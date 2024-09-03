@@ -1,0 +1,146 @@
+{
+	"info": {
+		"_postman_id": "c002b54f-4131-451d-a1a8-d73131e0d186",
+		"name": "Okta login setup",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29505683"
+	},
+	"item": [
+		{
+			"name": "Okta Authenticate",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 200) {\r",
+							"    pm.environment.set(\"okta_session_token\", pm.response.json().sessionToken)\r",
+							"    pm.environment.set(\"okta_user_id\", pm.response.json()._embedded.user.id)\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Cookie",
+						"value": "JSESSIONID=18C7669A191E3A6D50B597E3DA5DAC69"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"{{okta_username}}\",\r\n    \"password\": \"{{okta_password}}\",\r\n    \"options\": {\r\n        \"multiOptionalFactorEnroll\": true,\r\n        \"warnBeforePasswordExpired\": true\r\n    }\r\n}\r\n"
+				},
+				"url": {
+					"raw": "https://ikmg2.oktapreview.com//api/v1/authn",
+					"protocol": "https",
+					"host": [
+						"ikmg2",
+						"oktapreview",
+						"com"
+					],
+					"path": [
+						"",
+						"api",
+						"v1",
+						"authn"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Generate Authentication Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 200) {\r",
+							"        const $ = cheerio.load(pm.response.text());\r",
+							"        pm.environment.set(\"AUTH_TOKEN\", $('input[name=\"access_token\"]').val())\r",
+							"    }"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Cookie",
+						"value": "DT=DI1JiGZTgm8T9OUgib3kHHkyw; JSESSIONID=AB72ED875E5AA3EBCF5BD72089A16DD7; idx=eyJ6aXAiOiJERUYiLCJhbGlhcyI6ImVuY3J5cHRpb25rZXkiLCJ2ZXIiOiIxIiwib2lkIjoiMDBvNmJkMXljb1RlQVlmMWkxZDciLCJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiZGlyIn0..sPOhqM12mKhcsLq7.kTyai4LwlLDsetj3zcol2r5Tx7cngceX--6dieKkrasLpDrgHHswv5g8aq9sC6lAVFibtNRIw445YOm1gHD2ypzZo4Eh7Yptp1RXvMHTvuoD0Ubbv8z3no0iolBz3zFkSUldrHXWEmUJqROa1IBJC5zFn2fLBDfKoVJ0TTnRj9w5t5B0pAMR50SGgRhRC_yYjoSC8dGnDZKQDZqiBTXlCXSLd4ZEYU9u1Qh6svDHguMuubd9HAzarGCxDMD0FZ_hfCHofc1-L2m_7tSlIiY5klnxyUT5np0A0ZxA3DoS2N_1Bgfai9kEHryMUs27e-Hkty2u9Uf-BBLqwokZJFYCm6BwCe-zERDx6lNIKQedhawO2EcoQybNV80oEy5lhmEjRUY0O7WnHcRepse-2YL-SJxXEbSSylN-3uzLM7LNzCdtSed-jYnief18Pz2I5iUphDpT372I71t42vIZO3glFauduUK1YrEd58zAPFjcVd_j5wtelVi_1j7hZpebvk1NRtgrh82GkfriB8nLdrp_YBJi-GctNgKVVB9bU_T7R--Ld5LyYzbuB-QN8jEjUkAr2uwFUL4w-HPM6lV4OBA18nfJUeSsrWC1jk3DDp35KS49HUBiMu82FrGnrtEY5Xmnhg1Q0jq3tmtrKILVlv5L24CcPod-1KcyELRp0JgpczVBXImWKH810anALEv2qd58RvOFAKJq0jSCPou32paFXahGG8cKB6U9FUrkyzSoP4_set-rGab2-pKZKNvi64GdanfxrjroqR8NwjS7aBBkYRSxBljOz3kKccj9f76Pqplj7x9QLFNAbrvIWCf_9X9t1xXIGIgOc3s-R4ESp1esXNjb1rgSap_hSaqCS0kmAvHucHvtyD0OnUlLLn7cgw1hz6qn7OWhJqUTBrVbJn4QuNfRR7kIZVbzYhoh9u9pch-NnUEXFRv5YgHY4LJ2w5kvlh2MQVmoT7xoTcryjjutBSxn8lk9BTS3AgUEgmtZN1GzikJnovSd8euI6A.onxtCXT5oP2azIogqEHzyQ; proximity_8ff9b367d6d5ffa7d30e0f81218d35f4=eyJ6aXAiOiJERUYiLCJwMnMiOiJuZkVPQUdVUnozY2Rha1ljOERTTl93IiwicDJjIjoxMDAwLCJ2ZXIiOiIxIiwiZW5jIjoiQTI1NkdDTSIsImFsZyI6IlBCRVMyLUhTNTEyK0EyNTZLVyJ9.Cx9ycQn-d7CWwuMgDy06uutZ2VWmSUUoFzcIQ9DLoUyRIC3kVoQ3zQ.VI2kDSkmgDZmjl0X.Wp4BCnYPhAT9Ks9mJvnIIvyNIvus_kLD_Fh9_C9PnYCNse0pdDzmRZB8IQ_Dtn3t2lKo5ANrjAUyNhRk_F9HnOKbo-oDVz1RSUdJ8g-VyoxoJYc91_tiWS3O8Rh0Ju2yCKi8eq4tKL4GcOjngSRPGhZq3WnpNozHDiXymmmXGesPMw.Al40IchHafzottfn0JdM1g; sid=102TU9eBb2SQ4Sr31MSAI-bdA; t=default"
+					}
+				],
+				"url": {
+					"raw": "{{okta_url}}/oauth2/{{authorization_server_id}}/v1/authorize?client_id={{okta_client_id}}&response_type=token&response_mode=form_post&scope=openid&redirect_uri={{redirect_url}}&state={{$guid}}&nonce={{$guid}}&sessionToken={{okta_session_token}}",
+					"host": [
+						"{{okta_url}}"
+					],
+					"path": [
+						"oauth2",
+						"{{authorization_server_id}}",
+						"v1",
+						"authorize"
+					],
+					"query": [
+						{
+							"key": "client_id",
+							"value": "{{okta_client_id}}"
+						},
+						{
+							"key": "response_type",
+							"value": "token"
+						},
+						{
+							"key": "response_mode",
+							"value": "form_post"
+						},
+						{
+							"key": "scope",
+							"value": "openid"
+						},
+						{
+							"key": "redirect_uri",
+							"value": "{{redirect_url}}"
+						},
+						{
+							"key": "state",
+							"value": "{{$guid}}"
+						},
+						{
+							"key": "nonce",
+							"value": "{{$guid}}"
+						},
+						{
+							"key": "sessionToken",
+							"value": "{{okta_session_token}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

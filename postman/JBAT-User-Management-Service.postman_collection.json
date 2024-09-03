@@ -1,0 +1,1110 @@
+{
+	"info": {
+		"_postman_id": "820f8282-cb4c-4a72-ab3e-6f36a0f5a810",
+		"name": "CGAT_PDE-User-Management-Service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29505683"
+	},
+	"item": [
+		{
+			"name": "UserController",
+			"item": [
+				{
+					"name": "Fetch all Users based on filter provided with pagination capabilities.",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{AUTH_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/user-management-service/users?pageNo=0&pageSize=40&sortBy=updatedDate&sortOrder=DESC",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user-management-service",
+								"users"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "40"
+								},
+								{
+									"key": "sortBy",
+									"value": "updatedDate"
+								},
+								{
+									"key": "sortOrder",
+									"value": "DESC"
+								},
+								{
+									"key": "query",
+									"value": "<string>",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "IN_ACTIVE",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "ACTIVE",
+									"disabled": true
+								},
+								{
+									"key": "roles",
+									"value": "ONTADA_QC",
+									"disabled": true
+								},
+								{
+									"key": "roles",
+									"value": "VENDOR_QC",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users?pageNo=0&pageSize=20&sortBy=displayName&sortOrder=asc&query=<string>&status=<string>&roles=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users"
+									],
+									"query": [
+										{
+											"key": "pageNo",
+											"value": "0"
+										},
+										{
+											"key": "pageSize",
+											"value": "20"
+										},
+										{
+											"key": "sortBy",
+											"value": "displayName"
+										},
+										{
+											"key": "sortOrder",
+											"value": "asc"
+										},
+										{
+											"key": "query",
+											"value": "<string>"
+										},
+										{
+											"key": "status",
+											"value": "<string>"
+										},
+										{
+											"key": "roles",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"totalPages\": \"<integer>\",\n  \"totalElements\": \"<long>\",\n  \"first\": \"<boolean>\",\n  \"last\": \"<boolean>\",\n  \"sort\": {\n    \"empty\": \"<boolean>\",\n    \"sorted\": \"<boolean>\",\n    \"unsorted\": \"<boolean>\"\n  },\n  \"size\": \"<integer>\",\n  \"content\": [\n    {\n      \"id\": \"<string>\",\n      \"email\": \"<string>\",\n      \"roles\": [\n        {\n          \"label\": \"<string>\",\n          \"shortLabel\": \"<string>\",\n          \"value\": \"<string>\",\n          \"type\": \"<string>\"\n        },\n        {\n          \"label\": \"<string>\",\n          \"shortLabel\": \"<string>\",\n          \"value\": \"<string>\",\n          \"type\": \"<string>\"\n        }\n      ],\n      \"displayName\": \"<string>\",\n      \"updatedDate\": \"<dateTime>\",\n      \"active\": \"<boolean>\"\n    },\n    {\n      \"id\": \"<string>\",\n      \"email\": \"<string>\",\n      \"roles\": [\n        {\n          \"label\": \"<string>\",\n          \"shortLabel\": \"<string>\",\n          \"value\": \"<string>\",\n          \"type\": \"<string>\"\n        },\n        {\n          \"label\": \"<string>\",\n          \"shortLabel\": \"<string>\",\n          \"value\": \"<string>\",\n          \"type\": \"<string>\"\n        }\n      ],\n      \"displayName\": \"<string>\",\n      \"updatedDate\": \"<dateTime>\",\n      \"active\": \"<boolean>\"\n    }\n  ],\n  \"number\": \"<integer>\",\n  \"numberOfElements\": \"<integer>\",\n  \"pageable\": {\n    \"sort\": {\n      \"empty\": \"<boolean>\",\n      \"sorted\": \"<boolean>\",\n      \"unsorted\": \"<boolean>\"\n    },\n    \"offset\": \"<long>\",\n    \"paged\": \"<boolean>\",\n    \"pageSize\": \"<integer>\",\n    \"pageNumber\": \"<integer>\",\n    \"unpaged\": \"<boolean>\"\n  },\n  \"empty\": \"<boolean>\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Assign roles to a user.",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{AUTH_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/user-management-service/users/:userId/role?role=CHART_ABSTRACTOR",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user-management-service",
+								"users",
+								":userId",
+								"role"
+							],
+							"query": [
+								{
+									"key": "role",
+									"value": "CHART_ABSTRACTOR",
+									"description": "(Required) "
+								}
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "3ecb4a3d-a096-4a12-9a80-b28da4927a1c",
+									"description": "(Required) "
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userId/role?role=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userId",
+										"role"
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "<string>",
+											"description": "(Required) "
+										}
+									],
+									"variable": [
+										{
+											"key": "userId"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"id\": \"<uuid>\",\n  \"email\": \"<string>\",\n  \"displayName\": \"<string>\",\n  \"isActive\": \"<boolean>\",\n  \"isSyncWithChartAbstraction\": \"<integer>\",\n  \"roles\": [\n    {\n      \"id\": \"<uuid>\",\n      \"name\": \"<string>\",\n      \"label\": \"<string>\",\n      \"shortLabel\": \"<string>\",\n      \"roleType\": \"<string>\",\n      \"rolePermissionMappings\": [\n        {\n          \"permission\": {\n            \"id\": \"<uuid>\",\n            \"name\": \"<string>\",\n            \"label\": \"<string>\",\n            \"category\": \"<string>\"\n          }\n        },\n        {\n          \"permission\": {\n            \"id\": \"<uuid>\",\n            \"name\": \"<string>\",\n            \"label\": \"<string>\",\n            \"category\": \"<string>\"\n          }\n        }\n      ]\n    },\n    {\n      \"id\": \"<uuid>\",\n      \"name\": \"<string>\",\n      \"label\": \"<string>\",\n      \"shortLabel\": \"<string>\",\n      \"roleType\": \"<string>\",\n      \"rolePermissionMappings\": [\n        {\n          \"permission\": {\n            \"id\": \"<uuid>\",\n            \"name\": \"<string>\",\n            \"label\": \"<string>\",\n            \"category\": \"<string>\"\n          }\n        },\n        {\n          \"permission\": {\n            \"id\": \"<uuid>\",\n            \"name\": \"<string>\",\n            \"label\": \"<string>\",\n            \"category\": \"<string>\"\n          }\n        }\n      ]\n    }\n  ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Fetch individual User Details",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{AUTH_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/user-management-service/users/:userId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user-management-service",
+								"users",
+								":userId"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "3ecb4a3d-a096-4a12-9a80-b28da4927a1c",
+									"description": "(Required) "
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userId"
+									],
+									"variable": [
+										{
+											"key": "userId"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"value\": {},\n  \"filters\": {}\n}"
+						}
+					]
+				},
+				{
+					"name": "Upload and assign roles to all users.",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{AUTH_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "userRoleMappingCSV",
+									"type": "file",
+									"src": "/C:/Users/ev6t09r/Documents/user_sample.csv"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user-management-service/users/roles?preview=false",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user-management-service",
+								"users",
+								"roles"
+							],
+							"query": [
+								{
+									"key": "preview",
+									"value": "false",
+									"description": "(Required) "
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"userRoleMappingCSV\": \"<string>\"\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/users/roles?preview=<boolean>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"roles"
+									],
+									"query": [
+										{
+											"key": "preview",
+											"value": "<boolean>",
+											"description": "(Required) "
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"records\": [\n    {\n      \"displayName\": \"<string>\",\n      \"email\": \"<string>\",\n      \"roles\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"status\": \"<string>\",\n      \"validationMessages\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    {\n      \"displayName\": \"<string>\",\n      \"email\": \"<string>\",\n      \"roles\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"status\": \"<string>\",\n      \"validationMessages\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    }\n  ],\n  \"hasErrors\": \"<boolean>\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Filter Users for a specific role",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{AUTH_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n  \"5ec5de42-dffb-11ec-9d64-0242ac120953\",\n  \"5ec5de42-dffb-11ec-9d64-0242ac120957\",\n  \"9b083964-e8bc-4e0a-a6dc-9b002f690f94\",\n  \"7e9a1591-fb27-452c-999d-51142067c59b\",\n  \"5ef3e657-8dbb-4d98-b0b5-9422d9a770c0\",\n  \"dcfa516a-5069-49ce-933a-ce8d82d49768\",\n  \"3c115bc5-7aab-49bf-9853-47ebdbf056ca\",\n  \"f4e9b09f-19fa-4e0d-8860-1f759a6aa8a7\",\n  \"e80fe28d-356f-41ed-a5b4-5afad1a7a586\",\n  \"4a6d0d2e-418e-4cf3-9afd-4e61b73d0909\",\n  \"5ec5de42-dffb-11ec-9d64-0242ac120959\",\n  \"5ec5de42-dffb-11ec-9d64-0242ac120960\",\n  \"b8b7f361-0f72-4065-ae35-996e5171657c\"\n]\n",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user-management-service/users/filterByRole?role=ONTADA_QC",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user-management-service",
+								"users",
+								"filterByRole"
+							],
+							"query": [
+								{
+									"key": "role",
+									"value": "ONTADA_QC",
+									"description": "(Required) "
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[\n  \"<string>\",\n  \"<string>\"\n]",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/users/filterByRole?role=ONTADA_QC",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"filterByRole"
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "ONTADA_QC",
+											"description": "(Required) "
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "[\n  {\n    \"userId\": \"<string>\",\n    \"userName\": \"<string>\"\n  },\n  {\n    \"userId\": \"<string>\",\n    \"userName\": \"<string>\"\n  }\n]"
+						}
+					]
+				},
+				{
+					"name": "Filter Users for assigning to a study",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{AUTH_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/user-management-service/users/assign/study",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user-management-service",
+								"users",
+								"assign",
+								"study"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/assign/study",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"assign",
+										"study"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "OktaWebhookController",
+			"item": [
+				{
+					"name": "Send authorization information as commands to token hook to embed the authorization information inside the authentication token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "x-jwt-payload",
+								"value": "eyJpc3MiOiJodHRwczovL2R2LWlwdi1hcy0xLm5hLmNvcnAubWNrZXNzb24uY29tIiwic3ViIjoiQUFENUQ1NzNGRjU4NDc0Nzk2MEUxQzdGRjA1QkJDQUIiLCJhdWQiOiJhcGk6Ly9pby5pa21kLmcyIiwiaWF0IjoxNjg5NzAwMTc5LCJleHAiOjE2ODk3MDM3NzksImp0aSI6IjNiYTM4M2E3LWViNGQtNGZjZC1hMDQyLWFjOTc2MDAzNTEyZiIsInNjcCI6WyJnMjpwcmFjdGljZSIsImcyOnJvbGVzIiwib2ZmbGluZV9hY2Nlc3MiXSwiY2lkIjoibW9iaWxlIiwiZzJQcmFjdGljZSI6IjFENDM0QjBDRkUwNTQ2MDdCNjM2QzdGNDdFODAzREMxIiwiZzJSb2xlcyI6ImdINFF5NjlWdmVQX1BfdDlfV3Z1UHpEOVB3IiwiZzJVc2VyIjoiQUFENUQ1NzNGRjU4NDc0Nzk2MEUxQzdGRjA1QkJDQUIifQ",
+								"type": "text"
+							},
+							{
+								"key": "x-okta-auth",
+								"value": "YWRtaW5AMTIz",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"eventId\": \"P2YDDPPPSgySzGJ3bkAtnw\",\n    \"eventTime\": \"2023-10-04T15:37:27.000Z\",\n    \"eventType\": \"com.okta.oauth2.tokens.transform\",\n    \"eventTypeVersion\": \"1.0\",\n    \"contentType\": \"application/json\",\n    \"cloudEventVersion\": \"0.1\",\n    \"source\": \"https://ikmg2-admin.oktapreview.com\",\n    \"data\": {\n        \"context\": {\n            \"request\": {\n                \"id\": \"753634d79fcce4d8e40a4771fa1b72c8\",\n                \"method\": \"POST\",\n                \"url\": {\n                    \"value\": \"https://ikmg2-admin.oktapreview.com\"\n                },\n                \"ipAddress\": \"13.83.19.176\"\n            },\n            \"protocol\": {\n                \"type\": \"OAUTH2.0\",\n                \"request\": {\n                    \"scope\": \"openid offline_access email\",\n                    \"grant_type\": \"implicit\",\n                    \"client_id\": \"0oa8z4dc5eTkZTisf1d7\"\n                },\n                \"issuer\": {\n                    \"uri\": \"https://ikmg2.oktapreview.com/oauth2/aus15z2gtyeApTTXf1d7\"\n                },\n                \"client\": {\n                    \"id\": \"0oa8z4dc5eTkZTisf1d7\",\n                    \"name\": \"My Test JBAT App\",\n                    \"type\": \"PUBLIC\"\n                }\n            },\n            \"session\": {\n                \"id\": \"trszranV7ziQGGtzNO5vBpUqg\",\n                \"userId\": \"00ua80j5xgeeWqkbq1d7\",\n                \"login\": \"rohit.a@mckesson.com\",\n                \"createdAt\": \"2023-10-04T15:33:16.000Z\",\n                \"expiresAt\": \"2023-10-04T17:37:27.000Z\",\n                \"status\": \"ACTIVE\",\n                \"lastFactorVerification\": \"2023-10-04T12:12:39.000Z\",\n                \"amr\": [\n                    \"PASSWORD\"\n                ],\n                \"mfaActive\": false\n            },\n            \"user\": {\n                \"id\": \"00ua80j5xgeeWqkbq1d7\",\n                \"passwordChanged\": \"2023-09-25T12:05:19.000Z\",\n                \"profile\": {\n                    \"login\": \"rohit.a@mckesson.com\",\n                    \"firstName\": \"Rohit\",\n                    \"lastName\": \"A\",\n                    \"locale\": \"en\",\n                    \"timeZone\": \"America/Los_Angeles\"\n                },\n                \"_links\": {\n                    \"groups\": {\n                        \"href\": \"https://ikmg2.oktapreview.com/api/v1/users/00ua80j5xgeeWqkbq1d7/groups\"\n                    },\n                    \"factors\": {\n                        \"href\": \"https://ikmg2.oktapreview.com/api/v1/users/00ua80j5xgeeWqkbq1d7/factors\"\n                    }\n                }\n            },\n            \"policy\": {\n                \"id\": \"00p9clqktyJroltDu1d7\",\n                \"rule\": {\n                    \"id\": \"0pr9clexx6eWb4ai61d7\"\n                }\n            }\n        },\n        \"identity\": {\n            \"claims\": {\n                \"sub\": \"00ua80j5xgeeWqkbq1d7\",\n                \"email\": \"rohit.a@mckesson.com\",\n                \"ver\": 1,\n                \"iss\": \"https://ikmg2.oktapreview.com/oauth2/aus15z2gtyeApTTXf1d7\",\n                \"aud\": \"0oa8z4dc5eTkZTisf1d7\",\n                \"jti\": \"ID.0cnb32y8RCF-LE6BxoyrJxh0yd7IxvdJY7ZJRG5wXzw\",\n                \"amr\": [\n                    \"pwd\"\n                ],\n                \"idp\": \"00oxdyu3vL7nQe6Cp1d6\",\n                \"nonce\": \"nonce\",\n                \"auth_time\": 1000\n            },\n            \"token\": {\n                \"lifetime\": {\n                    \"expiration\": 3600\n                }\n            }\n        },\n        \"access\": {\n            \"claims\": {\n                \"ver\": 1,\n                \"jti\": \"AT.IN5kUosTP6PaOdo8smKGrMH22yFvo0jjh5fLCu91VZM\",\n                \"iss\": \"https://ikmg2.oktapreview.com/oauth2/aus15z2gtyeApTTXf1d7\",\n                \"aud\": \"https://localhost:8080\",\n                \"cid\": \"0oa8z4dc5eTkZTisf1d7\",\n                \"uid\": \"00ua80j5xgeeWqkbq1d7\",\n                \"auth_time\": 1000,\n                \"sub\": \"rohit.a@mckesson.com\",\n                \"email\": \"rohit.a@mckesson.com\"\n            },\n            \"token\": {\n                \"lifetime\": {\n                    \"expiration\": 3600\n                }\n            },\n            \"scopes\": {\n                \"openid\": {\n                    \"id\": \"scp15z2gtz1R8szdP1d7\",\n                    \"action\": \"GRANT\"\n                },\n                \"email\": {\n                    \"id\": \"scp15z2gu1xvSGPbL1d7\",\n                    \"action\": \"GRANT\"\n                }\n            }\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user-management-service/inlineHooks/handleTokenHook",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user-management-service",
+								"inlineHooks",
+								"handleTokenHook"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"mollit5\": {}\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/inlineHooks/handleTokenHook",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"inlineHooks",
+										"handleTokenHook"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"mollit5\": {}\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "ReferenceDataController",
+			"item": [
+				{
+					"name": "Fetch all roles static reference data.",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{AUTH_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/user-management-service/reference",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user-management-service",
+								"reference"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/reference",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reference"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"roles\": [\n    {\n      \"label\": \"<string>\",\n      \"shortLabel\": \"<string>\",\n      \"value\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    {\n      \"label\": \"<string>\",\n      \"shortLabel\": \"<string>\",\n      \"value\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Fetch all permissions associated with each role",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{AUTH_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/user-management-service/reference/role/:rolename/permissions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user-management-service",
+								"reference",
+								"role",
+								":rolename",
+								"permissions"
+							],
+							"variable": [
+								{
+									"key": "rolename",
+									"value": "ONTADA_QC",
+									"description": "(Required) "
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/reference/role/:rolename/permissions",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reference",
+										"role",
+										":rolename",
+										"permissions"
+									],
+									"variable": [
+										{
+											"key": "rolename"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"id\": \"<uuid>\",\n  \"name\": \"<string>\",\n  \"label\": \"<string>\",\n  \"shortLabel\": \"<string>\",\n  \"roleType\": \"<string>\",\n  \"rolePermissionMappings\": [\n    {\n      \"permission\": {\n        \"id\": \"<uuid>\",\n        \"name\": \"<string>\",\n        \"label\": \"<string>\",\n        \"category\": \"<string>\"\n      }\n    },\n    {\n      \"permission\": {\n        \"id\": \"<uuid>\",\n        \"name\": \"<string>\",\n        \"label\": \"<string>\",\n        \"category\": \"<string>\"\n      }\n    }\n  ]\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "PublicAccessController",
+			"item": [
+				{
+					"name": "Decode jwt token for Permissions",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{AUTH_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/user-management-service/public/jwt",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user-management-service",
+								"public",
+								"jwt"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/public/jwt",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"public",
+										"jwt"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"roles\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"permissions\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"userName\": \"<string>\",\n  \"userId\": \"<string>\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Retrieve Identity Provider Metadata",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{AUTH_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/user-management-service/public/idpConfig",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user-management-service",
+								"public",
+								"idpConfig"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/public/idpConfig",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"public",
+										"idpConfig"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"baseUrl\": \"<string>\",\n  \"protocol\": \"<string>\",\n  \"authServerId\": \"<string>\",\n  \"clientId\": \"<string>\",\n  \"redirectUri\": \"<string>\",\n  \"endSessionRedirectUri\": \"<string>\",\n  \"scopes\": \"<string>\",\n  \"state\": {\n    \"nostrude4\": \"<string>\",\n    \"et_7f9\": \"<string>\",\n    \"sit_f\": \"<string>\"\n  }\n}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"value": "",
+			"disabled": true
+		},
+		{
+			"value": "",
+			"type": "string",
+			"disabled": true
+		}
+	]
+}
