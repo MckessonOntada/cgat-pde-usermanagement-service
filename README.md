@@ -1,4 +1,4 @@
-# JBAT User Management   
+# CGAT-PDE User Management   
 Micro service providing services for user management within CGAT-PDE application. It plays crucial role in handling user-related functions including user creation, deactivation and managing roles and permissions. It interacts with OKTA to ensure secure authentication.
 
 ## Table of Contents
