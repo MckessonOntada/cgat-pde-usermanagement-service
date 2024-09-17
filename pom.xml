@@ -6,7 +6,7 @@
         <artifactId>jbat-parent</artifactId>
         <version>2.0.1</version>
     </parent>
-    <groupId>com.mckesson.cgat.pde.usermanagement</groupId>
+    <groupId>com.mckesson.cgat.pde</groupId>
     <artifactId>cgat-pde-usermanagement-service</artifactId>
     <version>${cgat-pde-usermanagement-services.version}</version>
     <name>CGAT-PDE User Management REST Service</name>

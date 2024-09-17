@@ -6,7 +6,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 
-@ComponentScan(basePackages = "com.mckesson.jbat")
+@ComponentScan(basePackages = "com.mckesson.cgat.pde")
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @SpringBootApplication
 @EnableJpaAuditing
