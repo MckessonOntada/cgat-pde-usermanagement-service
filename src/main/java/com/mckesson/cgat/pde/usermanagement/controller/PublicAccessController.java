@@ -1,30 +1,34 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
-import com.auth0.jwt.interfaces.Claim;
-import com.mckesson.jbat.auth.module.service.BearerJWTExtractor;
-import com.mckesson.jbat.auth.module.service.JWTExtractor;
-import com.mckesson.jbat.auth.module.util.JWTHelper;
-import com.mckesson.cgat.pde.usermanagement.dto.JwtResponseDto;
-import org.springframework.http.HttpHeaders;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.*;
+import static com.mckesson.jbat.common.util.constant.HeaderConstant.PERMISSION_CLAIM;
+import static com.mckesson.jbat.common.util.constant.HeaderConstant.ROLE_CLAIM;
+import static com.mckesson.jbat.common.util.constant.HeaderConstant.USER_CLAIM;
+import static com.mckesson.jbat.common.util.constant.HeaderConstant.USER_NAME_CLAIM;
 
-import com.mckesson.cgat.pde.usermanagement.dto.IdentityProviderMetaData;
-import com.mckesson.cgat.pde.usermanagement.service.IDPService;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-
-import lombok.extern.slf4j.Slf4j;
-
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.mckesson.jbat.common.util.constant.HeaderConstant.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.auth0.jwt.interfaces.Claim;
+import com.mckesson.cgat.pde.usermanagement.dto.IdentityProviderMetaData;
+import com.mckesson.cgat.pde.usermanagement.dto.JwtResponseDto;
+import com.mckesson.cgat.pde.usermanagement.service.IDPService;
+import com.mckesson.jbat.auth.module.service.JWTExtractor;
+import com.mckesson.jbat.auth.module.util.JWTHelper;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
@@ -33,6 +37,7 @@ import static com.mckesson.jbat.common.util.constant.HeaderConstant.*;
  * Note: As this controller does not require authentication, ensure that sensitive operations and data
  * are not exposed through this API.
  */
+@ComponentScan(basePackages = "com.mckesson.jbat.auth.module")
 @RestController
 @Tag(name = "Public Access", description = "Open and unauthenticated API endpoints for public access.")
 @RequestMapping(path = "/public", produces = MediaType.APPLICATION_JSON_VALUE)

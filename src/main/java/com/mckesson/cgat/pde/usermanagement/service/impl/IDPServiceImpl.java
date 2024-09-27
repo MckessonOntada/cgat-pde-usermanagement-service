@@ -1,13 +1,15 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
-import com.mckesson.jbat.auth.module.config.AppPropertiesConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 
 import com.mckesson.cgat.pde.usermanagement.dto.IdentityProviderMetaData;
 import com.mckesson.cgat.pde.usermanagement.service.IDPService;
+import com.mckesson.jbat.auth.module.config.AppPropertiesConfig;
 
 @Service
+@ComponentScan(basePackages = "com.mckesson.jbat.auth.module")
 public class IDPServiceImpl implements IDPService {
 	
 	private final AppPropertiesConfig appPropertiesConfig;

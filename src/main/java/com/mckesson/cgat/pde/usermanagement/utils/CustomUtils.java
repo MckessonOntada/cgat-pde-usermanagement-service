@@ -6,14 +6,17 @@ import java.util.regex.Pattern;
 
 public class CustomUtils {
 
-	private final static String regexPattern = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@" 
-	        + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$"; 
-	
+	private final static String regexPattern = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
+			+ "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
+
+	public enum operation_type {
+		create, update, delete
+	};
+
 	public static boolean validateEmail(String emailAddress) {
-	    return Pattern.compile(regexPattern)
-	      .matcher(emailAddress)
-	      .matches();
+		return Pattern.compile(regexPattern).matcher(emailAddress).matches();
 	}
+
 	public static String formatDateToString(Date date) {
 		// Check if the date is null
 		if (date == null) {
@@ -26,7 +29,8 @@ public class CustomUtils {
 		// Convert Date to String with milliseconds
 		String formattedDate = formatter.format(date);
 
-		// Since java.util.Date only supports milliseconds, append "000" for microseconds
+		// Since java.util.Date only supports milliseconds, append "000" for
+		// microseconds
 		String formattedDateWithMicroseconds = formattedDate + "000";
 
 		return formattedDateWithMicroseconds;
