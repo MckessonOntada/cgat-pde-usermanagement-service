@@ -32,7 +32,7 @@ public class UserModelController {
 	}
 
 	@PostMapping("/create-user/{userId}")
-	@Operation(summary = "Create new user")
+	@Operation(summary = "Create and update user")
 	public ResponseEntity<Object> createUser(@PathVariable String userId, @RequestBody UserModelRequestDto dto) throws Exception {
 		userModelService.createUser(userId,dto);
 		return new ResponseEntity<>("Success", HttpStatus.OK);
@@ -40,7 +40,7 @@ public class UserModelController {
 	}
 
 	@GetMapping("/users/{userId}")
-	@Operation(summary = "Getting all user details")
+	@Operation(summary = "Getting all user details and user details byId ")
 	public ResponseEntity<Object> users(@PathVariable String userId) throws ResourceNotFoundException {
 		List<UserModel> users = userModelService.users(userId);
 		return new ResponseEntity<>(users, HttpStatus.OK);
