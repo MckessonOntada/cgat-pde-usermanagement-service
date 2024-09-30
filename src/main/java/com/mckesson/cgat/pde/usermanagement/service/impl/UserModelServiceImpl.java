@@ -4,9 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import com.mckesson.cgat.pde.usermanagement.dto.UserModelRequestDto;
 import com.mckesson.cgat.pde.usermanagement.model.UserModel;
@@ -67,5 +71,22 @@ public class UserModelServiceImpl implements UserModelService {
 		user.get().setIsActive(false);
 		userModelRepository.save(user.get());
 		return user.get().getFirstName();
+	}
+
+	@Override
+	public Page<UserModel> findAll(Pageable paging, String query, List<String> status) {
+		query = StringUtils.toRootLowerCase(query);
+		Page<UserModel> response;
+		String statusActive = "Active";
+		if (!CollectionUtils.isEmpty(status)) {
+			if (status.stream().anyMatch(i -> i.equalsIgnoreCase("Active"))) {
+				statusActive = "Active";
+			}
+			if (status.stream().anyMatch(i -> i.equalsIgnoreCase("INACTIVE"))) {
+				statusActive = "ACTIVE".equals(statusActive) ? "ALL" : "INACTIVE";
+			}
+		}
+		response = userModelRepository.findAllByQueryText(query, statusActive, paging);
+		return response;
 	}
 }
