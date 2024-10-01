@@ -10,7 +10,11 @@ public class CustomUtils {
 			+ "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
 
 	public enum operation_type {
-		create, update, delete
+		CREATE, UPDATE, DELETE
+	};
+
+	public enum permission_type {
+		NONE, VIEW, FULL
 	};
 
 	public static boolean validateEmail(String emailAddress) {

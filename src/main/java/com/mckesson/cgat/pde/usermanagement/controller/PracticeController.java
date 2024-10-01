@@ -47,8 +47,8 @@ public class PracticeController {
 			@RequestParam(required = true, value = "data") String data)
 			throws IOException, IllegalStateException, ResourceNotFoundException {
 
-		String status = practiceService.createPractice(logo, data);
-		if (status.equals(CustomUtils.operation_type.create.name()))
+		String status = practiceService.createOrUpdatePractice(logo, data);
+		if (status.equals(CustomUtils.operation_type.CREATE.name()))
 			return ResponseEntity.status(HttpStatus.CREATED).body("Practice created successfully");
 		else
 			return ResponseEntity.status(HttpStatus.OK).body("Practice updated successfully");

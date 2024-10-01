@@ -35,7 +35,7 @@ public class PracticeServiceImpl implements PracticeService {
 	}
 
 	@Override
-	public String createPractice(MultipartFile logo, String data)
+	public String createOrUpdatePractice(MultipartFile logo, String data)
 			throws IllegalStateException, IOException, ResourceNotFoundException {
 		PracticeDto practiceRequestDto = practiceUtils.saveImage(logo, data);
 		Practice modelObj = null;
@@ -45,10 +45,10 @@ public class PracticeServiceImpl implements PracticeService {
 				throw new ResourceNotFoundException("Requested Practice not found");
 			modelObj.setId(UUID.fromString(practiceRequestDto.getId()));
 			practiceRepository.save(modelObj);
-			return CustomUtils.operation_type.update.name();
+			return CustomUtils.operation_type.UPDATE.name();
 		}
 		practiceRepository.save(modelObj);
-		return CustomUtils.operation_type.create.name();
+		return CustomUtils.operation_type.CREATE.name();
 	}
 
 	@Override
