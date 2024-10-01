@@ -46,9 +46,9 @@ public class UserModel extends AuditColumns implements Serializable {
 	
 	private String suffix;
 
-	private String addressFirst;
+	private String address1;
 
-	private String addressSecond;
+	private String address2;
 
 	
 	private String city;
@@ -60,7 +60,7 @@ public class UserModel extends AuditColumns implements Serializable {
 	private String zip;
 
 	@Email
-	private String emailId;
+	private String email;
 
 
 	private String phoneNumber;
