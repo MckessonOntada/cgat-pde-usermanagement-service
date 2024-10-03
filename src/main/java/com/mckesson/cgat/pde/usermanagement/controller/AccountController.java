@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mckesson.cgat.pde.usermanagement.dto.AccountRequestDto;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -42,12 +42,18 @@ public class AccountController {
 		this.accountService = accountService;
 	}
 
-	@PostMapping("/{accountId}")
-	@Operation(summary = "Create and update account")
-	public ResponseEntity<Object> createAccount(@PathVariable String accountId, @RequestBody AccountRequestDto dto)
-			throws ResourceNotFoundException, BadRequestException {
-		accountService.createAccount(accountId, dto);
-		return new ResponseEntity<>("Success", HttpStatus.OK);
+	@PostMapping
+	@Operation(summary = "Create new  account")
+	public ResponseEntity<Object> createAccount(@RequestBody Account account) throws BadRequestException {
+		return new ResponseEntity<>(accountService.createAccount(account), HttpStatus.OK);
+
+	}
+
+	@PutMapping("/{accountId}")
+	@Operation(summary = "Update existing account")
+	public ResponseEntity<HttpStatus> updateAccount(@PathVariable String accountId) throws ResourceNotFoundException {
+		accountService.updateAccount(accountId);
+		return new ResponseEntity<>(HttpStatus.OK);
 
 	}
 

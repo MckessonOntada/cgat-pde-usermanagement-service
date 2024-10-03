@@ -23,6 +23,10 @@ public interface AccountService {
 
 	Page<Account> findAll(Pageable paging, String query, List<String> status);
 
+	Account createAccount(Account account) throws BadRequestException;
+
+	void updateAccount(String accountId) throws ResourceNotFoundException;
+
 	
 
 }

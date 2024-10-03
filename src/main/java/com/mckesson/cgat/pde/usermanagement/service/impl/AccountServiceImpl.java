@@ -31,6 +31,24 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
+	public Account createAccount(Account account) throws BadRequestException {
+		Account createdAccount = accountRepository.save(account);
+		if (createdAccount == null)
+			throw new BadRequestException("Bad request..!!");
+		return createdAccount;
+	}
+
+	@Override
+	public void updateAccount(String accountId) throws ResourceNotFoundException {
+		Optional<Account> account = accountRepository.findById(accountId);
+		if (!account.isPresent())
+			throw new ResourceNotFoundException("account not found with given accountId = " + accountId);
+		else
+			account.get().setId(accountId);
+		accountRepository.save(account.get());
+	}
+
+	@Override
 	public Account createAccount(String accountId, AccountRequestDto dto)
 			throws BadRequestException, ResourceNotFoundException {
 		if (!accountId.isEmpty()) {

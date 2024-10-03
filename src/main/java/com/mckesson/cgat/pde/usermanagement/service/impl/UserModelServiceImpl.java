@@ -22,28 +22,28 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 @Service
 public class UserModelServiceImpl implements UserModelService {
 
-	@Autowired
-	private UserModelRepository userModelRepository;
+	
+	private  final UserModelRepository userModelRepository;
 
-	@Autowired
-	private UserModelUtil usrModelUtil;
+	public UserModelServiceImpl(UserModelRepository userModelRepository) {
+		this.userModelRepository = userModelRepository;
+	}
 
 	@Override
-	public UserModel createUser(String userId, UserModelRequestDto dto) throws Exception {
-		if (!userId.isEmpty()) {
-			Optional<UserModel> user = userModelRepository.findById(userId);
-			if (!user.isPresent())
-				throw new ResourceNotFoundException("User not found with given userId = " + userId);
-			else {
-				user.get().setId(userId);
-				userModelRepository.save(user.get());
-				return user.get();
-			}
-		}
-		UserModel createdUser = userModelRepository.save(usrModelUtil.mapDtoTOEntity(dto));
+	public UserModel createUser(UserModel model) throws BadRequestException {
+		UserModel createdUser = userModelRepository.save(model);
 		if (createdUser == null)
 			throw new BadRequestException("Bad request..!!");
 		return createdUser;
+	}
+
+	@Override
+	public void updateUser(String userId, UserModel model) throws ResourceNotFoundException {
+		Optional<UserModel> user = userModelRepository.findById(userId);
+		if (!user.isPresent())
+			throw new ResourceNotFoundException("User not found with given userId = " + userId);
+		user.get().setId(userId);
+		userModelRepository.save(user.get());
 	}
 
 	@Override
@@ -89,4 +89,13 @@ public class UserModelServiceImpl implements UserModelService {
 		response = userModelRepository.findAllByQueryText(query, statusActive, paging);
 		return response;
 	}
+
+//	@Override
+//	public UserModel updateUser(String userId, UserModelRequestDto dto) throws Exception {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+
+	
+
 }

@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import java.util.List;
 
+import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,11 +14,11 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.mckesson.cgat.pde.usermanagement.dto.UserModelRequestDto;
 import com.mckesson.cgat.pde.usermanagement.model.UserModel;
 import com.mckesson.cgat.pde.usermanagement.service.UserModelService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -39,17 +40,24 @@ public class UserModelController {
 		this.userModelService = userModelService;
 	}
 
-	@PostMapping("/{userId}")
-	@Operation(summary = "Create and update user")
-	public ResponseEntity<Object> createUser(@PathVariable String userId, @RequestBody UserModelRequestDto dto)
-			throws Exception {
-		userModelService.createUser(userId, dto);
-		return new ResponseEntity<>("Success", HttpStatus.OK);
+	@PostMapping
+	@Operation(summary = "Create new user")
+	public ResponseEntity<Object> createUser(@RequestBody UserModel model) throws BadRequestException {
+		return new ResponseEntity<>(userModelService.createUser(model), HttpStatus.OK);
+
+	}
+
+	@PutMapping("/{userId}")
+	@Operation(summary = "Update existing user details")
+	public ResponseEntity<HttpStatus> updateUser(@PathVariable String userId, @RequestBody UserModel model)
+			throws ResourceNotFoundException {
+		userModelService.updateUser(userId, model);
+		return new ResponseEntity<>(HttpStatus.OK);
 
 	}
 
 	@GetMapping("/{userId}")
-	@Operation(summary = "Getting all user details and user details byId ")
+	@Operation(summary = "Get user details byId ")
 	public ResponseEntity<Object> users(@PathVariable String userId) throws ResourceNotFoundException {
 		List<UserModel> users = userModelService.users(userId);
 		return new ResponseEntity<>(users, HttpStatus.OK);
