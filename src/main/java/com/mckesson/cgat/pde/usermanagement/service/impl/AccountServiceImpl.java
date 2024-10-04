@@ -39,13 +39,12 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public void updateAccount(String accountId) throws ResourceNotFoundException {
+	public void updateAccount(String accountId, Account obj) throws ResourceNotFoundException {
 		Optional<Account> account = accountRepository.findById(accountId);
 		if (!account.isPresent())
 			throw new ResourceNotFoundException("account not found with given accountId = " + accountId);
-		else
-			account.get().setId(accountId);
-		accountRepository.save(account.get());
+		obj.setId(accountId);
+		accountRepository.save(obj);
 	}
 
 	@Override

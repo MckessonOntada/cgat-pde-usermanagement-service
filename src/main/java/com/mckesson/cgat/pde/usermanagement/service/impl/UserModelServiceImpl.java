@@ -42,8 +42,8 @@ public class UserModelServiceImpl implements UserModelService {
 		Optional<UserModel> user = userModelRepository.findById(userId);
 		if (!user.isPresent())
 			throw new ResourceNotFoundException("User not found with given userId = " + userId);
-		user.get().setId(userId);
-		userModelRepository.save(user.get());
+		model.setId(userId);
+		userModelRepository.save(model);
 	}
 
 	@Override

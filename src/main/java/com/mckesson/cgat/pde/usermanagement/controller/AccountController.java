@@ -51,9 +51,8 @@ public class AccountController {
 
 	@PutMapping("/{accountId}")
 	@Operation(summary = "Update existing account")
-	public ResponseEntity<HttpStatus> updateAccount(@PathVariable String accountId) throws ResourceNotFoundException {
-		accountService.updateAccount(accountId);
-		return new ResponseEntity<>(HttpStatus.OK);
+	public void updateAccount(@PathVariable String accountId, @RequestBody Account account) throws ResourceNotFoundException {
+		accountService.updateAccount(accountId ,account);
 
 	}
 

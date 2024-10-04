@@ -11,7 +11,6 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 public interface UserModelService {
 
-//	UserModel createUser(String userId, UserModelRequestDto dto) throws Exception;
 
 	List<UserModel> users(String userId) throws ResourceNotFoundException;
 

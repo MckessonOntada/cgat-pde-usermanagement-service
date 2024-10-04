@@ -49,10 +49,9 @@ public class UserModelController {
 
 	@PutMapping("/{userId}")
 	@Operation(summary = "Update existing user details")
-	public ResponseEntity<HttpStatus> updateUser(@PathVariable String userId, @RequestBody UserModel model)
+	public void updateUser(@PathVariable String userId, @RequestBody UserModel model)
 			throws ResourceNotFoundException {
 		userModelService.updateUser(userId, model);
-		return new ResponseEntity<>(HttpStatus.OK);
 
 	}
 

@@ -9,13 +9,13 @@ import org.springframework.stereotype.Service;
 
 import com.mckesson.cgat.pde.usermanagement.dto.AccountRequestDto;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
-import com.mckesson.cgat.pde.usermanagement.model.UserModel;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 @Service
 public interface AccountService {
 
-	Account createAccount(String accountId, AccountRequestDto dto) throws BadRequestException, ResourceNotFoundException;
+	Account createAccount(String accountId, AccountRequestDto dto)
+			throws BadRequestException, ResourceNotFoundException;
 
 	List<Account> accounts(String accountId) throws ResourceNotFoundException;
 
@@ -25,8 +25,6 @@ public interface AccountService {
 
 	Account createAccount(Account account) throws BadRequestException;
 
-	void updateAccount(String accountId) throws ResourceNotFoundException;
-
-	
+	void updateAccount(String accountId, Account account) throws ResourceNotFoundException;
 
 }
