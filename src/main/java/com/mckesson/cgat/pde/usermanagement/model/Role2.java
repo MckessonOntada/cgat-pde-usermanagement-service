@@ -1,9 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.model;
 
+import java.io.Serializable;
 import java.util.List;
-import java.util.UUID;
-
-import org.hibernate.annotations.UuidGenerator;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -19,11 +17,10 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class Role2 {
+public class Role2 extends AuditColumns implements Serializable {
 
 	@Id
-	@UuidGenerator
-	private UUID id;
+	private String id;
 
 	private String name;
 

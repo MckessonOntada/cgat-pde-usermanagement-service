@@ -1,9 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.model;
 
 import java.io.Serializable;
-import java.util.UUID;
 
-import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.annotations.Where;
 import org.hibernate.type.NumericBooleanConverter;
 
@@ -24,8 +22,7 @@ public class Permission2 extends AuditColumns implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@UuidGenerator
-	private UUID id;
+	private String id;
 
 	private String name;
 

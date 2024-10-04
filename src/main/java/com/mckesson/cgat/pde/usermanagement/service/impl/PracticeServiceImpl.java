@@ -3,7 +3,6 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -41,9 +40,9 @@ public class PracticeServiceImpl implements PracticeService {
 		Practice modelObj = null;
 		modelObj = practiceUtils.mapDtoToEntity(practiceRequestDto);
 		if (practiceRequestDto.getId() != null) {
-			if (!practiceRepository.findById(UUID.fromString(practiceRequestDto.getId())).isPresent())
+			if (!practiceRepository.findById(practiceRequestDto.getId()).isPresent())
 				throw new ResourceNotFoundException("Requested Practice not found");
-			modelObj.setId(UUID.fromString(practiceRequestDto.getId()));
+			modelObj.setId(practiceRequestDto.getId());
 			practiceRepository.save(modelObj);
 			return CustomUtils.operation_type.UPDATE.name();
 		}
@@ -53,7 +52,7 @@ public class PracticeServiceImpl implements PracticeService {
 
 	@Override
 	public Practice getPractice(String id) {
-		Optional<Practice> byId = practiceRepository.findById(UUID.fromString(id));
+		Optional<Practice> byId = practiceRepository.findById(id);
 		if (byId == null || byId.isEmpty() || !byId.isPresent()) {
 		}
 		return byId.get();
@@ -66,7 +65,7 @@ public class PracticeServiceImpl implements PracticeService {
 
 	@Override
 	public String deletePractice(String id) throws ResourceNotFoundException {
-		Optional<Practice> byId = practiceRepository.findById(UUID.fromString(id));
+		Optional<Practice> byId = practiceRepository.findById(id);
 		if (byId != null && !byId.isEmpty()) {
 			byId.get().setIsActive(false);
 			practiceRepository.save(byId.get());

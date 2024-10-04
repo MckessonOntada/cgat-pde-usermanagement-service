@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.mckesson.cgat.pde.usermanagement.model.Practice;
 import com.mckesson.cgat.pde.usermanagement.service.PracticeService;
-import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,16 +42,23 @@ public class PracticeController {
 	PracticeService practiceService;
 
 	@PostMapping
-	@Operation(summary = "Create or modify Practice")
+	@Operation(summary = "Create Practice")
 	public ResponseEntity<String> createPractice(@RequestParam("logo") MultipartFile logo,
 			@RequestParam(required = true, value = "data") String data)
 			throws IOException, IllegalStateException, ResourceNotFoundException {
 
 		String status = practiceService.createOrUpdatePractice(logo, data);
-		if (status.equals(CustomUtils.operation_type.CREATE.name()))
-			return ResponseEntity.status(HttpStatus.CREATED).body("Practice created successfully");
-		else
-			return ResponseEntity.status(HttpStatus.OK).body("Practice updated successfully");
+		return ResponseEntity.status(HttpStatus.CREATED).body("Practice created successfully");
+	}
+
+	@PutMapping
+	@Operation(summary = "Modify Practice")
+	public ResponseEntity<String> updatePractice(@RequestParam("logo") MultipartFile logo,
+			@RequestParam(required = true, value = "data") String data)
+			throws IOException, IllegalStateException, ResourceNotFoundException {
+
+		String status = practiceService.createOrUpdatePractice(logo, data);
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body("Practice updated successfully");
 	}
 
 	@GetMapping("/{practiceId}")

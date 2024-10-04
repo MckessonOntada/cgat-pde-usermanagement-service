@@ -11,16 +11,14 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mckesson.cgat.pde.usermanagement.dto.RoleDto;
 import com.mckesson.cgat.pde.usermanagement.dto.RoleResponseDto;
 import com.mckesson.cgat.pde.usermanagement.model.Permission2;
 import com.mckesson.cgat.pde.usermanagement.service.RoleService;
-import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,13 +33,21 @@ public class RoleController {
 	RoleService roleService;
 
 	@PostMapping
-	@Operation(summary = "Create or update Role")
-	public ResponseEntity<String> createRole(@RequestBody RoleDto dto) throws ResourceNotFoundException {
-		String status = roleService.createOrUpdateRole(dto);
-		if (status.equals(CustomUtils.operation_type.CREATE.name()))
-			return ResponseEntity.status(HttpStatus.CREATED).body("Role created successfully");
-		else
-			return ResponseEntity.status(HttpStatus.OK).body("Role updated successfully");
+	@Operation(summary = "Create Role")
+	public ResponseEntity<String> createRole(@RequestParam String name, @RequestParam String desc,
+			@RequestParam String perms_type, @RequestParam List<String> perms) throws ResourceNotFoundException {
+		String role = roleService.createOrUpdateRole(null, name, desc, perms_type, perms);
+		return ResponseEntity.status(HttpStatus.CREATED).body("Role created successfully with name : " + role);
+
+	}
+
+	@PutMapping
+	@Operation(summary = "Update Role")
+	public ResponseEntity<String> updateRole(@RequestParam String id, @RequestParam String name,
+			@RequestParam String desc, @RequestParam String perms_type, @RequestParam List<String> perms)
+			throws ResourceNotFoundException {
+		String role = roleService.createOrUpdateRole(id, name, desc, perms_type, perms);
+		return ResponseEntity.status(HttpStatus.OK).body("Role updated successfully with name : " + role);
 	}
 
 	@GetMapping

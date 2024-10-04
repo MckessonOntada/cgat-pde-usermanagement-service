@@ -4,18 +4,17 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.mckesson.cgat.pde.usermanagement.dto.RoleDto;
 import com.mckesson.cgat.pde.usermanagement.dto.RoleResponseDto;
 import com.mckesson.cgat.pde.usermanagement.model.Permission2;
-import com.mckesson.cgat.pde.usermanagement.model.Role2;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 @Service
 public interface RoleService {
 
-	String createOrUpdateRole(RoleDto dto) throws ResourceNotFoundException;
+	String createOrUpdateRole(String id, String name, String desc, String perms_type, List<String> perms)
+			throws ResourceNotFoundException;
 
-	Role2 getRole(String id) throws ResourceNotFoundException;
+	List<RoleResponseDto> getRole(String id) throws ResourceNotFoundException;
 
 	List<RoleResponseDto> getAllRoles();
 

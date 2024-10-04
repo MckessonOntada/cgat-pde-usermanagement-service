@@ -1,20 +1,19 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.mckesson.cgat.pde.usermanagement.dto.RoleDto;
 import com.mckesson.cgat.pde.usermanagement.dto.RoleResponseDto;
+import com.mckesson.cgat.pde.usermanagement.model.HiloSequenceGenerator;
 import com.mckesson.cgat.pde.usermanagement.model.Permission2;
 import com.mckesson.cgat.pde.usermanagement.model.Role2;
 import com.mckesson.cgat.pde.usermanagement.repository.PermissionRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository2;
 import com.mckesson.cgat.pde.usermanagement.service.RoleService;
 import com.mckesson.cgat.pde.usermanagement.service.impl.utils.Role2Utils;
-import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import lombok.extern.slf4j.Slf4j;
@@ -35,28 +34,31 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	@Override
-	public String createOrUpdateRole(RoleDto dto) throws ResourceNotFoundException {
-		Role2 role2 = Role2.builder().description(dto.getDesc()).name(dto.getName()).permissions(dto.getPermissions())
-				.permissionType(dto.getPermission_type()).build();
-		if (dto.getId() != null) {
-			if (!roleRepository2.findById(UUID.fromString(dto.getId())).isPresent())
+	public String createOrUpdateRole(String id, String name, String desc, String perms_type, List<String> perms)
+			throws ResourceNotFoundException {
+		Role2 role2 = Role2.builder().description(desc).name(name).permissions(perms)
+				.id(new HiloSequenceGenerator().getId().toString()).permissionType(perms_type).build();
+		if (id != null) {
+			if (!roleRepository2.findById(id).isPresent())
 				throw new ResourceNotFoundException("Requested Role not found");
-			role2.setId(UUID.fromString(dto.getId()));
+			role2.setId(id);
 			roleRepository2.save(role2);
-			return CustomUtils.operation_type.UPDATE.name();
+			return role2.getName();
 		}
 		roleRepository2.save(role2);
-		return CustomUtils.operation_type.CREATE.name();
-
+		return role2.getName();
 	}
 
 	@Override
-	public Role2 getRole(String id) throws ResourceNotFoundException {
-		Optional<Role2> byId = roleRepository2.findById(UUID.fromString(id));
+	public List<RoleResponseDto> getRole(String id) throws ResourceNotFoundException {
+		Optional<Role2> byId = roleRepository2.findById(id);
 		if (byId == null || byId.isEmpty() || !byId.isPresent()) {
 			throw new ResourceNotFoundException("Requested Role not found");
 		}
-		return byId.get();
+		List<Role2> roles = new ArrayList<>();
+		roles.add(byId.get());
+		List<Permission2> allPerms = permissionRepository.findAllById(byId.get().getPermissions());
+		return role2Utils.mapEntityToDto(roles, allPerms);
 	}
 
 	@Override
@@ -72,6 +74,7 @@ public class RoleServiceImpl implements RoleService {
 		permission.setIsActive(false);
 		permission.setLabel(label);
 		permission.setName(name);
+		permission.setId(new HiloSequenceGenerator().getId().toString());
 
 		Permission2 save = permissionRepository.save(permission);
 		return save.getName();
@@ -79,7 +82,7 @@ public class RoleServiceImpl implements RoleService {
 
 	@Override
 	public String deletePermission(String id) throws ResourceNotFoundException {
-		Optional<Permission2> permission = permissionRepository.findById(UUID.fromString(id));
+		Optional<Permission2> permission = permissionRepository.findById(id);
 		if (permission != null && !permission.isEmpty()) {
 			permission.get().setIsActive(false);
 			permissionRepository.save(permission.get());
