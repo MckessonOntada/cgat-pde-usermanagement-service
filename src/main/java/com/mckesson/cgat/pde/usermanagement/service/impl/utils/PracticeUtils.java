@@ -18,7 +18,8 @@ public class PracticeUtils {
 	private ObjectMapper objectMapper;
 
 	public Practice mapDtoToEntity(PracticeDto dto) {
-		return Practice.builder().address1(dto.getAddress1()).address2(dto.getAddress2()).city(dto.getCity())
+		return Practice.builder()
+				//.address1(dto.getAddress1()).address2(dto.getAddress2()).city(dto.getCity())
 				.firstName(dto.getContact_first_name()).middleName(dto.getContact_middle_name())
 				.lastName(dto.getContact_last_name()).email(dto.getEmail()).fax(dto.getFax())
 				.phone(dto.getPhone_number()).logoUrl(dto.getPractice_logo_url()).name(dto.getPractice_name()).build();

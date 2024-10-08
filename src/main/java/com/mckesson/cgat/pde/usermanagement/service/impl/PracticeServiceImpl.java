@@ -19,6 +19,8 @@ import com.mckesson.cgat.pde.usermanagement.service.impl.utils.PracticeUtils;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -42,7 +44,7 @@ public class PracticeServiceImpl implements PracticeService {
 		if (practiceRequestDto.getId() != null) {
 			if (!practiceRepository.findById(practiceRequestDto.getId()).isPresent())
 				throw new ResourceNotFoundException("Requested Practice not found");
-			modelObj.setId(practiceRequestDto.getId());
+			//modelObj.setId(practiceRequestDto.getId());
 			practiceRepository.save(modelObj);
 			return CustomUtils.operation_type.UPDATE.name();
 		}
@@ -92,6 +94,20 @@ public class PracticeServiceImpl implements PracticeService {
 		response = practiceRepository.findAllByQueryText(query, statusActive, paging);
 
 		return response;
+	}
+
+	@Override
+	public Practice savePractice(Practice practice) {
+		return practiceRepository.save(practice);
+	}
+
+	@Override
+	@Transactional
+	public Practice savePractice(Practice practice, MultipartFile logo) {
+		Practice savedPractice=practiceRepository.save(practice);
+		String logoURL=/*uploadLogo(logo, savedPractice)*/ "http://some-random-url.com";
+        savedPractice.setLogoUrl(logoURL);
+		return savedPractice;
 	}
 
 }

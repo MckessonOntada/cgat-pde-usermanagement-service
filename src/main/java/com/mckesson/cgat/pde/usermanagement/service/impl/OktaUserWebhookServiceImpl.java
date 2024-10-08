@@ -3,8 +3,6 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 import com.mckesson.jbat.common.util.constant.HeaderConstant;
 import com.mckesson.cgat.pde.usermanagement.constant.WebhookConstants;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
-import com.mckesson.cgat.pde.usermanagement.model.User;
-import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
 import com.mckesson.cgat.pde.usermanagement.service.OktaUserWebhookService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
@@ -26,9 +24,9 @@ import static com.mckesson.cgat.pde.usermanagement.constant.WebhookConstants.*;
 
 @Service
 @Slf4j
-public class OktaUserWebhookServiceImpl implements OktaUserWebhookService {
+public class OktaUserWebhookServiceImpl  {
 
-
+/**
     @Value("${okta.token.inline.hook.auth.header}")
     private String oktaAuthHeader;
 
@@ -149,14 +147,12 @@ public class OktaUserWebhookServiceImpl implements OktaUserWebhookService {
 
     @Override
     public JSONObject getCommandsForTokenInlineWebhook(JSONObject authenticationResponse) {
-        /**
-         * Please refer
-         * <p>
-         * https://developer.okta.com/docs/reference/token-hook/#sample-json-payload-of-a-request
-         * </p>
-         * for the request body and response payload that needs to be returned in the
-         * API response.
-         */
+//         Please refer
+//         * <p>
+//         * https://developer.okta.com/docs/reference/token-hook/#sample-json-payload-of-a-request
+//         * </p>
+//         * for the request body and response payload that needs to be returned in the
+//         * API response.
         JSONObject commands = new JSONObject();
         log.info("Request from okta {}", StringEscapeUtils.escapeJava(authenticationResponse.toString()));
         commands.put("commands", new JSONArray());
@@ -228,4 +224,5 @@ public class OktaUserWebhookServiceImpl implements OktaUserWebhookService {
         accessPath.put("value", accessPathValue);
         existingCommand.put(accessPath);
     }
+    */
 }

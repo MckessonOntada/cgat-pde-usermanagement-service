@@ -11,7 +11,7 @@ public class AppFilterConfig implements GenericFilterConfigurations {
     @Override
     public String[] getPatternsToExclude() {
         return new String[]{
-                "/public/*", "/inlineHooks/*"
+                "/**"
         };
     }
 }

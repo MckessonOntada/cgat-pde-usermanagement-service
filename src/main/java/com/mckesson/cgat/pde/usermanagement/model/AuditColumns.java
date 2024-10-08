@@ -24,7 +24,7 @@ public abstract class AuditColumns implements Serializable {
 
     private static final long serialVersionUID = 8923669426693111099L;
 
-    @Column(name = "CREATED_DATE")
+    @Column(name = "CREATED_AT")
     @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)
     @JsonIgnore
@@ -35,7 +35,7 @@ public abstract class AuditColumns implements Serializable {
     @JsonIgnore
     private String createdBy;
 
-    @Column(name = "UPDATED_DATE")
+    @Column(name = "UPDATED_AT")
     @LastModifiedDate
     @Temporal(TemporalType.TIMESTAMP)
     @JsonIgnore
@@ -48,19 +48,19 @@ public abstract class AuditColumns implements Serializable {
 
     @PrePersist
     public void onPersist() {
-        CurrentRequestContext loginInfo = (CurrentRequestContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        this.createdBy = loginInfo.getUserId();
-        this.updatedBy = loginInfo.getUserId();
+        //CurrentRequestContext loginInfo = (CurrentRequestContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        //this.createdBy = loginInfo.getUserId();
+        //this.updatedBy = loginInfo.getUserId();
         this.createdDate = Date.from(Instant.now());
         this.updatedDate = Date.from(Instant.now());
     }
 
     @PreUpdate
     public void onUpdate() {
-        if(this.updatedBy == null) {
+        /*if(this.updatedBy == null) {
             CurrentRequestContext loginInfo = (CurrentRequestContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             this.updatedBy = loginInfo.getUserId();
-        }
+        }*/
         this.updatedDate = Date.from(Instant.now());
     }
 }

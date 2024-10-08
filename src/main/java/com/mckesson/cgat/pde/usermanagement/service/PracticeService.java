@@ -11,6 +11,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.mckesson.cgat.pde.usermanagement.model.Practice;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
+import jakarta.validation.Valid;
+
 @Service
 public interface PracticeService {
 
@@ -23,5 +25,9 @@ public interface PracticeService {
 	String deletePractice(String id) throws ResourceNotFoundException;
 
 	Page<Practice> findAll(Pageable paging, String query, List<String> roles, List<String> status);
+
+	Practice savePractice(Practice practice);
+	
+	Practice savePractice(Practice practice,MultipartFile logo);
 
 }

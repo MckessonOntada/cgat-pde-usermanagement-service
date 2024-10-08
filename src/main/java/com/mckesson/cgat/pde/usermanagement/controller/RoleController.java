@@ -5,28 +5,37 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mckesson.cgat.pde.usermanagement.dto.RoleResponseDto;
-import com.mckesson.cgat.pde.usermanagement.model.Permission2;
+import com.mckesson.cgat.pde.usermanagement.model.Permission;
+import com.mckesson.cgat.pde.usermanagement.model.Role;
 import com.mckesson.cgat.pde.usermanagement.service.RoleService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.websocket.server.PathParam;
 
 @RestController
 @Tag(name = "roles", description = "Controller for Manages role/permission related operations and data.")
-@RequestMapping(path = "/roles", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/roles", produces = MediaType.APPLICATION_JSON_VALUE ,consumes = MediaType.APPLICATION_JSON_VALUE)
 public class RoleController {
 
 	@Autowired
@@ -34,55 +43,20 @@ public class RoleController {
 
 	@PostMapping
 	@Operation(summary = "Create Role")
-	public ResponseEntity<String> createRole(@RequestParam String name, @RequestParam String desc,
-			@RequestParam String perms_type, @RequestParam List<String> perms) throws ResourceNotFoundException {
-		String role = roleService.createOrUpdateRole(null, name, desc, perms_type, perms);
-		return ResponseEntity.status(HttpStatus.CREATED).body("Role created successfully with name : " + role);
-
+	public ResponseEntity<Role> createRole( @Validated @RequestBody Role role){
+		return ResponseEntity.status(HttpStatus.CREATED).body(roleService.createOrUpdateRole(role));
 	}
 
-	@PutMapping
+	@PutMapping(path = "/{roleId}")
 	@Operation(summary = "Update Role")
-	public ResponseEntity<String> updateRole(@RequestParam String id, @RequestParam String name,
-			@RequestParam String desc, @RequestParam String perms_type, @RequestParam List<String> perms)
-			throws ResourceNotFoundException {
-		String role = roleService.createOrUpdateRole(id, name, desc, perms_type, perms);
-		return ResponseEntity.status(HttpStatus.OK).body("Role updated successfully with name : " + role);
+	public ResponseEntity<Role> updateRole(@Validated @RequestBody Role role){
+		return ResponseEntity.status(HttpStatus.OK).body(roleService.createOrUpdateRole(role));
 	}
-
-	@GetMapping
-	@Operation(summary = "Fetch Roles Details")
-	public ResponseEntity<List<RoleResponseDto>> getRoles() {
-		List<RoleResponseDto> allRoles = roleService.getAllRoles();
-		return new ResponseEntity<>(allRoles, HttpStatus.OK);
-
-	}
-
-	@PostMapping("/permission")
-	@Operation(summary = "Create permission")
-	public ResponseEntity<String> createPermission(@RequestParam String name, @RequestParam String label) {
-		roleService.createPermission(name, label);
-		return ResponseEntity.status(HttpStatus.CREATED).body("Permission created successfully with name : " + name);
-	}
-
-	@DeleteMapping("/permission/{permissionId}")
-	@Operation(summary = "Delete permission Details")
-	public ResponseEntity<String> deletePermission(@PathVariable String permissionId) throws ResourceNotFoundException {
-		String deletedPermission = roleService.deletePermission(permissionId);
-		return ResponseEntity.status(HttpStatus.OK)
-				.body("Permission deleted successfully with name : " + deletedPermission);
-
-	}
-
-	@GetMapping("/permission")
-	@Operation(summary = "Fetch permissions Details")
-	public ResponseEntity<List<Permission2>> getAllPermissions() {
-
-		List<Permission2> response = new ArrayList<>();
-		response = roleService.getAllPermissions();
-
-		return new ResponseEntity<>(response, HttpStatus.OK);
-
+	
+	@GetMapping(path = "/{roleId}")
+	@Operation(summary = "Fetch Role Details")
+	public ResponseEntity<Role> getRoles(@PathVariable("roleId") String id) throws ResourceNotFoundException {
+		return new ResponseEntity<>(roleService.getRole(id), HttpStatus.OK);
 	}
 
 }

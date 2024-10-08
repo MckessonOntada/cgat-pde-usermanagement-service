@@ -10,10 +10,10 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @SpringBootApplication
 @EnableJpaAuditing
-public class JBATUserManagementApplication {
+public class CGATUserManagementApplication {
 	
     public static void main(String[] args) {
-        SpringApplication.run(JBATUserManagementApplication.class, args);
+        SpringApplication.run(CGATUserManagementApplication.class, args);
     }
 
 

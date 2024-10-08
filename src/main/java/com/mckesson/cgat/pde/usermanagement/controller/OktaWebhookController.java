@@ -20,7 +20,7 @@ import java.util.Map;
 @Slf4j
 public class OktaWebhookController {
 
-    @Autowired
+    //@Autowired
     private OktaUserWebhookService oktaUserWebhookService;
 
     @PostMapping("/handleTokenHook")

@@ -1,44 +1,55 @@
 package com.mckesson.cgat.pde.usermanagement.model;
 
-import com.fasterxml.jackson.annotation.JsonFilter;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.Where;
-import org.hibernate.type.NumericBooleanConverter;
-
-import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Converter;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
-@Table(name = "role")
-@Setter
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
 @Getter
-@Where(clause = "IS_ACTIVE = 1")
-@JsonIgnoreProperties({ "createdDate", "createdBy", "updatedDate", "updatedBy" ,"isActive"})
-@JsonFilter("PermissionFilter")
-public class Role extends UUIDBaseEntity implements Serializable {
+@Setter
+public class Role extends AuditColumns implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-	
-	@Column(name="NAME")
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "role_sequence")
+	@SequenceGenerator(name = "role_sequence", sequenceName = "role_sequence", allocationSize = 1)
+	private Long id;
+    
+	@NotEmpty(message = "Role Name cannot be Empty")
+	@Column(unique = true)
 	private String name;
 
-	@Column(name="LABEL")
-	private String label;
-
-	@Column(name="SHORT_LABEL")
-	private String shortLabel;
-
-	@Column(name="ROLE_TYPE")
-	private String roleType;
-	
-	@Convert(converter = NumericBooleanConverter.class)
-	@Column(name="IS_ACTIVE")
-	private Boolean isActive;
-	
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "role")
-	private List<RolePermissionMapping> rolePermissionMappings;
-
+	private String description;
+    
+	@OneToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "role_permissions_mapping",
+			   joinColumns = @JoinColumn(name = "role_id"),
+			   inverseJoinColumns = @JoinColumn(name = "permission_id"))
+	private Set<Permission> permissions;
 }
