@@ -101,7 +101,7 @@ public class OktaUserWebhookServiceImpl implements OktaUserWebhookService {
             JSONObject actor = element.getJSONObject(ACTOR);
             if (StringUtils.equalsIgnoreCase(USER, actor.getString(TYPE))) {
                 String oktaId = actor.getString("id");
-                userRequest.setUpdatedBy(oktaId);
+               //To-DO-CGAT  userRequest.setUpdatedBy(oktaId);
             }
         }
         return userRequest;
@@ -112,7 +112,7 @@ public class OktaUserWebhookServiceImpl implements OktaUserWebhookService {
             JSONObject actor = element.getJSONObject(ACTOR);
             if (StringUtils.equalsIgnoreCase(USER, actor.getString(TYPE))) {
                 String oktaId = actor.getString("id");
-                userRequest.setCreatedBy(oktaId);
+               //To-DO-CGAT userRequest.setCreatedBy(oktaId);
             }
         }
         return userRequest;
