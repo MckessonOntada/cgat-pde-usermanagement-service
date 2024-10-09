@@ -27,6 +27,7 @@ CREATE TABLE  IF NOT EXISTS role (
     id INTEGER PRIMARY KEY,
     name VARCHAR(255) NOT NULL UNIQUE,
     description VARCHAR(255),
+    practice_id VARCHAR(255),
     created_at TIMESTAMP,
     created_by VARCHAR(255),
     updated_at TIMESTAMP,
@@ -45,6 +46,8 @@ CREATE TABLE IF NOT EXISTS permission (
     updated_at TIMESTAMP,
     updated_by VARCHAR(255)
 );
+
+CREATE SEQUENCE permission_sequence START WITH 1 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE CACHE 20;
 
 CREATE TABLE role_permissions_mapping (
     role_id INTEGER,

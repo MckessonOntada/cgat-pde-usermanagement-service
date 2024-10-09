@@ -1,20 +1,20 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.mckesson.cgat.pde.usermanagement.dto.RoleResponseDto;
-import com.mckesson.cgat.pde.usermanagement.model.HiloSequenceGenerator;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
+import com.mckesson.cgat.pde.usermanagement.model.Practice;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
 import com.mckesson.cgat.pde.usermanagement.repository.PermissionRepository;
+import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
 import com.mckesson.cgat.pde.usermanagement.service.RoleService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -23,46 +23,36 @@ public class RoleServiceImpl implements RoleService {
 
 	private final PermissionRepository permissionRepository;
 	private final RoleRepository roleRepository;
+	private final PracticeRepository practiceRepository;
 
-	public RoleServiceImpl(PermissionRepository permissionRepository, RoleRepository roleRepository2) {
+	public RoleServiceImpl(PermissionRepository permissionRepository, RoleRepository roleRepository2,
+			PracticeRepository practiceRepository) {
 		this.permissionRepository = permissionRepository;
 		this.roleRepository = roleRepository2;
+		this.practiceRepository = practiceRepository;
 	}
 
 	@Override
-	public Role createOrUpdateRole(Role role){
+	@Transactional
+	public Role createOrUpdateRole(Role role, String practiceId) throws ResourceNotFoundException {
+		Optional<Practice> byId = practiceRepository.findById(Long.valueOf(practiceId));
+		if (!byId.isPresent())
+			throw new ResourceNotFoundException("Practice not found with id:" + practiceId);
+		role.setPracticeId(byId.get());
 		return roleRepository.save(role);
 	}
 
 	@Override
-	public Role getRole(String id) throws ResourceNotFoundException {
-		Optional<Role> role = roleRepository.findById(id);
-		return role.orElseThrow(() -> new ResourceNotFoundException("Role not found for the id:"+id));
+	public List<Role> getRolesByPracticeId(String practiceId) throws ResourceNotFoundException {
+		Optional<Practice> byId = practiceRepository.findById(Long.valueOf(practiceId));
+		if (!byId.isPresent())
+			throw new ResourceNotFoundException("Practice not found with id:" + practiceId);
+		return roleRepository.findByPracticeId(practiceId);
 	}
-	/*
-	 * @Override public List<RoleResponseDto> getAllRoles() { List<Role> allRoles =
-	 * roleRepository.findAll(); List<Permission> allPermissions =
-	 * permissionRepository.findAll(); return role2Utils.mapEntityToDto(allRoles,
-	 * allPermissions); }
-	 * 
-	 * @Override public String createPermission(String name, String label) {
-	 * Permission permission = new Permission(); permission.setIsActive(false);
-	 * permission.setLabel(label); permission.setName(name); permission.setId(new
-	 * HiloSequenceGenerator().getId().toString());
-	 * 
-	 * Permission save = permissionRepository.save(permission); return
-	 * save.getName(); }
-	 * 
-	 * @Override public String deletePermission(String id) throws
-	 * ResourceNotFoundException { Optional<Permission> permission =
-	 * permissionRepository.findById(id); if (permission != null &&
-	 * !permission.isEmpty()) { permission.get().setIsActive(false);
-	 * permissionRepository.save(permission.get()); return
-	 * permission.get().getName(); } throw new
-	 * ResourceNotFoundException("No Permission found with id : " + id); }
-	 * 
-	 * @Override public List<Permission> getAllPermissions() { return
-	 * permissionRepository.findAll(); }
-	 */
+
+	@Override
+	public List<Permission> getAllPermissions() {
+		return permissionRepository.findAll();
+	}
 
 }

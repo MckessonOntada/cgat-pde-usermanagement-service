@@ -11,14 +11,13 @@ import org.springframework.web.multipart.MultipartFile;
 import com.mckesson.cgat.pde.usermanagement.model.Practice;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
-import jakarta.validation.Valid;
-
 @Service
 public interface PracticeService {
 
-	String createOrUpdatePractice(MultipartFile logo, String data) throws IllegalStateException, IOException, ResourceNotFoundException;
+//	String createOrUpdatePractice(MultipartFile logo, String data)
+//			throws IllegalStateException, IOException, ResourceNotFoundException;
 
-	Practice getPractice(String id);
+	Practice getPractice(String id) throws ResourceNotFoundException;
 
 	List<Practice> getAllPractices();
 
@@ -26,8 +25,7 @@ public interface PracticeService {
 
 	Page<Practice> findAll(Pageable paging, String query, List<String> roles, List<String> status);
 
-	Practice savePractice(Practice practice);
-	
-	Practice savePractice(Practice practice,MultipartFile logo);
+	Practice createPractice(Practice practice, MultipartFile logo) throws IllegalStateException, IOException;
 
+//	Practice updatePractice(Practice practice, MultipartFile logo) throws IllegalStateException, IOException;
 }

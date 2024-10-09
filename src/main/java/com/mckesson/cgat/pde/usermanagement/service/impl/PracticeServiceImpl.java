@@ -11,16 +11,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.mckesson.cgat.pde.usermanagement.dto.PracticeDto;
 import com.mckesson.cgat.pde.usermanagement.model.Practice;
 import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
 import com.mckesson.cgat.pde.usermanagement.service.PracticeService;
 import com.mckesson.cgat.pde.usermanagement.service.impl.utils.PracticeUtils;
-import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -36,28 +33,17 @@ public class PracticeServiceImpl implements PracticeService {
 	}
 
 	@Override
-	public String createOrUpdatePractice(MultipartFile logo, String data)
-			throws IllegalStateException, IOException, ResourceNotFoundException {
-		PracticeDto practiceRequestDto = practiceUtils.saveImage(logo, data);
-		Practice modelObj = null;
-		modelObj = practiceUtils.mapDtoToEntity(practiceRequestDto);
-		if (practiceRequestDto.getId() != null) {
-			if (!practiceRepository.findById(practiceRequestDto.getId()).isPresent())
-				throw new ResourceNotFoundException("Requested Practice not found");
-			//modelObj.setId(practiceRequestDto.getId());
-			practiceRepository.save(modelObj);
-			return CustomUtils.operation_type.UPDATE.name();
-		}
-		practiceRepository.save(modelObj);
-		return CustomUtils.operation_type.CREATE.name();
+	@Transactional
+	public Practice createPractice(Practice practice, MultipartFile logo) throws IllegalStateException, IOException {
+		String logoURL = practiceUtils.uploadLogo(logo); // "http://some-random-url.com";
+		practice.setLogoUrl(logoURL);
+		return practiceRepository.save(practice);
 	}
 
 	@Override
-	public Practice getPractice(String id) {
-		Optional<Practice> byId = practiceRepository.findById(id);
-		if (byId == null || byId.isEmpty() || !byId.isPresent()) {
-		}
-		return byId.get();
+	public Practice getPractice(String id) throws ResourceNotFoundException {
+		Optional<Practice> byId = practiceRepository.findById(Long.valueOf(id));
+		return byId.orElseThrow(() -> new ResourceNotFoundException("Practice not found for the id:" + id));
 	}
 
 	@Override
@@ -67,8 +53,8 @@ public class PracticeServiceImpl implements PracticeService {
 
 	@Override
 	public String deletePractice(String id) throws ResourceNotFoundException {
-		Optional<Practice> byId = practiceRepository.findById(id);
-		if (byId != null && !byId.isEmpty()) {
+		Optional<Practice> byId = practiceRepository.findById(Long.valueOf(id));
+		if (!byId.isEmpty()) {
 			byId.get().setIsActive(false);
 			practiceRepository.save(byId.get());
 			return byId.get().getName();
@@ -90,24 +76,8 @@ public class PracticeServiceImpl implements PracticeService {
 				statusActive = "ACTIVE".equals(statusActive) ? "ALL" : "INACTIVE";
 			}
 		}
-
 		response = practiceRepository.findAllByQueryText(query, statusActive, paging);
-
 		return response;
-	}
-
-	@Override
-	public Practice savePractice(Practice practice) {
-		return practiceRepository.save(practice);
-	}
-
-	@Override
-	@Transactional
-	public Practice savePractice(Practice practice, MultipartFile logo) {
-		Practice savedPractice=practiceRepository.save(practice);
-		String logoURL=/*uploadLogo(logo, savedPractice)*/ "http://some-random-url.com";
-        savedPractice.setLogoUrl(logoURL);
-		return savedPractice;
 	}
 
 }

@@ -18,14 +18,16 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Contact implements Serializable{
-	
+public class Contact implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
 	@NotNull(message = "Email cannot be null")
-    @Email(message = "Invalid email format")
+	@Email(message = "Invalid email format")
 	private String email;
-    
+
 	@NotNull(message = "Phone number cannot be null")
-    @Pattern(regexp = "\\d{10}", message = "Phone number must be 10 digits")
+	@Pattern(regexp = "\\d{10}", message = "Phone number must be 10 digits")
 	private String phone;
 
 	private String fax;
