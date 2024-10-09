@@ -3,7 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 import com.mckesson.jbat.common.util.constant.HeaderConstant;
 import com.mckesson.cgat.pde.usermanagement.constant.WebhookConstants;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
-import com.mckesson.cgat.pde.usermanagement.model.User;
+import com.mckesson.cgat.pde.usermanagement.model.Users;
 import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
 import com.mckesson.cgat.pde.usermanagement.service.OktaUserWebhookService;
 import lombok.extern.slf4j.Slf4j;
@@ -35,11 +35,15 @@ public class OktaUserWebhookServiceImpl implements OktaUserWebhookService {
     @Value("${okta.token.inline.hook.auth.token}")
     private String oktaAuthToken;
 
-    @Autowired
-    private UserRepository userRepository;
+    
+    private final UserRepository userRepository;
 
 
-    @Override
+    public OktaUserWebhookServiceImpl(UserRepository userRepository) {
+		this.userRepository = userRepository;
+	}
+
+	@Override
     public boolean validateToken(HttpHeaders headers) {
         Predicate<HttpHeaders> isValidToken = tokenHeader -> (tokenHeader.containsKey(oktaAuthHeader) && headers.get(oktaAuthHeader).get(0).equals(oktaAuthToken));
         return isValidToken.test(headers);
@@ -73,8 +77,8 @@ public class OktaUserWebhookServiceImpl implements OktaUserWebhookService {
         }
     }
 
-    private User extractUserDetails(JSONObject element) {
-        User userRequest = new User();
+    private Users extractUserDetails(JSONObject element) {
+        Users userRequest = new Users();
 
         if (element.has(TARGET)) {
             JSONArray targets = element.getJSONArray(TARGET);
@@ -84,7 +88,7 @@ public class OktaUserWebhookServiceImpl implements OktaUserWebhookService {
                     String email = StringUtils.toRootLowerCase(userJson.getString("alternateId"));
                     String displayName = userJson.getString("displayName");
                     userRequest.setEmail(email);
-                    userRequest.setDisplayName(displayName);
+//                    userRequest.setDisplayName(displayName);
                 }
             });
 
@@ -92,7 +96,7 @@ public class OktaUserWebhookServiceImpl implements OktaUserWebhookService {
         return userRequest;
     }
 
-    private User extractModifyBy(JSONObject element, User userRequest) {
+    private Users extractModifyBy(JSONObject element, Users userRequest) {
         if (element.has(ACTOR)) {
             JSONObject actor = element.getJSONObject(ACTOR);
             if (StringUtils.equalsIgnoreCase(USER, actor.getString(TYPE))) {
@@ -103,7 +107,7 @@ public class OktaUserWebhookServiceImpl implements OktaUserWebhookService {
         return userRequest;
     }
 
-    private User extractCreatedBy(JSONObject element, User userRequest) {
+    private Users extractCreatedBy(JSONObject element, Users userRequest) {
         if (element.has(ACTOR)) {
             JSONObject actor = element.getJSONObject(ACTOR);
             if (StringUtils.equalsIgnoreCase(USER, actor.getString(TYPE))) {
@@ -116,8 +120,8 @@ public class OktaUserWebhookServiceImpl implements OktaUserWebhookService {
 
     private void handleUserRemovedEvent(JSONObject element) {
         log.info("handleUserRemovedEvent");
-        User user = extractUserDetails(element);
-        User existingUser = userRepository.findByEmail(user.getEmail());
+        Users user = extractUserDetails(element);
+        Users existingUser = userRepository.findByEmail(user.getEmail());
             if (existingUser != null && existingUser.getIsActive()) {
                 extractModifyBy(element, existingUser);
                 existingUser.setIsActive(false);
@@ -126,8 +130,8 @@ public class OktaUserWebhookServiceImpl implements OktaUserWebhookService {
     }
     private void handleUserDeactivationEvent(JSONObject element) {
         log.info("handleUserDeactivationEvent");
-        User user = extractUserDetails(element);
-        User existingUser = userRepository.findByEmail(user.getEmail());
+        Users user = extractUserDetails(element);
+        Users existingUser = userRepository.findByEmail(user.getEmail());
         if (existingUser != null && existingUser.getIsActive()) {
                 extractModifyBy(element, existingUser);
                 existingUser.setIsActive(false);
@@ -137,8 +141,8 @@ public class OktaUserWebhookServiceImpl implements OktaUserWebhookService {
 
     private void handleUserAddedEvent(JSONObject element) {
         log.info("handleUserAddedEvent");
-        User user = extractUserDetails(element);
-        User existingUser = userRepository.findByEmail(user.getEmail());
+        Users user = extractUserDetails(element);
+        Users existingUser = userRepository.findByEmail(user.getEmail());
         if (existingUser != null && existingUser.getIsActive()) {
             extractModifyBy(element, existingUser);
             existingUser.setIsActive(true);
@@ -170,19 +174,19 @@ public class OktaUserWebhookServiceImpl implements OktaUserWebhookService {
                         String email = StringUtils.toRootLowerCase(claims.getString("sub"));
                         try {
                             log.info("Started Generating commands");
-                            User userInfo = userRepository.findByEmail(email);
-                            List<Role> roles = userInfo.getRoles();
-                            JSONArray userRoles = buildUserRole(roles);
-                            JSONArray userPermissions = generatePermissionArray(roles);
+                            Users userInfo = userRepository.findByEmail(email);
+//                            List<Role> roles = userInfo.getRoles();
+//                            JSONArray userRoles = buildUserRole(roles);
+//                            JSONArray userPermissions = generatePermissionArray(roles);
                             JSONArray command = commands.getJSONArray("commands");
-                            addCommand(WebhookConstants.PATCH, WebhookConstants.ADD_OPERTATION,
-                                    HeaderConstant.ROLE_CLAIM, command, userRoles);
-                            addCommand(WebhookConstants.PATCH, WebhookConstants.ADD_OPERTATION,
-                                    HeaderConstant.PERMISSION_CLAIM, command, userPermissions);
+//                            addCommand(WebhookConstants.PATCH, WebhookConstants.ADD_OPERTATION,
+//                                    HeaderConstant.ROLE_CLAIM, command, userRoles);
+//                            addCommand(WebhookConstants.PATCH, WebhookConstants.ADD_OPERTATION,
+//                                    HeaderConstant.PERMISSION_CLAIM, command, userPermissions);
                             addCommand(WebhookConstants.PATCH, WebhookConstants.ADD_OPERTATION,
                                     HeaderConstant.USER_CLAIM, command, userInfo.getId());
-                            addCommand(WebhookConstants.PATCH, WebhookConstants.ADD_OPERTATION,
-                                    HeaderConstant.USER_NAME_CLAIM, command, userInfo.getDisplayName());
+//                            addCommand(WebhookConstants.PATCH, WebhookConstants.ADD_OPERTATION,
+//                                    HeaderConstant.USER_NAME_CLAIM, command, userInfo.getDisplayName());
 
                         } catch (Exception e) {
                             log.error("Exception on generating scopes {}", e);

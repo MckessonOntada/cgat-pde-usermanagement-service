@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
 
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +38,7 @@ import static com.mckesson.jbat.common.util.constant.HeaderConstant.*;
 @Tag(name = "Public Access", description = "Open and unauthenticated API endpoints for public access.")
 @RequestMapping(path = "/public", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
+@ComponentScan(basePackages = "com.mckesson.jbat.auth.module")
 public class PublicAccessController {
 
 	@Autowired

@@ -13,7 +13,6 @@ import java.util.Date;
 @Table(name = "USER_ACTIVITY_AUDIT")
 @Getter
 @Setter
-
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserActivityAudit extends AuditColumns implements Serializable {

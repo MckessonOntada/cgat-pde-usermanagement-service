@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Date;
 
@@ -32,8 +33,9 @@ public abstract class AuditColumns implements Serializable {
 
     @Column(name = "CREATED_BY")
     @CreatedBy
+    @Temporal(TemporalType.TIMESTAMP)
     @JsonIgnore
-    private String createdBy;
+    private Timestamp createdBy;
 
     @Column(name = "UPDATED_DATE")
     @LastModifiedDate
@@ -43,24 +45,25 @@ public abstract class AuditColumns implements Serializable {
 
     @Column(name = "UPDATED_BY")
     @LastModifiedBy
+    @Temporal(TemporalType.TIMESTAMP)
     @JsonIgnore
-    private String updatedBy;
+    private Timestamp updatedBy;
 
-    @PrePersist
-    public void onPersist() {
-        CurrentRequestContext loginInfo = (CurrentRequestContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        this.createdBy = loginInfo.getUserId();
-        this.updatedBy = loginInfo.getUserId();
-        this.createdDate = Date.from(Instant.now());
-        this.updatedDate = Date.from(Instant.now());
-    }
-
-    @PreUpdate
-    public void onUpdate() {
-        if(this.updatedBy == null) {
-            CurrentRequestContext loginInfo = (CurrentRequestContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            this.updatedBy = loginInfo.getUserId();
-        }
-        this.updatedDate = Date.from(Instant.now());
-    }
+//    @PrePersist
+//    public void onPersist() {
+//        CurrentRequestContext loginInfo = (CurrentRequestContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        this.createdBy = loginInfo.getUserId();
+//        this.updatedBy = loginInfo.getUserId();
+//        this.createdDate = Date.from(Instant.now());
+//        this.updatedDate = Date.from(Instant.now());
+//    }
+//
+//    @PreUpdate
+//    public void onUpdate() {
+//        if(this.updatedBy == null) {
+//            CurrentRequestContext loginInfo = (CurrentRequestContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//            this.updatedBy = loginInfo.getUserId();
+//        }
+//        this.updatedDate = Date.from(Instant.now());
+//    }
 }

@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.exception.handler;
 
+import com.mckesson.jbat.auth.module.exception.BadRequestException;
 import com.mckesson.jbat.auth.module.exception.JWTNotFoundException;
 import com.mckesson.jbat.auth.module.exception.UserAuthenticationException;
 import com.mckesson.jbat.common.util.exception.ApiErrorResponse;
@@ -13,6 +14,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.HttpClientErrorException.BadRequest;
 import org.springframework.web.context.request.WebRequest;
 
 import java.util.Date;
@@ -68,6 +70,11 @@ public class ServiceExceptionHandler {
         Map<String, List<String>> errorResponse = new HashMap<>();
         errorResponse.put("errors", errors);
         return errorResponse;
+    }
+    
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<?>badRequestException(BadRequestException ex, WebRequest request) {
+        return buildResponseEntity(ex, request, HttpStatus.BAD_REQUEST);
     }
 
 }
