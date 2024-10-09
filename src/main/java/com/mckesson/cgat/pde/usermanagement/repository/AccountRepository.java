@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 
-public interface AccountRepository extends JpaRepository<Account, String> {
+public interface AccountRepository extends JpaRepository<Account, Long> {
 
 	@Query(nativeQuery = true, value = "SELECT distinct a FROM Account a  WHERE  "
 			+ "(:query is null or LOWER(a.name)  like %:query% or LOWER(a.dcid) like %:query% or"

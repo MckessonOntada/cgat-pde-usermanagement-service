@@ -3,7 +3,7 @@ package com.mckesson.jbat.usermanagement.service.impl;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
 import com.mckesson.cgat.pde.usermanagement.model.RolePermissionMapping;
-import com.mckesson.cgat.pde.usermanagement.model.User;
+import com.mckesson.cgat.pde.usermanagement.model.Users;
 import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
 import com.mckesson.cgat.pde.usermanagement.service.impl.OktaUserWebhookServiceImpl;
 import org.json.JSONArray;
@@ -45,7 +45,7 @@ class OktaUserWebhookServiceImplTest {
     @Test
     void getCommandsForTokenInlineWebhook_user_found() {
         JSONObject requestBody = new JSONObject(getOktaInlineTokenHookRequest());
-        User user = new User();
+        Users user = new Users();
         user.setEmail("test@test.com");
         List<Role> roles = new ArrayList<>();
         Role role = new Role();

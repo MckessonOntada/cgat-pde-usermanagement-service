@@ -51,14 +51,14 @@ public class AccountController {
 
 	@PutMapping("/{accountId}")
 	@Operation(summary = "Update existing account")
-	public void updateAccount(@PathVariable String accountId, @RequestBody Account account) throws ResourceNotFoundException {
+	public void updateAccount(@PathVariable Long accountId, @RequestBody Account account) throws ResourceNotFoundException {
 		accountService.updateAccount(accountId ,account);
 
 	}
 
 	@GetMapping("/{accountId}")
 	@Operation(summary = "Getting all account details and account details by accountId ")
-	public ResponseEntity<Object> accounts(@PathVariable String accountId) throws ResourceNotFoundException {
+	public ResponseEntity<Object> accounts(@PathVariable Long accountId) throws ResourceNotFoundException {
 		List<Account> accounts = accountService.accounts(accountId);
 		return new ResponseEntity<>(accounts, HttpStatus.OK);
 
@@ -66,7 +66,7 @@ public class AccountController {
 
 	@DeleteMapping("/{accountId}")
 	@Operation(summary = "Delete account details")
-	public ResponseEntity<Object> deleteAccounts(@PathVariable String accountId) throws ResourceNotFoundException {
+	public ResponseEntity<Object> deleteAccounts(@PathVariable Long accountId) throws ResourceNotFoundException {
 		String account = accountService.deleteAccounts(accountId);
 		return new ResponseEntity<>(account + " has been deleted", HttpStatus.OK);
 
