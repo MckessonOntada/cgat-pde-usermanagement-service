@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public List<Users> users(Long userId) throws ResourceNotFoundException {
 		List<Users> userList = new ArrayList<>();
-		if (userId==null)
+		if (userId==0)
 			userList = userRepository.findAll();
 		else {
 			Optional<Users> user = userRepository.findById(userId);

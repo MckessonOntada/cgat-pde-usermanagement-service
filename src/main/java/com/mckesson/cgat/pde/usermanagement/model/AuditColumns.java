@@ -33,9 +33,9 @@ public abstract class AuditColumns implements Serializable {
 
     @Column(name = "CREATED_BY")
     @CreatedBy
-//    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.TIMESTAMP)
     @JsonIgnore
-    private String createdBy;
+    private Timestamp createdBy;
 
     @Column(name = "UPDATED_DATE")
     @LastModifiedDate
@@ -45,9 +45,9 @@ public abstract class AuditColumns implements Serializable {
 
     @Column(name = "UPDATED_BY")
     @LastModifiedBy
-//    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.TIMESTAMP)
     @JsonIgnore
-    private String updatedBy;
+    private Timestamp updatedBy;
 
 //    @PrePersist
 //    public void onPersist() {
