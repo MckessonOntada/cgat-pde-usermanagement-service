@@ -11,16 +11,14 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 public interface UserService {
 
-
 	List<Users> users(Long userId) throws ResourceNotFoundException;
 
-	String deleteUsers(Long userId) throws ResourceNotFoundException;
+	void deleteUsers(Long userId) throws ResourceNotFoundException;
 
-//	Page<Users> findAll(Pageable paging, String query, List<String> status);
+	Page<Users> findAll(Pageable paging, String query, List<String> status);
 
 	void updateUser(Long userId, Users model) throws ResourceNotFoundException;
 
 	Users createUser(Users model) throws BadRequestException;
-
 
 }
