@@ -3,7 +3,11 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.Practice;
@@ -53,6 +57,23 @@ public class RoleServiceImpl implements RoleService {
 	@Override
 	public List<Permission> getAllPermissions() {
 		return permissionRepository.findAll();
+	}
+
+	@Override
+	public Page<Role> findAll(Pageable paging, String query, List<String> status) {
+		query = StringUtils.toRootLowerCase(query);
+		Page<Role> response;
+		String statusActive = "ALL";
+		if (!CollectionUtils.isEmpty(status)) {
+			if (status.stream().anyMatch(i -> i.equalsIgnoreCase("ACTIVE"))) {
+				statusActive = "ACTIVE";
+			}
+			if (status.stream().anyMatch(i -> i.equalsIgnoreCase("INACTIVE"))) {
+				statusActive = "ACTIVE".equals(statusActive) ? "ALL" : "INACTIVE";
+			}
+		}
+		response = roleRepository.findAllByQueryText(query, statusActive, paging);
+		return response;
 	}
 
 }

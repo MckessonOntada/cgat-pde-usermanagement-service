@@ -2,6 +2,8 @@ package com.mckesson.cgat.pde.usermanagement.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
@@ -16,5 +18,7 @@ public interface RoleService {
 	List<Role> getRolesByPracticeId(String practiceId) throws ResourceNotFoundException;
 
 	List<Permission> getAllPermissions();
+
+	Page<Role> findAll(Pageable paging, String query, List<String> status);
 
 }
