@@ -4,15 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.coyote.BadRequestException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
-import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.model.Users;
 import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;
@@ -21,8 +15,7 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 @Service
 public class UserServiceImpl implements UserService {
 
-	
-	private  final UserRepository userRepository;
+	private final UserRepository userRepository;
 
 	public UserServiceImpl(UserRepository userRepository) {
 		this.userRepository = userRepository;
@@ -32,8 +25,8 @@ public class UserServiceImpl implements UserService {
 	public Users createUser(Users model) throws BadRequestException {
 		Users user = new Users();
 		try {
-			 user = userRepository.save(model);
-			 
+			user = userRepository.save(model);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -53,7 +46,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public List<Users> users(Long userId) throws ResourceNotFoundException {
 		List<Users> userList = new ArrayList<>();
-		if (userId==0)
+		if (userId == 0)
 			userList = userRepository.findAll();
 		else {
 			Optional<Users> user = userRepository.findById(userId);
@@ -93,7 +86,5 @@ public class UserServiceImpl implements UserService {
 //		response = userRepository.findAllByQueryText(query, statusActive, paging);
 //		return response;
 //	}
-
-
 
 }

@@ -1,32 +1,33 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
-import com.mckesson.jbat.auth.module.config.AppPropertiesConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 
 import com.mckesson.cgat.pde.usermanagement.dto.IdentityProviderMetaData;
 import com.mckesson.cgat.pde.usermanagement.service.IDPService;
+import com.mckesson.jbat.auth.module.config.AppPropertiesConfig;
 
 @Service
 @ComponentScan(basePackages = "com.mckesson.jbat.auth.module.config")
 public class IDPServiceImpl implements IDPService {
-	
+
 	private final AppPropertiesConfig appPropertiesConfig;
-	
+
 	@Autowired
-    public IDPServiceImpl(AppPropertiesConfig appPropertiesConfig) {
-        this.appPropertiesConfig = appPropertiesConfig;
-    }
+	public IDPServiceImpl(AppPropertiesConfig appPropertiesConfig) {
+		this.appPropertiesConfig = appPropertiesConfig;
+	}
 
 	@Override
 	public IdentityProviderMetaData getIDPInfo() throws Exception {
 		IdentityProviderMetaData idpProviderMetaData = getOktaIDPConfig();
 		return idpProviderMetaData;
 	}
-	
+
 	/**
-	 * Retrieve the OKTA config from the properties file and load it into a IdentityProviderMetaData.
+	 * Retrieve the OKTA config from the properties file and load it into a
+	 * IdentityProviderMetaData.
 	 * 
 	 */
 	private IdentityProviderMetaData getOktaIDPConfig() {
