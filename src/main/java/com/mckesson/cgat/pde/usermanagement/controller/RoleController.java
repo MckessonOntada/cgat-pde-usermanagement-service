@@ -30,7 +30,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @Tag(name = "roles", description = "Controller for Manages role/permission related operations and data.")
-@RequestMapping(path = "/practice/{practiceId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/practice/{practiceId}/role", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 public class RoleController {
 
 	private static final String SORT_ORDER_ASC = "asc";
@@ -38,21 +38,21 @@ public class RoleController {
 	@Autowired
 	RoleService roleService;
 
-	@PostMapping("/role")
+	@PostMapping
 	@Operation(summary = "Create Role")
 	public ResponseEntity<Role> createRole(@Validated @RequestBody Role role, @PathVariable String practiceId)
 			throws ResourceNotFoundException {
 		return ResponseEntity.status(HttpStatus.CREATED).body(roleService.createOrUpdateRole(role, practiceId));
 	}
 
-	@PutMapping("/role/{roleId}")
-	@Operation(summary = "Update Role")
+	@PutMapping("/{roleId}")
+	@Operation(summary = "Update Role / Add permissions to Role")
 	public ResponseEntity<Role> updateRole(@Validated @RequestBody Role role, @PathVariable String practiceId)
 			throws ResourceNotFoundException {
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(roleService.createOrUpdateRole(role, practiceId));
 	}
 
-	@GetMapping("/role")
+	@GetMapping
 	@Operation(summary = "Fetch Role Details")
 	public ResponseEntity<List<Role>> getRolesByPracticeId(@PathVariable String practiceId)
 			throws ResourceNotFoundException {
@@ -65,7 +65,7 @@ public class RoleController {
 		return new ResponseEntity<>(roleService.getAllPermissions(), HttpStatus.OK);
 	}
 
-	@GetMapping
+	@GetMapping("/filterRoles")
 	@Operation(summary = "Fetch all Roles based on filter provided with pagination capabilities.")
 	Page<Role> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize,
