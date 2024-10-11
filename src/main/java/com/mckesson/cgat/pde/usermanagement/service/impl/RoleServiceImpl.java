@@ -7,7 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.Practice;
@@ -51,7 +50,7 @@ public class RoleServiceImpl implements RoleService {
 		Optional<Practice> byId = practiceRepository.findById(Long.valueOf(practiceId));
 		if (!byId.isPresent())
 			throw new ResourceNotFoundException("Practice not found with id:" + practiceId);
-		return roleRepository.findByPracticeId(practiceId);
+		return roleRepository.findByPracticeId(Long.valueOf(practiceId));
 	}
 
 	@Override
@@ -60,19 +59,10 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	@Override
-	public Page<Role> findAll(Pageable paging, String query, List<String> status) {
+	public Page<Role> findAll(Pageable paging, String query) {
 		query = StringUtils.toRootLowerCase(query);
 		Page<Role> response;
-		String statusActive = "ALL";
-		if (!CollectionUtils.isEmpty(status)) {
-			if (status.stream().anyMatch(i -> i.equalsIgnoreCase("ACTIVE"))) {
-				statusActive = "ACTIVE";
-			}
-			if (status.stream().anyMatch(i -> i.equalsIgnoreCase("INACTIVE"))) {
-				statusActive = "ACTIVE".equals(statusActive) ? "ALL" : "INACTIVE";
-			}
-		}
-		response = roleRepository.findAllByQueryText(query, statusActive, paging);
+		response = roleRepository.findAllByQueryText(query, paging);
 		return response;
 	}
 
