@@ -15,6 +15,7 @@ import com.mckesson.cgat.pde.usermanagement.model.Practice;
 import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
 import com.mckesson.cgat.pde.usermanagement.service.PracticeService;
 import com.mckesson.cgat.pde.usermanagement.service.impl.utils.PracticeUtils;
+import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import jakarta.transaction.Transactional;
@@ -67,13 +68,15 @@ public class PracticeServiceImpl implements PracticeService {
 //        log.info("Searching practices based on filter query:{},  roles:{}", query, roles);
 		query = StringUtils.toRootLowerCase(query);
 		Page<Practice> response;
-		String statusActive = "ALL";
+		String statusActive = CustomUtils.object_status.ALL.name();
 		if (!CollectionUtils.isEmpty(status)) {
-			if (status.stream().anyMatch(i -> i.equalsIgnoreCase("ACTIVE"))) {
-				statusActive = "ACTIVE";
+			if (status.stream().anyMatch(i -> i.equalsIgnoreCase(CustomUtils.object_status.ACTIVE.name()))) {
+				statusActive = CustomUtils.object_status.ACTIVE.name();
 			}
-			if (status.stream().anyMatch(i -> i.equalsIgnoreCase("INACTIVE"))) {
-				statusActive = "ACTIVE".equals(statusActive) ? "ALL" : "INACTIVE";
+			if (status.stream().anyMatch(i -> i.equalsIgnoreCase(CustomUtils.object_status.INACTIVE.name()))) {
+				statusActive = CustomUtils.object_status.ACTIVE.name().equals(statusActive)
+						? CustomUtils.object_status.ALL.name()
+						: CustomUtils.object_status.INACTIVE.name();
 			}
 		}
 		response = practiceRepository.findAllByQueryText(query, statusActive, paging);

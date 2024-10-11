@@ -3,7 +3,6 @@ package com.mckesson.cgat.pde.usermanagement.model;
 import java.io.Serializable;
 import java.util.Set;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -49,7 +48,7 @@ public class Role extends AuditColumns implements Serializable {
 	@JoinColumn(name = "practice_id")
 	private Practice practiceId;
 
-	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+	@OneToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "role_permissions_mapping", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "permission_id"))
 	private Set<Permission> permissions;
 }

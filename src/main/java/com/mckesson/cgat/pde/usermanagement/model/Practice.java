@@ -5,6 +5,7 @@ import java.io.Serializable;
 import org.hibernate.type.NumericBooleanConverter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -53,5 +54,7 @@ public class Practice extends AuditColumns implements Serializable {
 
 	@Convert(converter = NumericBooleanConverter.class)
 	@JsonIgnore
+	@JsonProperty("isActive")
 	private Boolean isActive;
+
 }
