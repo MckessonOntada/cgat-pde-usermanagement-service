@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Page<Users> findAll(Pageable paging, String query, List<String> status) {
-		query = (null!=query)? query.toLowerCase() : null;
+		query = (null != query) ? query.toLowerCase() : null;
 		String statusActive = "Active";
 		if (!CollectionUtils.isEmpty(status)) {
 			boolean hasActive = status.stream().anyMatch(i -> i.equalsIgnoreCase("Active"));
@@ -82,4 +82,5 @@ public class UserServiceImpl implements UserService {
 		}
 		return userRepository.findAllByQueryText(query, statusActive, paging);
 	}
+
 }

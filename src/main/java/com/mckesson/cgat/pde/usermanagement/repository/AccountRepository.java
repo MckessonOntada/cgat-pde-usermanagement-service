@@ -15,4 +15,5 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 			+ " LOWER(a.dcname) like %:query% and (:status = 'ALL' "
 			+ "or (('ACTIVE' = :status and a.isActive = true ) or ('isActive' = :status and a.isActive = false )))")
 	Page<Account> findAllByQueryText(@Param("query") String query, @Param("status") String status, Pageable paging);
+
 }

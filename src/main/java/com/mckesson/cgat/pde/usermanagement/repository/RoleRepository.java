@@ -17,8 +17,7 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
 	@Query(nativeQuery = true, value = "select * from usermanagement.role where practice_id =:practiceId")
 	List<Role> findByPracticeId(Long practiceId);
 
-	@Query(nativeQuery = true, value = "SELECT * "
-			+ "FROM usermanagement.role "
+	@Query(nativeQuery = true, value = "SELECT * " + "FROM usermanagement.role "
 			+ "Where (:query is null or LOWER(name)  like %:query% or LOWER(description) like %:query% )")
 	public Page<Role> findAllByQueryText(@Param("query") String query, Pageable paging);
 

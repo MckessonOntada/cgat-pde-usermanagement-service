@@ -16,35 +16,36 @@ import static org.junit.Assert.assertEquals;
 
 public class TransformerTest {
 
-    private Transformer transformer;
+	private Transformer transformer;
 
-    @BeforeEach
-    public void setUp() {
-        transformer = new Transformer();
-    }
+	@BeforeEach
+	public void setUp() {
+		transformer = new Transformer();
+	}
 
-    @Test
-    public void testToUserDto() {
-        Users user = new Users();
-        Role role1 = new Role();
-        role1.setName("SYSTEM_ADMIN");
-        role1.setLabel("System Admin");
-        role1.setShortLabel("Admin");
-        role1.setRoleType("Admin");
-        List<Role> roleList = new ArrayList<>();
-        roleList.add(role1);
-        user.setId(UUID.fromString("4c3163a2-53ad-40a1-922c-6277b696abb1"));
-        user.setEmail("test@example.com");
-        user.setDisplayName("Test User");
-        user.setIsActive(true);
-        user.setRoles(roleList);
-        user.setUpdatedDate(new Date());
-        UserResponse userResponse = transformer.toUserDto(user);
-        assertEquals(user.getId().toString(), userResponse.getId());
-        assertEquals(user.getEmail(), userResponse.getEmail());
-        assertEquals(user.getDisplayName(), userResponse.getDisplayName());
-        assertEquals(user.getIsActive(), userResponse.isActive());
-        assertEquals(user.getRoles().size(), userResponse.getRoles().size());
-        assertEquals(user.getUpdatedDate(), userResponse.getUpdatedDate());
-    }
+	@Test
+	public void testToUserDto() {
+		Users user = new Users();
+		Role role1 = new Role();
+		role1.setName("SYSTEM_ADMIN");
+		role1.setLabel("System Admin");
+		role1.setShortLabel("Admin");
+		role1.setRoleType("Admin");
+		List<Role> roleList = new ArrayList<>();
+		roleList.add(role1);
+		user.setId(UUID.fromString("4c3163a2-53ad-40a1-922c-6277b696abb1"));
+		user.setEmail("test@example.com");
+		user.setDisplayName("Test User");
+		user.setIsActive(true);
+		user.setRoles(roleList);
+		user.setUpdatedDate(new Date());
+		UserResponse userResponse = transformer.toUserDto(user);
+		assertEquals(user.getId().toString(), userResponse.getId());
+		assertEquals(user.getEmail(), userResponse.getEmail());
+		assertEquals(user.getDisplayName(), userResponse.getDisplayName());
+		assertEquals(user.getIsActive(), userResponse.isActive());
+		assertEquals(user.getRoles().size(), userResponse.getRoles().size());
+		assertEquals(user.getUpdatedDate(), userResponse.getUpdatedDate());
+	}
+
 }

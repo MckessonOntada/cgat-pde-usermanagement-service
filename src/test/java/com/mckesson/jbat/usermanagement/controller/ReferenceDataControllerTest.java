@@ -25,51 +25,52 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class ReferenceDataControllerTest extends AbstractTest {
 
-    @InjectMocks
-    private ReferenceDataController controller;
-    @Mock
-    private ReferenceDataService service;
-    @Mock
-    private RoleRepository roleRepository;
+	@InjectMocks
+	private ReferenceDataController controller;
 
-    @BeforeEach
-    public void setup() {
-        MockitoAnnotations.initMocks(this);
-        this.mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
-    }
+	@Mock
+	private ReferenceDataService service;
 
+	@Mock
+	private RoleRepository roleRepository;
 
-    @Test
-    void allStaticReferenceData() throws Exception {
+	@BeforeEach
+	public void setup() {
+		MockitoAnnotations.initMocks(this);
+		this.mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+	}
 
-        ResultActions response = mockMvc.perform(get("/reference")
-                .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN));
-        response.andExpect(status().isOk());
-    }
+	@Test
+	void allStaticReferenceData() throws Exception {
 
-    
-    @Test
-    public void testGetAllRolesAndPermissions_RoleNotFound() throws Exception {
-        when(service.getRoleByname(anyString())).thenThrow(new ResourceNotFoundException("Role not found"));
-        ResultActions result = mockMvc.perform(get("/reference/role/{rolename}/permissions","ADMIN")
-                        .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-                        .contentType(MediaType.APPLICATION_JSON));
-        result.andExpect(status().isNotFound());
-        Exception ex =result.andReturn().getResolvedException();
-        assertNotNull(ex);
-    }
-    @Test
-    public void testGetAllRolesAndPermissions() throws Exception {
-        Role role = new Role();
-        role.setName("test");
-        role.setRoleType("Vendor QC");
-        role.setIsActive(true);
-        role.setLabel("Test");
-        String roleName = "VENDOR_QC";
-        when(roleRepository.findByName(roleName)).thenReturn(Optional.of(role));
-        ResultActions result = mockMvc.perform(get("/reference/role/{rolename}/permissions","VENDOR_QC")
-                .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON));
-        result.andExpect(status().isOk());
-    }
+		ResultActions response = mockMvc.perform(get("/reference").header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN));
+		response.andExpect(status().isOk());
+	}
+
+	@Test
+	public void testGetAllRolesAndPermissions_RoleNotFound() throws Exception {
+		when(service.getRoleByname(anyString())).thenThrow(new ResourceNotFoundException("Role not found"));
+		ResultActions result = mockMvc.perform(
+				get("/reference/role/{rolename}/permissions", "ADMIN").header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+					.contentType(MediaType.APPLICATION_JSON));
+		result.andExpect(status().isNotFound());
+		Exception ex = result.andReturn().getResolvedException();
+		assertNotNull(ex);
+	}
+
+	@Test
+	public void testGetAllRolesAndPermissions() throws Exception {
+		Role role = new Role();
+		role.setName("test");
+		role.setRoleType("Vendor QC");
+		role.setIsActive(true);
+		role.setLabel("Test");
+		String roleName = "VENDOR_QC";
+		when(roleRepository.findByName(roleName)).thenReturn(Optional.of(role));
+		ResultActions result = mockMvc.perform(
+				get("/reference/role/{rolename}/permissions", "VENDOR_QC").header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+					.contentType(MediaType.APPLICATION_JSON));
+		result.andExpect(status().isOk());
+	}
+
 }

@@ -6,9 +6,13 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class KeyValueDto {
-    private String label;
-    private String shortLabel;
-    private String value;
-    private String type;
+
+	private String label;
+
+	private String shortLabel;
+
+	private String value;
+
+	private String type;
 
 }

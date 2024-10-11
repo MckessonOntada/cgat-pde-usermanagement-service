@@ -41,4 +41,5 @@ public class UserActivityAudit extends AuditColumns implements Serializable {
 	@Column(name = "ACTIVITY_DATE")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date activityDate;
+
 }

@@ -1,4 +1,5 @@
 package com.mckesson.cgat.pde.usermanagement.dto;
+
 import com.google.auto.value.AutoValue.Builder;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -23,7 +24,7 @@ public class AccountRequestDto {
 	@NotNull(message = "Dc Name must not be null")
 	@NotEmpty
 	private String dcName;
-	
+
 	@NotEmpty
 	private Boolean isActive = false;
 

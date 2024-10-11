@@ -5,9 +5,10 @@ import org.springframework.http.HttpHeaders;
 
 public interface OktaUserWebhookService {
 
-    JSONObject getCommandsForTokenInlineWebhook(JSONObject authenticationResponse);
+	JSONObject getCommandsForTokenInlineWebhook(JSONObject authenticationResponse);
 
-    boolean validateToken(HttpHeaders headers);
+	boolean validateToken(HttpHeaders headers);
 
-    void addUpdateUserEvent(JSONObject requestBody);
+	void addUpdateUserEvent(JSONObject requestBody);
+
 }

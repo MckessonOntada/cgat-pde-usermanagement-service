@@ -18,5 +18,7 @@ public class CustomDTOs {
 		public String label;
 
 		public boolean is_active;
+
 	}
+
 }

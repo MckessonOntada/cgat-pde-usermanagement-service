@@ -23,4 +23,5 @@ public abstract class UUIDBaseEntity extends AuditColumns {
 	@Column(nullable = false, updatable = false)
 	@JdbcType(VarcharJdbcType.class)
 	private UUID id;
+
 }

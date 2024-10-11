@@ -77,4 +77,5 @@ public abstract class AuditColumns implements Serializable {
 		}
 		this.updatedAt = Date.from(Instant.now());
 	}
+
 }

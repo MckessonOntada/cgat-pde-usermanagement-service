@@ -8,9 +8,10 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 class FileValidationUtilsTest {
 
-    @Test
-    public void testValidateMultiPartFile_WithValidFile() {
-        MockMultipartFile file = new MockMultipartFile("file", "test.csv", "text/csv", "content".getBytes());
-        assertDoesNotThrow(() -> FileValidationUtils.validateMultiPartFile(file));
-    }
+	@Test
+	public void testValidateMultiPartFile_WithValidFile() {
+		MockMultipartFile file = new MockMultipartFile("file", "test.csv", "text/csv", "content".getBytes());
+		assertDoesNotThrow(() -> FileValidationUtils.validateMultiPartFile(file));
+	}
+
 }

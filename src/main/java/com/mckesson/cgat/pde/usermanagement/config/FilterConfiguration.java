@@ -8,9 +8,12 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
 @Configuration
 public class FilterConfiguration {
-    public FilterConfiguration (ObjectMapper objectMapper) {
-        SimpleFilterProvider simpleFilterProvider = new SimpleFilterProvider().setFailOnUnknownId(true);
-        simpleFilterProvider.addFilter("PermissionFilter", SimpleBeanPropertyFilter.filterOutAllExcept("id","label","shortLabel","roleType","rolePermissionMappings"));
-        objectMapper.setFilterProvider(simpleFilterProvider);
-    }
+
+	public FilterConfiguration(ObjectMapper objectMapper) {
+		SimpleFilterProvider simpleFilterProvider = new SimpleFilterProvider().setFailOnUnknownId(true);
+		simpleFilterProvider.addFilter("PermissionFilter", SimpleBeanPropertyFilter.filterOutAllExcept("id", "label",
+				"shortLabel", "roleType", "rolePermissionMappings"));
+		objectMapper.setFilterProvider(simpleFilterProvider);
+	}
+
 }

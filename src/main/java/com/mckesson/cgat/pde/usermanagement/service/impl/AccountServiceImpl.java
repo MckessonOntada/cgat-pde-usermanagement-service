@@ -76,7 +76,7 @@ public class AccountServiceImpl implements AccountService {
 		String statusActive = "Active";
 		if (!CollectionUtils.isEmpty(status)) {
 			if (status.stream().anyMatch(i -> i.equalsIgnoreCase("Active"))) {
-//				 statusActive =""
+				// statusActive =""
 			}
 			if (status.stream().anyMatch(i -> i.equalsIgnoreCase("INACTIVE"))) {
 				statusActive = "ACTIVE".equals(statusActive) ? "ALL" : "INACTIVE";

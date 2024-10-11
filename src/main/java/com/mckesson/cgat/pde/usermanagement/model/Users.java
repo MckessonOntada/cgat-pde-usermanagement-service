@@ -68,21 +68,24 @@ public class Users extends AuditColumns implements Serializable {
 	private String phoneNumber;
 
 	@Convert(converter = NumericBooleanConverter.class)
-	private Boolean isActive=false;
+	private Boolean isActive = false;
 
 	@Embedded
 	private Address address;
 
 	@ManyToMany
 	@JoinTable(name = "user_account", // Name of the join table
-			joinColumns = @JoinColumn(name = "user_id"), // Foreign key from the current entity (User)
-			inverseJoinColumns = @JoinColumn(name = "account_id") // Foreign key from the other entity (Account)
+			joinColumns = @JoinColumn(name = "user_id"), // Foreign key from the current
+															// entity (User)
+			inverseJoinColumns = @JoinColumn(name = "account_id") // Foreign key from the
+																	// other entity
+																	// (Account)
 	)
 
 	@Transient
 	private Set<Account> account;
 
-//	@Column(name = "is_syncwithchartabstraction")
-//	private Integer isSyncWithChartAbstraction;
+	// @Column(name = "is_syncwithchartabstraction")
+	// private Integer isSyncWithChartAbstraction;
 
 }

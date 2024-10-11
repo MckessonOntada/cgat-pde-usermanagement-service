@@ -10,15 +10,21 @@ public class CustomUtils {
 			+ "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
 
 	public enum operation_type {
+
 		CREATE, UPDATE, DELETE
+
 	};
 
 	public enum permission_type {
+
 		NONE, VIEW, FULL
+
 	};
 
 	public enum object_status {
+
 		ALL, ACTIVE, INACTIVE
+
 	}
 
 	public static boolean validateEmail(String emailAddress) {
@@ -43,4 +49,5 @@ public class CustomUtils {
 
 		return formattedDateWithMicroseconds;
 	}
+
 }

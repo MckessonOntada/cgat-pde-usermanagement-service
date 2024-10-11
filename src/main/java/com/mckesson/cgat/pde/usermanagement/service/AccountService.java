@@ -14,7 +14,6 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 @Service
 public interface AccountService {
 
-
 	List<Account> accounts(Long accountId) throws ResourceNotFoundException;
 
 	String deleteAccounts(Long accountId) throws ResourceNotFoundException;

@@ -108,7 +108,7 @@ public class PracticeController {
 	public ResponseEntity<String> deletePractice(@PathVariable String practiceId) throws ResourceNotFoundException {
 		String deletedPractice = practiceService.deletePractice(practiceId);
 		return ResponseEntity.status(HttpStatus.OK)
-				.body("Practice deleted successfully with name : " + deletedPractice);
+			.body("Practice deleted successfully with name : " + deletedPractice);
 
 	}
 

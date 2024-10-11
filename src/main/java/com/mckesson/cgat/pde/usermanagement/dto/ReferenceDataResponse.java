@@ -6,5 +6,7 @@ import java.util.List;
 
 @Data
 public class ReferenceDataResponse {
-   private  List<KeyValueDto> roles;
+
+	private List<KeyValueDto> roles;
+
 }

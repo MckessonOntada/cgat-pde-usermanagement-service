@@ -25,7 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 public class RoleServiceImpl implements RoleService {
 
 	private final PermissionRepository permissionRepository;
+
 	private final RoleRepository roleRepository;
+
 	private final PracticeRepository practiceRepository;
 
 	public RoleServiceImpl(PermissionRepository permissionRepository, RoleRepository roleRepository2,
