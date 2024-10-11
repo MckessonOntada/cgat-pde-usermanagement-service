@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import com.mckesson.cgat.pde.usermanagement.model.Users;
 import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
@@ -82,5 +80,4 @@ public class UserServiceImpl implements UserService {
 		}
 		return userRepository.findAllByQueryText(query, statusActive, paging);
 	}
-
 }
