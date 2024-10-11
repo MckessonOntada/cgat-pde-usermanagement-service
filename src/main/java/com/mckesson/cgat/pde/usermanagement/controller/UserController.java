@@ -51,8 +51,7 @@ public class UserController {
 
 	@PutMapping("/{userId}")
 	@Operation(summary = "Update existing user details")
-	public void updateUser(@PathVariable Long userId, @RequestBody Users model)
-			throws ResourceNotFoundException {
+	public void updateUser(@PathVariable Long userId, @RequestBody Users model) throws ResourceNotFoundException {
 		userModelService.updateUser(userId, model);
 
 	}
@@ -67,24 +66,23 @@ public class UserController {
 
 	@DeleteMapping("/{userId}")
 	@Operation(summary = "Delete user details")
-	public ResponseEntity<Object> deleteUsers(@PathVariable Long userId) throws ResourceNotFoundException {
-		String user = userModelService.deleteUsers(userId);
-		return new ResponseEntity<>(user + " has been deleted", HttpStatus.OK);
+	public void deleteUsers(@PathVariable Long userId) throws ResourceNotFoundException {
+		userModelService.deleteUsers(userId);
 
 	}
 
-//	@GetMapping
-//	@Operation(summary = "Fetch all Users based on filter provided with pagination capabilities.")
-//	Page<Users> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
-//			@RequestParam(defaultValue = "20") Integer pageSize,
-//			@RequestParam(defaultValue = "displayName") String sortBy,
-//			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
-//			@RequestParam(required = false) List<String> status) {
-//		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
-//				: Sort.by(sortBy).descending();
-//		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-//		return userModelService.findAll(paging, query, status);
-//
-//	}
+	@GetMapping
+	@Operation(summary = "Fetch all Users based on filter provided with pagination capabilities.")
+	Page<Users> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
+			@RequestParam(defaultValue = "20") Integer pageSize,
+			@RequestParam(defaultValue = "first_name") String sortBy,
+			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
+			@RequestParam(required = false) List<String> status) {
+		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
+				: Sort.by(sortBy).descending();
+		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
+		return userModelService.findAll(paging, query, status);
+
+	}
 
 }
