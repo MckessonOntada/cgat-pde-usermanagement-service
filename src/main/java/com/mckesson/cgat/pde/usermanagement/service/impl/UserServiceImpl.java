@@ -8,6 +8,8 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import com.mckesson.cgat.pde.usermanagement.model.Users;
 import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
@@ -68,7 +70,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Page<Users> findAll(Pageable paging, String query, List<String> status) {
-		query = StringUtils.toRootLowerCase(query);
+		query = (null!=query)? query.toLowerCase() : null;
 		String statusActive = "Active";
 		if (!CollectionUtils.isEmpty(status)) {
 			boolean hasActive = status.stream().anyMatch(i -> i.equalsIgnoreCase("Active"));
