@@ -20,60 +20,68 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mckesson.cgat.pde.usermanagement.model.Users;
+import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Tag(name = "Users", description = "Controller for Manages user-related operations and data.")
-@RequestMapping(path = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/{praticeId}/users", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class UserController {
 
-	private final UserService userModelService;
+	private final UserService userService;
 
 	private static final String SORT_ORDER_ASC = "asc";
 
 	public UserController(UserService userModelService) {
-		this.userModelService = userModelService;
+		this.userService = userModelService;
 	}
 
 	@PostMapping
 	@Operation(summary = "Create new user")
-	public ResponseEntity<Object> createUser(@RequestBody Users model) throws BadRequestException {
-		return new ResponseEntity<>(userModelService.createUser(model), HttpStatus.OK);
+	public ResponseEntity<User> createUser(@Valid @RequestBody User model) throws BadRequestException {
+		return new ResponseEntity<>(userService.createUser(model), HttpStatus.OK);
 
 	}
 
 	@PutMapping("/{userId}")
 	@Operation(summary = "Update existing user details")
-	public void updateUser(@PathVariable Long userId, @RequestBody Users model) throws ResourceNotFoundException {
-		userModelService.updateUser(userId, model);
+	public User updateUser(@PathVariable Long userId, @RequestBody User model) throws ResourceNotFoundException {
+		return userService.updateUser(userId, model);
 
 	}
 
+//	@GetMapping
+//	@Operation(summary = "Get All user details with paginated result ")
+//	public Page<User> getAllUsers(@RequestParam(defaultValue = "0") int page,
+//			@RequestParam(defaultValue = "10") int size) {
+//		Pageable pageable = PageRequest.of(page, size);
+//		return userService.getAllUsers(pageable);
+//
+//	}
+
 	@GetMapping("/{userId}")
 	@Operation(summary = "Get user details byId ")
-	public ResponseEntity<Object> users(@PathVariable Long userId) throws ResourceNotFoundException {
-		List<Users> users = userModelService.users(userId);
-		return new ResponseEntity<>(users, HttpStatus.OK);
-
+	public ResponseEntity<User> getUser(@PathVariable Long userId) throws ResourceNotFoundException {
+		return new ResponseEntity<>(userService.getUser(userId), HttpStatus.OK);
 	}
 
 	@DeleteMapping("/{userId}")
 	@Operation(summary = "Delete user details")
 	public void deleteUsers(@PathVariable Long userId) throws ResourceNotFoundException {
-		userModelService.deleteUsers(userId);
+		userService.deleteUsers(userId);
 
 	}
 
 	@GetMapping
 	@Operation(summary = "Fetch all Users based on filter provided with pagination capabilities.")
-	Page<Users> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
+	Page<User> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(defaultValue = "first_name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
@@ -81,7 +89,7 @@ public class UserController {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-		return userModelService.findAll(paging, query, status);
+		return userService.findAll(paging, query, status);
 
 	}
 

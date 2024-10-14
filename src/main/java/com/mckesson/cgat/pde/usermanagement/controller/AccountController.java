@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Tag(name = "Accounts", description = "Controller for Manages account-related operations and data.")
-@RequestMapping(path = "/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/{practiceId}/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class AccountController {
 
@@ -44,31 +44,30 @@ public class AccountController {
 
 	@PostMapping
 	@Operation(summary = "Create new  account")
-	public ResponseEntity<Object> createAccount(@RequestBody Account account) throws BadRequestException {
+	public ResponseEntity<Account> createAccount(@RequestBody Account account) throws BadRequestException {
 		return new ResponseEntity<>(accountService.createAccount(account), HttpStatus.OK);
 
 	}
 
 	@PutMapping("/{accountId}")
 	@Operation(summary = "Update existing account")
-	public void updateAccount(@PathVariable Long accountId, @RequestBody Account account) throws ResourceNotFoundException {
-		accountService.updateAccount(accountId ,account);
+	public Account updateAccount(@PathVariable Long accountId, @RequestBody Account account) throws ResourceNotFoundException {
+		return accountService.updateAccount(accountId ,account);
 
 	}
 
 	@GetMapping("/{accountId}")
 	@Operation(summary = "Getting all account details and account details by accountId ")
-	public ResponseEntity<Object> accounts(@PathVariable Long accountId) throws ResourceNotFoundException {
-		List<Account> accounts = accountService.accounts(accountId);
-		return new ResponseEntity<>(accounts, HttpStatus.OK);
+	public ResponseEntity<Account> getAccount(@PathVariable Long accountId) throws ResourceNotFoundException {
+		Account account = accountService.getAccount(accountId);
+		return new ResponseEntity<>(account, HttpStatus.OK);
 
 	}
 
 	@DeleteMapping("/{accountId}")
 	@Operation(summary = "Delete account details")
-	public ResponseEntity<Object> deleteAccounts(@PathVariable Long accountId) throws ResourceNotFoundException {
-		String account = accountService.deleteAccounts(accountId);
-		return new ResponseEntity<>(account + " has been deleted", HttpStatus.OK);
+	public void deleteAccounts(@PathVariable Long accountId) throws ResourceNotFoundException {
+		accountService.deleteAccounts(accountId);
 
 	}
 
@@ -76,7 +75,7 @@ public class AccountController {
 	@Operation(summary = "Fetch all Accounts based on filter provided with pagination capabilities.")
 	Page<Account> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize,
-			@RequestParam(defaultValue = "displayName") String sortBy,
+			@RequestParam(defaultValue = "name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
 			@RequestParam(required = false) List<String> status) {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()

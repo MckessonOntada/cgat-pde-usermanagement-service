@@ -4,7 +4,7 @@ import com.mckesson.cgat.pde.usermanagement.dto.UserResponse;
 import com.mckesson.cgat.pde.usermanagement.dto.UserStudyResponse;
 import com.mckesson.cgat.pde.usermanagement.mapper.Transformer;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
-import com.mckesson.cgat.pde.usermanagement.model.Users;
+import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.model.UserProfileAudit;
 import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.UserActivityAuditRepository;
@@ -70,7 +70,7 @@ class UserServiceImplTest {
         List<String> roles = null;
 
         String statusActive = "ALL";
-        Page<Users> mockResponse = getUsers();
+        Page<User> mockResponse = getUsers();
 
         Mockito.when(userRepository.findAllByQueryText(query, statusActive, paging)).thenReturn(mockResponse);
 
@@ -91,7 +91,7 @@ class UserServiceImplTest {
         List<String> roles = null;
 
         String statusActive = "ACTIVE";
-        Page<Users> mockResponse = getUsers();
+        Page<User> mockResponse = getUsers();
 
         Mockito.when(userRepository.findAllByQueryText(query, statusActive, paging)).thenReturn(mockResponse);
 
@@ -112,7 +112,7 @@ class UserServiceImplTest {
         List<String> roles = null;
 
         String statusActive = "ALL";
-        Page<Users> mockResponse = getUsers();
+        Page<User> mockResponse = getUsers();
 
         Mockito.when(userRepository.findAllByQueryText(query, statusActive, paging)).thenReturn(mockResponse);
 
@@ -133,7 +133,7 @@ class UserServiceImplTest {
         List<String> roles = Arrays.asList("ADMIN");
 
         String statusActive = "ALL";
-        Page<Users> mockResponse = getUsers();
+        Page<User> mockResponse = getUsers();
 
         Mockito.when(userRepository.findAllByQueryTextAndRoles(query, roles, statusActive, paging)).thenReturn(mockResponse);
 
@@ -154,7 +154,7 @@ class UserServiceImplTest {
         List<String> roles = Arrays.asList("UNASSIGNED");
 
         String statusActive = "ALL";
-        Page<Users> mockResponse = getUsers();
+        Page<User> mockResponse = getUsers();
 
         Mockito.when(userRepository.findAllByQueryTextRoleUnAssigned(query, statusActive, paging)).thenReturn(mockResponse);
 
@@ -166,25 +166,25 @@ class UserServiceImplTest {
         assertTrue(result.getSize() == mockResponse.getSize());
     }
 
-    private Page<Users> getUsers() {
+    private Page<User> getUsers() {
         Integer pageNo = 0;
         Integer pageSize = 20;
         String sortBy = "displayName";
         String sortOrder = "asc";
-        List<Users> users = new ArrayList<>();
-        Users user1 = new Users();
+        List<User> users = new ArrayList<>();
+        User user1 = new User();
         user1.setDisplayName("User one");
         user1.setEmail("user.one@test.com");
-        Users user2 = new Users();
+        User user2 = new User();
         user2.setDisplayName("User two");
         user2.setEmail("user.two@test.com");
-        Users user3 = new Users();
+        User user3 = new User();
         user3.setDisplayName("User three");
         user3.setEmail("user.three@test.com");
-        Users user4 = new Users();
+        User user4 = new User();
         user4.setDisplayName("User four");
         user4.setEmail("user.four@test.com");
-        Users user5 = new Users();
+        User user5 = new User();
         user5.setDisplayName("User five");
         user5.setEmail("user.five@test.com");
         users.add(user1);
@@ -202,12 +202,12 @@ class UserServiceImplTest {
     }
     @Test
     void filterUsersByRole() {
-        List<Users> users = new ArrayList<>();
-        Users user1 = new Users();
+        List<User> users = new ArrayList<>();
+        User user1 = new User();
         user1.setId(UUID.fromString("5ec5de42-dffb-11ec-9d64-0242ac120958"));
         user1.setDisplayName("User one");
         user1.setEmail("user.one@test.com");
-        Users user2 = new Users();
+        User user2 = new User();
         user2.setId(UUID.fromString("5ec5de42-dffb-11ec-9d64-0242ac120957"));
         user2.setDisplayName("User two");
         user2.setEmail("user.two@test.com");
@@ -261,11 +261,11 @@ class UserServiceImplTest {
     @Test
     void getUser_UserExists() throws ResourceNotFoundException {
         UUID userId = UUID.randomUUID();
-        Users mockUser = new Users();
+        User mockUser = new User();
         mockUser.setId(userId);
         mockUser.setDisplayName("John Doe");
         Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser));
-        Users retrievedUser = service.getUser(userId.toString());
+        User retrievedUser = service.getUser(userId.toString());
         verify(userRepository).findById(userId);
         assertEquals(mockUser, retrievedUser);
     }
@@ -282,7 +282,7 @@ class UserServiceImplTest {
 
     @Test
     public void testAssignRole_Success() throws Exception{
-        Users user = new Users();
+        User user = new User();
         user.setId(UUID.fromString("5ec5de42-dffb-11ec-9d64-0242ac120958"));
         user.setDisplayName("User one");
         user.setEmail("user.one@test.com");
@@ -313,7 +313,7 @@ class UserServiceImplTest {
 
     @Test
     public void testAssignRole_RoleNotFound() {
-        Mockito.when(userRepository.findById(any())).thenReturn(Optional.of(new Users()));
+        Mockito.when(userRepository.findById(any())).thenReturn(Optional.of(new User()));
         Mockito.when(roleRepository.findByName(anyString())).thenReturn(Optional.empty());
         assertThrows(ResourceNotFoundException.class, () -> {
             service.assignRole("5ec5de42-dffb-11ec-9d64-0242ac120958", "ADMIN");

@@ -8,7 +8,7 @@ import com.mckesson.cgat.pde.usermanagement.dto.UserRoleRequest;
 import com.mckesson.cgat.pde.usermanagement.dto.UserStudyResponse;
 import com.mckesson.cgat.pde.usermanagement.dto.UsersRoleBulkUploadResponse;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
-import com.mckesson.cgat.pde.usermanagement.model.Users;
+import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;
 import com.mckesson.cgat.pde.usermanagement.service.impl.utils.UserAbstractionSyncUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -122,7 +122,7 @@ class UserControllerTest extends AbstractTest {
 
     @Test
     public void getUserById() throws Exception{
-        Users sampleUser = new Users();
+        User sampleUser = new User();
         sampleUser.setId(UUID.fromString("5e4988f0-130a-4c7f-89a1-af94a3cc02fd"));
         sampleUser.setDisplayName("User1");
         sampleUser.setIsActive(true);
@@ -133,7 +133,7 @@ class UserControllerTest extends AbstractTest {
         result.andExpect(status().isOk());
         String content = result.andReturn().getResponse().getContentAsString();
         ObjectMapper objectMapper = new ObjectMapper();
-        Users responseUser = objectMapper.readValue(content, Users.class);
+        User responseUser = objectMapper.readValue(content, User.class);
         assertEquals(sampleUser.getId(), responseUser.getId());
         assertEquals(sampleUser.getDisplayName(), responseUser.getDisplayName());
         assertEquals(sampleUser.getEmail(),responseUser.getEmail());
@@ -155,7 +155,7 @@ class UserControllerTest extends AbstractTest {
     void assignRole_RoleAssignedSuccessfully() throws Exception {
         String userId = "5e4988f0-130a-4c7f-89a1-af94a3cc02fd";
         String roleName = "SYSTEM_ADMIN";
-        Users user = new Users();
+        User user = new User();
         user.setId(UUID.fromString(userId));
         Role role = new Role();
         role.setName(roleName);

@@ -7,16 +7,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.mckesson.cgat.pde.usermanagement.model.Users;
+import com.mckesson.cgat.pde.usermanagement.model.User;
 
 @Repository
-public interface UserRepository extends JpaRepository<Users, Long> {
-
-	@Query(nativeQuery = true, value = "SELECT * FROM usermanagement.users WHERE"
-			+ " first_name ILIKE '%:query%'AND middle_name ILIKE '%:query%' AND last_name ILIKE '%:query%' AND city ILIKE '%:query%' AND "
-			+ "email ILIKE '%:query%'AND state ILIKE '%:query%' AND address1 ILIKE '%:query%' AND is_active = 0 OR is_active = 1")
-	Page<Users> findAllByQueryText(@Param("query") String query, @Param("status") String status, Pageable paging);
-
-	Users findByEmail(String email);
+public interface UserRepository extends JpaRepository<User, Long> {
+	@Query(nativeQuery = true, value = """
+			SELECT * FROM usermanagement.user WHERE (:query IS NULL
+			 OR LOWER(city) LIKE %:query% OR LOWER(state) LIKE %:query%
+			 OR LOWER(first_name) LIKE %:query% OR LOWER(middle_name) LIKE %:query%
+			 OR LOWER(last_name) LIKE %:query%  OR LOWER(address1) LIKE %:query%
+			 OR LOWER(address2) LIKE %:query%) AND ((:status = 'ALL' AND (is_active = 1 OR is_active = 0))
+			 OR ('ACTIVE' = :status AND is_active = 1) OR ('INACTIVE' = :status AND is_active = 0))""")
+	Page<User> findAllByQueryText(@Param("query") String query, @Param("status") String status, Pageable paging);
 
 }

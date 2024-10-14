@@ -10,9 +10,9 @@ import com.mckesson.cgat.pde.usermanagement.model.Account;
 
 public interface AccountRepository extends JpaRepository<Account, Long> {
 
-	@Query(nativeQuery = true, value = "SELECT distinct a FROM Account a  WHERE  "
-			+ "(:query is null or LOWER(a.name)  like %:query% or LOWER(a.dcid) like %:query% or"
-			+ " LOWER(a.dcname) like %:query% and (:status = 'ALL' "
-			+ "or (('ACTIVE' = :status and a.isActive = true ) or ('isActive' = :status and a.isActive = false )))")
+	@Query(nativeQuery = true, value = """
+			SELECT DISTINCT a FROM usermanagement.account a WHERE (:query IS NULL
+			    OR LOWER(a.name) LIKE %:query% AND (:status = 'ALL' OR ('ACTIVE' = :status AND a.isActive = TRUE)
+			    OR ('INACTIVE' = :status AND a.isActive = FALSE))""")
 	Page<Account> findAllByQueryText(@Param("query") String query, @Param("status") String status, Pageable paging);
 }

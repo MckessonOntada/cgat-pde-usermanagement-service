@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS practice
 (
-	id INTEGER PRIMARY KEY,
+	id 				INTEGER PRIMARY KEY,
     name           	VARCHAR(255) UNIQUE NOT NULL,
     logo_url       	VARCHAR(255),
     first_name  	VARCHAR(50) NOT NULL,
@@ -12,13 +12,13 @@ CREATE TABLE IF NOT EXISTS practice
     state			VARCHAR(50) NOT NULL,
     zip				VARCHAR(50) NOT NULL,
     email			VARCHAR(50) NOT NULL,
-    phone	VARCHAR(50) NOT NULL,
+    phone			VARCHAR(50) NOT NULL,
     fax				VARCHAR(50),
     is_active       INTEGER,
-    created_at TIMESTAMP,
-    created_by VARCHAR(255),
-    updated_at TIMESTAMP,
-    updated_by VARCHAR(255)
+    created_at 		TIMESTAMP,
+    created_by 		VARCHAR(255),
+    updated_at 		TIMESTAMP,
+    updated_by 		VARCHAR(255)
 );
 
 CREATE SEQUENCE practice_sequence START WITH 1 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE  CACHE 20;
@@ -58,75 +58,66 @@ CREATE TABLE role_permissions_mapping (
 );
 
 
-CREATE TABLE IF NOT EXISTS users
+
+
+CREATE TABLE IF NOT EXISTS "user"
 (
-    id          				VARCHAR(50) 	NOT NULL,
+    id        					INTEGER NOT NULL,
+    practice_id					INTEGER,
     first_name  				VARCHAR(255) 	UNIQUE NOT NULL,
     middle_name 				VARCHAR(255),
-    last_name	 				VARCHAR(50) 	NOT NULL,
+    last_name	 				VARCHAR(255) 	NOT NULL,
     suffix						VARCHAR(50),
-    address_1					VARCHAR(255) 	NOT NULL,
-    address_2					VARCHAR(255),
+    address1					VARCHAR(255) 	NOT NULL,
+    address2					VARCHAR(255),
     city						VARCHAR(255) 	NOT NULL,
     state 						VARCHAR(255) 	NOT NULL,
     zip 						VARCHAR(255) 	NOT NULL,
-    emai_id 					VARCHAR(255) 	NOT NULL,
-    phone_number 				VARCHAR(255) 	NOT NULL,
-    created_date				TIMESTAMP(6) 	DEFAULT	CURRENT_TIMESTAMP  	NOT NULL,
-    updated_by					VARCHAR(50),
-    CONSTRAINT users_pk 		PRIMARY KEY (id)
+    email	 					VARCHAR(255) 	NOT NULL,
+    phone						VARCHAR(255) 	NOT NULL,
+    fax							VARCHAR(50),
+    CONSTRAINT user_pk			PRIMARY KEY (id),
+    is_active      				INTEGER,
+    created_date 				TIMESTAMP,
+    created_by 					VARCHAR(255),
+    updated_date 				TIMESTAMP,
+    updated_by 					VARCHAR(255)
+    
 );
 
 
-CREATE TABLE IF NOT EXISTS USERS
+CREATE TABLE IF NOT EXISTS account
 (
-    ID          				BIGINT NOT NULL,
-    FIRST_NAME  				VARCHAR(255) 	UNIQUE NOT NULL,
-    MIDDLE_NAME 				VARCHAR(255) ,
-    LAST_NAME	 				VARCHAR(50) 	NOT NULL ,
-    SUFFIX						VARCHAR(50) ,
-    EMAIL						VARCHAR(255) 	NOT NULL,
-    PHONE_NUMBER 				VARCHAR(255) 	NOT NULL,
-    ADDRESS1 					VARCHAR(255) 	NOT NULL,
-    ADDRESS2 					VARCHAR(255),
-    CITY 						VARCHAR(255) 	NOT NULL,
-    ZIP 						VARCHAR(255) 	NOT NULL,
-    STATE 						VARCHAR(255) 	NOT NULL,
-    CREATED_DATE				TIMESTAMP(6) 	DEFAULT	CURRENT_TIMESTAMP,
-    CREATED_BY					TIMESTAMP(6) 	DEFAULT	CURRENT_TIMESTAMP,
-    UPDATED_DATE				TIMESTAMP(6) 	DEFAULT	CURRENT_TIMESTAMP,
-    UPDATED_BY					TIMESTAMP(6) 	DEFAULT	CURRENT_TIMESTAMP,
-    IS_ACTIVE					Integer  		NOT NULL,
-    CONSTRAINT USERS_PK 		PRIMARY KEY (ID)
+    id          				INTEGER NOT NULL,
+    practice_id					INTEGER,
+    name  						VARCHAR(255) 	UNIQUE NOT NULL,
+    dc_id 						VARCHAR(255) ,
+    dc_name						VARCHAR(50) 	NOT NULL ,
+    is_active					INTEGER ,
+    created_date 				TIMESTAMP,
+    created_by 					VARCHAR(255),
+    updated_date 				TIMESTAMP,
+    updated_by 					VARCHAR(255),
+    CONSTRAINT account_pk 		PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS user_account_mapping (
+    user_id 					INTEGER NOT NULL,
+    account_id 					INTEGER NOT NULL,
+    PRIMARY KEY 				(user_id, account_id)
+);
+
+CREATE TABLE IF NOT EXISTS account_user_maping (
+    account_id 					INTEGER NOT NULL,
+    user_id 					INTEGER NOT NULL,
+    PRIMARY KEY 				(account_id, user_id)
 );
 
 
-CREATE TABLE IF NOT EXISTS ACCOUNT
-(
-    ID          				BIGINT NOT NULL,
-    NAME  						VARCHAR(255) 	UNIQUE NOT NULL,
-    DC_ID 						VARCHAR(255) ,
-    DC_NAME						VARCHAR(50) 	NOT NULL ,
-    ISACTIVE					BOOLEAN ,
-    CONSTRAINT ACCOUNT_PK 		PRIMARY KEY (ID)
-);
-
-CREATE TABLE IF NOT EXISTS USER_ACCOUNT (
-    USER_ID 					BIGINT NOT NULL,
-    ACCOUNT_ID 					BIGINT NOT NULL,
-    PRIMARY KEY 				(USER_ID, ACCOUNT_ID)
-);
-
-CREATE SEQUENCE USER_SEQUENCE
-    START WITH 1
-    INCREMENT BY 1
-    CACHE 1;
+CREATE SEQUENCE USER_SEQUENCE START WITH 1 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE  CACHE 20;
     
     
-CREATE SEQUENCE ACCOUNT_SEQUENCE
-    START WITH 1
-    INCREMENT BY 1 
-    CACHE 1;   
+CREATE SEQUENCE ACCOUNT_SEQUENCE START WITH 1 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE  CACHE 20;  
    
 
 

@@ -1,6 +1,5 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,39 +33,30 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public void updateAccount(Long accountId, Account obj) throws ResourceNotFoundException {
-		Optional<Account> account = accountRepository.findById(accountId);
-		if (!account.isPresent())
+	public Account updateAccount(Long accountId, Account obj) throws ResourceNotFoundException {
+		Account account = accountRepository.findById(accountId)
+				.orElseThrow(() -> new ResourceNotFoundException("User not found with given userId: " + accountId));
+		if (!Boolean.FALSE.equals(account.getIsActive()))
 			throw new ResourceNotFoundException("account not found with given accountId = " + accountId);
 		obj.setId(accountId);
-		accountRepository.save(obj);
+		return accountRepository.save(obj);
 	}
 
 	@Override
-	public List<Account> accounts(Long accountId) throws ResourceNotFoundException {
-		List<Account> accountList = new ArrayList<>();
-		if (accountId == null)
-			accountList = accountRepository.findAll();
-		else {
-			Optional<Account> account = accountRepository.findById(accountId);
-			if (account.isPresent())
-				accountList.add(account.get());
-			else
-				throw new ResourceNotFoundException("account not found with given Id = " + accountId);
-
-			return accountList;
-		}
-		return accountList;
+	public Account getAccount(Long accountId) throws ResourceNotFoundException {
+		Optional<Account> account = Optional.of(accountRepository.findById(accountId)
+				.orElseThrow(() -> new ResourceNotFoundException("User not found with given Id = " + accountId)));
+		return account.get();
 	}
 
 	@Override
-	public String deleteAccounts(Long accountId) throws ResourceNotFoundException {
-		Optional<Account> account = accountRepository.findById(accountId);
-		if (!account.isPresent())
+	public void deleteAccounts(Long accountId) throws ResourceNotFoundException {
+		Account account = accountRepository.findById(accountId)
+				.orElseThrow(() -> new ResourceNotFoundException("Account not found with given Id = " + accountId));
+		if (Boolean.FALSE.equals(account.getIsActive()))
 			throw new ResourceNotFoundException("Account not found with given Id = " + accountId);
-		account.get().setIsActive(false);
-		accountRepository.save(account.get());
-		return account.get().getName();
+		account.setIsActive(false);
+		accountRepository.save(account);
 	}
 
 	@Override
@@ -75,12 +65,14 @@ public class AccountServiceImpl implements AccountService {
 		Page<Account> response;
 		String statusActive = "Active";
 		if (!CollectionUtils.isEmpty(status)) {
-			if (status.stream().anyMatch(i -> i.equalsIgnoreCase("Active"))) {
-//				 statusActive =""
-			}
-			if (status.stream().anyMatch(i -> i.equalsIgnoreCase("INACTIVE"))) {
+			boolean hasActive = status.stream().anyMatch(i -> i.equalsIgnoreCase("ACTIVE"));
+			boolean hasInactive = status.stream().anyMatch(i -> i.equalsIgnoreCase("INACTIVE"));
+
+			if (hasActive)
+				statusActive = "ACTIVE";
+
+			if (hasInactive)
 				statusActive = "ACTIVE".equals(statusActive) ? "ALL" : "INACTIVE";
-			}
 		}
 		response = accountRepository.findAllByQueryText(query, statusActive, paging);
 		return response;

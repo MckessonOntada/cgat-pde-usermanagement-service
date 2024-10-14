@@ -10,6 +10,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.validation.constraints.NotEmpty;
@@ -45,12 +47,18 @@ public class Account extends AuditColumns implements Serializable {
 	@NotNull(message = "Dc name must not be null")
 	@NotEmpty
 	private String dcName;
+	
+	private Long practiceId;
 
 	@NotEmpty
 	@Convert(converter = NumericBooleanConverter.class)
 	private Boolean isActive;
 
 	@ManyToMany
-	private Set<Users> user;
+	@JoinTable(name = "account_user_maping", // Name of the join table
+			joinColumns = @JoinColumn(name = "account_id"), // Foreign key from the current entity (User)
+			inverseJoinColumns = @JoinColumn(name = "user_id") // Foreign key from the other entity (Account)
+	)
+	private Set<User> user;
 
 }
