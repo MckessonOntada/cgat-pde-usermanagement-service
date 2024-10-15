@@ -32,9 +32,9 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User updateUser(Long userId, User model) throws ResourceNotFoundException {
 		User user = userRepository.findById(userId)
-				.orElseThrow(() -> new ResourceNotFoundException("User not found with given userId: " + userId));
+				.orElseThrow(() -> new ResourceNotFoundException(userId.toString()));
 		if (Boolean.FALSE.equals(user.getIsActive()))
-			throw new ResourceNotFoundException("User not found with given userId = " + userId);
+			throw new ResourceNotFoundException(userId.toString());
 		model.setId(userId);
 		return userRepository.save(model);
 	}
@@ -42,22 +42,22 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User getUser(Long userId) throws ResourceNotFoundException {
 		Optional<User> user = Optional.of(userRepository.findById(userId)
-				.orElseThrow(() -> new ResourceNotFoundException("User not found with given Id = " + userId)));
+				.orElseThrow(() -> new ResourceNotFoundException(userId.toString())));
 		return user.get();
 	}
 
 	@Override
 	public void deleteUsers(Long userId) throws ResourceNotFoundException {
 		User user = userRepository.findById(userId)
-				.orElseThrow(() -> new ResourceNotFoundException("User not found with given Id = " + userId));
+				.orElseThrow(() -> new ResourceNotFoundException(userId.toString()));
 		if (Boolean.FALSE.equals(user.getIsActive()))
-			throw new ResourceNotFoundException("User not found with given Id = " + userId);
+			throw  new ResourceNotFoundException(userId.toString());
 		user.setIsActive(false);
 		userRepository.save(user);
 	}
 
 	@Override
-	public Page<User> findAll(Pageable paging, String query, List<String> status) {
+	public Page<User> findAll(Pageable paging, String query, List<String> status,String praciceId) {
 		String statusActive = "ALL";
 
 		if (!CollectionUtils.isEmpty(status)) {
@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService {
 			if (hasInactive)
 				statusActive = "ACTIVE".equals(statusActive) ? "ALL" : "INACTIVE";
 		}
-		return userRepository.findAllByQueryText(query, statusActive, paging);
+		return userRepository.findAllByQueryText(query, statusActive, paging,praciceId);
 	}
 
 	@Override

@@ -35,9 +35,9 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public Account updateAccount(Long accountId, Account obj) throws ResourceNotFoundException {
 		Account account = accountRepository.findById(accountId)
-				.orElseThrow(() -> new ResourceNotFoundException("User not found with given userId: " + accountId));
+				.orElseThrow(() -> new ResourceNotFoundException(accountId.toString()));
 		if (!Boolean.FALSE.equals(account.getIsActive()))
-			throw new ResourceNotFoundException("account not found with given accountId = " + accountId);
+			throw new ResourceNotFoundException(accountId.toString());
 		obj.setId(accountId);
 		return accountRepository.save(obj);
 	}
@@ -45,22 +45,22 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public Account getAccount(Long accountId) throws ResourceNotFoundException {
 		Optional<Account> account = Optional.of(accountRepository.findById(accountId)
-				.orElseThrow(() -> new ResourceNotFoundException("User not found with given Id = " + accountId)));
+				.orElseThrow(() -> new ResourceNotFoundException(accountId.toString())));
 		return account.get();
 	}
 
 	@Override
-	public void deleteAccounts(Long accountId) throws ResourceNotFoundException {
+	public void deleteAccount(Long accountId) throws ResourceNotFoundException {
 		Account account = accountRepository.findById(accountId)
-				.orElseThrow(() -> new ResourceNotFoundException("Account not found with given Id = " + accountId));
+				.orElseThrow(() -> new ResourceNotFoundException(accountId.toString()));
 		if (Boolean.FALSE.equals(account.getIsActive()))
-			throw new ResourceNotFoundException("Account not found with given Id = " + accountId);
+			throw new ResourceNotFoundException(accountId.toString());
 		account.setIsActive(false);
 		accountRepository.save(account);
 	}
 
 	@Override
-	public Page<Account> findAll(Pageable paging, String query, List<String> status) {
+	public Page<Account> findAll(Pageable paging, String query, List<String> status,String practiceId) {
 		query = StringUtils.toRootLowerCase(query);
 		Page<Account> response;
 		String statusActive = "Active";
@@ -74,7 +74,7 @@ public class AccountServiceImpl implements AccountService {
 			if (hasInactive)
 				statusActive = "ACTIVE".equals(statusActive) ? "ALL" : "INACTIVE";
 		}
-		response = accountRepository.findAllByQueryText(query, statusActive, paging);
+		response = accountRepository.findAllByQueryText(query, statusActive, paging,practiceId);
 		return response;
 	}
 

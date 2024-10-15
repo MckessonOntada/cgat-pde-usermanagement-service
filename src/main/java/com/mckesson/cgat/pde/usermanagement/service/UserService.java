@@ -16,7 +16,7 @@ public interface UserService {
 
 	void deleteUsers(Long userId) throws ResourceNotFoundException;
 
-	Page<User> findAll(Pageable paging, String query, List<String> status);
+	Page<User> findAll(Pageable paging, String query, List<String> status,String praciceId);
 
 	User updateUser(Long userId, User model) throws ResourceNotFoundException;
 

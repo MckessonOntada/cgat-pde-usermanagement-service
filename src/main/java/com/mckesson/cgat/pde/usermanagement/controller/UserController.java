@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Tag(name = "Users", description = "Controller for Manages user-related operations and data.")
-@RequestMapping(path = "/{praticeId}/users", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/practice/{praticeId}/users", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class UserController {
 
@@ -51,20 +51,20 @@ public class UserController {
 	}
 
 	@PutMapping("/{userId}")
-	@Operation(summary = "Update existing user details")
+	@Operation(summary = "Update existing user details byId")
 	public User updateUser(@PathVariable Long userId, @RequestBody User model) throws ResourceNotFoundException {
 		return userService.updateUser(userId, model);
 
 	}
 
-//	@GetMapping
-//	@Operation(summary = "Get All user details with paginated result ")
-//	public Page<User> getAllUsers(@RequestParam(defaultValue = "0") int page,
-//			@RequestParam(defaultValue = "10") int size) {
-//		Pageable pageable = PageRequest.of(page, size);
-//		return userService.getAllUsers(pageable);
-//
-//	}
+	@GetMapping
+	@Operation(summary = "Get All user details with paginated result ")
+	public Page<User> getAllUsers(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size) {
+		Pageable pageable = PageRequest.of(page, size);
+		return userService.getAllUsers(pageable);
+
+	}
 
 	@GetMapping("/{userId}")
 	@Operation(summary = "Get user details byId ")
@@ -79,17 +79,19 @@ public class UserController {
 
 	}
 
-	@GetMapping
+	@GetMapping("/filter")
 	@Operation(summary = "Fetch all Users based on filter provided with pagination capabilities.")
 	Page<User> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(defaultValue = "first_name") String sortBy,
-			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
+			@RequestParam(defaultValue = "asc") String sortOrder,
+			@RequestParam(required = false) String query,
+			@RequestParam(required = false) String praciceId,
 			@RequestParam(required = false) List<String> status) {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-		return userService.findAll(paging, query, status);
+		return userService.findAll(paging, query, status,praciceId);
 
 	}
 

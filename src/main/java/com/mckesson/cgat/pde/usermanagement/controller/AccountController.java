@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Tag(name = "Accounts", description = "Controller for Manages account-related operations and data.")
-@RequestMapping(path = "/{practiceId}/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/practice/{practiceId}/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class AccountController {
 
@@ -42,6 +43,7 @@ public class AccountController {
 		this.accountService = accountService;
 	}
 
+	
 	@PostMapping
 	@Operation(summary = "Create new  account")
 	public ResponseEntity<Account> createAccount(@RequestBody Account account) throws BadRequestException {
@@ -57,7 +59,7 @@ public class AccountController {
 	}
 
 	@GetMapping("/{accountId}")
-	@Operation(summary = "Getting all account details and account details by accountId ")
+	@Operation(summary = "Get account details by accountId ")
 	public ResponseEntity<Account> getAccount(@PathVariable Long accountId) throws ResourceNotFoundException {
 		Account account = accountService.getAccount(accountId);
 		return new ResponseEntity<>(account, HttpStatus.OK);
@@ -66,8 +68,9 @@ public class AccountController {
 
 	@DeleteMapping("/{accountId}")
 	@Operation(summary = "Delete account details")
-	public void deleteAccounts(@PathVariable Long accountId) throws ResourceNotFoundException {
-		accountService.deleteAccounts(accountId);
+	public ResponseEntity<String> deleteAccount(@PathVariable Long accountId) throws ResourceNotFoundException {
+		accountService.deleteAccount(accountId);
+		return new ResponseEntity<>(HttpStatus.OK);
 
 	}
 
@@ -76,12 +79,14 @@ public class AccountController {
 	Page<Account> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(defaultValue = "name") String sortBy,
-			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
+			@RequestParam(defaultValue = "asc") String sortOrder,
+			@RequestParam(required = false) String query,
+			@RequestParam(required = false) String practiceId,
 			@RequestParam(required = false) List<String> status) {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-		return accountService.findAll(paging, query, status);
+		return accountService.findAll(paging, query, status,practiceId);
 	}
 
 }
