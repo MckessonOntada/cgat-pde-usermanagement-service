@@ -44,24 +44,16 @@ public class PracticeServiceImpl implements PracticeService {
 
 	@Override
 	public Practice getPractice(String id) throws ResourceNotFoundException {
-		Optional<Practice> byId = practiceRepository.findById(Long.valueOf(id));
-		return byId.orElseThrow(() -> new ResourceNotFoundException(id));
+		Optional<Practice> practiceOpt = practiceRepository.findById(Long.valueOf(id));
+		return practiceOpt.orElseThrow(() -> new ResourceNotFoundException(id));
 	}
 
 	@Override
-	public Page<Practice> getAllPractices(Pageable paging) {
-		return practiceRepository.findAll(paging);
-	}
-
-	@Override
-	public Boolean deletePractice(String id) throws ResourceNotFoundException {
-		Optional<Practice> byId = practiceRepository.findById(Long.valueOf(id));
-		if (!byId.isPresent())
-			return false;
-		byId.get().setIsActive(false);
-		practiceRepository.save(byId.get());
-		return true;
-
+	public void deletePractice(String id) throws ResourceNotFoundException {
+		Optional<Practice> practiceOpt = practiceRepository.findById(Long.valueOf(id));
+		Practice practice = practiceOpt.orElseThrow(() -> new ResourceNotFoundException(id));
+		practice.setIsActive(false);
+		practiceRepository.save(practice);
 	}
 
 	@Override
@@ -76,7 +68,8 @@ public class PracticeServiceImpl implements PracticeService {
 			}
 			if (status.stream().anyMatch(i -> i.equalsIgnoreCase(CustomUtils.object_status.INACTIVE.name()))) {
 				statusActive = CustomUtils.object_status.ACTIVE.name().equals(statusActive)
-						? CustomUtils.object_status.ALL.name() : CustomUtils.object_status.INACTIVE.name();
+						? CustomUtils.object_status.ALL.name()
+						: CustomUtils.object_status.INACTIVE.name();
 			}
 		}
 		response = practiceRepository.findAllByQueryText(query, statusActive, paging);

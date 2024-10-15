@@ -15,19 +15,20 @@ public interface PracticeRepository extends JpaRepository<Practice, Long> {
 	@Query(value = """
 			SELECT *
 			FROM usermanagement.Practice
-			where
-			(
-			:query is null
-			or LOWER(name) like %:query%
-			or LOWER(city) like %:query%
-			or LOWER(state) like %:query%
-			and
-			(
-			(:status = 'ALL' and (is_active = 1 or is_active = 0))
-			or ('ACTIVE' = :status and is_active = 1 )
-			or ('INACTIVE' = :status and is_active = 0 )
-			)
-			) """, nativeQuery = true)
+			WHERE
+				(
+				:query is null
+				or LOWER(name) like %:query%
+				or LOWER(city) like %:query%
+				or LOWER(state) like %:query%
+				and
+					(
+					(:status = 'ALL' and (is_active = 1 or is_active = 0))
+					or ('ACTIVE' = :status and is_active = 1 )
+					or ('INACTIVE' = :status and is_active = 0 )
+					)
+				)
+			 """, nativeQuery = true)
 	public Page<Practice> findAllByQueryText(@Param("query") String query, @Param("status") String status,
 			Pageable paging);
 

@@ -33,8 +33,8 @@ public class Permission extends AuditColumns implements Serializable {
 	@SequenceGenerator(name = "permission_sequence", sequenceName = "permission_sequence", allocationSize = 1)
 	private Long id;
 
-	@NotEmpty(message = "Role name cannot be empty")
-	@NotNull(message = "Role name cannot be null")
+	@NotEmpty(message = "Name cannot be empty")
+	@NotNull(message = "Name cannot be null")
 	private String name;
 
 	private String label;

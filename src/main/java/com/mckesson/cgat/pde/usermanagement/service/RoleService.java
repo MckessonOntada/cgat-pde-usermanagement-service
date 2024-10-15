@@ -17,8 +17,6 @@ public interface RoleService {
 
 	Role getRole(String roleId) throws ResourceNotFoundException;
 
-	List<Role> getRolesByPracticeId(String practiceId) throws ResourceNotFoundException;
-
 	List<Permission> getAllPermissions();
 
 	Page<Role> findAll(Pageable paging, String query, String practiceId, List<String> status);

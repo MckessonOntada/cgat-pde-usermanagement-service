@@ -16,9 +16,7 @@ public interface PracticeService {
 
 	Practice getPractice(String id) throws ResourceNotFoundException;
 
-	Page<Practice> getAllPractices(Pageable paging);
-
-	Boolean deletePractice(String id) throws ResourceNotFoundException;
+	void deletePractice(String id) throws ResourceNotFoundException;
 
 	Page<Practice> findAll(Pageable paging, String query, List<String> status);
 

@@ -3,7 +3,6 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import java.io.IOException;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mckesson.cgat.pde.usermanagement.model.Practice;
 import com.mckesson.cgat.pde.usermanagement.service.PracticeService;
 import com.mckesson.cgat.pde.usermanagement.service.impl.utils.PracticeUtils;
+import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,16 +40,17 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PracticeController {
 
-	private static final String SORT_ORDER_ASC = "asc";
+	private final PracticeService practiceService;
 
-	@Autowired
-	private PracticeService practiceService;
+	private final PracticeUtils practiceUtils;
 
-	@Autowired
-	private PracticeUtils practiceUtils;
+	public PracticeController(PracticeService practiceService, PracticeUtils practiceUtils) {
+		this.practiceService = practiceService;
+		this.practiceUtils = practiceUtils;
+	}
 
 	@PostMapping
-	@Operation(summary = "create Practice")
+	@Operation(summary = "Create Practice")
 	public ResponseEntity<Object> createPractice(@RequestPart("practiceStr") @Valid String practiceStr,
 			@RequestPart("logo") MultipartFile logo, BindingResult bindingResult) throws IOException {
 		Practice practiceObj = parsePractice(practiceStr);
@@ -84,39 +85,26 @@ public class PracticeController {
 	}
 
 	@GetMapping("/{practiceId}")
-	@Operation(summary = "Get Practice by PracticeId")
+	@Operation(summary = "Get Practice by Id")
 	public ResponseEntity<Practice> getPractice(@PathVariable String practiceId)
 			throws NumberFormatException, ResourceNotFoundException {
 		return new ResponseEntity<>(practiceService.getPractice(practiceId), HttpStatus.OK);
 	}
 
-	@GetMapping
-	@Operation(summary = "GetAll Practices")
-	public Page<Practice> getAllPractice(@RequestParam(defaultValue = "0") Integer pageNo,
-			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(defaultValue = "name") String sortBy,
-			@RequestParam(defaultValue = "20") Integer pageSize) {
-		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
-				: Sort.by(sortBy).descending();
-		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-		return practiceService.getAllPractices(paging);
-	}
-
 	@DeleteMapping("/{practiceId}")
-	@Operation(summary = "Delete Practice")
-	public ResponseEntity<String> deletePractice(@PathVariable String practiceId) throws ResourceNotFoundException {
-		if (Boolean.FALSE.equals(practiceService.deletePractice(practiceId)))
-			throw new ResourceNotFoundException(practiceId);
-		return new ResponseEntity<>(HttpStatus.OK);
-
+	@Operation(summary = "Delete Practice by Id")
+	public ResponseEntity<Object> deletePractice(@PathVariable String practiceId) throws ResourceNotFoundException {
+		practiceService.deletePractice(practiceId);
+		return new ResponseEntity<>(practiceId, HttpStatus.OK);
 	}
 
-	@GetMapping("/filter")
+	@GetMapping
 	@Operation(summary = "Fetch all Practices based on filter provided with pagination capabilities.")
 	Page<Practice> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
 			@RequestParam(required = false) List<String> status) {
-		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
+		Sort sort = CustomUtils.SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 

@@ -22,19 +22,20 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
 	@Query(value = """
 			SELECT *
 			FROM usermanagement.role
-			where
-			(
-			:query is null
-			or LOWER(name) like %:query%
-			and
-			practice_id =:practiceId
-			and
-			(
-			(:status = 'ALL' and (is_active = 1 or is_active = 0))
-			or ('ACTIVE' = :status and is_active = 1 )
-			or ('INACTIVE' = :status and is_active = 0 )
-			)
-			)""", nativeQuery = true)
+			WHERE
+				(
+				:query is null
+				or LOWER(name) like %:query%
+				and
+				practice_id =:practiceId
+				and
+					(
+					(:status = 'ALL' and (is_active = 1 or is_active = 0))
+					or ('ACTIVE' = :status and is_active = 1 )
+					or ('INACTIVE' = :status and is_active = 0 )
+					)
+				)
+			""", nativeQuery = true)
 	public Page<Role> findAllByQueryText(@Param("query") String query, @Param("status") String status,
 			@Param("practiceId") String practiceId, Pageable paging);
 

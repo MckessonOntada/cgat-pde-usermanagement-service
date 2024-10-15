@@ -42,25 +42,16 @@ public class RoleServiceImpl implements RoleService {
 	@Override
 	@Transactional
 	public Role createOrUpdateRole(Role role, String practiceId) throws ResourceNotFoundException {
-		Optional<Practice> byId = practiceRepository.findById(Long.valueOf(practiceId));
-		if (!byId.isPresent())
-			throw new ResourceNotFoundException(practiceId);
-		role.setPracticeId(byId.get());
+		Optional<Practice> roleOpt = practiceRepository.findById(Long.valueOf(practiceId));
+		Practice practice = roleOpt.orElseThrow(() -> new ResourceNotFoundException(practiceId));
+		role.setPracticeId(practice);
 		return roleRepository.save(role);
 	}
 
 	@Override
 	public Role getRole(String roleId) throws ResourceNotFoundException {
-		Optional<Role> byId = roleRepository.findById(Long.valueOf(roleId));
-		return byId.orElseThrow(() -> new ResourceNotFoundException(roleId));
-	}
-
-	@Override
-	public List<Role> getRolesByPracticeId(String practiceId) throws ResourceNotFoundException {
-		Optional<Practice> byId = practiceRepository.findById(Long.valueOf(practiceId));
-		if (!byId.isPresent())
-			throw new ResourceNotFoundException(practiceId);
-		return roleRepository.findByPracticeId(byId.get());
+		Optional<Role> roleOpt = roleRepository.findById(Long.valueOf(roleId));
+		return roleOpt.orElseThrow(() -> new ResourceNotFoundException(roleId));
 	}
 
 	@Override
@@ -79,7 +70,8 @@ public class RoleServiceImpl implements RoleService {
 			}
 			if (status.stream().anyMatch(i -> i.equalsIgnoreCase(CustomUtils.object_status.INACTIVE.name()))) {
 				statusActive = CustomUtils.object_status.ACTIVE.name().equals(statusActive)
-						? CustomUtils.object_status.ALL.name() : CustomUtils.object_status.INACTIVE.name();
+						? CustomUtils.object_status.ALL.name()
+						: CustomUtils.object_status.INACTIVE.name();
 			}
 		}
 		response = roleRepository.findAllByQueryText(query, statusActive, practiceId, paging);
