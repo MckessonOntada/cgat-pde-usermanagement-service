@@ -50,10 +50,6 @@ public class User extends AuditColumns implements Serializable {
 	@Embedded
 	private Contact contact;
 
-	@NotNull(message = "Suffix must not be null")
-	@NotEmpty
-	private String suffix;
-
 	@Convert(converter = NumericBooleanConverter.class)
 	private Boolean isActive = false;
 

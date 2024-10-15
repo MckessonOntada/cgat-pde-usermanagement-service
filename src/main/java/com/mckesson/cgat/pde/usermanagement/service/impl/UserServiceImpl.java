@@ -1,6 +1,8 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.apache.coyote.BadRequestException;
@@ -8,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ReflectionUtils;
 
 import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
@@ -73,9 +76,22 @@ public class UserServiceImpl implements UserService {
 		return userRepository.findAllByQueryText(query, statusActive, paging,praciceId);
 	}
 
+
 	@Override
 	public Page<User> getAllUsers(Pageable pageable) {
 		return userRepository.findAll(pageable);
+	}
+
+	@Override
+	public User linkUserToAccount(Long userId, Map<String,Object> user) throws ResourceNotFoundException {
+		User userObj = userRepository.findById(userId)
+				.orElseThrow(() -> new ResourceNotFoundException(userId.toString()));
+		user.forEach((key ,value)->{
+		Field field = ReflectionUtils.findField(User.class, key);
+		field.setAccessible(true);
+		ReflectionUtils.setField(field, userObj, value);
+		});
+		return userRepository.save(userObj);
 	}
 
 }

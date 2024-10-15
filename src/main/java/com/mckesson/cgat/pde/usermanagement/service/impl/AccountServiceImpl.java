@@ -1,7 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.coyote.BadRequestException;
@@ -26,27 +25,21 @@ public class AccountServiceImpl implements AccountService {
 
 	@Override
 	public Account createAccount(Account account) throws BadRequestException {
-		Account createdAccount = accountRepository.save(account);
-		if (createdAccount == null)
-			throw new BadRequestException("Bad request..!!");
-		return createdAccount;
+		return accountRepository.save(account);
 	}
 
 	@Override
 	public Account updateAccount(Long accountId, Account obj) throws ResourceNotFoundException {
-		Account account = accountRepository.findById(accountId)
-				.orElseThrow(() -> new ResourceNotFoundException(accountId.toString()));
-		if (!Boolean.FALSE.equals(account.getIsActive()))
-			throw new ResourceNotFoundException(accountId.toString());
-		obj.setId(accountId);
+		Account account = getAccount(accountId);
+		if (account != null)
+			obj.setId(accountId);
 		return accountRepository.save(obj);
 	}
 
 	@Override
 	public Account getAccount(Long accountId) throws ResourceNotFoundException {
-		Optional<Account> account = Optional.of(accountRepository.findById(accountId)
-				.orElseThrow(() -> new ResourceNotFoundException(accountId.toString())));
-		return account.get();
+		return accountRepository.findById(accountId)
+				.orElseThrow(() -> new ResourceNotFoundException(accountId.toString()));
 	}
 
 	@Override
@@ -60,10 +53,10 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public Page<Account> findAll(Pageable paging, String query, List<String> status,String practiceId) {
+	public Page<Account> findAll(Pageable paging, String query, List<String> status, String practiceId) {
 		query = StringUtils.toRootLowerCase(query);
 		Page<Account> response;
-		String statusActive = "Active";
+		String statusActive = "ALL";
 		if (!CollectionUtils.isEmpty(status)) {
 			boolean hasActive = status.stream().anyMatch(i -> i.equalsIgnoreCase("ACTIVE"));
 			boolean hasInactive = status.stream().anyMatch(i -> i.equalsIgnoreCase("INACTIVE"));
@@ -74,7 +67,7 @@ public class AccountServiceImpl implements AccountService {
 			if (hasInactive)
 				statusActive = "ACTIVE".equals(statusActive) ? "ALL" : "INACTIVE";
 		}
-		response = accountRepository.findAllByQueryText(query, statusActive, paging,practiceId);
+		response = accountRepository.findAllByQueryText(query, statusActive, paging, Long.valueOf(practiceId));
 		return response;
 	}
 

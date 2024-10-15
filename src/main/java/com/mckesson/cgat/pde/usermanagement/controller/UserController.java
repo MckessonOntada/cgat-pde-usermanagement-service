@@ -1,6 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
@@ -12,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -31,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Tag(name = "Users", description = "Controller for Manages user-related operations and data.")
-@RequestMapping(path = "/practice/{praticeId}/users", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/practice/{practiceId}/users", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class UserController {
 
@@ -86,12 +88,19 @@ public class UserController {
 			@RequestParam(defaultValue = "first_name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder,
 			@RequestParam(required = false) String query,
-			@RequestParam(required = false) String praciceId,
+			@PathVariable(required = false) String practiceId,
 			@RequestParam(required = false) List<String> status) {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-		return userService.findAll(paging, query, status,praciceId);
+		return userService.findAll(paging, query, status,practiceId);
+
+	}
+	
+	@PatchMapping("/{userId}")
+	@Operation(summary = "Link user to account")
+	public User linkUserToAccount(@PathVariable Long userId, @RequestBody Map<String,Object> user) throws ResourceNotFoundException {
+		return userService.linkUserToAccount(userId, user);
 
 	}
 

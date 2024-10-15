@@ -7,6 +7,7 @@ import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.SequenceGenerator;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -24,12 +25,7 @@ import lombok.Setter;
 public class Name implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-
-//	@EmbeddedId
-//	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "name_sequence")
-//	@SequenceGenerator(name = "name_sequence", sequenceName = "name_sequence", allocationSize = 1)
-//	private Long id;
-
+	
 	@NotNull(message = "First name cannot be null")
 	@Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
 	private String firstName;
@@ -40,5 +36,10 @@ public class Name implements Serializable {
 	@NotNull(message = "First name cannot be null")
 	@Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
 	private String lastName;
+	
+	@NotNull(message = "Suffix must not be null")
+	@NotEmpty
+	private String suffix;
+
 
 }

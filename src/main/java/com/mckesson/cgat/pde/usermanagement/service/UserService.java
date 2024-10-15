@@ -1,6 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,8 @@ public interface UserService {
 	User createUser(User model) throws BadRequestException;
 
 	Page<User> getAllUsers(Pageable pageable);
+
+	User linkUserToAccount(Long userId, Map<String,Object> user) throws ResourceNotFoundException;
 
 
 }

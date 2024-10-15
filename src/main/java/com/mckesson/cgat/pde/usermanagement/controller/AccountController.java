@@ -27,6 +27,7 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -46,7 +47,7 @@ public class AccountController {
 	
 	@PostMapping
 	@Operation(summary = "Create new  account")
-	public ResponseEntity<Account> createAccount(@RequestBody Account account) throws BadRequestException {
+	public ResponseEntity<Account> createAccount(@Valid @RequestBody Account account) throws BadRequestException {
 		return new ResponseEntity<>(accountService.createAccount(account), HttpStatus.OK);
 
 	}
@@ -81,12 +82,14 @@ public class AccountController {
 			@RequestParam(defaultValue = "name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder,
 			@RequestParam(required = false) String query,
-			@RequestParam(required = false) String practiceId,
+			@PathVariable(required = false) String practiceId,
 			@RequestParam(required = false) List<String> status) {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 		return accountService.findAll(paging, query, status,practiceId);
 	}
+	
+	
 
 }

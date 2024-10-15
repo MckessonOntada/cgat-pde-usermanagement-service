@@ -62,7 +62,7 @@ CREATE TABLE role_permissions_mapping (
 
 CREATE TABLE IF NOT EXISTS "user"
 (
-    id        					INTEGER NOT NULL,
+    id        					INTEGER 		NOT NULL,
     practice_id					INTEGER,
     first_name  				VARCHAR(255) 	UNIQUE NOT NULL,
     middle_name 				VARCHAR(255),
@@ -106,13 +106,6 @@ CREATE TABLE IF NOT EXISTS user_account_mapping (
     account_id 					INTEGER NOT NULL,
     PRIMARY KEY 				(user_id, account_id)
 );
-
-CREATE TABLE IF NOT EXISTS account_user_maping (
-    account_id 					INTEGER NOT NULL,
-    user_id 					INTEGER NOT NULL,
-    PRIMARY KEY 				(account_id, user_id)
-);
-
 
 CREATE SEQUENCE USER_SEQUENCE START WITH 1 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE  CACHE 20;
     

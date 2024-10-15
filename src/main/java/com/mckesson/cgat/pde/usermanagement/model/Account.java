@@ -7,6 +7,7 @@ import org.hibernate.type.NumericBooleanConverter;
 
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -50,14 +51,13 @@ public class Account extends AuditColumns implements Serializable {
 	
 	private Long practiceId;
 
-	@NotEmpty
 	@Convert(converter = NumericBooleanConverter.class)
-	private Boolean isActive;
+	private Boolean isActive=false;
 
-	@ManyToMany
-	@JoinTable(name = "account_user_maping", // Name of the join table
-			joinColumns = @JoinColumn(name = "account_id"), // Foreign key from the current entity (User)
-			inverseJoinColumns = @JoinColumn(name = "user_id") // Foreign key from the other entity (Account)
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "user_account_mapping", // Name of the join table
+			joinColumns = @JoinColumn(name = "user_id"), // Foreign key from the current entity (User)
+			inverseJoinColumns = @JoinColumn(name = "account_id") // Foreign key from the other entity (Account)
 	)
 	private Set<User> user;
 
