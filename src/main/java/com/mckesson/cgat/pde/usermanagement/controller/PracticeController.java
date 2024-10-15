@@ -1,7 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,48 +80,47 @@ public class PracticeController {
 		}
 		practiceObj.setId(Long.valueOf(practiceId));
 		Practice practice = practiceService.createPractice(practiceObj, logo);
-		return ResponseEntity.status(HttpStatus.ACCEPTED).body(practice);
+		return ResponseEntity.status(HttpStatus.OK).body(practice);
 	}
 
 	@GetMapping("/{practiceId}")
-	@Operation(summary = "Fetch Practice Details")
-	public ResponseEntity<List<Practice>> getPractice(@PathVariable String practiceId)
+	@Operation(summary = "Get Practice by PracticeId")
+	public ResponseEntity<Practice> getPractice(@PathVariable String practiceId)
 			throws NumberFormatException, ResourceNotFoundException {
-		List<Practice> response = new ArrayList<>();
-
-		Practice practice = practiceService.getPractice(practiceId);
-		if (practice != null)
-			response.add(practice);
-
-		return new ResponseEntity<>(response, HttpStatus.OK);
+		return new ResponseEntity<>(practiceService.getPractice(practiceId), HttpStatus.OK);
 	}
 
 	@GetMapping
-	@Operation(summary = "Fetch AllPractices Details")
-	public ResponseEntity<List<Practice>> getAllPractice() throws NumberFormatException, ResourceNotFoundException {
-		return new ResponseEntity<>(practiceService.getAllPractices(), HttpStatus.OK);
+	@Operation(summary = "GetAll Practices")
+	public Page<Practice> getAllPractice(@RequestParam(defaultValue = "0") Integer pageNo,
+			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(defaultValue = "name") String sortBy,
+			@RequestParam(defaultValue = "20") Integer pageSize) {
+		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
+				: Sort.by(sortBy).descending();
+		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
+		return practiceService.getAllPractices(paging);
 	}
 
 	@DeleteMapping("/{practiceId}")
-	@Operation(summary = "Delete Practice Details")
+	@Operation(summary = "Delete Practice")
 	public ResponseEntity<String> deletePractice(@PathVariable String practiceId) throws ResourceNotFoundException {
-		String deletedPractice = practiceService.deletePractice(practiceId);
-		return ResponseEntity.status(HttpStatus.OK)
-			.body("Practice deleted successfully with name : " + deletedPractice);
+		if (Boolean.FALSE.equals(practiceService.deletePractice(practiceId)))
+			throw new ResourceNotFoundException(practiceId);
+		return new ResponseEntity<>(HttpStatus.OK);
 
 	}
 
-	@GetMapping("/filterPractices")
+	@GetMapping("/filter")
 	@Operation(summary = "Fetch all Practices based on filter provided with pagination capabilities.")
 	Page<Practice> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
-			@RequestParam(required = false) List<String> status, @RequestParam(required = false) List<String> roles) {
+			@RequestParam(required = false) List<String> status) {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 
-		return practiceService.findAll(paging, query, roles, status);
+		return practiceService.findAll(paging, query, status);
 	}
 
 }

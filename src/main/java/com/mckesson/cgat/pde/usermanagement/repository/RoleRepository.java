@@ -9,16 +9,33 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.mckesson.cgat.pde.usermanagement.model.Practice;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
 
-	@Query(nativeQuery = true, value = "select * from usermanagement.role where practice_id =:practiceId")
-	List<Role> findByPracticeId(Long practiceId);
+	// @Query(nativeQuery = true, value = "select * from usermanagement.role where
+	// practice_id =:practiceId")
+	List<Role> findByPracticeId(Practice practiceId);
 
-	@Query(nativeQuery = true, value = "SELECT * " + "FROM usermanagement.role "
-			+ "Where (:query is null or LOWER(name)  like %:query% or LOWER(description) like %:query% )")
-	public Page<Role> findAllByQueryText(@Param("query") String query, Pageable paging);
+	@Query(value = """
+			SELECT *
+			FROM usermanagement.role
+			where
+			(
+			:query is null
+			or LOWER(name) like %:query%
+			and
+			practice_id =:practiceId
+			and
+			(
+			(:status = 'ALL' and (is_active = 1 or is_active = 0))
+			or ('ACTIVE' = :status and is_active = 1 )
+			or ('INACTIVE' = :status and is_active = 0 )
+			)
+			)""", nativeQuery = true)
+	public Page<Role> findAllByQueryText(@Param("query") String query, @Param("status") String status,
+			@Param("practiceId") String practiceId, Pageable paging);
 
 }
