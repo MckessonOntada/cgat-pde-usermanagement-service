@@ -26,23 +26,24 @@ public class PracticeUtils {
 		this.objectMapper = objectMapper;
 	}
 
-//	public Practice mapDtoToEntity(PracticeDto dto) {
-//		return Practice.builder().name(dto.getPractice_name())
-//				.contactPerson(
-//						new Name(dto.getContact_first_name(), dto.getContact_middle_name(), dto.getContact_last_name()))
-//				.address(Address.builder().address1(dto.getAddress1()).address2(dto.getAddress2()).city(dto.getCity())
-//						.state(dto.getState()).zip(dto.getZip()).build())
-//				.contact(new Contact(dto.getEmail(), dto.getPhone_number(), dto.getFax()))
-//				.logoUrl(dto.getPractice_logo_url()).isActive(false).build();
-//	}
+	// public Practice mapDtoToEntity(PracticeDto dto) {
+	// return Practice.builder().name(dto.getPractice_name())
+	// .contactPerson(
+	// new Name(dto.getContact_first_name(), dto.getContact_middle_name(),
+	// dto.getContact_last_name()))
+	// .address(Address.builder().address1(dto.getAddress1()).address2(dto.getAddress2()).city(dto.getCity())
+	// .state(dto.getState()).zip(dto.getZip()).build())
+	// .contact(new Contact(dto.getEmail(), dto.getPhone_number(), dto.getFax()))
+	// .logoUrl(dto.getPractice_logo_url()).isActive(false).build();
+	// }
 
 	public String uploadLogo(MultipartFile file) throws IllegalStateException, IOException {
 		File directory = new File(
 				System.getProperty("user.dir") + "/src/main/resources/static/" + file.getOriginalFilename());
 		// Create the directory if it doesn't exist
-//		if (!directory.exists())
-//			directory.mkdirs();
-//		file.transferTo(directory);
+		// if (!directory.exists())
+		// directory.mkdirs();
+		// file.transferTo(directory);
 		return directory.getPath();
 	}
 

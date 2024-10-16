@@ -54,4 +54,5 @@ public class Practice extends AuditColumns implements Serializable {
 	@Convert(converter = NumericBooleanConverter.class)
 	@JsonIgnore
 	private Boolean isActive;
+
 }

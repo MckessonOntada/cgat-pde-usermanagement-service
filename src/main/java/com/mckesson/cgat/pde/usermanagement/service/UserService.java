@@ -17,12 +17,10 @@ public interface UserService {
 
 	void deleteUser(Long userId) throws ResourceNotFoundException;
 
-	Page<User> findAll(Pageable paging, String query, List<String> status,String praciceId);
+	Page<User> findAll(Pageable paging, String query, List<String> status, String praciceId);
 
 	User updateUser(Long userId, User model) throws ResourceNotFoundException;
 
-	User createUser(User model) throws BadRequestException;
-
-
+	User createUser(User model);
 
 }

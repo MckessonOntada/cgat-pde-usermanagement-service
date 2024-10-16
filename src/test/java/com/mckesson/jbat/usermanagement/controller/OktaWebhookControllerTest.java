@@ -19,53 +19,55 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class OktaWebhookControllerTest extends AbstractTest {
 
-    @InjectMocks
-    private OktaWebhookController controller;
-    @Mock
-    private OktaUserWebhookService service;
+	@InjectMocks
+	private OktaWebhookController controller;
 
-    @BeforeEach
-    public void setup() {
-        MockitoAnnotations.initMocks(this);
-        this.mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
-    }
+	@Mock
+	private OktaUserWebhookService service;
 
-    @Test
-    void handleTokenHook() throws Exception {
-        ResultActions response = mockMvc.perform(post("/inlineHooks/handleTokenHook")
-                .content(getOktaInlineTokenHookRequest())
-                .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-                .header("x-okta-auth", "YWRtaW5AMTIz"));
-        response.andExpect(status().isOk());
-        String content = response.andReturn().getResponse().getContentAsString();
-        assertTrue(content.equals("{}"));
-    }
+	@BeforeEach
+	public void setup() {
+		MockitoAnnotations.initMocks(this);
+		this.mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+	}
 
-    @Test
-    void handleTokenHook_InvalidToken() throws Exception {
-        ResultActions response = mockMvc.perform(post("/inlineHooks/handleTokenHook")
-                .content(getOktaInlineTokenHookRequest())
-                .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-                .header("x-okta-auth", "YWRtaW5AMTIz_L"));
-        response.andExpect(status().isOk());
-        String content = response.andReturn().getResponse().getContentAsString();
-        assertTrue(content.equals("{}"));
+	@Test
+	void handleTokenHook() throws Exception {
+		ResultActions response = mockMvc
+			.perform(post("/inlineHooks/handleTokenHook").content(getOktaInlineTokenHookRequest())
+				.contentType(MediaType.APPLICATION_JSON)
+				.header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+				.header("x-okta-auth", "YWRtaW5AMTIz"));
+		response.andExpect(status().isOk());
+		String content = response.andReturn().getResponse().getContentAsString();
+		assertTrue(content.equals("{}"));
+	}
 
-    }
+	@Test
+	void handleTokenHook_InvalidToken() throws Exception {
+		ResultActions response = mockMvc
+			.perform(post("/inlineHooks/handleTokenHook").content(getOktaInlineTokenHookRequest())
+				.contentType(MediaType.APPLICATION_JSON)
+				.header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+				.header("x-okta-auth", "YWRtaW5AMTIz_L"));
+		response.andExpect(status().isOk());
+		String content = response.andReturn().getResponse().getContentAsString();
+		assertTrue(content.equals("{}"));
 
-    @Test
-    void testHandleTokenHook() throws Exception {
-        ResultActions response = mockMvc.perform(get("/inlineHooks/handleTokenHook")
-                .content(getOktaInlineTokenHookRequest())
-                .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-                .header("x-okta-verification-challenge", "abcdef123456"));
-        response.andExpect(status().isOk());
-    }
-    private String getOktaInlineTokenHookRequest() {
-        return "{\"test\":\"test value\"}";
-    }
+	}
+
+	@Test
+	void testHandleTokenHook() throws Exception {
+		ResultActions response = mockMvc
+			.perform(get("/inlineHooks/handleTokenHook").content(getOktaInlineTokenHookRequest())
+				.contentType(MediaType.APPLICATION_JSON)
+				.header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+				.header("x-okta-verification-challenge", "abcdef123456"));
+		response.andExpect(status().isOk());
+	}
+
+	private String getOktaInlineTokenHookRequest() {
+		return "{\"test\":\"test value\"}";
+	}
 
 }

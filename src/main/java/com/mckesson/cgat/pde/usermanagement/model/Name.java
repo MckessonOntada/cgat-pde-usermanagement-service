@@ -25,7 +25,7 @@ import lombok.Setter;
 public class Name implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	@NotNull(message = "First name cannot be null")
 	@Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
 	private String firstName;
@@ -36,10 +36,9 @@ public class Name implements Serializable {
 	@NotNull(message = "First name cannot be null")
 	@Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
 	private String lastName;
-	
+
 	@NotNull(message = "Suffix must not be null")
 	@NotEmpty
 	private String suffix;
-
 
 }

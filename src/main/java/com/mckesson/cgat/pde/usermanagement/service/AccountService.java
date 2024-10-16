@@ -14,16 +14,14 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 @Service
 public interface AccountService {
 
-
 	Account getAccount(Long accountId) throws ResourceNotFoundException;
 
 	void deleteAccount(Long accountId) throws ResourceNotFoundException;
 
-	Page<Account> findAll(Pageable paging, String query, List<String> status,String practiceId);
+	Page<Account> findAll(Pageable paging, String query, List<String> status, String practiceId);
 
 	Account createAccount(Account account) throws BadRequestException;
 
 	Account updateAccount(Long accountId, Account account) throws ResourceNotFoundException;
 
-	
 }

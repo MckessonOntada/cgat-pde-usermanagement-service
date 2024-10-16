@@ -11,16 +11,24 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-public class IdentityProviderMetaData implements Serializable{
+public class IdentityProviderMetaData implements Serializable {
 
 	private static final long serialVersionUID = -492052672419412275L;
+
 	private String baseUrl;
+
 	private String protocol;
+
 	private String authServerId;
+
 	private String clientId;
+
 	private String redirectUri;
-	private String endSessionRedirectUri;	
+
+	private String endSessionRedirectUri;
+
 	private String scopes;
-	private Map<String,String> state=new HashMap<>();
-	
+
+	private Map<String, String> state = new HashMap<>();
+
 }

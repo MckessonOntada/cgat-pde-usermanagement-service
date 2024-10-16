@@ -35,8 +35,8 @@ import lombok.extern.slf4j.Slf4j;
  * Controller providing open API endpoints for direct and unauthenticated public
  * interaction.
  *
- * Note: As this controller does not require authentication, ensure that
- * sensitive operations and data are not exposed through this API.
+ * Note: As this controller does not require authentication, ensure that sensitive
+ * operations and data are not exposed through this API.
  */
 @ComponentScan(basePackages = "com.mckesson.jbat.auth.module")
 @RestController
@@ -48,6 +48,7 @@ public class PublicAccessController {
 
 	@Autowired
 	private IDPService idpService;
+
 	@Autowired
 	JWTExtractor bearerJWTExtractor;
 
@@ -74,9 +75,14 @@ public class PublicAccessController {
 			List<String> permissions = payload.get(PERMISSION_CLAIM).asList(String.class);
 			String userName = payload.get(USER_NAME_CLAIM).asString();
 			String userId = payload.get(USER_CLAIM).asString();
-			return JwtResponseDto.builder().roles(roleNames).permissions(permissions).userName(userName).userId(userId)
-					.build();
+			return JwtResponseDto.builder()
+				.roles(roleNames)
+				.permissions(permissions)
+				.userName(userName)
+				.userId(userId)
+				.build();
 		}
 		return null;
 	}
+
 }

@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PracticeServiceImpl implements PracticeService {
 
 	private final PracticeUtils practiceUtils;
+
 	private final PracticeRepository practiceRepository;
 
 	public PracticeServiceImpl(PracticeUtils practiceUtils, PracticeRepository practiceRepository) {
@@ -64,7 +65,8 @@ public class PracticeServiceImpl implements PracticeService {
 
 	@Override
 	public Page<Practice> findAll(Pageable paging, String query, List<String> roles, List<String> status) {
-//        log.info("Searching practices based on filter query:{},  roles:{}", query, roles);
+		// log.info("Searching practices based on filter query:{}, roles:{}", query,
+		// roles);
 		query = StringUtils.toRootLowerCase(query);
 		Page<Practice> response;
 		String statusActive = "ALL";

@@ -2,7 +2,6 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import java.util.List;
 
-import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +29,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@Tag(name = "Users", description = "Controller for Manages user-related operations and data.")
+@Tag(name = "Users", description = "Controller for Managing user-related operations and data.")
 @RequestMapping(path = "/practice/{practiceId}/users", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class UserController {
@@ -45,7 +44,7 @@ public class UserController {
 
 	@PostMapping
 	@Operation(summary = "Create new user")
-	public ResponseEntity<User> createUser(@Valid @RequestBody User model) throws BadRequestException {
+	public ResponseEntity<User> createUser(@Valid @RequestBody User model) {
 		return new ResponseEntity<>(userService.createUser(model), HttpStatus.OK);
 
 	}

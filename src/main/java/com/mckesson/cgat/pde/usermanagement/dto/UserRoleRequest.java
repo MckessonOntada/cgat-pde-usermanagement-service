@@ -13,22 +13,22 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 public class UserRoleRequest {
-	
-    @NotNull(message = "Name must not be null")
-    private String  displayName;
-    
-    @NotNull(message = "User email must not be null")
-    @Email
-    private String  email;
 
-    @NotNull(message = "Roles must not be null")
-    @NotEmpty
-    private List<String> roles;
+	@NotNull(message = "Name must not be null")
+	private String displayName;
 
-    @NotNull(message = "Status must not be null")
-    private String status;
+	@NotNull(message = "User email must not be null")
+	@Email
+	private String email;
 
-    private Set<String> validationMessages= new HashSet<>();
+	@NotNull(message = "Roles must not be null")
+	@NotEmpty
+	private List<String> roles;
+
+	@NotNull(message = "Status must not be null")
+	private String status;
+
+	private Set<String> validationMessages = new HashSet<>();
 
 	public UserRoleRequest(@NotNull(message = "Name must not be null") String displayName,
 			@NotNull(message = "User email must not be null") @Email String email,
@@ -40,5 +40,5 @@ public class UserRoleRequest {
 		this.roles = roles;
 		this.status = status;
 	}
-	
+
 }

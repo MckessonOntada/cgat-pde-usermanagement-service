@@ -30,12 +30,15 @@ import lombok.Setter;
 public class Account extends AuditColumns implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+
 	private static final String SEQUENCE_GENERATOR_NAME = "ACCOUNT_SEQUENCE";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = SEQUENCE_GENERATOR_NAME)
 	@SequenceGenerator(name = SEQUENCE_GENERATOR_NAME, sequenceName = SEQUENCE_GENERATOR_NAME, allocationSize = 1)
 	private Long id;
+
+	private Long practiceId;
 
 	@NotNull(message = "Name must not be null")
 	@NotEmpty
@@ -48,17 +51,18 @@ public class Account extends AuditColumns implements Serializable {
 	@NotNull(message = "Dc name must not be null")
 	@NotEmpty
 	private String dcName;
-	
-	private Long practiceId;
-
-	@Convert(converter = NumericBooleanConverter.class)
-	private Boolean isActive=false;
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "user_account_mapping", // Name of the join table
-			joinColumns = @JoinColumn(name = "user_id"), // Foreign key from the current entity (User)
-			inverseJoinColumns = @JoinColumn(name = "account_id") // Foreign key from the other entity (Account)
+			joinColumns = @JoinColumn(name = "user_id"), // Foreign key from the current
+															// entity (User)
+			inverseJoinColumns = @JoinColumn(name = "account_id") // Foreign key from the
+																	// other entity
+																	// (Account)
 	)
 	private Set<User> user;
+
+	@Convert(converter = NumericBooleanConverter.class)
+	private Boolean isActive = false;
 
 }

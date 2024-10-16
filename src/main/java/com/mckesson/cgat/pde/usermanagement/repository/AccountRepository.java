@@ -26,4 +26,5 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 			))""")
 	Page<Account> findAllByQueryText(@Param("query") String query, @Param("status") String status, Pageable paging,
 			@Param("pacticeId") long pacticeId);
+
 }

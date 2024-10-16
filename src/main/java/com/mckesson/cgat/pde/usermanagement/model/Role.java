@@ -50,6 +50,8 @@ public class Role extends AuditColumns implements Serializable {
 	private Practice practiceId;
 
 	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-	@JoinTable(name = "role_permissions_mapping", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "permission_id"))
+	@JoinTable(name = "role_permissions_mapping", joinColumns = @JoinColumn(name = "role_id"),
+			inverseJoinColumns = @JoinColumn(name = "permission_id"))
 	private Set<Permission> permissions;
+
 }

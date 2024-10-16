@@ -11,23 +11,25 @@ import com.mckesson.cgat.pde.usermanagement.model.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+
 	@Query(nativeQuery = true, value = """
 			SELECT *
 			FROM usermanagement.user
 			WHERE
 			(
-			:query IS NULL
-			OR LOWER(city) LIKE %:query%
-			OR LOWER(state) LIKE %:query%
-			OR LOWER(first_name) LIKE %:query%
-			AND
-			practice_id =:practiceId
-			AND
-			(
-			(:status = 'ALL' AND (is_active = 1 OR is_active = 0))
-			OR ('ACTIVE' = :status AND is_active = 1)
-			OR ('INACTIVE' = :status AND is_active = 0)
-			)""")
+				(   :query IS NULL
+					OR LOWER(city) LIKE %:query%
+					OR LOWER(state) LIKE %:query%
+					OR LOWER(first_name) LIKE %:query%
+				)
+				AND practice_id =:practiceId
+				AND (
+					(:status = 'ALL' AND (is_active = 1 OR is_active = 0))
+					OR ('ACTIVE' = :status AND is_active = 1)
+					OR ('INACTIVE' = :status AND is_active = 0)
+					)
+			 )
+			   """)
 	Page<User> findAllByQueryText(@Param("query") String query, @Param("status") String status, Pageable paging,
 			@Param("practiceId") String practiceId);
 

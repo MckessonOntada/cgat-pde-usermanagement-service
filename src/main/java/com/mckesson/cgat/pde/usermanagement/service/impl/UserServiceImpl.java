@@ -24,7 +24,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User createUser(User model) throws BadRequestException {
+	public User createUser(User model) {
 		return userRepository.save(model);
 
 	}
@@ -39,22 +39,18 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User getUser(Long userId) throws ResourceNotFoundException {
-		Optional<User> user = Optional.of(
-				userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(userId.toString())));
-		return user.get();
+		return userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(userId.toString()));
 	}
 
 	@Override
 	public void deleteUser(Long userId) throws ResourceNotFoundException {
 		User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(userId.toString()));
-		if (Boolean.FALSE.equals(user.getIsActive()))
-			throw new ResourceNotFoundException(userId.toString());
 		user.setIsActive(false);
 		userRepository.save(user);
 	}
 
 	@Override
-	public Page<User> findAll(Pageable paging, String query, List<String> status, String praciceId) {
+	public Page<User> findAll(Pageable paging, String query, List<String> status, String praticeId) {
 		String statusActive = "ALL";
 
 		if (!CollectionUtils.isEmpty(status)) {
@@ -67,7 +63,7 @@ public class UserServiceImpl implements UserService {
 			if (hasInactive)
 				statusActive = "ACTIVE".equals(statusActive) ? "ALL" : "INACTIVE";
 		}
-		return userRepository.findAllByQueryText(query, statusActive, paging, praciceId);
+		return userRepository.findAllByQueryText(query, statusActive, paging, praticeId);
 	}
 
 }

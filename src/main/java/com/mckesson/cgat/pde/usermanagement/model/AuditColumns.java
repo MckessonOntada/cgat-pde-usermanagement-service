@@ -39,7 +39,7 @@ public abstract class AuditColumns implements Serializable {
 
 	@Column(name = "CREATED_BY")
 	@CreatedBy
-//	@Temporal(TemporalType.TIMESTAMP)
+	// @Temporal(TemporalType.TIMESTAMP)
 	@JsonIgnore
 	private String createdBy;
 
@@ -51,7 +51,7 @@ public abstract class AuditColumns implements Serializable {
 
 	@Column(name = "UPDATED_BY")
 	@LastModifiedBy
-//	@Temporal(TemporalType.TIMESTAMP)
+	// @Temporal(TemporalType.TIMESTAMP)
 	@JsonIgnore
 	private String updatedBy;
 
@@ -77,4 +77,5 @@ public abstract class AuditColumns implements Serializable {
 		}
 		this.updatedDate = Date.from(Instant.now());
 	}
+
 }

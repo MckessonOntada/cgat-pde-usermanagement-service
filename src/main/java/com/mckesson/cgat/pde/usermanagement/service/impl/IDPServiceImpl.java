@@ -28,7 +28,7 @@ public class IDPServiceImpl implements IDPService {
 	/**
 	 * Retrieve the OKTA config from the properties file and load it into a
 	 * IdentityProviderMetaData.
-	 * 
+	 *
 	 */
 	private IdentityProviderMetaData getOktaIDPConfig() {
 		IdentityProviderMetaData idpProviderMetaData = new IdentityProviderMetaData();
@@ -42,4 +42,5 @@ public class IDPServiceImpl implements IDPService {
 		idpProviderMetaData.setAuthServerId(appPropertiesConfig.getAuthServerId());
 		return idpProviderMetaData;
 	}
+
 }

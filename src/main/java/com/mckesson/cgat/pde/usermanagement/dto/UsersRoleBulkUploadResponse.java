@@ -6,8 +6,9 @@ import lombok.Data;
 
 @Data
 public class UsersRoleBulkUploadResponse {
-	
+
 	private List<UserRoleRequest> records;
+
 	private boolean hasErrors;
 
 }

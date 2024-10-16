@@ -14,8 +14,8 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 @Service
 public interface PracticeService {
 
-//	String createOrUpdatePractice(MultipartFile logo, String data)
-//			throws IllegalStateException, IOException, ResourceNotFoundException;
+	// String createOrUpdatePractice(MultipartFile logo, String data)
+	// throws IllegalStateException, IOException, ResourceNotFoundException;
 
 	Practice getPractice(String id) throws ResourceNotFoundException;
 
@@ -27,5 +27,7 @@ public interface PracticeService {
 
 	Practice createPractice(Practice practice, MultipartFile logo) throws IllegalStateException, IOException;
 
-//	Practice updatePractice(Practice practice, MultipartFile logo) throws IllegalStateException, IOException;
+	// Practice updatePractice(Practice practice, MultipartFile logo) throws
+	// IllegalStateException, IOException;
+
 }

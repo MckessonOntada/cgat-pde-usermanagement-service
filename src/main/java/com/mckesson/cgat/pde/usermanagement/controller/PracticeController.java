@@ -91,7 +91,8 @@ public class PracticeController {
 		List<Practice> response = new ArrayList<>();
 		if (practiceId == null || practiceId.equals("null")) {
 			response = practiceService.getAllPractices();
-		} else {
+		}
+		else {
 			Practice practice = practiceService.getPractice(practiceId);
 			if (practice != null)
 				response.add(practice);
@@ -104,7 +105,7 @@ public class PracticeController {
 	public ResponseEntity<String> deletePractice(@PathVariable String practiceId) throws ResourceNotFoundException {
 		String deletedPractice = practiceService.deletePractice(practiceId);
 		return ResponseEntity.status(HttpStatus.OK)
-				.body("Practice deleted successfully with name : " + deletedPractice);
+			.body("Practice deleted successfully with name : " + deletedPractice);
 
 	}
 

@@ -42,6 +42,8 @@ public class User extends AuditColumns implements Serializable {
 	@SequenceGenerator(name = SEQUENCE_GENERATOR_NAME, sequenceName = SEQUENCE_GENERATOR_NAME, allocationSize = 1)
 	private Long id;
 
+	private Long practiceId;
+
 	@Valid
 	@Embedded
 	private Name name;
@@ -50,20 +52,16 @@ public class User extends AuditColumns implements Serializable {
 	@Embedded
 	private Contact contact;
 
-	@Convert(converter = NumericBooleanConverter.class)
-	private Boolean isActive = false;
-
 	@Valid
 	@Embedded
 	private Address address;
 
 	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "user_account_mapping", // Name of the join table
-			joinColumns = @JoinColumn(name = "user_id"), // Foreign key from the current entity (User)
-			inverseJoinColumns = @JoinColumn(name = "account_id") // Foreign key from the other entity (Account)
-	)
+	@JoinTable(name = "user_account_mapping", joinColumns = @JoinColumn(name = "user_id"),
+			inverseJoinColumns = @JoinColumn(name = "account_id"))
 	private Set<Account> account;
 
-	private Long practiceId;
+	@Convert(converter = NumericBooleanConverter.class)
+	private Boolean isActive = false;
 
 }
