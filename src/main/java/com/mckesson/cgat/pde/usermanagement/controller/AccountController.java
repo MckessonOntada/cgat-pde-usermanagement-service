@@ -8,7 +8,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -44,9 +43,8 @@ public class AccountController {
 		this.accountService = accountService;
 	}
 
-	
 	@PostMapping
-	@Operation(summary = "Create new  account")
+	@Operation(summary = "Create new account")
 	public ResponseEntity<Account> createAccount(@Valid @RequestBody Account account) throws BadRequestException {
 		return new ResponseEntity<>(accountService.createAccount(account), HttpStatus.OK);
 
@@ -54,8 +52,9 @@ public class AccountController {
 
 	@PutMapping("/{accountId}")
 	@Operation(summary = "Update existing account")
-	public Account updateAccount(@PathVariable Long accountId, @RequestBody Account account) throws ResourceNotFoundException {
-		return accountService.updateAccount(accountId ,account);
+	public Account updateAccount(@PathVariable Long accountId, @RequestBody Account account)
+			throws ResourceNotFoundException {
+		return accountService.updateAccount(accountId, account);
 
 	}
 
@@ -68,7 +67,7 @@ public class AccountController {
 	}
 
 	@DeleteMapping("/{accountId}")
-	@Operation(summary = "Delete account details")
+	@Operation(summary = "Delete account details byId")
 	public ResponseEntity<String> deleteAccount(@PathVariable Long accountId) throws ResourceNotFoundException {
 		accountService.deleteAccount(accountId);
 		return new ResponseEntity<>(HttpStatus.OK);
@@ -78,18 +77,13 @@ public class AccountController {
 	@GetMapping
 	@Operation(summary = "Fetch all Accounts based on filter provided with pagination capabilities.")
 	Page<Account> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
-			@RequestParam(defaultValue = "20") Integer pageSize,
-			@RequestParam(defaultValue = "name") String sortBy,
-			@RequestParam(defaultValue = "asc") String sortOrder,
-			@RequestParam(required = false) String query,
-			@PathVariable(required = false) String practiceId,
-			@RequestParam(required = false) List<String> status) {
+			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "name") String sortBy,
+			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
+			@PathVariable(required = false) String practiceId, @RequestParam(required = false) List<String> status) {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-		return accountService.findAll(paging, query, status,practiceId);
+		return accountService.findAll(paging, query, status, practiceId);
 	}
-	
-	
 
 }

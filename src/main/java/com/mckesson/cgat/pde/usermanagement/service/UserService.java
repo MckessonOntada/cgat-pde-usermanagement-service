@@ -15,7 +15,7 @@ public interface UserService {
 
 	User getUser(Long userId) throws ResourceNotFoundException;
 
-	void deleteUsers(Long userId) throws ResourceNotFoundException;
+	void deleteUser(Long userId) throws ResourceNotFoundException;
 
 	Page<User> findAll(Pageable paging, String query, List<String> status,String praciceId);
 
@@ -23,9 +23,6 @@ public interface UserService {
 
 	User createUser(User model) throws BadRequestException;
 
-	Page<User> getAllUsers(Pageable pageable);
-
-	User linkUserToAccount(Long userId, Map<String,Object> user) throws ResourceNotFoundException;
 
 
 }
