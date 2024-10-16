@@ -19,6 +19,6 @@ public interface RoleService {
 
 	List<Permission> getAllPermissions();
 
-	Page<Role> findAll(Pageable paging, String query);
+	Page<Role> findAll(Pageable paging, String query, List<String> status);
 
 }

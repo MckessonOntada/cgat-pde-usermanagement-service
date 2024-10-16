@@ -1,9 +1,10 @@
-CREATE TABLE  USERS
+CREATE TABLE   if not exists User
 (
-    ID          VARCHAR(50) NOT NULL,
-    EMAIL       VARCHAR(250) UNIQUE NOT NULL,
-    DISPLAY_NAME VARCHAR(250) NOT NULL,
-    IS_ACTIVE		       integer	 							      NOT NULL,
+    ID          		VARCHAR(50) 
+    PRACTICE_ID			INTEGER												NOT NULL,
+    EMAIL       		VARCHAR(250) 										UNIQUE NOT NULL,
+    DISPLAY_NAME 		VARCHAR(250) 										NOT NULL,
+    IS_ACTIVE		    integer	 											NOT NULL,
     CREATED_BY			VARCHAR(50) 										,
     CREATED_DATE		TIMESTAMP(6) 	DEFAULT		CURRENT_TIMESTAMP	    NOT NULL,
     UPDATED_BY			VARCHAR(50)										,
@@ -13,7 +14,7 @@ CREATE TABLE  USERS
 
 
 CREATE TABLE ROLE (
-                      ID					VARCHAR(50)	 NOT NULL,
+    				  ID					VARCHAR(50)	 NOT NULL,
                       NAME		    VARCHAR(50)	  NOT NULL,
                       LABEL   VARCHAR(250)  NOT NULL,
                       ROLE_TYPE           VARCHAR(50)	 							      NOT NULL,

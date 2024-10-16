@@ -16,6 +16,8 @@ import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
 import com.mckesson.cgat.pde.usermanagement.service.RoleService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
+import org.springframework.util.CollectionUtils;
+
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -52,7 +54,7 @@ public class RoleServiceImpl implements RoleService {
 		Optional<Practice> byId = practiceRepository.findById(Long.valueOf(practiceId));
 		if (!byId.isPresent())
 			throw new ResourceNotFoundException("Practice not found with id:" + practiceId);
-		return roleRepository.findByPracticeId(Long.valueOf(practiceId));
+		return roleRepository.findByPracticeId(practiceId);
 	}
 
 	@Override
@@ -61,10 +63,19 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	@Override
-	public Page<Role> findAll(Pageable paging, String query) {
+	public Page<Role> findAll(Pageable paging, String query, List<String> status) {
 		query = StringUtils.toRootLowerCase(query);
 		Page<Role> response;
-		response = roleRepository.findAllByQueryText(query, paging);
+		String statusActive = "ALL";
+		if (!CollectionUtils.isEmpty(status)) {
+			if (status.stream().anyMatch(i -> i.equalsIgnoreCase("ACTIVE"))) {
+				statusActive = "ACTIVE";
+			}
+			if (status.stream().anyMatch(i -> i.equalsIgnoreCase("INACTIVE"))) {
+				statusActive = "ACTIVE".equals(statusActive) ? "ALL" : "INACTIVE";
+			}
+		}
+		response = roleRepository.findAllByQueryText(query, statusActive, paging);
 		return response;
 	}
 

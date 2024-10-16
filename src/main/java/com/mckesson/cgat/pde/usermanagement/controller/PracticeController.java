@@ -89,11 +89,14 @@ public class PracticeController {
 	public ResponseEntity<List<Practice>> getPractice(@PathVariable String practiceId)
 			throws NumberFormatException, ResourceNotFoundException {
 		List<Practice> response = new ArrayList<>();
-
-		Practice practice = practiceService.getPractice(practiceId);
-		if (practice != null)
-			response.add(practice);
-
+		if (practiceId == null || practiceId.equals("null")) {
+			response = practiceService.getAllPractices();
+		}
+		else {
+			Practice practice = practiceService.getPractice(practiceId);
+			if (practice != null)
+				response.add(practice);
+		}
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 

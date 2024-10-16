@@ -2,7 +2,6 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import java.util.List;
 
-import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,68 +19,67 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mckesson.cgat.pde.usermanagement.model.Users;
+import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@Tag(name = "Users", description = "Controller for Manages user-related operations and data.")
-@RequestMapping(path = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
+@Tag(name = "Users", description = "Controller for Managing user-related operations and data.")
+@RequestMapping(path = "/practice/{practiceId}/users", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class UserController {
 
-	private final UserService userModelService;
+	private final UserService userService;
 
 	private static final String SORT_ORDER_ASC = "asc";
 
 	public UserController(UserService userModelService) {
-		this.userModelService = userModelService;
+		this.userService = userModelService;
 	}
 
 	@PostMapping
 	@Operation(summary = "Create new user")
-	public ResponseEntity<Object> createUser(@RequestBody Users model) throws BadRequestException {
-		return new ResponseEntity<>(userModelService.createUser(model), HttpStatus.OK);
+	public ResponseEntity<User> createUser(@Valid @RequestBody User model) {
+		return new ResponseEntity<>(userService.createUser(model), HttpStatus.OK);
 
 	}
 
 	@PutMapping("/{userId}")
-	@Operation(summary = "Update existing user details")
-	public void updateUser(@PathVariable Long userId, @RequestBody Users model) throws ResourceNotFoundException {
-		userModelService.updateUser(userId, model);
+	@Operation(summary = "Update existing user details byId")
+	public User updateUser(@PathVariable Long userId, @RequestBody User model) throws ResourceNotFoundException {
+		return userService.updateUser(userId, model);
 
 	}
 
 	@GetMapping("/{userId}")
 	@Operation(summary = "Get user details byId ")
-	public ResponseEntity<Object> users(@PathVariable Long userId) throws ResourceNotFoundException {
-		List<Users> users = userModelService.users(userId);
-		return new ResponseEntity<>(users, HttpStatus.OK);
-
+	public ResponseEntity<User> getUser(@PathVariable Long userId) throws ResourceNotFoundException {
+		return new ResponseEntity<>(userService.getUser(userId), HttpStatus.OK);
 	}
 
 	@DeleteMapping("/{userId}")
-	@Operation(summary = "Delete user details")
-	public void deleteUsers(@PathVariable Long userId) throws ResourceNotFoundException {
-		userModelService.deleteUsers(userId);
+	@Operation(summary = "Delete user details byId")
+	public void deleteUser(@PathVariable Long userId) throws ResourceNotFoundException {
+		userService.deleteUser(userId);
 
 	}
 
 	@GetMapping
 	@Operation(summary = "Fetch all Users based on filter provided with pagination capabilities.")
-	Page<Users> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
+	Page<User> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(defaultValue = "first_name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
-			@RequestParam(required = false) List<String> status) {
+			@PathVariable(required = false) String practiceId, @RequestParam(required = false) List<String> status) {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-		return userModelService.findAll(paging, query, status);
+		return userService.findAll(paging, query, status, practiceId);
 
 	}
 

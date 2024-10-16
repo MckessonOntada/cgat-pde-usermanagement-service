@@ -3,7 +3,7 @@ package com.mckesson.jbat.usermanagement.mapper;
 import com.mckesson.cgat.pde.usermanagement.dto.UserResponse;
 import com.mckesson.cgat.pde.usermanagement.mapper.Transformer;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
-import com.mckesson.cgat.pde.usermanagement.model.Users;
+import com.mckesson.cgat.pde.usermanagement.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -25,7 +25,7 @@ public class TransformerTest {
 
 	@Test
 	public void testToUserDto() {
-		Users user = new Users();
+		User user = new User();
 		Role role1 = new Role();
 		role1.setName("SYSTEM_ADMIN");
 		role1.setLabel("System Admin");
