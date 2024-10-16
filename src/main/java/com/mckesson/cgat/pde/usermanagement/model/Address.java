@@ -5,6 +5,7 @@ import java.io.Serializable;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,7 +38,7 @@ public class Address implements Serializable {
 	private String state;
 
 	@NotNull(message = "zip cannot be null")
-	@NotEmpty(message = "zip cannot be empty")
+	@Pattern(regexp = "^\\d{5}", message = "Zip code must be 5 digits")
 	private String zip;
 
 }

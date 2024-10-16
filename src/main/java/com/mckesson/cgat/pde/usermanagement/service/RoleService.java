@@ -15,10 +15,9 @@ public interface RoleService {
 
 	Role createOrUpdateRole(Role role, String practiceId) throws ResourceNotFoundException;
 
-	List<Role> getRolesByPracticeId(String practiceId) throws ResourceNotFoundException;
+	Role getRole(String roleId) throws ResourceNotFoundException;
 
 	List<Permission> getAllPermissions();
 
-	Page<Role> findAll(Pageable paging, String query, List<String> status);
-
+	Page<Role> findAll(Pageable paging, String query, String practiceId, List<String> status);
 }

@@ -22,13 +22,6 @@ public class Name implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	// @EmbeddedId
-	// @GeneratedValue(strategy = GenerationType.SEQUENCE, generator =
-	// "name_sequence")
-	// @SequenceGenerator(name = "name_sequence", sequenceName = "name_sequence",
-	// allocationSize = 1)
-	// private Long id;
-
 	@NotNull(message = "First name cannot be null")
 	@Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
 	private String firstName;

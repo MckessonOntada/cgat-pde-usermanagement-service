@@ -2,7 +2,6 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
 import com.mckesson.cgat.pde.usermanagement.service.RoleService;
+import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,14 +30,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @Tag(name = "roles", description = "Controller for Manages role/permission related operations and data.")
-@RequestMapping(path = "/practice/{practiceId}/role", produces = MediaType.APPLICATION_JSON_VALUE,
-		consumes = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/practice/{practiceId}/roles", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+
 public class RoleController {
 
-	private static final String SORT_ORDER_ASC = "asc";
+	private final RoleService roleService;
 
-	@Autowired
-	RoleService roleService;
+	public RoleController(RoleService roleService) {
+		this.roleService = roleService;
+	}
 
 	@PostMapping
 	@Operation(summary = "Create Role")
@@ -46,37 +47,40 @@ public class RoleController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(roleService.createOrUpdateRole(role, practiceId));
 	}
 
-	@PutMapping("/role/{roleId}")
+	@PutMapping("/{roleId}")
 	@Operation(summary = "Update Role / Add permissions to Role")
-	public ResponseEntity<Role> updateRole(@Validated @RequestBody Role role, @PathVariable String practiceId)
-			throws ResourceNotFoundException {
-		return ResponseEntity.status(HttpStatus.ACCEPTED).body(roleService.createOrUpdateRole(role, practiceId));
+	public ResponseEntity<Role> updateRole(@Validated @RequestBody Role role, @PathVariable String practiceId,
+			@PathVariable String roleId) throws ResourceNotFoundException {
+		Role roleObj = roleService.getRole(roleId);
+		if (roleObj == null)
+			throw new ResourceNotFoundException(roleId);
+		role.setId(Long.valueOf(roleId));
+		return ResponseEntity.status(HttpStatus.OK).body(roleService.createOrUpdateRole(role, practiceId));
 	}
 
-	@GetMapping
-	@Operation(summary = "Fetch Role Details")
-	public ResponseEntity<List<Role>> getRolesByPracticeId(@PathVariable String practiceId)
-			throws ResourceNotFoundException {
-		return new ResponseEntity<>(roleService.getRolesByPracticeId(practiceId), HttpStatus.OK);
+	@GetMapping("/{roleId}")
+	@Operation(summary = "Get Role by Id")
+	public ResponseEntity<Role> getRole(@PathVariable String roleId) throws ResourceNotFoundException {
+		return new ResponseEntity<>(roleService.getRole(roleId), HttpStatus.OK);
 	}
 
 	@GetMapping("/permission")
-	@Operation(summary = "Fetch AllPermissions Details")
+	@Operation(summary = "Fetch AllPermissions")
 	public ResponseEntity<List<Permission>> getPermissions() {
 		return new ResponseEntity<>(roleService.getAllPermissions(), HttpStatus.OK);
 	}
 
-	@GetMapping("/filterRoles")
+	@GetMapping
 	@Operation(summary = "Fetch all Roles based on filter provided with pagination capabilities.")
 	Page<Role> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize,
-			@RequestParam(defaultValue = "displayName") String sortBy,
-			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query) {
-		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
+			@RequestParam(defaultValue = "name") String sortBy,
+			@RequestParam(required = false) List<String> status, @RequestParam(defaultValue = "asc") String sortOrder,
+			@RequestParam(required = false) String query, @PathVariable String practiceId) {
+		Sort sort = CustomUtils.SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-
-		return roleService.findAll(paging, query);
+		return roleService.findAll(paging, query, practiceId, status);
 	}
 
 }

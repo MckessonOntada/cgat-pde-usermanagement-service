@@ -27,6 +27,8 @@ public class CustomUtils {
 
 	}
 
+	public static final String SORT_ORDER_ASC = "asc";
+
 	public static boolean validateEmail(String emailAddress) {
 		return Pattern.compile(regexPattern).matcher(emailAddress).matches();
 	}

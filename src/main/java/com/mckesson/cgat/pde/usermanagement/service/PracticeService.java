@@ -14,20 +14,12 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 @Service
 public interface PracticeService {
 
-	// String createOrUpdatePractice(MultipartFile logo, String data)
-	// throws IllegalStateException, IOException, ResourceNotFoundException;
-
 	Practice getPractice(String id) throws ResourceNotFoundException;
 
-	List<Practice> getAllPractices();
+	void deletePractice(String id) throws ResourceNotFoundException;
 
-	String deletePractice(String id) throws ResourceNotFoundException;
-
-	Page<Practice> findAll(Pageable paging, String query, List<String> roles, List<String> status);
+	Page<Practice> findAll(Pageable paging, String query, List<String> status);
 
 	Practice createPractice(Practice practice, MultipartFile logo) throws IllegalStateException, IOException;
-
-	// Practice updatePractice(Practice practice, MultipartFile logo) throws
-	// IllegalStateException, IOException;
 
 }

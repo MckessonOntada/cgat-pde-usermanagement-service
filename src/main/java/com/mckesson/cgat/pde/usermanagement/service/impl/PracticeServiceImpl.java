@@ -44,30 +44,21 @@ public class PracticeServiceImpl implements PracticeService {
 
 	@Override
 	public Practice getPractice(String id) throws ResourceNotFoundException {
-		Optional<Practice> byId = practiceRepository.findById(Long.valueOf(id));
-		return byId.orElseThrow(() -> new ResourceNotFoundException("Practice not found for the id:" + id));
+		Optional<Practice> practiceOpt = practiceRepository.findById(Long.valueOf(id));
+		return practiceOpt.orElseThrow(() -> new ResourceNotFoundException(id));
 	}
 
 	@Override
-	public List<Practice> getAllPractices() {
-		return practiceRepository.findAll();
+	public void deletePractice(String id) throws ResourceNotFoundException {
+		Optional<Practice> practiceOpt = practiceRepository.findById(Long.valueOf(id));
+		Practice practice = practiceOpt.orElseThrow(() -> new ResourceNotFoundException(id));
+		practice.setIsActive(false);
+		practiceRepository.save(practice);
 	}
 
 	@Override
-	public String deletePractice(String id) throws ResourceNotFoundException {
-		Optional<Practice> byId = practiceRepository.findById(Long.valueOf(id));
-		if (!byId.isEmpty()) {
-			byId.get().setIsActive(false);
-			practiceRepository.save(byId.get());
-			return byId.get().getName();
-		}
-		throw new ResourceNotFoundException("No Profile found with id : " + id);
-	}
-
-	@Override
-	public Page<Practice> findAll(Pageable paging, String query, List<String> roles, List<String> status) {
-		// log.info("Searching practices based on filter query:{}, roles:{}", query,
-		// roles);
+	public Page<Practice> findAll(Pageable paging, String query, List<String> status) {
+		log.debug("Searching practices based on filter query:{},  roles:{}", query);
 		query = StringUtils.toRootLowerCase(query);
 		Page<Practice> response;
 		String statusActive = CustomUtils.object_status.ALL.name();
