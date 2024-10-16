@@ -1,7 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.model;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Date;
 
@@ -39,9 +38,8 @@ public abstract class AuditColumns implements Serializable {
 
 	@Column(name = "CREATED_BY")
 	@CreatedBy
-	@Temporal(TemporalType.TIMESTAMP)
 	@JsonIgnore
-	private Timestamp createdBy;
+	private String createdBy;
 
 	@Column(name = "UPDATED_AT")
 	@LastModifiedDate
@@ -51,9 +49,8 @@ public abstract class AuditColumns implements Serializable {
 
 	@Column(name = "UPDATED_BY")
 	@LastModifiedBy
-	@Temporal(TemporalType.TIMESTAMP)
 	@JsonIgnore
-	private Timestamp updatedBy;
+	private String updatedBy;
 
 	@PrePersist
 	public void onPersist() {

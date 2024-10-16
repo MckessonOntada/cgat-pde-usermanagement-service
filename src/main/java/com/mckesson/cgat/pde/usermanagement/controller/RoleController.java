@@ -73,7 +73,7 @@ public class RoleController {
 	@Operation(summary = "Fetch all Roles based on filter provided with pagination capabilities.")
 	Page<Role> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize,
-			@RequestParam(defaultValue = "displayName") String sortBy,
+			@RequestParam(defaultValue = "name") String sortBy,
 			@RequestParam(required = false) List<String> status, @RequestParam(defaultValue = "asc") String sortOrder,
 			@RequestParam(required = false) String query, @PathVariable String practiceId) {
 		Sort sort = CustomUtils.SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()

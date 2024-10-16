@@ -28,6 +28,7 @@ CREATE TABLE  IF NOT EXISTS role (
     name VARCHAR(255) NOT NULL UNIQUE,
     description VARCHAR(255),
     practice_id INTEGER,
+    is_active INTEGER,
     created_at TIMESTAMP,
     created_by VARCHAR(255),
     updated_at TIMESTAMP,

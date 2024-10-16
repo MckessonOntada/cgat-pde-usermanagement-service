@@ -74,7 +74,7 @@ public class RoleServiceImpl implements RoleService {
 						: CustomUtils.object_status.INACTIVE.name();
 			}
 		}
-		response = roleRepository.findAllByQueryText(query, statusActive, practiceId, paging);
+		response = roleRepository.findAllByQueryText(query, statusActive, Long.valueOf(practiceId), paging);
 		return response;
 	}
 

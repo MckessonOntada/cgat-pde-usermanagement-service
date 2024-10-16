@@ -3,7 +3,13 @@ package com.mckesson.cgat.pde.usermanagement.model;
 import java.io.Serializable;
 import java.util.Set;
 
+import org.hibernate.type.NumericBooleanConverter;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -48,6 +54,11 @@ public class Role extends AuditColumns implements Serializable {
 	@JoinColumn(name = "practice_id")
 	private Practice practiceId;
 
+	@Convert(converter = NumericBooleanConverter.class)
+	@JsonIgnore
+	@JsonProperty("isActive")
+	private Boolean isActive = false;
+	
 	@OneToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "role_permissions_mapping", joinColumns = @JoinColumn(name = "role_id"),
 			inverseJoinColumns = @JoinColumn(name = "permission_id"))
