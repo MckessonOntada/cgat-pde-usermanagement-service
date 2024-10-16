@@ -18,6 +18,8 @@ import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
 import com.mckesson.cgat.pde.usermanagement.service.RoleService;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
+import org.springframework.util.CollectionUtils;
+
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;

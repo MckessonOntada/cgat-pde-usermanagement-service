@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.model;
 import java.io.Serializable;
 
 import jakarta.persistence.Embeddable;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -31,5 +32,9 @@ public class Name implements Serializable {
 	@NotNull(message = "First name cannot be null")
 	@Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
 	private String lastName;
+
+	@NotNull(message = "Suffix must not be null")
+	@NotEmpty
+	private String suffix;
 
 }

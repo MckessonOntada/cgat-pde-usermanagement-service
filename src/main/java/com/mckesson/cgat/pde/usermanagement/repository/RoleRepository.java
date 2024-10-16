@@ -15,8 +15,6 @@ import com.mckesson.cgat.pde.usermanagement.model.Role;
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
 
-	// @Query(nativeQuery = true, value = "select * from usermanagement.role where
-	// practice_id =:practiceId")
 	List<Role> findByPracticeId(Practice practiceId);
 
 	@Query(value = """
