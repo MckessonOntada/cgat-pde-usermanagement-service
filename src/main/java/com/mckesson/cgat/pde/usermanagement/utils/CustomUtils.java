@@ -21,6 +21,12 @@ public class CustomUtils {
 
 	};
 
+	public enum object_status {
+
+		ALL, ACTIVE, INACTIVE
+
+	}
+
 	public static boolean validateEmail(String emailAddress) {
 		return Pattern.compile(regexPattern).matcher(emailAddress).matches();
 	}

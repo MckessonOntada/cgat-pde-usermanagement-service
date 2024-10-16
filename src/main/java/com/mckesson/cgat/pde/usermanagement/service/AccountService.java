@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.mckesson.cgat.pde.usermanagement.dto.AccountRequestDto;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 

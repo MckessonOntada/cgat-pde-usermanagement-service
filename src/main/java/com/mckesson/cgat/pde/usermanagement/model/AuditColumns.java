@@ -31,11 +31,11 @@ public abstract class AuditColumns implements Serializable {
 
 	private static final long serialVersionUID = 8923669426693111099L;
 
-	@Column(name = "CREATED_DATE")
+	@Column(name = "CREATED_AT")
 	@CreatedDate
 	@Temporal(TemporalType.TIMESTAMP)
 	@JsonIgnore
-	private Date createdDate;
+	private Date createdAt;
 
 	@Column(name = "CREATED_BY")
 	@CreatedBy
@@ -43,11 +43,11 @@ public abstract class AuditColumns implements Serializable {
 	@JsonIgnore
 	private String createdBy;
 
-	@Column(name = "UPDATED_DATE")
+	@Column(name = "UPDATED_AT")
 	@LastModifiedDate
 	@Temporal(TemporalType.TIMESTAMP)
 	@JsonIgnore
-	private Date updatedDate;
+	private Date updatedAt;
 
 	@Column(name = "UPDATED_BY")
 	@LastModifiedBy
@@ -63,8 +63,8 @@ public abstract class AuditColumns implements Serializable {
 		 */
 		this.createdBy = null;// loginInfo.getUserId();
 		this.updatedBy = null;// loginInfo.getUserId();
-		this.createdDate = Date.from(Instant.now());
-		this.updatedDate = Date.from(Instant.now());
+		this.createdAt = Date.from(Instant.now());
+		this.updatedAt = Date.from(Instant.now());
 	}
 
 	@PreUpdate
@@ -75,7 +75,7 @@ public abstract class AuditColumns implements Serializable {
 			// .getAuthentication().getPrincipal();
 			this.updatedBy = null;// loginInfo.getUserId();
 		}
-		this.updatedDate = Date.from(Instant.now());
+		this.updatedAt = Date.from(Instant.now());
 	}
 
 }

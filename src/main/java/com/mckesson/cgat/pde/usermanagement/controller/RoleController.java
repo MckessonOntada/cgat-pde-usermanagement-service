@@ -46,7 +46,7 @@ public class RoleController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(roleService.createOrUpdateRole(role, practiceId));
 	}
 
-	@PutMapping("/{roleId}")
+	@PutMapping("/role/{roleId}")
 	@Operation(summary = "Update Role / Add permissions to Role")
 	public ResponseEntity<Role> updateRole(@Validated @RequestBody Role role, @PathVariable String practiceId)
 			throws ResourceNotFoundException {
@@ -71,13 +71,12 @@ public class RoleController {
 	Page<Role> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(defaultValue = "displayName") String sortBy,
-			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
-			@RequestParam(required = false) List<String> status) {
+			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query) {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 
-		return roleService.findAll(paging, query, status);
+		return roleService.findAll(paging, query);
 	}
 
 }

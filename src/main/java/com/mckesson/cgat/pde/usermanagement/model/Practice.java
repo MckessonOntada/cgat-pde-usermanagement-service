@@ -5,8 +5,10 @@ import java.io.Serializable;
 import org.hibernate.type.NumericBooleanConverter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Convert;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -43,16 +45,20 @@ public class Practice extends AuditColumns implements Serializable {
 	private String logoUrl;
 
 	@Valid
+	@Embedded
 	private Name contactPerson;
 
 	@Valid
+	@Embedded
 	private Address address;
 
 	@Valid
+	@Embedded
 	private Contact contact;
 
 	@Convert(converter = NumericBooleanConverter.class)
 	@JsonIgnore
+	@JsonProperty("isActive")
 	private Boolean isActive;
 
 }

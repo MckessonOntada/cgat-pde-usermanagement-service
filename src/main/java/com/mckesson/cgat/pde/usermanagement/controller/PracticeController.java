@@ -100,6 +100,12 @@ public class PracticeController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
+	@GetMapping
+	@Operation(summary = "Fetch AllPractices Details")
+	public ResponseEntity<List<Practice>> getAllPractice() throws NumberFormatException, ResourceNotFoundException {
+		return new ResponseEntity<>(practiceService.getAllPractices(), HttpStatus.OK);
+	}
+
 	@DeleteMapping("/{practiceId}")
 	@Operation(summary = "Delete Practice Details")
 	public ResponseEntity<String> deletePractice(@PathVariable String practiceId) throws ResourceNotFoundException {
@@ -109,11 +115,10 @@ public class PracticeController {
 
 	}
 
-	@GetMapping
+	@GetMapping("/filterPractices")
 	@Operation(summary = "Fetch all Practices based on filter provided with pagination capabilities.")
 	Page<Practice> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
-			@RequestParam(defaultValue = "20") Integer pageSize,
-			@RequestParam(defaultValue = "displayName") String sortBy,
+			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
 			@RequestParam(required = false) List<String> status, @RequestParam(required = false) List<String> roles) {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
