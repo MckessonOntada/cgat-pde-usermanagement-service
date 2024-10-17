@@ -23,4 +23,6 @@ public interface AccountService {
 
 	Account updateAccount(Long accountId, Account account) throws ResourceNotFoundException;
 
+	List<Account> linkAccontsToPractice(String practiceId, List<String> acccountIds);
+
 }

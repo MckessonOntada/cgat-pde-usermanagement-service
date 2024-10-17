@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -56,7 +57,6 @@ public class AccountController {
 			throws ResourceNotFoundException {
 		return accountService.updateAccount(accountId, account);
 
-
 	}
 
 	@GetMapping("/{accountId}")
@@ -85,6 +85,13 @@ public class AccountController {
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 		return accountService.findAll(paging, query, status, practiceId);
+	}
+
+	@PatchMapping
+	@Operation(summary = "Link multiple accounts to a Practice.")
+	public ResponseEntity<List<Account>> linkAccountsToPractice(@PathVariable String practiceId,
+			@RequestBody List<String> accountIds) {
+		return new ResponseEntity<>(accountService.linkAccontsToPractice(practiceId, accountIds), HttpStatus.OK);
 	}
 
 }

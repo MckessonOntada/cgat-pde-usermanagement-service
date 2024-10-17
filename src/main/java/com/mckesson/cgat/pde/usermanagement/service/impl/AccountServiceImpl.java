@@ -1,6 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.coyote.BadRequestException;
@@ -69,6 +70,14 @@ public class AccountServiceImpl implements AccountService {
 		}
 		response = accountRepository.findAllByQueryText(query, statusActive, paging, Long.valueOf(practiceId));
 		return response;
+	}
+
+	@Override
+	public List<Account> linkAccontsToPractice(String practiceId, List<String> acccountIds) {
+		List<Long> accounts = acccountIds.stream().map(Long::valueOf).collect(Collectors.toList());
+		List<Account> allAccounts = accountRepository.findAllById(accounts);
+		allAccounts.forEach(account -> account.setPracticeId(Long.valueOf(practiceId)));
+		return accountRepository.saveAll(allAccounts);
 	}
 
 }
