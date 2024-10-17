@@ -24,13 +24,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
-import com.mckesson.cgat.pde.usermanagement.service.PracticeService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,13 +40,10 @@ public class AccountController {
 
 	private final AccountService accountService;
 
-	private final PracticeService practiceService;
-
 	private static final String SORT_ORDER_ASC = "asc";
 
-	public AccountController(AccountService accountService, PracticeService practiceService) {
+	public AccountController(AccountService accountService) {
 		this.accountService = accountService;
-		this.practiceService = practiceService;
 	}
 
 	@PostMapping
@@ -96,8 +91,9 @@ public class AccountController {
 
 	@PatchMapping
 	@Operation(summary = "Link multiple accounts to a Practice.")
-	public ResponseEntity<List<Account>> linkAccountsToPractice(@PathVariable @NotNull Long practiceId,
-			@RequestBody @NotEmpty Set<Long> accountIds) throws ResourceNotFoundException {
+	public ResponseEntity<List<Account>> linkAccountsToPractice(
+			@PathVariable @NotNull(message = "PracticeId can not be null") Long practiceId,
+			@RequestBody Set<Long> accountIds) throws ResourceNotFoundException {
 		if (Boolean.TRUE.equals(accountService.linkAccountsToPractice(practiceId, accountIds)))
 			return new ResponseEntity<>(HttpStatus.OK);
 		else

@@ -24,6 +24,6 @@ public interface AccountService {
 
 	Account updateAccount(Long accountId, Account account) throws ResourceNotFoundException;
 
-	Boolean linkAccountsToPractice(Long practiceId, Set<Long> acccountIds) throws ResourceNotFoundException;
+	Boolean linkAccountsToPractice(Long practiceId, Set<Long> accountIds) throws ResourceNotFoundException;
 
 }

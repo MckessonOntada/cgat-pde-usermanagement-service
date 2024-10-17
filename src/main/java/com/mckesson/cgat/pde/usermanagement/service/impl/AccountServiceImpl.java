@@ -18,6 +18,8 @@ import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class AccountServiceImpl implements AccountService {
 
@@ -77,16 +79,29 @@ public class AccountServiceImpl implements AccountService {
 		return response;
 	}
 
+	@Transactional
 	@Override
-	public Boolean linkAccountsToPractice(Long practiceId, Set<Long> acccountIds) throws ResourceNotFoundException {
+	public Boolean linkAccountsToPractice(Long practiceId, Set<Long> accountIds) throws ResourceNotFoundException {
 		Optional<Practice> practice = practiceRepository.findById(practiceId);
-		practice.orElseThrow(() -> new ResourceNotFoundException(practiceId.toString()));
-		List<Account> allAccounts = accountRepository.findAllById(acccountIds);
+		practice.orElseThrow(() -> new ResourceNotFoundException("Practice not found : " + practiceId.toString()));
+
+		List<Account> allAccounts = accountRepository.findAllById(accountIds);
 		Optional<Account> anyAccount = allAccounts.stream().filter(a -> a.getPracticeId() != null).findAny();
 		if (anyAccount.isPresent())
 			return false;
-		allAccounts.forEach(account -> account.setPracticeId(practiceId));
-		accountRepository.saveAll(allAccounts);
+
+		List<Account> existingAccounts = accountRepository.findByPracticeId(practiceId);
+		existingAccounts.addAll(allAccounts);
+
+		existingAccounts.forEach(a -> {
+			if (accountIds.contains(a.getId()))
+				a.setPracticeId(practiceId);
+			else
+				a.setPracticeId(null);
+
+		});
+
+		accountRepository.saveAll(existingAccounts);
 		return true;
 	}
 
