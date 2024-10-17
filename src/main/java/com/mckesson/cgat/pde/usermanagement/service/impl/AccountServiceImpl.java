@@ -1,7 +1,8 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.coyote.BadRequestException;
@@ -11,7 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import com.mckesson.cgat.pde.usermanagement.model.Account;
+import com.mckesson.cgat.pde.usermanagement.model.Practice;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
+import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
@@ -19,9 +22,11 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 public class AccountServiceImpl implements AccountService {
 
 	private final AccountRepository accountRepository;
+	private final PracticeRepository practiceRepository;
 
-	public AccountServiceImpl(AccountRepository accountRepository) {
+	public AccountServiceImpl(AccountRepository accountRepository, PracticeRepository practiceRepository) {
 		this.accountRepository = accountRepository;
+		this.practiceRepository = practiceRepository;
 	}
 
 	@Override
@@ -73,11 +78,16 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public List<Account> linkAccontsToPractice(String practiceId, List<String> acccountIds) {
-		List<Long> accounts = acccountIds.stream().map(Long::valueOf).collect(Collectors.toList());
-		List<Account> allAccounts = accountRepository.findAllById(accounts);
-		allAccounts.forEach(account -> account.setPracticeId(Long.valueOf(practiceId)));
-		return accountRepository.saveAll(allAccounts);
+	public Boolean linkAccountsToPractice(Long practiceId, Set<Long> acccountIds) throws ResourceNotFoundException {
+		Optional<Practice> practice = practiceRepository.findById(practiceId);
+		practice.orElseThrow(() -> new ResourceNotFoundException(practiceId.toString()));
+		List<Account> allAccounts = accountRepository.findAllById(acccountIds);
+		Optional<Account> anyAccount = allAccounts.stream().filter(a -> a.getPracticeId() != null).findAny();
+		if (anyAccount.isPresent())
+			return false;
+		allAccounts.forEach(account -> account.setPracticeId(practiceId));
+		accountRepository.saveAll(allAccounts);
+		return true;
 	}
 
 }

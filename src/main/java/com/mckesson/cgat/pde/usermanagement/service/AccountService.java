@@ -1,6 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.service;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,6 @@ public interface AccountService {
 
 	Account updateAccount(Long accountId, Account account) throws ResourceNotFoundException;
 
-	List<Account> linkAccontsToPractice(String practiceId, List<String> acccountIds);
+	Boolean linkAccountsToPractice(Long practiceId, Set<Long> acccountIds) throws ResourceNotFoundException;
 
 }
