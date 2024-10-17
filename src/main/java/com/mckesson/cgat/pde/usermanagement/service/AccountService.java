@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.mckesson.cgat.pde.usermanagement.dto.LinkAccountToUserDto;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
@@ -22,5 +23,7 @@ public interface AccountService {
 	Account createAccount(Account account) throws BadRequestException;
 
 	Account updateAccount(Long accountId, Account account) throws ResourceNotFoundException;
+
+	Account linkAccountsToUser(LinkAccountToUserDto dto);
 
 }

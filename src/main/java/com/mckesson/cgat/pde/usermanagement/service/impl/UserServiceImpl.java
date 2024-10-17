@@ -2,23 +2,32 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import com.mckesson.cgat.pde.usermanagement.dto.LinkUserToAccountsDto;
+import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.model.User;
+import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class UserServiceImpl implements UserService {
 
 	private final UserRepository userRepository;
+	
+	private final AccountRepository accountRepository;
 
-	public UserServiceImpl(UserRepository userRepository) {
+	public UserServiceImpl(UserRepository userRepository ,AccountRepository repository) {
 		this.userRepository = userRepository;
+		this.accountRepository =repository;
 	}
 
 	@Override
@@ -49,6 +58,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Page<User> findAll(Pageable paging, String query, List<String> status, String praticeId) {
+		query = StringUtils.toRootLowerCase(query);
 		String statusActive = "ALL";
 
 		if (!CollectionUtils.isEmpty(status)) {
@@ -61,7 +71,23 @@ public class UserServiceImpl implements UserService {
 			if (hasInactive)
 				statusActive = "ACTIVE".equals(statusActive) ? "ALL" : "INACTIVE";
 		}
-		return userRepository.findAllByQueryText(query, statusActive, paging, praticeId);
+		return userRepository.findAllByQueryText(query, statusActive, paging, Long.valueOf(praticeId));
+	}
+
+	@Override
+	@Transactional
+	public User linkUserToAccounts(LinkUserToAccountsDto dto,Long userId) throws ResourceNotFoundException {
+		User user = userRepository.findById(userId).orElseThrow(()-> new ResourceNotFoundException(userId.toString()));
+		List<Account> accounts = accountRepository.findByIdIn(dto.getAccounts());
+		user.getAccount().clear();
+		user.getAccount().addAll(accounts);
+		userRepository.save(user);
+		for(Account account :accounts) {
+			account.getUser().add(user);
+		}
+		accountRepository.saveAll(accounts);
+		return user;
+		
 	}
 
 }

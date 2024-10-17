@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mckesson.cgat.pde.usermanagement.dto.LinkAccountToUserDto;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -86,5 +88,15 @@ public class AccountController {
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 		return accountService.findAll(paging, query, status, practiceId);
 	}
+	
+	@PatchMapping
+	@Operation(summary = "Link account to user")
+	public Account linkAccountsToUser( @RequestBody LinkAccountToUserDto dto)
+			throws ResourceNotFoundException {
+		return accountService.linkAccountsToUser(dto);
+
+
+	}
+	
 
 }

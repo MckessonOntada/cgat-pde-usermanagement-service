@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.mckesson.cgat.pde.usermanagement.dto.LinkUserToAccountsDto;
 import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
@@ -19,5 +20,8 @@ public interface UserService {
 	User updateUser(Long userId, User model) throws ResourceNotFoundException;
 
 	User createUser(User model);
+
+	User linkUserToAccounts(LinkUserToAccountsDto dto,Long userId) throws ResourceNotFoundException;
+
 
 }

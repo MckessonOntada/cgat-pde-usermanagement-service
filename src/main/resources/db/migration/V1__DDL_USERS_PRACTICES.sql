@@ -79,10 +79,10 @@ CREATE TABLE IF NOT EXISTS "user"
     fax							VARCHAR(50),
     CONSTRAINT user_pk			PRIMARY KEY (id),
     is_active      				INTEGER,
-    created_date 				TIMESTAMP,
+    created_at 					TIMESTAMP,
     created_by 					VARCHAR(255),
-    updated_date 				TIMESTAMP,
-    updated_by 					VARCHAR(255)
+    updated_at 					TIMESTAMP,
+    updated_by 					VARCHAR(255)	
     
 );
 
@@ -95,9 +95,9 @@ CREATE TABLE IF NOT EXISTS account
     dc_id 						VARCHAR(255) ,
     dc_name						VARCHAR(50) 	NOT NULL ,
     is_active					INTEGER ,
-    created_date 				TIMESTAMP,
+    created_at 					TIMESTAMP,
     created_by 					VARCHAR(255),
-    updated_date 				TIMESTAMP,
+    updated_at 					TIMESTAMP,
     updated_by 					VARCHAR(255),
     CONSTRAINT account_pk 		PRIMARY KEY (id)
 );
@@ -105,8 +105,11 @@ CREATE TABLE IF NOT EXISTS account
 CREATE TABLE IF NOT EXISTS user_account_mapping (
     user_id 					INTEGER NOT NULL,
     account_id 					INTEGER NOT NULL,
-    PRIMARY KEY 				(user_id, account_id)
+    PRIMARY KEY 				(user_id, account_id),
+    FOREIGN KEY 				(user_id) REFERENCES "user"(id),
+    FOREIGN KEY 				(account_id) REFERENCES account(id)
 );
+
 
 CREATE SEQUENCE USER_SEQUENCE START WITH 1 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE  CACHE 20;
     

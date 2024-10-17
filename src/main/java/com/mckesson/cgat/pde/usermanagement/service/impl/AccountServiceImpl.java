@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import com.databricks.sdk.service.iam.User;
+import com.mckesson.cgat.pde.usermanagement.dto.LinkAccountToUserDto;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
@@ -69,6 +71,14 @@ public class AccountServiceImpl implements AccountService {
 		}
 		response = accountRepository.findAllByQueryText(query, statusActive, paging, Long.valueOf(practiceId));
 		return response;
+	}
+
+	@Override
+	public Account linkAccountsToUser(LinkAccountToUserDto dto) {
+		List<Account> accounts = accountRepository.findAllById(dto.getAccounts());
+		User user = new User();
+		accountRepository.save(null);
+		return null;
 	}
 
 }
