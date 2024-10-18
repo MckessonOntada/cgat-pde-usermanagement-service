@@ -1,6 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,4 +38,7 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
 	public Page<Role> findAllByQueryText(@Param("query") String query, @Param("status") String status,
 			@Param("practiceId") Long practiceId, Pageable paging);
 
+	//Role findByIdAndIsActive(Long roleId, int isActive);
+	
+	Optional<Role> findByIdAndIsActiveTrue(Long roleId);
 }

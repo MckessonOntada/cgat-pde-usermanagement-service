@@ -22,6 +22,6 @@ public interface UserService {
 
 	User linkUserToAccounts(Long userId, List<Long> accountIds) throws ResourceNotFoundException;
 
-	User linkUserToRoles(Long userId, Long roleId) throws ResourceNotFoundException;
+	User linkUserToRole(Long userId, Long roleId) throws ResourceNotFoundException;
 
 }

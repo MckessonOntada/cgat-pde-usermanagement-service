@@ -64,7 +64,7 @@ public class User extends AuditColumns implements Serializable {
 
 	@OneToOne
 	@JoinColumn(name = "role_id", referencedColumnName = "id")
-	private Role roles;
+	private Role role;
 
 	@Convert(converter = NumericBooleanConverter.class)
 	private Boolean isActive = false;

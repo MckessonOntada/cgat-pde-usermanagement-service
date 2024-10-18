@@ -91,15 +91,15 @@ public class UserController {
 
 	}
 
-	@PatchMapping("/{userId}/roles")
+	@PatchMapping("/{userId}/role")
 	@Operation(summary = "Link User with roles")
-	public User linkUserToRoles(@PathVariable Long userId, @RequestParam(defaultValue = "0") Long roleId)
+	public User linkUserToRole(@PathVariable Long userId, @RequestParam(defaultValue = "0") Long roleId)
 			throws ResourceNotFoundException {
 
 		if (roleId == 0 || userId == null)
 			throw new IllegalArgumentException("Role ID and user id is required for link to user.");
 
-		return userService.linkUserToRoles(userId, roleId);
+		return userService.linkUserToRole(userId, roleId);
 
 	}
 

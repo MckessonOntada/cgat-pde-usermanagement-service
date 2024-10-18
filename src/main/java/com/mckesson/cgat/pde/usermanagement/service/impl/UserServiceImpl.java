@@ -99,14 +99,15 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User linkUserToRoles(Long userId, Long roleId) throws ResourceNotFoundException {
+	public User linkUserToRole(Long userId, Long roleId) throws ResourceNotFoundException {
+
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("User not found with this Id :" + userId));
 
-		Role roles = roleRepository.findById(roleId)
+		Role role = roleRepository.findByIdAndIsActiveTrue(roleId)
 				.orElseThrow(() -> new ResourceNotFoundException("Role not found with this Id :" + roleId));
 
-		user.setRoles(roles);
+		user.setRole(role);
 		return userRepository.save(user);
 
 	}
