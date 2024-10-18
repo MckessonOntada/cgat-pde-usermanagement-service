@@ -8,10 +8,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import com.mckesson.cgat.pde.usermanagement.dto.LinkUserToAccountsDto;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
+import com.mckesson.cgat.pde.usermanagement.model.Role;
 import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
+import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -22,12 +23,15 @@ import jakarta.transaction.Transactional;
 public class UserServiceImpl implements UserService {
 
 	private final UserRepository userRepository;
-	
+
 	private final AccountRepository accountRepository;
 
-	public UserServiceImpl(UserRepository userRepository ,AccountRepository repository) {
+	private final RoleRepository roleRepository;
+
+	public UserServiceImpl(UserRepository userRepository, AccountRepository repository, RoleRepository roleRepository) {
 		this.userRepository = userRepository;
-		this.accountRepository =repository;
+		this.accountRepository = repository;
+		this.roleRepository = roleRepository;
 	}
 
 	@Override
@@ -76,18 +80,35 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional
-	public User linkUserToAccounts(LinkUserToAccountsDto dto,Long userId) throws ResourceNotFoundException {
-		User user = userRepository.findById(userId).orElseThrow(()-> new ResourceNotFoundException(userId.toString()));
-		List<Account> accounts = accountRepository.findByIdIn(dto.getAccounts());
+	public User linkUserToAccounts(Long userId, List<Long> accountIds) throws ResourceNotFoundException {
+		if (userId == 0 || accountIds.isEmpty())
+			throw new IllegalArgumentException("User id and account IDs cannot be zero.");
+
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new ResourceNotFoundException("User not found with this Id :" + userId));
+
+		List<Account> accounts = accountRepository.findAllById(accountIds);
+
+		if (accounts.size() != accountIds.size())
+			throw new ResourceNotFoundException("Some of the provided account IDs do not exist.");
+
 		user.getAccount().clear();
 		user.getAccount().addAll(accounts);
-		userRepository.save(user);
-		for(Account account :accounts) {
-			account.getUser().add(user);
-		}
-		accountRepository.saveAll(accounts);
-		return user;
-		
+		return userRepository.save(user);
+
+	}
+
+	@Override
+	public User linkUserToRoles(Long userId, Long roleId) throws ResourceNotFoundException {
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new ResourceNotFoundException("User not found with this Id :" + userId));
+
+		Role roles = roleRepository.findById(roleId)
+				.orElseThrow(() -> new ResourceNotFoundException("Role not found with this Id :" + roleId));
+
+		user.setRoles(roles);
+		return userRepository.save(user);
+
 	}
 
 }

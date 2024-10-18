@@ -41,13 +41,13 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public Account getAccount(Long accountId) throws ResourceNotFoundException {
 		return accountRepository.findById(accountId)
-				.orElseThrow(() -> new ResourceNotFoundException(accountId.toString()));
+			.orElseThrow(() -> new ResourceNotFoundException(accountId.toString()));
 	}
 
 	@Override
 	public void deleteAccount(Long accountId) throws ResourceNotFoundException {
 		Account account = accountRepository.findById(accountId)
-				.orElseThrow(() -> new ResourceNotFoundException(accountId.toString()));
+			.orElseThrow(() -> new ResourceNotFoundException(accountId.toString()));
 		if (Boolean.FALSE.equals(account.getIsActive()))
 			throw new ResourceNotFoundException(accountId.toString());
 		account.setIsActive(false);

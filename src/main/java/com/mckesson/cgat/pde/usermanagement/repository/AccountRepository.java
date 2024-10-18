@@ -29,6 +29,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	Page<Account> findAllByQueryText(@Param("query") String query, @Param("status") String status, Pageable paging,
 			@Param("pacticeId") long pacticeId);
 
-	List<Account> findByIdIn(List<Long> accounts);
+	// List<Account> findByIdIn(List<Long> accounts);
 
 }

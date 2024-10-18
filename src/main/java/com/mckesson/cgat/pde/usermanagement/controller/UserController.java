@@ -20,19 +20,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mckesson.cgat.pde.usermanagement.dto.LinkUserToAccountsDto;
 import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Tag(name = "Users", description = "Controller for Managing user-related operations and data.")
-@RequestMapping(path = "/practice/{practiceId}/users", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/practice/{practiceId}/users", consumes = "application/json", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class UserController {
 
@@ -46,7 +44,7 @@ public class UserController {
 
 	@PostMapping
 	@Operation(summary = "Create new user")
-	public ResponseEntity<User> createUser(@Valid @RequestBody User model) {
+	public ResponseEntity<User> createUser(@RequestBody User model) {
 		return new ResponseEntity<>(userService.createUser(model), HttpStatus.OK);
 
 	}
@@ -84,11 +82,24 @@ public class UserController {
 		return userService.findAll(paging, query, status, practiceId);
 
 	}
-	
+
 	@PatchMapping("/{userId}")
 	@Operation(summary = "Link User with accounts")
-	public User linkUserToAccounts(@PathVariable long userId,@RequestBody LinkUserToAccountsDto dto) throws ResourceNotFoundException {
-		return userService.linkUserToAccounts(dto,userId);
+	public User linkUserToAccounts(@PathVariable Long userId, @RequestParam List<Long> accountIds)
+			throws ResourceNotFoundException {
+		return userService.linkUserToAccounts(userId, accountIds);
+
+	}
+
+	@PatchMapping("/{userId}/roles")
+	@Operation(summary = "Link User with roles")
+	public User linkUserToRoles(@PathVariable Long userId, @RequestParam(defaultValue = "0") Long roleId)
+			throws ResourceNotFoundException {
+
+		if (roleId == 0 || userId == null)
+			throw new IllegalArgumentException("Role ID and user id is required for link to user.");
+
+		return userService.linkUserToRoles(userId, roleId);
 
 	}
 

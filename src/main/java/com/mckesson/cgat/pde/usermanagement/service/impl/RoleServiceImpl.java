@@ -20,7 +20,6 @@ import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import org.springframework.util.CollectionUtils;
 
-
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
@@ -72,8 +71,7 @@ public class RoleServiceImpl implements RoleService {
 			}
 			if (status.stream().anyMatch(i -> i.equalsIgnoreCase(CustomUtils.object_status.INACTIVE.name()))) {
 				statusActive = CustomUtils.object_status.ACTIVE.name().equals(statusActive)
-						? CustomUtils.object_status.ALL.name()
-						: CustomUtils.object_status.INACTIVE.name();
+						? CustomUtils.object_status.ALL.name() : CustomUtils.object_status.INACTIVE.name();
 			}
 		}
 		response = roleRepository.findAllByQueryText(query, statusActive, Long.valueOf(practiceId), paging);

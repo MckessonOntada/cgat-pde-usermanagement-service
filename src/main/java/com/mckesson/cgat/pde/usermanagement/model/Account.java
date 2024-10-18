@@ -5,8 +5,6 @@ import java.util.Set;
 
 import org.hibernate.type.NumericBooleanConverter;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -56,7 +54,6 @@ public class Account extends AuditColumns implements Serializable {
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "user_account_mapping", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "account_id"))
-	@JsonBackReference
 	private Set<User> user;
 
 	@Convert(converter = NumericBooleanConverter.class)

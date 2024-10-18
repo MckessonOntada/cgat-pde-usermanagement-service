@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS practice
     first_name  	VARCHAR(50) NOT NULL,
     middle_name	    VARCHAR(50),
     last_name 		VARCHAR(50) NOT NULL,
+    suffix			VARCHAR(50),
     address1		VARCHAR(255)NOT NULL,
     address2		VARCHAR(255),
     city		    VARCHAR(50) NOT NULL,
@@ -77,6 +78,7 @@ CREATE TABLE IF NOT EXISTS "user"
     email	 					VARCHAR(255) 	NOT NULL,
     phone						VARCHAR(255) 	NOT NULL,
     fax							VARCHAR(50),
+    role_id						INTEGER,
     CONSTRAINT user_pk			PRIMARY KEY (id),
     is_active      				INTEGER,
     created_at 					TIMESTAMP,
@@ -109,6 +111,7 @@ CREATE TABLE IF NOT EXISTS user_account_mapping (
     FOREIGN KEY 				(user_id) REFERENCES "user"(id),
     FOREIGN KEY 				(account_id) REFERENCES account(id)
 );
+
 
 
 CREATE SEQUENCE USER_SEQUENCE START WITH 1 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE  CACHE 20;
