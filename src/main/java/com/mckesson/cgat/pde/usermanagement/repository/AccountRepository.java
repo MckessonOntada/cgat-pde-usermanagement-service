@@ -1,5 +1,8 @@
 package com.mckesson.cgat.pde.usermanagement.repository;
 
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,5 +29,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 			))""")
 	Page<Account> findAllByQueryText(@Param("query") String query, @Param("status") String status, Pageable paging,
 			@Param("pacticeId") long pacticeId);
+
+	Set<Account> findByPracticeId(Long practiceId);
 
 }
