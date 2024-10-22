@@ -20,4 +20,8 @@ public interface UserService {
 
 	User createUser(User model);
 
+	User linkUserToAccounts(Long userId, List<Long> accountIds) throws ResourceNotFoundException;
+
+	User linkUserToRole(Long userId, Long roleId) throws ResourceNotFoundException;
+
 }

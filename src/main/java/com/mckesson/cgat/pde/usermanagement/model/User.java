@@ -5,6 +5,8 @@ import java.util.Set;
 
 import org.hibernate.type.NumericBooleanConverter;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -15,6 +17,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -57,7 +60,12 @@ public class User extends AuditColumns implements Serializable {
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "user_account_mapping", joinColumns = @JoinColumn(name = "user_id"),
 			inverseJoinColumns = @JoinColumn(name = "account_id"))
-	private Set<Account> account;
+	@JsonIgnore
+	private Set<Account> accounts;
+
+	@OneToOne
+	@JoinColumn(name = "role_id", referencedColumnName = "id")
+	private Role role;
 
 	@Convert(converter = NumericBooleanConverter.class)
 	private Boolean isActive = false;

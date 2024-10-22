@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import com.databricks.sdk.service.iam.User;
+import com.mckesson.cgat.pde.usermanagement.dto.LinkAccountToUserDto;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.model.Practice;

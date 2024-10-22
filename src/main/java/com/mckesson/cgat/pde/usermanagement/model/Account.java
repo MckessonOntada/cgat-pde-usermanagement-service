@@ -55,13 +55,8 @@ public class Account extends AuditColumns implements Serializable {
 	private String dcName;
 
 	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "user_account_mapping", // Name of the join table
-			joinColumns = @JoinColumn(name = "user_id"), // Foreign key from the current
-															// entity (User)
-			inverseJoinColumns = @JoinColumn(name = "account_id") // Foreign key from the
-																	// other entity
-																	// (Account)
-	)
+	@JoinTable(name = "user_account_mapping", joinColumns = @JoinColumn(name = "user_id"),
+			inverseJoinColumns = @JoinColumn(name = "account_id"))
 	private Set<User> user;
 
 	@Convert(converter = NumericBooleanConverter.class)

@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -35,7 +34,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Tag(name = "Accounts", description = "Controller for Manages account-related operations and data.")
-@RequestMapping(path = "/practice/{practiceId}/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/practice/{practiceId}/accounts", consumes = "application/json",
+		produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class AccountController {
 
@@ -47,7 +47,7 @@ public class AccountController {
 		this.accountService = accountService;
 	}
 
-	@PostMapping
+	@PostMapping(consumes = "application/json")
 	@Operation(summary = "Create new account")
 	public ResponseEntity<Account> createAccount(@Valid @RequestBody Account account) throws BadRequestException {
 		return new ResponseEntity<>(accountService.createAccount(account), HttpStatus.OK);

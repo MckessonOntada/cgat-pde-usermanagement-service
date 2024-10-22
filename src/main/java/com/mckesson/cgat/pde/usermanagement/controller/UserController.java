@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -25,12 +26,13 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Tag(name = "Users", description = "Controller for Managing user-related operations and data.")
-@RequestMapping(path = "/practice/{practiceId}/users", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/practice/{practiceId}/users", consumes = "application/json",
+		produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class UserController {
 
@@ -44,7 +46,7 @@ public class UserController {
 
 	@PostMapping
 	@Operation(summary = "Create new user")
-	public ResponseEntity<User> createUser(@Valid @RequestBody User model) {
+	public ResponseEntity<User> createUser(@RequestBody User model) {
 		return new ResponseEntity<>(userService.createUser(model), HttpStatus.OK);
 
 	}
@@ -80,6 +82,26 @@ public class UserController {
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 		return userService.findAll(paging, query, status, practiceId);
+
+	}
+
+	@PatchMapping("/{userId}/accounts")
+	@Operation(
+			summary = "Link/Delink User with accounts.(This API maps the accounts being passed in requst with the user "
+					+ "such as the requested mapping is the current state of user to account association")
+	public User linkUserToAccounts(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
+			@RequestParam List<Long> accountIds) throws ResourceNotFoundException {
+		return userService.linkUserToAccounts(userId, accountIds);
+
+	}
+
+	@PatchMapping("/{userId}/roles")
+	@Operation(summary = "Link User with roles")
+	public User linkUserToRole(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
+			@RequestParam @NotNull(message = "RoleId can not be null") Long roleId)
+			throws ResourceNotFoundException {
+
+		return userService.linkUserToRole(userId, roleId);
 
 	}
 
