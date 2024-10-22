@@ -81,19 +81,16 @@ public class UserServiceImpl implements UserService {
 	@Override
 	@Transactional
 	public User linkUserToAccounts(Long userId, List<Long> accountIds) throws ResourceNotFoundException {
-		if (userId == 0 || accountIds.isEmpty())
-			throw new IllegalArgumentException("User id and account IDs cannot be zero.");
-
 		User user = userRepository.findById(userId)
-				.orElseThrow(() -> new ResourceNotFoundException("User not found with this Id :" + userId));
+			.orElseThrow(() -> new ResourceNotFoundException("User not found with this Id :" + userId));
 
 		List<Account> accounts = accountRepository.findAllById(accountIds);
 
 		if (accounts.size() != accountIds.size())
-			throw new ResourceNotFoundException("Some of the provided account IDs do not exist.");
+			throw new ResourceNotFoundException("Some of the provided account IDs does not exist.");
 
-		user.getAccount().clear();
-		user.getAccount().addAll(accounts);
+		user.getAccounts().clear();
+		user.getAccounts().addAll(accounts);
 		return userRepository.save(user);
 
 	}
@@ -102,10 +99,10 @@ public class UserServiceImpl implements UserService {
 	public User linkUserToRole(Long userId, Long roleId) throws ResourceNotFoundException {
 
 		User user = userRepository.findById(userId)
-				.orElseThrow(() -> new ResourceNotFoundException("User not found with this Id :" + userId));
+			.orElseThrow(() -> new ResourceNotFoundException("User not found with this Id :" + userId));
 
 		Role role = roleRepository.findByIdAndIsActiveTrue(roleId)
-				.orElseThrow(() -> new ResourceNotFoundException("Role not found with this Id :" + roleId));
+			.orElseThrow(() -> new ResourceNotFoundException("Role not found with this Id :" + roleId));
 
 		user.setRole(role);
 		return userRepository.save(user);

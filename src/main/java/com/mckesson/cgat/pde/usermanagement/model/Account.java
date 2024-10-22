@@ -53,7 +53,8 @@ public class Account extends AuditColumns implements Serializable {
 	private String dcName;
 
 	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "user_account_mapping", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "account_id"))
+	@JoinTable(name = "user_account_mapping", joinColumns = @JoinColumn(name = "user_id"),
+			inverseJoinColumns = @JoinColumn(name = "account_id"))
 	private Set<User> user;
 
 	@Convert(converter = NumericBooleanConverter.class)

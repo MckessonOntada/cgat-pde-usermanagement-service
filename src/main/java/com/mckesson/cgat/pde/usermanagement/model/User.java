@@ -58,9 +58,10 @@ public class User extends AuditColumns implements Serializable {
 	private Address address;
 
 	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "user_account_mapping", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "account_id"))
+	@JoinTable(name = "user_account_mapping", joinColumns = @JoinColumn(name = "user_id"),
+			inverseJoinColumns = @JoinColumn(name = "account_id"))
 	@JsonIgnore
-	private Set<Account> account;
+	private Set<Account> accounts;
 
 	@OneToOne
 	@JoinColumn(name = "role_id", referencedColumnName = "id")

@@ -26,11 +26,13 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Tag(name = "Users", description = "Controller for Managing user-related operations and data.")
-@RequestMapping(path = "/practice/{practiceId}/users", consumes = "application/json", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/practice/{practiceId}/users", consumes = "application/json",
+		produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class UserController {
 
@@ -83,21 +85,21 @@ public class UserController {
 
 	}
 
-	@PatchMapping("/{userId}")
-	@Operation(summary = "Link User with accounts")
-	public User linkUserToAccounts(@PathVariable Long userId, @RequestParam List<Long> accountIds)
-			throws ResourceNotFoundException {
+	@PatchMapping("/{userId}/accounts")
+	@Operation(
+			summary = "Link/Delink User with accounts.(This API maps the accounts being passed in requst with the user "
+					+ "such as the requested mapping is the current state of user to account association")
+	public User linkUserToAccounts(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
+			@RequestParam List<Long> accountIds) throws ResourceNotFoundException {
 		return userService.linkUserToAccounts(userId, accountIds);
 
 	}
 
-	@PatchMapping("/{userId}/role")
+	@PatchMapping("/{userId}/roles")
 	@Operation(summary = "Link User with roles")
-	public User linkUserToRole(@PathVariable Long userId, @RequestParam(defaultValue = "0") Long roleId)
+	public User linkUserToRole(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
+			@RequestParam @NotNull(message = "RoleId can not be null") Long roleId)
 			throws ResourceNotFoundException {
-
-		if (roleId == 0 || userId == null)
-			throw new IllegalArgumentException("Role ID and user id is required for link to user.");
 
 		return userService.linkUserToRole(userId, roleId);
 
