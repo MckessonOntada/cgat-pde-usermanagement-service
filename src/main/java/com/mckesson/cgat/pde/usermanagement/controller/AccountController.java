@@ -1,6 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
@@ -21,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mckesson.cgat.pde.usermanagement.dto.LinkAccountToUserDto;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -29,6 +29,7 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -90,9 +91,13 @@ public class AccountController {
 	}
 
 	@PatchMapping
-	@Operation(summary = "Link account to user")
-	public Account linkAccountsToUser(@RequestBody LinkAccountToUserDto dto) throws ResourceNotFoundException {
-		return accountService.linkAccountsToUser(dto);
+	@Operation(
+			summary = "Link multiple accounts to a Practice.(This de-links any existing account not present in the request)")
+	public ResponseEntity<Void> linkAccountsToPractice(
+			@PathVariable @NotNull(message = "Practice Id can not be null") Long practiceId,
+			@RequestBody Set<Long> accountIds) throws ResourceNotFoundException, UnauthorizedAccessException {
+		accountService.linkAccountsToPractice(practiceId, accountIds);
+		return new ResponseEntity<>(HttpStatus.OK);
 
 	}
 

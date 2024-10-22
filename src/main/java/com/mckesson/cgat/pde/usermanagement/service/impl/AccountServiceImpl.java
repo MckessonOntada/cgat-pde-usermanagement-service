@@ -1,6 +1,8 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.coyote.BadRequestException;
@@ -11,18 +13,26 @@ import org.springframework.util.CollectionUtils;
 
 import com.databricks.sdk.service.iam.User;
 import com.mckesson.cgat.pde.usermanagement.dto.LinkAccountToUserDto;
+import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
+import com.mckesson.cgat.pde.usermanagement.model.Practice;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
+import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class AccountServiceImpl implements AccountService {
 
 	private final AccountRepository accountRepository;
 
-	public AccountServiceImpl(AccountRepository accountRepository) {
+	private final PracticeRepository practiceRepository;
+
+	public AccountServiceImpl(AccountRepository accountRepository, PracticeRepository practiceRepository) {
 		this.accountRepository = accountRepository;
+		this.practiceRepository = practiceRepository;
 	}
 
 	@Override
@@ -73,12 +83,38 @@ public class AccountServiceImpl implements AccountService {
 		return response;
 	}
 
+	@Transactional
 	@Override
-	public Account linkAccountsToUser(LinkAccountToUserDto dto) {
-		List<Account> accounts = accountRepository.findAllById(dto.getAccounts());
-		User user = new User();
-		accountRepository.save(null);
-		return null;
+	public void linkAccountsToPractice(Long practiceId, Set<Long> accountIds)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
+		// To-do: Assuming this piece of Practice validation will go away when tenant
+		// filter is implemented
+		Optional<Practice> practice = practiceRepository.findById(practiceId);
+		practice.orElseThrow(() -> new ResourceNotFoundException("Practice not found : " + practiceId.toString()));
+
+		List<Account> allAccounts = accountRepository.findAllById(accountIds);
+		isAnyAccountLinkedToAnyOtherPractice(practiceId, allAccounts);
+
+		Set<Account> existingAccounts = accountRepository.findByPracticeId(practiceId);
+		existingAccounts.addAll(allAccounts);
+
+		existingAccounts.forEach(a -> {
+			if (accountIds.contains(a.getId()))
+				a.setPracticeId(practiceId);
+			else
+				a.setPracticeId(null);
+
+		});
+	}
+
+	private void isAnyAccountLinkedToAnyOtherPractice(Long practiceId, List<Account> allAccounts)
+			throws UnauthorizedAccessException {
+		Optional<Account> accountLinkedToOtherPractice = allAccounts.stream()
+			.filter(a -> a.getPracticeId() != null && !a.getPracticeId().equals(practiceId))
+			.findAny();
+		if (accountLinkedToOtherPractice.isPresent())
+			throw new UnauthorizedAccessException(
+					"Account update not authorized.Some accounts that has to be linked to current practice are linked to other practices");
 	}
 
 }
