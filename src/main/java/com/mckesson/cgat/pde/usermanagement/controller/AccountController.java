@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -90,14 +91,14 @@ public class AccountController {
 	}
 
 	@PatchMapping
-	@Operation(summary = "Link multiple accounts to a Practice.")
-	public ResponseEntity<List<Account>> linkAccountsToPractice(
-			@PathVariable @NotNull(message = "PracticeId can not be null") Long practiceId,
-			@RequestBody Set<Long> accountIds) throws ResourceNotFoundException {
-		if (Boolean.TRUE.equals(accountService.linkAccountsToPractice(practiceId, accountIds)))
-			return new ResponseEntity<>(HttpStatus.OK);
-		else
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	@Operation(
+			summary = "Link multiple accounts to a Practice.(This de-links any existing account not present in the request)")
+	public ResponseEntity<Void> linkAccountsToPractice(
+			@PathVariable @NotNull(message = "Practice Id can not be null") Long practiceId,
+			@RequestBody Set<Long> accountIds) throws ResourceNotFoundException, UnauthorizedAccessException {
+		accountService.linkAccountsToPractice(practiceId, accountIds);
+		return new ResponseEntity<>(HttpStatus.OK);
+
 	}
 
 }

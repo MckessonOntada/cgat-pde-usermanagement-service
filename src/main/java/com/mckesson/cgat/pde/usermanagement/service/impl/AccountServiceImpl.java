@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.model.Practice;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
@@ -82,16 +83,17 @@ public class AccountServiceImpl implements AccountService {
 
 	@Transactional
 	@Override
-	public Boolean linkAccountsToPractice(Long practiceId, Set<Long> accountIds) throws ResourceNotFoundException {
+	public void linkAccountsToPractice(Long practiceId, Set<Long> accountIds)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
+		// To-do: Assuming this piece of Practice validation will go away when tenant
+		// filter is implemented
 		Optional<Practice> practice = practiceRepository.findById(practiceId);
 		practice.orElseThrow(() -> new ResourceNotFoundException("Practice not found : " + practiceId.toString()));
 
 		List<Account> allAccounts = accountRepository.findAllById(accountIds);
-		Optional<Account> anyAccount = allAccounts.stream().filter(a -> a.getPracticeId() != null).findAny();
-		if (anyAccount.isPresent())
-			return false;
+		isAnyAccountLinkedToAnyOtherPractice(practiceId, allAccounts);
 
-		List<Account> existingAccounts = accountRepository.findByPracticeId(practiceId);
+		Set<Account> existingAccounts = accountRepository.findByPracticeId(practiceId);
 		existingAccounts.addAll(allAccounts);
 
 		existingAccounts.forEach(a -> {
@@ -101,9 +103,16 @@ public class AccountServiceImpl implements AccountService {
 				a.setPracticeId(null);
 
 		});
+	}
 
-		accountRepository.saveAll(existingAccounts);
-		return true;
+	private void isAnyAccountLinkedToAnyOtherPractice(Long practiceId, List<Account> allAccounts)
+			throws UnauthorizedAccessException {
+		Optional<Account> accountLinkedToOtherPractice = allAccounts.stream()
+			.filter(a -> a.getPracticeId() != null && !a.getPracticeId().equals(practiceId))
+			.findAny();
+		if (accountLinkedToOtherPractice.isPresent())
+			throw new UnauthorizedAccessException(
+					"Account update not authorized.Some accounts that has to be linked to current practice are linked to other practices");
 	}
 
 }

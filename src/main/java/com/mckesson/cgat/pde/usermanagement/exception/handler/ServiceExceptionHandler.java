@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.exception.handler;
 
+import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.jbat.auth.module.exception.BadRequestException;
 import com.mckesson.jbat.auth.module.exception.JWTNotFoundException;
 import com.mckesson.jbat.auth.module.exception.UserAuthenticationException;
@@ -39,6 +40,12 @@ public class ServiceExceptionHandler {
 
 	@ExceptionHandler({ UserAuthenticationException.class })
 	public final ResponseEntity<?> handleUserAuthenticationException(UserAuthenticationException ex,
+			WebRequest request) {
+		return buildResponseEntity(ex, request, HttpStatus.UNAUTHORIZED);
+	}
+
+	@ExceptionHandler({ UnauthorizedAccessException.class })
+	public final ResponseEntity<?> handleUserAuthenticationException(UnauthorizedAccessException ex,
 			WebRequest request) {
 		return buildResponseEntity(ex, request, HttpStatus.UNAUTHORIZED);
 	}
