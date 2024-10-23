@@ -97,6 +97,7 @@ CREATE TABLE IF NOT EXISTS account
     dc_id 						VARCHAR(255) ,
     dc_name						VARCHAR(50) 	NOT NULL ,
     is_active					INTEGER ,
+    created_at   				TIMESTAMP,
     created_by 					VARCHAR(255),
     updated_at  				TIMESTAMP,
     updated_by 					VARCHAR(255),

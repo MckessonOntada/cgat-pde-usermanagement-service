@@ -90,13 +90,13 @@ public class UserController {
 			summary = "Link/Delink User with accounts.(This API maps the accounts being passed in requst with the user "
 					+ "such as the requested mapping is the current state of user to account association")
 	public User linkUserToAccounts(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
-			@RequestParam List<Long> accountIds) throws ResourceNotFoundException {
+			@RequestBody List<Long> accountIds) throws ResourceNotFoundException {
 		return userService.linkUserToAccounts(userId, accountIds);
 
 	}
 
-	@PatchMapping("/{userId}/roles")
-	@Operation(summary = "Link User with roles")
+	@PatchMapping("/{userId}/role")
+	@Operation(summary = "Link User with role")
 	public User linkUserToRole(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
 			@RequestParam @NotNull(message = "RoleId can not be null") Long roleId)
 			throws ResourceNotFoundException {

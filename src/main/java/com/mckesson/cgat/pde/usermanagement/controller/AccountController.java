@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -34,8 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Tag(name = "Accounts", description = "Controller for Manages account-related operations and data.")
-@RequestMapping(path = "/practice/{practiceId}/accounts", consumes = "application/json",
-		produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/practice/{practiceId}/accounts", consumes = "application/json", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class AccountController {
 
@@ -49,7 +49,7 @@ public class AccountController {
 
 	@PostMapping(consumes = "application/json")
 	@Operation(summary = "Create new account")
-	public ResponseEntity<Account> createAccount(@Valid @RequestBody Account account) throws BadRequestException {
+	public ResponseEntity<Account> createAccount(@Valid @RequestBody Account account) {
 		return new ResponseEntity<>(accountService.createAccount(account), HttpStatus.OK);
 
 	}
@@ -91,8 +91,7 @@ public class AccountController {
 	}
 
 	@PatchMapping
-	@Operation(
-			summary = "Link multiple accounts to a Practice.(This de-links any existing account not present in the request)")
+	@Operation(summary = "Link multiple accounts to a Practice.(This de-links any existing account not present in the request)")
 	public ResponseEntity<Void> linkAccountsToPractice(
 			@PathVariable @NotNull(message = "Practice Id can not be null") Long practiceId,
 			@RequestBody Set<Long> accountIds) throws ResourceNotFoundException, UnauthorizedAccessException {

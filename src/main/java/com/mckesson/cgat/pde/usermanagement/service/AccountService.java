@@ -8,8 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.mckesson.cgat.pde.usermanagement.dto.LinkAccountToUserDto;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
+import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 @Service
@@ -21,7 +21,7 @@ public interface AccountService {
 
 	Page<Account> findAll(Pageable paging, String query, List<String> status, String practiceId);
 
-	Account createAccount(Account account) throws BadRequestException;
+	Account createAccount(Account account);
 
 	Account updateAccount(Long accountId, Account account) throws ResourceNotFoundException;
 
