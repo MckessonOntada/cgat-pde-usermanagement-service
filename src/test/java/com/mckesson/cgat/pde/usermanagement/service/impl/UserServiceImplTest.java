@@ -44,7 +44,7 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import com.mckesson.jbat.usermanagement.controller.AbstractTest;
 
 @SpringBootTest(classes = JacksonAutoConfiguration.class)
-class UserServiceTest extends AbstractTest {
+class UserServiceImplTest extends AbstractTest {
 
 	@InjectMocks
 	private UserServiceImpl userService;
