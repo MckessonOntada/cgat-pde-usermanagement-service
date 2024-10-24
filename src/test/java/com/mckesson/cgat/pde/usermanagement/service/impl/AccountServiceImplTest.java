@@ -1,4 +1,4 @@
-package com.mckesson.jbat.usermanagement.service.impl;
+package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
