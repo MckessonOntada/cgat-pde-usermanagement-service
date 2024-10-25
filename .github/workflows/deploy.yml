@@ -1,0 +1,112 @@
+name: Deploy Workflow
+on:
+  workflow_dispatch:
+    inputs:
+      deploy-environment:
+        type: choice
+        description: 'Environment to deploy to'
+        options:
+        - dev
+        - prod
+        - qa
+        - qa2
+        - uat
+        - prod-dr
+        required: true
+        default: 'dev' 
+      image-tag:
+        description: 'Docker tag to deploy'
+        required: true
+        default: 'latest'
+
+env:
+  # TODO: Change to name of your Docker Registry
+  DOCKER_REGISTRY: "mck-ontada-sre.jfrog.io"
+  IMAGE_TAG: "${{ github.event.inputs.image-tag }}"
+  ENV: "${{ github.event.inputs.deploy-environment }}"
+  WORKFLOW_ID: "${{ github.run_id }}"
+
+
+jobs:
+  deploy:
+    name: "${{ github.event.inputs.deploy-environment }} deploy tag : ${{ github.event.inputs.image-tag }}"
+    environment: ${{ github.event.inputs.deploy-environment }}
+    runs-on: kube-deploy
+    defaults:
+      run:
+        shell: bash
+    container:
+      image: mck-tech-platform-srvs.jfrog.io/kubectl:latest
+      credentials:
+        username: ${{ secrets.DEV_PORTAL_JFROG_USERNAME }}
+        password: ${{ secrets.DEV_PORTAL_JFROG_API_KEY }}
+    steps:
+    - name: Validate Deployment
+      run: |
+        if [ "$ENV" = "prod" ] || [ "$ENV" = "prod-dr" ] && [ "$IMAGE_TAG" = "latest" ]; then
+          echo "Prod deployment with latest tag is not allowed, please select a semantic version"
+          exit 1
+        else
+          echo "Valid deployment"
+        fi
+    -
+      name: Get Manifest File
+      uses: actions/checkout@v2
+    -
+      name: "Deploy to ${{ github.event.inputs.deploy-environment }} cluster"
+      env:
+        # TODO: Change to secrets.name of your Kubernetes SA
+        KUBERNETES_SERVICE_ACCOUNT: ${{ secrets.DEV_PORTAL_KUBE_SA_US }}
+        MANIFEST_NAME: manifest-${{ env.ENV }}.yml
+        CLUSTER_TYPE: "AKS" # Change to AKS for AKS deployments
+        CLUSTER_REGION: "US" # Change to EU for EU deployments
+        SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
+        SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+        SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+        SPRING_DATASOURCE_MAXIMUMPOOLSIZE: ${{ secrets.SPRING_DATASOURCE_MAXIMUMPOOLSIZE }}
+        OKTA_AUTHSERVERID: ${{ secrets.OKTA_AUTHSERVERID }}
+        OKTA_CLIENTID: ${{ secrets.OKTA_CLIENTID }}
+        OKTA_BASEURL: ${{ secrets.OKTA_BASEURL }}
+        CHART_ABSTRACTION_BASE_URL: ${{ secrets.CHART_ABSTRACTION_BASE_URL }}
+        OKTA_AUDIENCE: ${{ secrets.OKTA_AUDIENCE }}
+        OKTA_HOOK_AUTH_TOKEN: ${{ secrets.OKTA_HOOK_AUTH_TOKEN }}
+      run: |
+        # Setting up cluster configurations, config files are in the kubectl image
+        # https://github.com/mckesson/pltsrv-kube-apps/tree/master/kubectl
+        source /gke/gke-clusters.config
+        source /aks/aks-clusters.config
+
+        if [ "$ENV" = "prod" ]; then
+          PROD=$(eval "echo \${CLUSTER_TYPE}_\${CLUSTER_REGION}PROD")
+          SHARED_CLUSTER="\$${PROD}"
+        elif [ "$ENV" = "prod-dr" ]; then
+          EAST=$(eval "echo \${CLUSTER_TYPE}_\${CLUSTER_REGION}EAST")
+          SHARED_CLUSTER="\$${EAST}"
+        else
+          DEV=$(eval "echo  \${CLUSTER_TYPE}_\${CLUSTER_REGION}DEV")
+          SHARED_CLUSTER="\$${DEV}"
+        fi
+
+        # Set shared cluster cert and API
+        eval CLUSTER_CERT="${SHARED_CLUSTER}_CERT"
+        eval CLUSTER_API="${SHARED_CLUSTER}_API"
+
+        # envsubst command will substitute environmental variables available to this step into the
+        # kubernetes manifest file
+        # e.g. ${IMAGE_NAME} in the manifest-dev.yml will be replaced with an actual value
+        # The output i.e. the manifest file with actual values is then piped into the kubectl
+        # apply command to deploy the resources to Kubernetes
+        envsubst < .kube/${MANIFEST_NAME} | \
+        kubectl \
+          --token="$KUBERNETES_SERVICE_ACCOUNT" \
+          --certificate-authority=$CLUSTER_CERT \
+          --server=$CLUSTER_API \
+          apply -f -
+
+    - if: github.event.inputs.deploy-environment == 'prod'
+      name: Mark Release
+      uses: ncipollo/release-action@v1
+      with:
+        allowUpdates: true
+        tag: ${{ env.IMAGE_TAG }}
+        token: ${{ secrets.GITHUB_TOKEN }}
