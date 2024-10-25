@@ -98,8 +98,7 @@ public class UserController {
 	@PatchMapping("/{userId}/roles")
 	@Operation(summary = "Link User with roles")
 	public User linkUserToRole(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
-			@RequestParam @NotNull(message = "RoleId can not be null") Long roleId)
-			throws ResourceNotFoundException {
+			@RequestParam @NotNull(message = "RoleId can not be null") Long roleId) throws ResourceNotFoundException {
 
 		return userService.linkUserToRole(userId, roleId);
 

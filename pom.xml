@@ -15,8 +15,8 @@
 	<description>CGAT-PDE User Management REST Service</description>
 	<properties>
 		<retrofit.version>2.9.0</retrofit.version>
-		<common-util.version>2.0.2</common-util.version>
-		<auth-module.version>2.0.2</auth-module.version>
+		<common-util.version>2.0.4</common-util.version>
+		<auth-module.version>2.0.4</auth-module.version>
 	</properties>
 	<dependencies>
 		<dependency>
