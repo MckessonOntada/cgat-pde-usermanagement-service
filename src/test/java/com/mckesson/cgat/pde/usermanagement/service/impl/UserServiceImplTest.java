@@ -43,7 +43,7 @@ import com.mckesson.cgat.pde.usermanagement.service.impl.UserServiceImpl;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import com.mckesson.jbat.usermanagement.controller.AbstractTest;
 
-@SpringBootTest(classes = JacksonAutoConfiguration.class)
+@SpringBootTest(classes = UserServiceImplTest.class)
 class UserServiceImplTest extends AbstractTest {
 
 	@InjectMocks
@@ -311,11 +311,7 @@ class UserServiceImplTest extends AbstractTest {
 				.address(Address.builder().address1("15 Main Street").address2("Suite 505").city("New York").state("NY")
 						.zip("10005").build())
 				.isActive(true).build();
-		users.add(user1);
-		users.add(user2);
-		users.add(user3);
-		users.add(user4);
-		users.add(user5);
+		users= Arrays.asList(user1,user2,user3,user4,user5);
 
 		Sort sort = "asc".equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);

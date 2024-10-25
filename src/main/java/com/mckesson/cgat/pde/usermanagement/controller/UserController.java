@@ -26,6 +26,7 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,7 +47,7 @@ public class UserController {
 
 	@PostMapping
 	@Operation(summary = "Create new user")
-	public ResponseEntity<User> createUser(@RequestBody User model) {
+	public ResponseEntity<User> createUser(@Valid @RequestBody User model) {
 		return new ResponseEntity<>(userService.createUser(model), HttpStatus.OK);
 
 	}
