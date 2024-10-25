@@ -44,7 +44,7 @@ public class RoleServiceImpl implements RoleService {
 	public Role createOrUpdateRole(Role role, String practiceId) throws ResourceNotFoundException {
 		Optional<Practice> practiceOptionale = practiceRepository.findById(Long.valueOf(practiceId));
 		Practice practice = practiceOptionale
-				.orElseThrow(() -> new ResourceNotFoundException("Practice not found with id : " + practiceId));
+			.orElseThrow(() -> new ResourceNotFoundException("Practice not found with id : " + practiceId));
 		role.setPracticeId(practice);
 		return roleRepository.save(role);
 	}
@@ -71,8 +71,7 @@ public class RoleServiceImpl implements RoleService {
 			}
 			if (status.stream().anyMatch(i -> i.equalsIgnoreCase(CustomUtils.object_status.INACTIVE.name()))) {
 				statusActive = CustomUtils.object_status.ACTIVE.name().equals(statusActive)
-						? CustomUtils.object_status.ALL.name()
-						: CustomUtils.object_status.INACTIVE.name();
+						? CustomUtils.object_status.ALL.name() : CustomUtils.object_status.INACTIVE.name();
 			}
 		}
 		response = roleRepository.findAllByQueryText(query, statusActive, Long.valueOf(practiceId), paging);

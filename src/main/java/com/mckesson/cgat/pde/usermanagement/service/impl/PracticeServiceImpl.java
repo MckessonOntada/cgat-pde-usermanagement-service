@@ -52,7 +52,7 @@ public class PracticeServiceImpl implements PracticeService {
 	public void deletePractice(String id) throws ResourceNotFoundException {
 		Optional<Practice> practiceOpt = practiceRepository.findById(Long.valueOf(id));
 		Practice practice = practiceOpt
-				.orElseThrow(() -> new ResourceNotFoundException("Practice not found with id : " + id));
+			.orElseThrow(() -> new ResourceNotFoundException("Practice not found with id : " + id));
 		practice.setIsActive(false);
 		practiceRepository.save(practice);
 	}
@@ -69,8 +69,7 @@ public class PracticeServiceImpl implements PracticeService {
 			}
 			if (status.stream().anyMatch(i -> i.equalsIgnoreCase(CustomUtils.object_status.INACTIVE.name()))) {
 				statusActive = CustomUtils.object_status.ACTIVE.name().equals(statusActive)
-						? CustomUtils.object_status.ALL.name()
-						: CustomUtils.object_status.INACTIVE.name();
+						? CustomUtils.object_status.ALL.name() : CustomUtils.object_status.INACTIVE.name();
 			}
 		}
 		response = practiceRepository.findAllByQueryText(query, statusActive, paging);
