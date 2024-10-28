@@ -22,6 +22,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Setter
@@ -29,6 +30,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 public class Practice extends AuditColumns implements Serializable {
 
 	private static final long serialVersionUID = 1L;
