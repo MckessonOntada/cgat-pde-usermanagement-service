@@ -98,7 +98,7 @@ public class UserController {
 
 	}
 
-	@PatchMapping("/{userId}/roles")
+	@PatchMapping("/{userId}/roles-permissions")
 	@Operation(summary = "Link User with role and permissions")
 	public User linkUserToRole(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
 			@RequestParam @NotNull(message = "Role Id can not be null") Long roleId,
