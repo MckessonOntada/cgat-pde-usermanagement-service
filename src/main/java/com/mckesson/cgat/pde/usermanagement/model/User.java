@@ -1,12 +1,14 @@
 package com.mckesson.cgat.pde.usermanagement.model;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.hibernate.type.NumericBooleanConverter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -17,6 +19,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.validation.Valid;
@@ -57,10 +60,10 @@ public class User extends AuditColumns implements Serializable {
 	@Embedded
 	private Address address;
 
-	@ManyToMany(fetch = FetchType.EAGER)
+	@OneToMany(fetch = FetchType.EAGER, orphanRemoval = true)
 	@JoinTable(name = "user_permission_mapping", joinColumns = @JoinColumn(name = "user_id"),
 			inverseJoinColumns = @JoinColumn(name = "permission_id"))
-	private Set<Permission> permissions;
+	private Set<Permission> permissions = new HashSet<>();
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "user_account_mapping", joinColumns = @JoinColumn(name = "user_id"),
