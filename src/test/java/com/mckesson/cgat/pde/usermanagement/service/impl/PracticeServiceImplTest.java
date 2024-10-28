@@ -37,10 +37,9 @@ import com.mckesson.cgat.pde.usermanagement.model.Practice;
 import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
 import com.mckesson.cgat.pde.usermanagement.service.impl.utils.PracticeUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
-import com.mckesson.jbat.usermanagement.controller.AbstractTest;
 
 @SpringBootTest(classes = JacksonAutoConfiguration.class)
-class PracticeServiceImplTest extends AbstractTest {
+class PracticeServiceImplTest {
 
 	@InjectMocks
 	private PracticeServiceImpl practiceService;
@@ -55,15 +54,10 @@ class PracticeServiceImplTest extends AbstractTest {
 
 	@BeforeEach
 	public void beforeEach() {
-		practice = Practice.builder()
-			.id(1L)
-			.address(new Address("address1", "address2", "city", "state", "12345"))
-			.contact(new Contact("email@gmail.com", "1212121212", "fax"))
-			.contactPerson(new Name("first", "", "last", "MR"))
-			.isActive(Boolean.TRUE)
-			.logoUrl("logo")
-			.name("DefaultName")
-			.build();
+		practice = Practice.builder().id(1L).address(new Address("address1", "address2", "city", "state", "12345"))
+				.contact(new Contact("email@gmail.com", "1212121212", "fax"))
+				.contactPerson(new Name("first", "", "last", "MR")).isActive(Boolean.TRUE).logoUrl("logo")
+				.name("DefaultName").build();
 	}
 
 	@DisplayName("Test : Create Practice")
@@ -140,51 +134,31 @@ class PracticeServiceImplTest extends AbstractTest {
 		String sortBy = "name";
 		String sortOrder = "asc";
 		List<Practice> practices = new ArrayList<>();
-		Practice practice1 = Practice.builder()
-			.id(1L)
-			.address(new Address("address1_1", "address2_1", "city1", "state5", "12345"))
-			.contact(new Contact("email@gmail.com", "4444444444", "fax"))
-			.contactPerson(new Name("first", "", "last", "MR"))
-			.isActive(Boolean.TRUE)
-			.logoUrl("http://localhost:8080/1")
-			.name("practicename")
-			.build();
-		Practice practice2 = Practice.builder()
-			.id(3L)
-			.address(new Address("address1_2", "address2_2", "city2", "state4", "23451"))
-			.contact(new Contact("email@gmail.com", "2222222222", "fax"))
-			.contactPerson(new Name("first", "", "last", "MRS"))
-			.isActive(Boolean.TRUE)
-			.logoUrl("http://localhost:8080/2")
-			.name("practicename")
-			.build();
-		Practice practice3 = Practice.builder()
-			.id(5L)
-			.address(new Address("address1_3", "address2_3", "city3", "state3", "34512"))
-			.contact(new Contact("email@gmail.com", "9999999999", "fax"))
-			.contactPerson(new Name("first", "", "last", "MS"))
-			.isActive(Boolean.TRUE)
-			.logoUrl("http://localhost:8080/3")
-			.name("practicename")
-			.build();
-		Practice practice4 = Practice.builder()
-			.id(7L)
-			.address(new Address("address1_4", "address2_4", "city4", "state2", "45123"))
-			.contact(new Contact("email@gmail.com", "7777777777", "fax"))
-			.contactPerson(new Name("first", "", "last", "MS"))
-			.isActive(Boolean.TRUE)
-			.logoUrl("http://localhost:8080/4")
-			.name("practicename")
-			.build();
-		Practice practice5 = Practice.builder()
-			.id(9L)
-			.address(new Address("address1_5", "address2_5", "city5", "state1", "51234"))
-			.contact(new Contact("email@gmail.com", "6666666666", "fax"))
-			.contactPerson(new Name("first", "", "last", "JR"))
-			.isActive(Boolean.TRUE)
-			.logoUrl("http://localhost:8080/5")
-			.name("practicename")
-			.build();
+		Practice practice1 = Practice.builder().id(1L)
+				.address(new Address("address1_1", "address2_1", "city1", "state5", "12345"))
+				.contact(new Contact("email@gmail.com", "4444444444", "fax"))
+				.contactPerson(new Name("first", "", "last", "MR")).isActive(Boolean.TRUE)
+				.logoUrl("http://localhost:8080/1").name("practicename").build();
+		Practice practice2 = Practice.builder().id(3L)
+				.address(new Address("address1_2", "address2_2", "city2", "state4", "23451"))
+				.contact(new Contact("email@gmail.com", "2222222222", "fax"))
+				.contactPerson(new Name("first", "", "last", "MRS")).isActive(Boolean.TRUE)
+				.logoUrl("http://localhost:8080/2").name("practicename").build();
+		Practice practice3 = Practice.builder().id(5L)
+				.address(new Address("address1_3", "address2_3", "city3", "state3", "34512"))
+				.contact(new Contact("email@gmail.com", "9999999999", "fax"))
+				.contactPerson(new Name("first", "", "last", "MS")).isActive(Boolean.TRUE)
+				.logoUrl("http://localhost:8080/3").name("practicename").build();
+		Practice practice4 = Practice.builder().id(7L)
+				.address(new Address("address1_4", "address2_4", "city4", "state2", "45123"))
+				.contact(new Contact("email@gmail.com", "7777777777", "fax"))
+				.contactPerson(new Name("first", "", "last", "MS")).isActive(Boolean.TRUE)
+				.logoUrl("http://localhost:8080/4").name("practicename").build();
+		Practice practice5 = Practice.builder().id(9L)
+				.address(new Address("address1_5", "address2_5", "city5", "state1", "51234"))
+				.contact(new Contact("email@gmail.com", "6666666666", "fax"))
+				.contactPerson(new Name("first", "", "last", "JR")).isActive(Boolean.TRUE)
+				.logoUrl("http://localhost:8080/5").name("practicename").build();
 		practices.add(practice1);
 		practices.add(practice2);
 		practices.add(practice3);

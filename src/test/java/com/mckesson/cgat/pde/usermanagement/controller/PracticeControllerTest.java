@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -19,31 +20,47 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.mock.web.MockPart;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mckesson.cgat.pde.usermanagement.model.Address;
 import com.mckesson.cgat.pde.usermanagement.model.Contact;
 import com.mckesson.cgat.pde.usermanagement.model.Name;
 import com.mckesson.cgat.pde.usermanagement.model.Practice;
 import com.mckesson.cgat.pde.usermanagement.service.PracticeService;
-import com.mckesson.jbat.usermanagement.controller.AbstractTest;
+import com.mckesson.cgat.pde.usermanagement.service.impl.utils.PracticeUtils;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @WebAppConfiguration
-class PracticeControllerTest extends AbstractTest {
+class PracticeControllerTest {
 
 	@InjectMocks
 	private PracticeController controller;
 
 	@Mock
 	private PracticeService practiceService;
+
+	@Mock
+	PracticeUtils practiceUtils;
+
+	MockMvc mockMvc;
+
+	ObjectMapper objectMapper = new ObjectMapper();
 
 	private Practice practice;
 
@@ -55,15 +72,10 @@ class PracticeControllerTest extends AbstractTest {
 
 	@BeforeEach
 	public void beforeEach() {
-		practice = Practice.builder()
-			.id(1L)
-			.address(new Address("address1", "address2", "city", "state", "12345"))
-			.contact(new Contact("email@gmail.com", "1212121212", "fax"))
-			.contactPerson(new Name("first", "", "last", "MR"))
-			.isActive(Boolean.TRUE)
-			.logoUrl("logo url")
-			.name("practicename")
-			.build();
+		practice = Practice.builder().id(1L).address(new Address("address1", "address2", "city", "state", "12345"))
+				.contact(new Contact("email@gmail.com", "1212121212", "fax"))
+				.contactPerson(new Name("first", "", "last", "MR")).isActive(Boolean.TRUE).logoUrl("logo url")
+				.name("practicename").build();
 	}
 
 	@DisplayName("Test : Get Practice")
@@ -96,17 +108,9 @@ class PracticeControllerTest extends AbstractTest {
 
 		when(practiceService.findAll(paging, query, List.of(statusActive))).thenReturn(mockResponse);
 
-		mockMvc
-			.perform(get("/practice").param("pageNo", pageNo)
-				.param("pageSize", pageSize)
-				.param("sortBy", sortBy)
-				.param("sortOrder", sortOrder)
-				.param("query", query)
-				.param("status", statusActive)
-				.contentType(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andDo(print())
-			.andReturn();
+		mockMvc.perform(get("/practice").param("pageNo", pageNo).param("pageSize", pageSize).param("sortBy", sortBy)
+				.param("sortOrder", sortOrder).param("query", query).param("status", statusActive)
+				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(print()).andReturn();
 	}
 
 	private Page<Practice> getPractices() {
@@ -115,51 +119,31 @@ class PracticeControllerTest extends AbstractTest {
 		String sortBy = "name";
 		String sortOrder = "asc";
 		List<Practice> practices = new ArrayList<>();
-		Practice practice1 = Practice.builder()
-			.id(1L)
-			.address(new Address("address1_1", "address2_1", "city1", "state5", "12345"))
-			.contact(new Contact("email@gmail.com", "4444444444", "fax"))
-			.contactPerson(new Name("first", "", "last", "MR"))
-			.isActive(Boolean.TRUE)
-			.logoUrl("http://localhost:8080/1")
-			.name("practicename")
-			.build();
-		Practice practice2 = Practice.builder()
-			.id(3L)
-			.address(new Address("address1_2", "address2_2", "city2", "state4", "23451"))
-			.contact(new Contact("email@gmail.com", "2222222222", "fax"))
-			.contactPerson(new Name("first", "", "last", "MRS"))
-			.isActive(Boolean.TRUE)
-			.logoUrl("http://localhost:8080/2")
-			.name("practicename")
-			.build();
-		Practice practice3 = Practice.builder()
-			.id(5L)
-			.address(new Address("address1_3", "address2_3", "city3", "state3", "34512"))
-			.contact(new Contact("email@gmail.com", "9999999999", "fax"))
-			.contactPerson(new Name("first", "", "last", "MS"))
-			.isActive(Boolean.TRUE)
-			.logoUrl("http://localhost:8080/3")
-			.name("practicename")
-			.build();
-		Practice practice4 = Practice.builder()
-			.id(7L)
-			.address(new Address("address1_4", "address2_4", "city4", "state2", "45123"))
-			.contact(new Contact("email@gmail.com", "7777777777", "fax"))
-			.contactPerson(new Name("first", "", "last", "MS"))
-			.isActive(Boolean.TRUE)
-			.logoUrl("http://localhost:8080/4")
-			.name("practicename")
-			.build();
-		Practice practice5 = Practice.builder()
-			.id(9L)
-			.address(new Address("address1_5", "address2_5", "city5", "state1", "51234"))
-			.contact(new Contact("email@gmail.com", "6666666666", "fax"))
-			.contactPerson(new Name("first", "", "last", "JR"))
-			.isActive(Boolean.TRUE)
-			.logoUrl("http://localhost:8080/5")
-			.name("practicename")
-			.build();
+		Practice practice1 = Practice.builder().id(1L)
+				.address(new Address("address1_1", "address2_1", "city1", "state5", "12345"))
+				.contact(new Contact("email@gmail.com", "4444444444", "fax"))
+				.contactPerson(new Name("first", "", "last", "MR")).isActive(Boolean.TRUE)
+				.logoUrl("http://localhost:8080/1").name("practicename").build();
+		Practice practice2 = Practice.builder().id(3L)
+				.address(new Address("address1_2", "address2_2", "city2", "state4", "23451"))
+				.contact(new Contact("email@gmail.com", "2222222222", "fax"))
+				.contactPerson(new Name("first", "", "last", "MRS")).isActive(Boolean.TRUE)
+				.logoUrl("http://localhost:8080/2").name("practicename").build();
+		Practice practice3 = Practice.builder().id(5L)
+				.address(new Address("address1_3", "address2_3", "city3", "state3", "34512"))
+				.contact(new Contact("email@gmail.com", "9999999999", "fax"))
+				.contactPerson(new Name("first", "", "last", "MS")).isActive(Boolean.TRUE)
+				.logoUrl("http://localhost:8080/3").name("practicename").build();
+		Practice practice4 = Practice.builder().id(7L)
+				.address(new Address("address1_4", "address2_4", "city4", "state2", "45123"))
+				.contact(new Contact("email@gmail.com", "7777777777", "fax"))
+				.contactPerson(new Name("first", "", "last", "MS")).isActive(Boolean.TRUE)
+				.logoUrl("http://localhost:8080/4").name("practicename").build();
+		Practice practice5 = Practice.builder().id(9L)
+				.address(new Address("address1_5", "address2_5", "city5", "state1", "51234"))
+				.contact(new Contact("email@gmail.com", "6666666666", "fax"))
+				.contactPerson(new Name("first", "", "last", "JR")).isActive(Boolean.TRUE)
+				.logoUrl("http://localhost:8080/5").name("practicename").build();
 		practices.add(practice1);
 		practices.add(practice2);
 		practices.add(practice3);
@@ -170,44 +154,53 @@ class PracticeControllerTest extends AbstractTest {
 		return new PageImpl<>(practices, pageable, practices.size());
 	}
 
-	// @DisplayName("Test : Create Practice")
-	// @Test
-	// void createPractice() throws Exception {
-	// String practiceStr = objectMapper.writeValueAsString(practice);
-	// ClassPathResource fileResource = new ClassPathResource("");
-	// MockMultipartFile file = new MockMultipartFile("logo", fileResource.getFilename(),
-	// MediaType.MULTIPART_FORM_DATA_VALUE, fileResource.getInputStream());
-	//
-	// when(practiceService.createPractice(any(Practice.class),
-	// any(MockMultipartFile.class))).thenReturn(practice);
-	//
-	// mockMvc.perform(MockMvcRequestBuilders.multipart("/practice").file(file).param("practiceStr",
-	// practiceStr))
-	// .andDo(print()).andExpect(status().isCreated());
-	//
-	// }
+	@DisplayName("Test : Create Practice")
+	@Test
+	void createPractice() throws Exception {
+		ClassPathResource fileResource = new ClassPathResource("");
+		MockMultipartFile file = new MockMultipartFile("logo", fileResource.getFilename(),
+				MediaType.MULTIPART_FORM_DATA_VALUE, fileResource.getInputStream());
 
-	// @DisplayName("Test : Create Practice")
-	// @Test
-	// void createPractice() throws Exception {
-	// String practiceStr = objectMapper.writeValueAsString(practice);
-	// ClassPathResource fileResource = new ClassPathResource("");
-	//
-	// byte[] content = objectMapper.writeValueAsBytes(practiceStr);
-	// MockPart somePart = new MockPart("practiceStr", content);
-	// somePart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
-	//
-	// MockMultipartFile file = new MockMultipartFile("logo", fileResource.getFilename(),
-	// MediaType.MULTIPART_FORM_DATA_VALUE, fileResource.getInputStream());
-	//
-	// when(practiceService.createPractice(any(Practice.class),
-	// any(MockMultipartFile.class))).thenReturn(practice);
-	//
-	// mockMvc.perform(MockMvcRequestBuilders.multipart("/practice").file(file).part(somePart))//
-	// .param("practiceStr",
-	// // practiceStr))
-	// .andExpect(status().isCreated()).andDo(print());
-	//
-	// }
+		byte[] content = objectMapper.writeValueAsBytes(practice);
+		MockPart somePart = new MockPart("practiceStr", content);
+		somePart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+
+		when(practiceService.createPractice(any(Practice.class), any(MockMultipartFile.class))).thenReturn(practice);
+
+		mockMvc.perform(MockMvcRequestBuilders.multipart("/practice").file(file).part(somePart))
+				.andExpect(status().isCreated()).andDo(print()).andReturn();
+	}
+
+	@DisplayName("Test : Update Practice")
+	@Test
+	void updatePractice() throws Exception {
+
+		Practice newPractice = Practice.builder().id(1L)
+				.address(new Address("address1", "address2", "city", "state", "12345"))
+				.contact(new Contact("email@gmail.com", "1212121212", "fax"))
+				.contactPerson(new Name("first", "", "last", "MR")).isActive(Boolean.TRUE).logoUrl("changed logo url")
+				.name("changedpracticename").build();
+
+		ClassPathResource fileResource = new ClassPathResource("");
+		MockMultipartFile file = new MockMultipartFile("logo", fileResource.getFilename(),
+				MediaType.MULTIPART_FORM_DATA_VALUE, fileResource.getInputStream());
+
+		byte[] content = objectMapper.writeValueAsBytes(newPractice);
+		MockPart somePart = new MockPart("practiceStr", content);
+		somePart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+
+		when(practiceService.createPractice(any(Practice.class), any(MockMultipartFile.class))).thenReturn(newPractice);
+
+		MockMultipartHttpServletRequestBuilder builder = MockMvcRequestBuilders.multipart("/practice/{practiceId}",
+				newPractice.getId().toString());
+		builder.with(new RequestPostProcessor() {
+			@Override
+			public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
+				request.setMethod("PUT");
+				return request;
+			}
+		});
+		mockMvc.perform(builder.file(file).part(somePart)).andExpect(status().isOk()).andDo(print()).andReturn();
+	}
 
 }

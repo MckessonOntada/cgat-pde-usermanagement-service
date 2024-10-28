@@ -35,10 +35,9 @@ import com.mckesson.cgat.pde.usermanagement.model.Role;
 import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
-import com.mckesson.jbat.usermanagement.controller.AbstractTest;
 
 @SpringBootTest(classes = JacksonAutoConfiguration.class)
-class RoleServiceImplTest extends AbstractTest {
+class RoleServiceImplTest {
 
 	@Mock
 	RoleRepository roleRepository;
@@ -55,24 +54,13 @@ class RoleServiceImplTest extends AbstractTest {
 
 	@BeforeEach
 	public void beforeEach() {
-		practice = Practice.builder()
-			.id(1L)
-			.address(new Address("address1", "address2", "city", "state", "12345"))
-			.contact(new Contact("email@gmail.com", "1212121212", "fax"))
-			.contactPerson(new Name("first", "", "last", "MR"))
-			.isActive(Boolean.TRUE)
-			.logoUrl("logo")
-			.name("DefaultName")
-			.build();
+		practice = Practice.builder().id(1L).address(new Address("address1", "address2", "city", "state", "12345"))
+				.contact(new Contact("email@gmail.com", "1212121212", "fax"))
+				.contactPerson(new Name("first", "", "last", "MR")).isActive(Boolean.TRUE).logoUrl("logo")
+				.name("DefaultName").build();
 
-		role = Role.builder()
-			.id(1L)
-			.name("ADMIN_ROLE")
-			.description("Admin role")
-			.isActive(Boolean.TRUE)
-			.permissions(null)
-			.practiceId(practice)
-			.build();
+		role = Role.builder().id(1L).name("ADMIN_ROLE").description("Admin role").isActive(Boolean.TRUE)
+				.permissions(null).practiceId(practice).build();
 	}
 
 	@DisplayName("Test : Create Role")
@@ -136,46 +124,16 @@ class RoleServiceImplTest extends AbstractTest {
 		String sortBy = "name";
 		String sortOrder = "asc";
 		List<Role> roles = new ArrayList<>();
-		Role role1 = Role.builder()
-			.id(1L)
-			.name("ADMIN_ROLE")
-			.description("Admin role")
-			.isActive(Boolean.TRUE)
-			.permissions(null)
-			.practiceId(practice)
-			.build();
-		Role role2 = Role.builder()
-			.id(1L)
-			.name("ADMIN_ROLE")
-			.description("Admin role")
-			.isActive(Boolean.TRUE)
-			.permissions(null)
-			.practiceId(practice)
-			.build();
-		Role role3 = Role.builder()
-			.id(1L)
-			.name("ADMIN_ROLE")
-			.description("Admin role")
-			.isActive(Boolean.TRUE)
-			.permissions(null)
-			.practiceId(practice)
-			.build();
-		Role role4 = Role.builder()
-			.id(1L)
-			.name("ADMIN_ROLE")
-			.description("Admin role")
-			.isActive(Boolean.TRUE)
-			.permissions(null)
-			.practiceId(practice)
-			.build();
-		Role role5 = Role.builder()
-			.id(1L)
-			.name("ADMIN_ROLE")
-			.description("Admin role")
-			.isActive(Boolean.TRUE)
-			.permissions(null)
-			.practiceId(practice)
-			.build();
+		Role role1 = Role.builder().id(1L).name("ADMIN_ROLE").description("Admin role").isActive(Boolean.TRUE)
+				.permissions(null).practiceId(practice).build();
+		Role role2 = Role.builder().id(1L).name("ADMIN_ROLE").description("Admin role").isActive(Boolean.TRUE)
+				.permissions(null).practiceId(practice).build();
+		Role role3 = Role.builder().id(1L).name("ADMIN_ROLE").description("Admin role").isActive(Boolean.TRUE)
+				.permissions(null).practiceId(practice).build();
+		Role role4 = Role.builder().id(1L).name("ADMIN_ROLE").description("Admin role").isActive(Boolean.TRUE)
+				.permissions(null).practiceId(practice).build();
+		Role role5 = Role.builder().id(1L).name("ADMIN_ROLE").description("Admin role").isActive(Boolean.TRUE)
+				.permissions(null).practiceId(practice).build();
 		roles.add(role1);
 		roles.add(role2);
 		roles.add(role3);
