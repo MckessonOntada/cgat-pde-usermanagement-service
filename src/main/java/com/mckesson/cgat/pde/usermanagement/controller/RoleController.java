@@ -30,8 +30,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @Tag(name = "roles", description = "Controller for Manages role/permission related operations and data.")
-@RequestMapping(path = "/practice/{practiceId}/roles", produces = MediaType.APPLICATION_JSON_VALUE,
-		consumes = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/practice/{practiceId}/roles", produces = MediaType.APPLICATION_JSON_VALUE)
 
 public class RoleController {
 
