@@ -1,6 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,12 +21,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -95,13 +98,13 @@ public class UserController {
 
 	}
 
-	@PatchMapping("/{userId}/roles")
-	@Operation(summary = "Link User with roles")
+	@PatchMapping("/{userId}/roles-permissions")
+	@Operation(summary = "Link User with role and permissions")
 	public User linkUserToRole(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
-			@RequestParam @NotNull(message = "RoleId can not be null") Long roleId) throws ResourceNotFoundException {
-
-		return userService.linkUserToRole(userId, roleId);
-
+			@RequestParam @NotNull(message = "Role Id can not be null") Long roleId,
+			@RequestBody @NotEmpty(message = "Permissions can not be empty") Set<Permission> permissions)
+			throws ResourceNotFoundException {
+		return userService.linkUserToRoleAndPermissions(userId, roleId, permissions);
 	}
 
 }

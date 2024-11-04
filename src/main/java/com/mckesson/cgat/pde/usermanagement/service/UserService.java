@@ -1,10 +1,12 @@
 package com.mckesson.cgat.pde.usermanagement.service;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
@@ -22,6 +24,7 @@ public interface UserService {
 
 	User linkUserToAccounts(Long userId, List<Long> accountIds) throws ResourceNotFoundException;
 
-	User linkUserToRole(Long userId, Long roleId) throws ResourceNotFoundException;
+	User linkUserToRoleAndPermissions(Long userId, Long roleId, Set<Permission> permissions)
+			throws ResourceNotFoundException;
 
 }
