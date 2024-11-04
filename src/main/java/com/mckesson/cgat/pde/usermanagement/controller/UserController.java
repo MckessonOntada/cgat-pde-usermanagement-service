@@ -105,7 +105,6 @@ public class UserController {
 			@RequestBody @NotEmpty(message = "Permissions can not be empty") Set<Permission> permissions)
 			throws ResourceNotFoundException {
 		return userService.linkUserToRoleAndPermissions(userId, roleId, permissions);
-
 	}
 
 }
