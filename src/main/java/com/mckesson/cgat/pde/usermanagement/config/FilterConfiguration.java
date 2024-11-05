@@ -31,8 +31,10 @@ public class FilterConfiguration {
 	}
 
 	@Bean
-	public FilterRegistrationBean<UserManagementFilter> userManagementFilterFilterRegistrationBean(UserManagementFilter userManagementFilter) {
-		FilterRegistrationBean<UserManagementFilter> registrationBean = new FilterRegistrationBean<>(userManagementFilter);
+	public FilterRegistrationBean<UserManagementFilter> userManagementFilterFilterRegistrationBean(
+			UserManagementFilter userManagementFilter) {
+		FilterRegistrationBean<UserManagementFilter> registrationBean = new FilterRegistrationBean<>(
+				userManagementFilter);
 		registrationBean.addUrlPatterns("/*");
 		registrationBean.setOrder(1);
 		registrationBean.setEnabled(enableLoginFilter);
