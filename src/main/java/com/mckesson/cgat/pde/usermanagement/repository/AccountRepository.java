@@ -29,17 +29,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	Page<Account> findAllByQueryText(@Param("query") String query, @Param("status") String status, Pageable paging,
 			@Param("pacticeId") long pacticeId);
 
-	@Query(nativeQuery = true, value = """
-        SELECT *
-        FROM usermanagement.account a
-        WHERE
-        (:query IS NULL
-        OR LOWER(a.name) LIKE %:query%)
-        AND
-        a.practice_id IS NULL
-        """)
-	Page<Account> findAllByQueryTextAvail(@Param("query") String query, Pageable paging);
-
 	Set<Account> findByPracticeId(Long practiceId);
 
 }

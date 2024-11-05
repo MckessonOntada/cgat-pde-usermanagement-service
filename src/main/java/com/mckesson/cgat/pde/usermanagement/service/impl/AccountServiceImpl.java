@@ -83,14 +83,6 @@ public class AccountServiceImpl implements AccountService {
 		return response;
 	}
 
-	@Override
-	public Page<Account> findAllAvailAccounts(Pageable paging, String query) {
-		query = StringUtils.toRootLowerCase(query);
-		Page<Account> response;
-		response = accountRepository.findAllByQueryTextAvail(query, paging);
-		return response;
-	}
-
 	@Transactional
 	@Override
 	public void linkAccountsToPractice(Long practiceId, Set<Long> accountIds)

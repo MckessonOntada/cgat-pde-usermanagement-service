@@ -24,8 +24,6 @@ public interface AccountService {
 
 	Account createAccount(Account account) throws BadRequestException;
 
-	Page<Account> findAllAvailAccounts(Pageable paging, String query);
-
 	Account updateAccount(Long accountId, Account account) throws ResourceNotFoundException;
 
 	void linkAccountsToPractice(Long practiceId, Set<Long> accountIds)
