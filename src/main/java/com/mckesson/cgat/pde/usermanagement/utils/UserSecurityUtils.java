@@ -46,7 +46,7 @@ public class UserSecurityUtils {
 		UserCurrentRequestContext user = (UserCurrentRequestContext) SecurityContextHolder.getContext()
 			.getAuthentication()
 			.getPrincipal();
-		return user.getLoggedInUser().getListOfPermissions().contains(permission);
+		return user.getLoggedInUser().getPermissions().contains(permission);
 	}
 
 }

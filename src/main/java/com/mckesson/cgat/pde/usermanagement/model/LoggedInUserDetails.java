@@ -16,7 +16,7 @@ public class LoggedInUserDetails {
 
 	private String userName;
 
-	private Set<Permission> listOfPermissions = new HashSet<>();
+	private Set<Permission> permissions = new HashSet<>();
 
 	private Role role;
 

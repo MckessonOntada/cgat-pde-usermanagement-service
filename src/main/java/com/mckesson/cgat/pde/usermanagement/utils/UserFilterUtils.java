@@ -32,7 +32,7 @@ public class UserFilterUtils {
 			if (user != null) {
 				loggedInUser.setName(user.getName());
 				loggedInUser.setRole(user.getRole());
-				loggedInUser.setListOfPermissions(user.getPermissions());
+				loggedInUser.setPermissions(user.getPermissions());
 				loggedInUser.setPracticeId(user.getPracticeId());
 			}
 		}
