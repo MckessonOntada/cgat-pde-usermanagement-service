@@ -29,7 +29,6 @@ import static com.mckesson.jbat.auth.module.constant.UtilsConstant.SWAGGER_URL_T
 @Slf4j
 public class UserManagementFilter extends OncePerRequestFilter {
 
-
 	private AntPathMatcher pathMatcher;
 
 	@Autowired
@@ -40,7 +39,6 @@ public class UserManagementFilter extends OncePerRequestFilter {
 
 	@Autowired
 	private UserSecurityUtils userSecurityUtils;
-
 
 	@PostConstruct
 	public void init() {
@@ -89,9 +87,10 @@ public class UserManagementFilter extends OncePerRequestFilter {
 
 	@Override
 	public boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-		if(pathMatcher == null) {
+		if (pathMatcher == null) {
 			pathMatcher = new AntPathMatcher();
 		}
 		return Stream.of(SWAGGER_URL_TO_EXCLUDE).anyMatch(f -> pathMatcher.match(f, request.getServletPath()));
 	}
+
 }
