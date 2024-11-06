@@ -1,6 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.service;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,7 +18,7 @@ public interface RoleService {
 
 	Role getRole(String roleId) throws ResourceNotFoundException;
 
-	List<Permission> getAllPermissions();
+	Role linkPermissionToRole(Long roleId, Set<Permission> permissions) throws ResourceNotFoundException;
 
 	Page<Role> findAll(Pageable paging, String query, String practiceId, List<String> status);
 

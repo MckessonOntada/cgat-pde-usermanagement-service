@@ -41,17 +41,18 @@ public class Role extends AuditColumns implements Serializable {
 
 	@ManyToOne
 	@JoinColumn(name = "practice_id")
+	@JsonIgnore
 	private Practice practiceId;
+
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "role_permissions_mapping", joinColumns = @JoinColumn(name = "role_id"))
+	@Column(name = "permission", nullable = false)
+	@Enumerated(EnumType.STRING)
+	private Set<Permission> permissions;
 
 	@Convert(converter = NumericBooleanConverter.class)
 	@JsonIgnore
 	@JsonProperty("isActive")
 	private Boolean isActive = true;
-
-	@ElementCollection(fetch = FetchType.EAGER)
-	@Enumerated(EnumType.STRING)
-	@CollectionTable(name = "role_permissions_mapping", joinColumns = @JoinColumn(name = "role_id"))
-	@Column(name = "permission")
-	private Set<Permission> permissions;
 
 }

@@ -1,7 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -56,12 +55,13 @@ public class RoleController {
 		return ResponseEntity.status(HttpStatus.OK).body(roleService.createOrUpdateRole(role, practiceId));
 	}
 
-	@PatchMapping("/{roleId}/permissions")
-	@Operation(summary = "Get all permissions associated with a roleId.")
-	public List<Permission> getPermissionOnRoleId(
-			@PathVariable @NotNull(message = "Role Id cannot be null") String roleId) throws ResourceNotFoundException {
-		Role role = roleService.getRole(roleId);
-		return Arrays.asList(role.getPermissions());
+	@Operation(summary = "Link/Unlink Roles to permission. Associated the permission in current request with the role.")
+	public ResponseEntity<Role> linkPermissionToRole(
+			@PathVariable @NotNull(message = "Role Id can not be null") Long roleId,
+			@RequestBody @NotNull(message = "Permissions can not be null") @NotNull(
+					message = "Permissions can not be Empty") Set<Permission> permissions)
+			throws ResourceNotFoundException {
+		return ResponseEntity.status(HttpStatus.OK).body(roleService.linkPermissionToRole(roleId, permissions));
 	}
 
 	@GetMapping("/{roleId}")
