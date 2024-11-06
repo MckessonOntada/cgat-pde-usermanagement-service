@@ -3,7 +3,6 @@ package com.mckesson.cgat.pde.usermanagement.service;
 import java.util.List;
 import java.util.Set;
 
-import com.mckesson.cgat.pde.usermanagement.model.Account;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,7 +19,8 @@ public interface AccountService {
 
 	void deleteAccount(Long accountId) throws ResourceNotFoundException;
 
-	Page<Account> findAll(Pageable paging, String query, List<String> status, String practiceId);
+	Page<Account> findAll(Pageable paging, String query, List<String> status, Long userId, String practiceId)
+			throws ResourceNotFoundException;
 
 	Account createAccount(Account account) throws BadRequestException;
 
