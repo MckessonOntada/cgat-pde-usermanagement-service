@@ -62,9 +62,11 @@ public class GlobalAccountControllerTest {
 		String query = "";
 
 		Pageable paging = PageRequest.of(0, 20, Sort.by("name").ascending());
+		Pageable pageable = PageRequest.of(0, 20, Sort.by("name").descending());
 		Page<Account> mockResponse = new PageImpl<>(accounts, paging, accounts.size());
 
 		when(accountService.findAll(paging, query, null, null)).thenReturn(mockResponse);
+		when(accountService.findAll(pageable, query, null, null)).thenReturn(mockResponse);
 
 		mockMvc
 			.perform(get("/accounts").param("pageNo", pageNo)
@@ -77,42 +79,4 @@ public class GlobalAccountControllerTest {
 			.andDo(print())
 			.andReturn();
 	}
-
-	@DisplayName("Test: FindAll Available Accounts Desc")
-	@Test
-	void findAllAvailableAccountsTestDesc() throws Exception {
-
-		Account account1 = Account.builder()
-				.id(1L)
-				.practiceId(null)
-				.name("Account1")
-				.dcId("DC1")
-				.dcName("DataCenter1")
-				.isActive(true)
-				.build();
-
-		List<Account> accounts = List.of(account1);
-		String pageNo = "0";
-		String pageSize = "20";
-		String sortBy = "name";
-		String sortOrder = "desc";
-		String query = "";
-
-		Pageable paging = PageRequest.of(0, 20, Sort.by("name").descending());
-		Page<Account> mockResponse = new PageImpl<>(accounts, paging, accounts.size());
-
-		when(accountService.findAll(paging, query, null, null)).thenReturn(mockResponse);
-
-		mockMvc
-				.perform(get("/accounts").param("pageNo", pageNo)
-						.param("pageSize", pageSize)
-						.param("sortBy", sortBy)
-						.param("sortOrder", sortOrder)
-						.param("query", query)
-						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andDo(print())
-				.andReturn();
-	}
-
 }
