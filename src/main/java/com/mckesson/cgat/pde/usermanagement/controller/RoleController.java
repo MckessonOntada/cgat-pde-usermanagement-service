@@ -58,8 +58,8 @@ public class RoleController {
 
 	@PatchMapping("/{roleId}/permissions")
 	@Operation(summary = "Get all permissions associated with a roleId.")
-	public List<Permission> getPermissionOnRoleId(@PathVariable @NotNull(message = "Role Id cannot be null") String roleId)
-			throws ResourceNotFoundException {
+	public List<Permission> getPermissionOnRoleId(
+			@PathVariable @NotNull(message = "Role Id cannot be null") String roleId) throws ResourceNotFoundException {
 		Role role = roleService.getRole(roleId);
 		return Arrays.asList(role.getPermissions());
 	}

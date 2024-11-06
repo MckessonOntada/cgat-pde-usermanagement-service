@@ -47,9 +47,7 @@ public class RoleServiceImpl implements RoleService {
 	@Override
 	public List<Permission> getPermissionsByRoleId(String roleId) {
 		List<String> permissionStrings = rolePermissionMappingRepository.findPermissionsByRoleId(roleId);
-		return permissionStrings.stream()
-				.map(Permission::valueOf)
-				.collect(Collectors.toList());
+		return permissionStrings.stream().map(Permission::valueOf).collect(Collectors.toList());
 	}
 
 	@Override

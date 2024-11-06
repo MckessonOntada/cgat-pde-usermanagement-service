@@ -10,12 +10,13 @@ import java.util.List;
 @Repository
 public interface RolePermissionMappingRepository extends JpaRepository<Object, Long> {
 
-    @Query(value = """
-            SELECT permission
-            FROM usermanagement.role_permissions_mapping
-            WHERE role_id = :roleId
-            """, nativeQuery = true)
-    List<String> findPermissionsByRoleId(@Param("roleId") String roleId);
+	@Query(value = """
+			SELECT permission
+			FROM usermanagement.role_permissions_mapping
+			WHERE role_id = :roleId
+			""", nativeQuery = true)
+	List<String> findPermissionsByRoleId(@Param("roleId") String roleId);
 
-    // Additional custom queries can be added here as needed
+	// Additional custom queries can be added here as needed
+
 }

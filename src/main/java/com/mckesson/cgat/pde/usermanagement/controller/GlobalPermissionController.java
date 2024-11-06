@@ -20,15 +20,16 @@ import java.util.List;
 @Slf4j
 public class GlobalPermissionController {
 
-    private final RoleService roleService;
+	private final RoleService roleService;
 
-    public GlobalPermissionController(RoleService roleService) {
-        this.roleService = roleService;
-    }
+	public GlobalPermissionController(RoleService roleService) {
+		this.roleService = roleService;
+	}
 
-    @GetMapping
-    @Operation(summary = "Fetch AllPermissions")
-    public ResponseEntity<List<Permission>> getPermissions() {
-        return new ResponseEntity<>(roleService.getAllPermissions(), HttpStatus.OK);
-    }
+	@GetMapping
+	@Operation(summary = "Fetch AllPermissions")
+	public ResponseEntity<List<Permission>> getPermissions() {
+		return new ResponseEntity<>(roleService.getAllPermissions(), HttpStatus.OK);
+	}
+
 }
