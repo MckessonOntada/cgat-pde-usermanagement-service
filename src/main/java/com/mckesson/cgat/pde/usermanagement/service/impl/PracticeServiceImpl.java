@@ -45,13 +45,14 @@ public class PracticeServiceImpl implements PracticeService {
 	@Override
 	public Practice getPractice(String id) throws ResourceNotFoundException {
 		Optional<Practice> practiceOpt = practiceRepository.findById(Long.valueOf(id));
-		return practiceOpt.orElseThrow(() -> new ResourceNotFoundException(id));
+		return practiceOpt.orElseThrow(() -> new ResourceNotFoundException("Practice not found with id : " + id));
 	}
 
 	@Override
 	public void deletePractice(String id) throws ResourceNotFoundException {
 		Optional<Practice> practiceOpt = practiceRepository.findById(Long.valueOf(id));
-		Practice practice = practiceOpt.orElseThrow(() -> new ResourceNotFoundException(id));
+		Practice practice = practiceOpt
+			.orElseThrow(() -> new ResourceNotFoundException("Practice not found with id : " + id));
 		practice.setIsActive(false);
 		practiceRepository.save(practice);
 	}

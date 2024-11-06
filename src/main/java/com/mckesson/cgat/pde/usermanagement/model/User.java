@@ -1,6 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.model;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.hibernate.type.NumericBooleanConverter;
@@ -56,6 +57,11 @@ public class User extends AuditColumns implements Serializable {
 	@Valid
 	@Embedded
 	private Address address;
+
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "user_permission_mapping", joinColumns = @JoinColumn(name = "user_id"),
+			inverseJoinColumns = @JoinColumn(name = "permission_id"))
+	private Set<Permission> permissions;
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "user_account_mapping", joinColumns = @JoinColumn(name = "user_id"),
