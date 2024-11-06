@@ -1,6 +1,5 @@
 package com.mckesson.cgat.pde.usermanagement.repository;
 
-import java.util.List;
 import java.util.Set;
 
 import org.springframework.data.domain.Page;
@@ -31,5 +30,27 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 			@Param("pacticeId") long pacticeId);
 
 	Set<Account> findByPracticeId(Long practiceId);
+
+	@Query(nativeQuery = true,
+			value = """
+					select * FROM
+						(
+						SELECT *
+						FROM usermanagement.account ua INNER JOIN usermanagement.user_account_mapping uam ON ua.id = uam.account_id
+						) as jointuseraccountmapping
+					WHERE
+					(
+						practice_id =:practiceId
+						AND
+						jointuseraccountmapping.user_id =:userId
+						AND
+						(
+							(:status = 'ALL' and (is_active = 1 or is_active = 0))
+							OR ('ACTIVE' = :status and is_active = 1 )
+							OR ('INACTIVE' = :status and is_active = 0 )
+						)
+					)""")
+	Page<Account> findAccountsByUser(@Param("userId") Long userId, @Param("status") String status, Pageable pageable, 
+			@Param("practiceId") Long practiceId);
 
 }
