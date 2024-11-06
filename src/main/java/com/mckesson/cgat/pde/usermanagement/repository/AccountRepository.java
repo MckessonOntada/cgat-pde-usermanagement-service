@@ -16,16 +16,19 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 			SELECT *
 			FROM usermanagement.account a
 			WHERE
-			(:query IS NULL
-			OR LOWER(a.name) LIKE %:query%
-			AND
-			practice_id =:pacticeId
-			AND
 			(
-			(:status = 'ALL' and (is_active = 1 or is_active = 0))
-			OR ('ACTIVE' = :status and is_active = 1 )
-			OR ('INACTIVE' = :status and is_active = 0 )
-			))""")
+				:query IS NULL
+				OR LOWER(a.name) LIKE %:query%
+				AND
+				practice_id =:pacticeId
+				AND
+				(
+					(:status = 'ALL' and (is_active = 1 or is_active = 0))
+					OR ('ACTIVE' = :status and is_active = 1 )
+					OR ('INACTIVE' = :status and is_active = 0 )
+				)
+			)"""
+		)
 	Page<Account> findAllByQueryText(@Param("query") String query, @Param("status") String status, Pageable paging,
 			@Param("pacticeId") long pacticeId);
 
@@ -33,23 +36,22 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
 	@Query(nativeQuery = true,
 			value = """
-					select * FROM
-						(
-						SELECT *
-						FROM usermanagement.account ua INNER JOIN usermanagement.user_account_mapping uam ON ua.id = uam.account_id
-						) as jointuseraccountmapping
+					select *
+					FROM usermanagement.account ua
+					JOIN usermanagement.user_account_mapping uam ON ua.id = uam.account_id	
 					WHERE
 					(
 						practice_id =:practiceId
 						AND
-						jointuseraccountmapping.user_id =:userId
+						user_id =:userId
 						AND
 						(
 							(:status = 'ALL' and (is_active = 1 or is_active = 0))
 							OR ('ACTIVE' = :status and is_active = 1 )
 							OR ('INACTIVE' = :status and is_active = 0 )
 						)
-					)""")
+					)"""
+			)
 	Page<Account> findAccountsByUser(@Param("userId") Long userId, @Param("status") String status, Pageable pageable, 
 			@Param("practiceId") Long practiceId);
 
