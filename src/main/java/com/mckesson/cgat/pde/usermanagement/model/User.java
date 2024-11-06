@@ -60,7 +60,7 @@ public class User extends AuditColumns implements Serializable {
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "user_permission_mapping", joinColumns = @JoinColumn(name = "user_id"),
-			inverseJoinColumns = @JoinColumn(name = "permission_id"))
+			inverseJoinColumns = @JoinColumn(name = "permission"))
 	private Set<Permission> permissions;
 
 	@ManyToMany(fetch = FetchType.EAGER)
