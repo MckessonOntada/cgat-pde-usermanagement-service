@@ -3,23 +3,12 @@ package com.mckesson.cgat.pde.usermanagement.model;
 import java.io.Serializable;
 import java.util.Set;
 
+import jakarta.persistence.*;
 import org.hibernate.type.NumericBooleanConverter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -59,9 +48,9 @@ public class Role extends AuditColumns implements Serializable {
 	@JsonProperty("isActive")
 	private Boolean isActive = true;
 
-	@OneToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "role_permissions_mapping", joinColumns = @JoinColumn(name = "role_id"),
-			inverseJoinColumns = @JoinColumn(name = "permission"))
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "role_permissions_mapping", joinColumns = @JoinColumn(name = "role_id"))
+	@Column(name = "permission")
 	private Set<Permission> permissions;
 
 }
