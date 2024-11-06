@@ -49,6 +49,7 @@ public class Role extends AuditColumns implements Serializable {
 	private Boolean isActive = true;
 
 	@ElementCollection(fetch = FetchType.EAGER)
+	@Enumerated(EnumType.STRING)
 	@CollectionTable(name = "role_permissions_mapping", joinColumns = @JoinColumn(name = "role_id"))
 	@Column(name = "permission")
 	private Set<Permission> permissions;

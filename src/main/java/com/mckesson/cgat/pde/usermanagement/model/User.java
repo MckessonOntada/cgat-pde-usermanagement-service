@@ -48,6 +48,7 @@ public class User extends AuditColumns implements Serializable {
 	private Address address;
 
 	@ElementCollection(fetch = FetchType.EAGER)
+	@Enumerated(EnumType.STRING)
 	@CollectionTable(name = "user_permission_mapping", joinColumns = @JoinColumn(name = "user_id"))
 	@Column(name = "permission")
 	private Set<Permission> permissions;
