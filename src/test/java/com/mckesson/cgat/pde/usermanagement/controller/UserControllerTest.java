@@ -20,18 +20,20 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -45,12 +47,15 @@ import com.mckesson.cgat.pde.usermanagement.service.UserService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import com.mckesson.jbat.usermanagement.controller.AbstractTest;
 
-@TestInstance(Lifecycle.PER_CLASS)
+@WebMvcTest(UserController.class)
+@ContextConfiguration(classes = { UserController.class })
+@ImportAutoConfiguration(exclude = SecurityAutoConfiguration.class)
 class UserControllerTest extends AbstractTest {
 
+	@Autowired
 	private MockMvc mockMvc;
 
-	@Mock
+	@MockBean
 	private UserService userService;
 
 	@InjectMocks
@@ -60,13 +65,6 @@ class UserControllerTest extends AbstractTest {
 
 	@Autowired
 	private ObjectMapper objectMapper;
-
-	@BeforeAll
-	public void beforeAll() {
-		MockitoAnnotations.initMocks(this);
-		this.mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
-		objectMapper = new ObjectMapper();
-	}
 
 	@BeforeEach
 	public void setUp() {

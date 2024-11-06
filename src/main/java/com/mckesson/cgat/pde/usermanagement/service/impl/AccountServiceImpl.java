@@ -5,14 +5,11 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import com.databricks.sdk.service.iam.User;
-import com.mckesson.cgat.pde.usermanagement.dto.LinkAccountToUserDto;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.model.Practice;
@@ -36,7 +33,7 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public Account createAccount(Account account){
+	public Account createAccount(Account account) {
 		return accountRepository.save(account);
 	}
 
@@ -51,15 +48,13 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public Account getAccount(Long accountId) throws ResourceNotFoundException {
 		return accountRepository.findById(accountId)
-			.orElseThrow(() -> new ResourceNotFoundException(accountId.toString()));
+				.orElseThrow(() -> new ResourceNotFoundException(accountId.toString()));
 	}
 
 	@Override
 	public void deleteAccount(Long accountId) throws ResourceNotFoundException {
 		Account account = accountRepository.findById(accountId)
-			.orElseThrow(() -> new ResourceNotFoundException(accountId.toString()));
-		if (Boolean.FALSE.equals(account.getIsActive()))
-			throw new ResourceNotFoundException(accountId.toString());
+				.orElseThrow(() -> new ResourceNotFoundException(accountId.toString()));
 		account.setIsActive(false);
 		accountRepository.save(account);
 	}
@@ -101,17 +96,18 @@ public class AccountServiceImpl implements AccountService {
 		existingAccounts.forEach(a -> {
 			if (accountIds.contains(a.getId()))
 				a.setPracticeId(practiceId);
+			
 			else
 				a.setPracticeId(null);
 
 		});
+		accountRepository.saveAll(existingAccounts);
 	}
 
 	private void isAnyAccountLinkedToAnyOtherPractice(Long practiceId, List<Account> allAccounts)
 			throws UnauthorizedAccessException {
 		Optional<Account> accountLinkedToOtherPractice = allAccounts.stream()
-			.filter(a -> a.getPracticeId() != null && !a.getPracticeId().equals(practiceId))
-			.findAny();
+				.filter(a -> a.getPracticeId() != null && !a.getPracticeId().equals(practiceId)).findAny();
 		if (accountLinkedToOtherPractice.isPresent())
 			throw new UnauthorizedAccessException(
 					"Account update not authorized.Some accounts that has to be linked to current practice are linked to other practices");

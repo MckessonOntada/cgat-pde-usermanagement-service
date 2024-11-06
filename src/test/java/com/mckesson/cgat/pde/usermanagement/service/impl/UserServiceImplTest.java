@@ -96,7 +96,7 @@ class UserServiceImplTest extends AbstractTest {
 						.zip("10001").build())
 				.isActive(true).build();
 
-		User updateUser = User.builder().id(2L).practiceId(300L).name(new Name("neeraj", "kumar", "kumar", "Mr"))
+		User updateUser = User.builder().id(1L).practiceId(300L).name(new Name("neeraj", "kumar", "kumar", "Mr"))
 				.contact(
 						Contact.builder().email("neeraj.kumar@gmail.com").phone("1234567890").fax("9876543210").build())
 				.address(Address.builder().address1("15 Main Street").address2("Suite 502").city("New York").state("NY")
@@ -118,7 +118,6 @@ class UserServiceImplTest extends AbstractTest {
 	@DisplayName("DeleteUser")
 	@Test
 	void deleteUserTest() throws ResourceNotFoundException {
-		user.setIsActive(true);
 		when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 		userService.deleteUser(user.getId());
 		assertFalse(user.getIsActive());
@@ -201,7 +200,7 @@ class UserServiceImplTest extends AbstractTest {
 		verify(userRepository, never()).save(any(User.class));
 	}
 
-	@DisplayName("SomeAccountsFound : LinkUserToAccounts")
+	@DisplayName("SomeAccountsNotFound : LinkUserToAccounts")
 	@Test
 	void linkUserToAccounts_someAccountsNotFound() {
 		List<Long> newAccountIds = Arrays.asList(200L, 201L, 202L);
