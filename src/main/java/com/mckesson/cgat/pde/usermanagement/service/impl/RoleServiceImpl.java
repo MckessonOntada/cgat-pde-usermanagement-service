@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -12,7 +13,6 @@ import org.springframework.util.CollectionUtils;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.Practice;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
-import com.mckesson.cgat.pde.usermanagement.repository.PermissionRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
 import com.mckesson.cgat.pde.usermanagement.service.RoleService;
@@ -26,20 +26,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RoleServiceImpl implements RoleService {
 
-	private final PermissionRepository permissionRepository;
-
 	private final RoleRepository roleRepository;
 
 	private final PracticeRepository practiceRepository;
 
-	public RoleServiceImpl(PermissionRepository permissionRepository, RoleRepository roleRepository2,
-			PracticeRepository practiceRepository) {
-		this.permissionRepository = permissionRepository;
+	public RoleServiceImpl(RoleRepository roleRepository2, PracticeRepository practiceRepository) {
 		this.roleRepository = roleRepository2;
 		this.practiceRepository = practiceRepository;
 	}
 
-	@Override
 	@Transactional
 	public Role createOrUpdateRole(Role role, String practiceId) throws ResourceNotFoundException {
 		Optional<Practice> practiceOptionale = practiceRepository.findById(Long.valueOf(practiceId));
@@ -53,11 +48,6 @@ public class RoleServiceImpl implements RoleService {
 	public Role getRole(String roleId) throws ResourceNotFoundException {
 		Optional<Role> roleOpt = roleRepository.findById(Long.valueOf(roleId));
 		return roleOpt.orElseThrow(() -> new ResourceNotFoundException("Practice not found with id : " + roleId));
-	}
-
-	@Override
-	public List<Permission> getAllPermissions() {
-		return permissionRepository.findAll();
 	}
 
 	@Override
@@ -76,6 +66,15 @@ public class RoleServiceImpl implements RoleService {
 		}
 		response = roleRepository.findAllByQueryText(query, statusActive, Long.valueOf(practiceId), paging);
 		return response;
+	}
+
+	@Override
+	public Role linkPermissionToRole(Long roleId, Set<Permission> permissions) throws ResourceNotFoundException {
+		Role role = roleRepository.findById(roleId)
+			.orElseThrow(() -> new ResourceNotFoundException("Role not found for id :" + roleId));
+		role.getPermissions().clear();
+		role.setPermissions(permissions);
+		return roleRepository.save(role);
 	}
 
 }

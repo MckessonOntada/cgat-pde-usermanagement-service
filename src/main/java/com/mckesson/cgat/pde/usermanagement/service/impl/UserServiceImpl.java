@@ -110,7 +110,7 @@ public class UserServiceImpl implements UserService {
 
 		user.setRole(role);
 		user.getPermissions().clear();
-		user.getPermissions().addAll(permissions);
+		user.setPermissions(permissions);
 		return userRepository.save(user);
 
 	}
