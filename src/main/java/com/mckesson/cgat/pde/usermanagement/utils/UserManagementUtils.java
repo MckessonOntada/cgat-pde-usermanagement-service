@@ -3,7 +3,6 @@ package com.mckesson.cgat.pde.usermanagement.utils;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.LoggedInUserDetails;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
-import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.model.UserType;
 
 import java.util.Set;
@@ -46,8 +45,10 @@ public class UserManagementUtils {
 	public static void validateFetchUserRequest(LoggedInUserDetails loggedInUser, String practiceId)
 			throws UnauthorizedAccessException {
 		boolean ifSystemAdminUser = checkIfSystemAdmin(loggedInUser.getRole().getId(), loggedInUser.getPracticeId());
-		if (!ifSystemAdminUser && Long.parseLong(practiceId) == 1) {
-			throw new UnauthorizedAccessException("User is not authorized for this action");
+		if (!ifSystemAdminUser) {
+			long requestPracticeId = Long.parseLong(practiceId);
+			if(requestPracticeId == 1 || requestPracticeId != loggedInUser.getPracticeId())
+				throw new UnauthorizedAccessException("User is not authorized for this action");
 		}
 	}
 
