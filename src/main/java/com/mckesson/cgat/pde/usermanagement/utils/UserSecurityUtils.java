@@ -42,11 +42,11 @@ public class UserSecurityUtils {
 
 	}
 
-	public boolean hasPermission(String permission) {
+	public LoggedInUserDetails getLoggedInUser() {
 		UserCurrentRequestContext user = (UserCurrentRequestContext) SecurityContextHolder.getContext()
 			.getAuthentication()
 			.getPrincipal();
-		return user.getLoggedInUser().getPermissions().contains(permission);
+		return user.getLoggedInUser();
 	}
 
 }

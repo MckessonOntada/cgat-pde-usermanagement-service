@@ -3,6 +3,10 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import java.util.List;
 import java.util.Set;
 
+import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
+import com.mckesson.cgat.pde.usermanagement.model.*;
+import com.mckesson.cgat.pde.usermanagement.utils.UserManagementUtils;
+import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,9 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mckesson.cgat.pde.usermanagement.model.Account;
-import com.mckesson.cgat.pde.usermanagement.model.Permission;
-import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -45,16 +46,22 @@ public class UserController {
 
 	private final AccountService accountService;
 
+	private final UserSecurityUtils userSecurityUtils;
+
 	private static final String SORT_ORDER_ASC = "asc";
 
-	public UserController(UserService userModelService, AccountService accountService) {
+	public UserController(UserService userModelService, AccountService accountService,
+			UserSecurityUtils userSecurityUtils) {
 		this.userService = userModelService;
 		this.accountService = accountService;
+		this.userSecurityUtils = userSecurityUtils;
 	}
 
 	@PostMapping
 	@Operation(summary = "Create new user")
-	public ResponseEntity<User> createUser(@RequestBody User model) {
+	public ResponseEntity<User> createUser(@RequestBody User model) throws UnauthorizedAccessException {
+		LoggedInUserDetails loggedInUser = userSecurityUtils.getLoggedInUser();
+		UserManagementUtils.validateUserCreation(model, loggedInUser);
 		return new ResponseEntity<>(userService.createUser(model), HttpStatus.OK);
 
 	}
