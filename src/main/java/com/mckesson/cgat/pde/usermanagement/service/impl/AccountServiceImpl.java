@@ -13,9 +13,12 @@ import org.springframework.util.CollectionUtils;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.model.Practice;
+import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
+import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
+import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import jakarta.transaction.Transactional;
@@ -27,9 +30,13 @@ public class AccountServiceImpl implements AccountService {
 
 	private final PracticeRepository practiceRepository;
 
-	public AccountServiceImpl(AccountRepository accountRepository, PracticeRepository practiceRepository) {
+	private final UserRepository userRepository;
+
+	public AccountServiceImpl(AccountRepository accountRepository, PracticeRepository practiceRepository,
+			UserRepository userRepository) {
 		this.accountRepository = accountRepository;
 		this.practiceRepository = practiceRepository;
+		this.userRepository = userRepository;
 	}
 
 	@Override
@@ -60,22 +67,30 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public Page<Account> findAll(Pageable paging, String query, List<String> status, String practiceId) {
+	public Page<Account> findAll(Pageable paging, String query, List<String> status, Long userId, String practiceId)
+			throws ResourceNotFoundException {
 		query = StringUtils.toRootLowerCase(query);
-		Page<Account> response;
-		String statusActive = "ALL";
+		String statusActive = CustomUtils.object_status.ALL.name();
 		if (!CollectionUtils.isEmpty(status)) {
-			boolean hasActive = status.stream().anyMatch(i -> i.equalsIgnoreCase("ACTIVE"));
-			boolean hasInactive = status.stream().anyMatch(i -> i.equalsIgnoreCase("INACTIVE"));
+			boolean hasActive = status.stream()
+				.anyMatch(i -> i.equalsIgnoreCase(CustomUtils.object_status.ACTIVE.name()));
+			boolean hasInactive = status.stream()
+				.anyMatch(i -> i.equalsIgnoreCase(CustomUtils.object_status.INACTIVE.name()));
 
 			if (hasActive)
-				statusActive = "ACTIVE";
+				statusActive = CustomUtils.object_status.ACTIVE.name();
 
 			if (hasInactive)
-				statusActive = "ACTIVE".equals(statusActive) ? "ALL" : "INACTIVE";
+				statusActive = CustomUtils.object_status.ACTIVE.name().equals(statusActive)
+						? CustomUtils.object_status.ALL.name() : CustomUtils.object_status.INACTIVE.name();
 		}
-		response = accountRepository.findAllByQueryText(query, statusActive, paging, Long.valueOf(practiceId));
-		return response;
+		if (userId != null) {
+			Optional<User> user = userRepository.findById(userId);
+			if (!user.isPresent())
+				throw new ResourceNotFoundException("User not found with id: " + userId);
+			return accountRepository.findAccountsByUser(userId, statusActive, paging, Long.valueOf(practiceId));
+		}
+		return accountRepository.findAllByQueryText(query, statusActive, paging, Long.valueOf(practiceId));
 	}
 
 	@Transactional
