@@ -31,8 +31,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 					)
 			 )
 			   """)
-	Page<User> findAllByQueryText(@Param("status") String status, @Param("query") String query,Pageable paging,
+	Page<User> findAllByQueryText(@Param("status") String status, @Param("query") String query, Pageable paging,
 			@Param("practiceId") long practiceId);
-	
 
 }

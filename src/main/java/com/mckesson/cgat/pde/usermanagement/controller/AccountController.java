@@ -35,7 +35,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Tag(name = "Accounts", description = "Controller for Manages account-related operations and data.")
-@RequestMapping(path = "/practice/{practiceId}/accounts", consumes = "application/json", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/practice/{practiceId}/accounts", consumes = "application/json",
+		produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class AccountController {
 
@@ -91,7 +92,8 @@ public class AccountController {
 	}
 
 	@PatchMapping
-	@Operation(summary = "Link multiple accounts to a Practice.(This de-links any existing account not present in the request)")
+	@Operation(
+			summary = "Link multiple accounts to a Practice.(This de-links any existing account not present in the request)")
 	public ResponseEntity<Void> linkAccountsToPractice(
 			@PathVariable @NotNull(message = "Practice Id can not be null") Long practiceId,
 			@RequestBody Set<Long> accountIds) throws ResourceNotFoundException, UnauthorizedAccessException {

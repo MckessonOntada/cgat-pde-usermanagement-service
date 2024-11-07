@@ -56,8 +56,15 @@ class AccountServiceImplTest extends AbstractTest {
 
 	@BeforeEach
 	public void setUp() {
-		account = Account.builder().id(1L).practiceId(100L).name("account").dcId("123").dcName("dcname").user(null)
-				.isActive(true).build();
+		account = Account.builder()
+			.id(1L)
+			.practiceId(100L)
+			.name("account")
+			.dcId("123")
+			.dcName("dcname")
+			.user(null)
+			.isActive(true)
+			.build();
 
 	}
 
@@ -83,10 +90,24 @@ class AccountServiceImplTest extends AbstractTest {
 	@Test
 	void updateAccountTest() throws ResourceNotFoundException {
 
-		Account oldAccount = Account.builder().id(1L).practiceId(100L).name("abc").dcId("123").dcName("dcname")
-				.user(null).isActive(true).build();
-		Account newAccount = Account.builder().id(2L).practiceId(100L).name("abcd").dcId("1243").dcName("dcname2")
-				.user(null).isActive(true).build();
+		Account oldAccount = Account.builder()
+			.id(1L)
+			.practiceId(100L)
+			.name("abc")
+			.dcId("123")
+			.dcName("dcname")
+			.user(null)
+			.isActive(true)
+			.build();
+		Account newAccount = Account.builder()
+			.id(2L)
+			.practiceId(100L)
+			.name("abcd")
+			.dcId("1243")
+			.dcName("dcname2")
+			.user(null)
+			.isActive(true)
+			.build();
 		when(accountRepository.findById(oldAccount.getId())).thenReturn(Optional.of(oldAccount));
 		when(accountRepository.save(newAccount)).thenReturn(newAccount);
 
@@ -135,18 +156,41 @@ class AccountServiceImplTest extends AbstractTest {
 		Long practiceId = 1L;
 		Set<Long> accountIds = new HashSet<>(Arrays.asList(1L, 2L));
 
-		Practice practice = Practice.builder().id(practiceId).name("practice_name").logoUrl("logo_url")
-				.contactPerson(Name.builder().firstName("ram").middleName(" ").lastName("kumar").suffix("mr").build())
-				.address(Address.builder().address1("address1").address2("address1").city("noida").state("up")
-						.zip("201301").build())
-				.contact(Contact.builder().email("abc@gmail.com").phone("1234567890").fax("").build()).isActive(true)
-				.build();
+		Practice practice = Practice.builder()
+			.id(practiceId)
+			.name("practice_name")
+			.logoUrl("logo_url")
+			.contactPerson(Name.builder().firstName("ram").middleName(" ").lastName("kumar").suffix("mr").build())
+			.address(Address.builder()
+				.address1("address1")
+				.address2("address1")
+				.city("noida")
+				.state("up")
+				.zip("201301")
+				.build())
+			.contact(Contact.builder().email("abc@gmail.com").phone("1234567890").fax("").build())
+			.isActive(true)
+			.build();
 
-		Account account1 = Account.builder().id(1L).practiceId(1L).name("account1").dcId("123").dcName("dcname1")
-				.user(null).isActive(true).build();
+		Account account1 = Account.builder()
+			.id(1L)
+			.practiceId(1L)
+			.name("account1")
+			.dcId("123")
+			.dcName("dcname1")
+			.user(null)
+			.isActive(true)
+			.build();
 
-		Account account2 = Account.builder().id(2L).practiceId(1L).name("account2").dcId("1243").dcName("dcname2")
-				.user(null).isActive(true).build();
+		Account account2 = Account.builder()
+			.id(2L)
+			.practiceId(1L)
+			.name("account2")
+			.dcId("1243")
+			.dcName("dcname2")
+			.user(null)
+			.isActive(true)
+			.build();
 
 		List<Account> accounts = Arrays.asList(account1, account2);
 
@@ -178,23 +222,65 @@ class AccountServiceImplTest extends AbstractTest {
 		String sortBy = "name";
 		String sortOrder = "asc";
 
-		Account account1 = Account.builder().id(1L).practiceId(100L).name("account1").dcId("123").dcName("dcname1")
-				.user(null).isActive(true).build();
+		Account account1 = Account.builder()
+			.id(1L)
+			.practiceId(100L)
+			.name("account1")
+			.dcId("123")
+			.dcName("dcname1")
+			.user(null)
+			.isActive(true)
+			.build();
 
-		Account account2 = Account.builder().id(2L).practiceId(200L).name("account2").dcId("1243").dcName("dcname2")
-				.user(null).isActive(true).build();
+		Account account2 = Account.builder()
+			.id(2L)
+			.practiceId(200L)
+			.name("account2")
+			.dcId("1243")
+			.dcName("dcname2")
+			.user(null)
+			.isActive(true)
+			.build();
 
-		Account account3 = Account.builder().id(1L).practiceId(100L).name("account3").dcId("12345").dcName("dcname3")
-				.user(null).isActive(true).build();
+		Account account3 = Account.builder()
+			.id(1L)
+			.practiceId(100L)
+			.name("account3")
+			.dcId("12345")
+			.dcName("dcname3")
+			.user(null)
+			.isActive(true)
+			.build();
 
-		Account account4 = Account.builder().id(2L).practiceId(200L).name("account4").dcId("12434").dcName("dcname4")
-				.user(null).isActive(true).build();
+		Account account4 = Account.builder()
+			.id(2L)
+			.practiceId(200L)
+			.name("account4")
+			.dcId("12434")
+			.dcName("dcname4")
+			.user(null)
+			.isActive(true)
+			.build();
 
-		Account account5 = Account.builder().id(1L).practiceId(100L).name("account5").dcId("12345").dcName("dcname5")
-				.user(null).isActive(true).build();
+		Account account5 = Account.builder()
+			.id(1L)
+			.practiceId(100L)
+			.name("account5")
+			.dcId("12345")
+			.dcName("dcname5")
+			.user(null)
+			.isActive(true)
+			.build();
 
-		Account account6 = Account.builder().id(2L).practiceId(200L).name("account6").dcId("12435").dcName("dcname6")
-				.user(null).isActive(true).build();
+		Account account6 = Account.builder()
+			.id(2L)
+			.practiceId(200L)
+			.name("account6")
+			.dcId("12435")
+			.dcName("dcname6")
+			.user(null)
+			.isActive(true)
+			.build();
 
 		List<Account> accounts = Arrays.asList(account1, account2, account3, account4, account5, account6);
 

@@ -48,13 +48,13 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public Account getAccount(Long accountId) throws ResourceNotFoundException {
 		return accountRepository.findById(accountId)
-				.orElseThrow(() -> new ResourceNotFoundException(accountId.toString()));
+			.orElseThrow(() -> new ResourceNotFoundException(accountId.toString()));
 	}
 
 	@Override
 	public void deleteAccount(Long accountId) throws ResourceNotFoundException {
 		Account account = accountRepository.findById(accountId)
-				.orElseThrow(() -> new ResourceNotFoundException(accountId.toString()));
+			.orElseThrow(() -> new ResourceNotFoundException(accountId.toString()));
 		account.setIsActive(false);
 		accountRepository.save(account);
 	}
@@ -96,7 +96,7 @@ public class AccountServiceImpl implements AccountService {
 		existingAccounts.forEach(a -> {
 			if (accountIds.contains(a.getId()))
 				a.setPracticeId(practiceId);
-			
+
 			else
 				a.setPracticeId(null);
 
@@ -107,7 +107,8 @@ public class AccountServiceImpl implements AccountService {
 	private void isAnyAccountLinkedToAnyOtherPractice(Long practiceId, List<Account> allAccounts)
 			throws UnauthorizedAccessException {
 		Optional<Account> accountLinkedToOtherPractice = allAccounts.stream()
-				.filter(a -> a.getPracticeId() != null && !a.getPracticeId().equals(practiceId)).findAny();
+			.filter(a -> a.getPracticeId() != null && !a.getPracticeId().equals(practiceId))
+			.findAny();
 		if (accountLinkedToOtherPractice.isPresent())
 			throw new UnauthorizedAccessException(
 					"Account update not authorized.Some accounts that has to be linked to current practice are linked to other practices");

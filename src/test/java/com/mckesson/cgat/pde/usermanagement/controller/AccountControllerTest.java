@@ -63,8 +63,15 @@ class AccountControllerTest {
 
 	@BeforeEach
 	public void setUp() {
-		account = Account.builder().id(1L).practiceId(100L).name("abc").dcId("123").dcName("dcname").user(null)
-				.isActive(true).build();
+		account = Account.builder()
+			.id(1L)
+			.practiceId(100L)
+			.name("abc")
+			.dcId("123")
+			.dcName("dcname")
+			.user(null)
+			.isActive(true)
+			.build();
 	}
 
 	@DisplayName("CreateAccountTest")
@@ -73,9 +80,12 @@ class AccountControllerTest {
 		String objectString = objectMapper.writeValueAsString(account);
 		when(accountService.createAccount(any(Account.class))).thenReturn(account);
 		MvcResult result = mockMvc
-				.perform(post("/practice/{practiceId}/accounts", account.getPracticeId())
-						.contentType(MediaType.APPLICATION_JSON).content(objectString))
-				.andExpect(status().isOk()).andDo(print()).andReturn();
+			.perform(post("/practice/{practiceId}/accounts", account.getPracticeId())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectString))
+			.andExpect(status().isOk())
+			.andDo(print())
+			.andReturn();
 
 		assertNotNull(result);
 
@@ -84,13 +94,21 @@ class AccountControllerTest {
 	@DisplayName("ValidationError :CreateAccountTest")
 	@Test
 	void createAccount_ValidationErrorTest() throws Exception {
-		account = Account.builder().id(1L).practiceId(100L).name("").dcId("123").dcName("dcname").user(null)
-				.isActive(true).build();
+		account = Account.builder()
+			.id(1L)
+			.practiceId(100L)
+			.name("")
+			.dcId("123")
+			.dcName("dcname")
+			.user(null)
+			.isActive(true)
+			.build();
 
 		ResultActions result = mockMvc
-				.perform(post("/practice/{practiceId}/accounts", account.getPracticeId())
-						.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(account)))
-				.andExpect(status().isBadRequest());
+			.perform(post("/practice/{practiceId}/accounts", account.getPracticeId())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(account)))
+			.andExpect(status().isBadRequest());
 		assertNotNull(result);
 	}
 
@@ -98,18 +116,32 @@ class AccountControllerTest {
 	@Test
 	void updateAccountTest() throws Exception {
 
-		Account requestedAccount = Account.builder().id(null).practiceId(100L).name("abc").dcId("123").dcName("dcname")
-				.user(null).isActive(true).build();
+		Account requestedAccount = Account.builder()
+			.id(null)
+			.practiceId(100L)
+			.name("abc")
+			.dcId("123")
+			.dcName("dcname")
+			.user(null)
+			.isActive(true)
+			.build();
 
-		Account updatedAccount = Account.builder().id(1L).practiceId(100L).name("abcd").dcId("1234").dcName("dcname")
-				.user(null).isActive(true).build();
+		Account updatedAccount = Account.builder()
+			.id(1L)
+			.practiceId(100L)
+			.name("abcd")
+			.dcId("1234")
+			.dcName("dcname")
+			.user(null)
+			.isActive(true)
+			.build();
 
 		when(accountService.updateAccount(account.getId(), requestedAccount)).thenReturn(updatedAccount);
 		ResultActions result = mockMvc
-				.perform(put("/practice/{practiceId}/accounts/{accountId}", account.getPracticeId(), account.getId())
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(requestedAccount)))
-				.andExpect(status().isOk());
+			.perform(put("/practice/{practiceId}/accounts/{accountId}", account.getPracticeId(), account.getId())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(requestedAccount)))
+			.andExpect(status().isOk());
 		assertNotNull(result);
 	}
 
@@ -118,9 +150,10 @@ class AccountControllerTest {
 	void getAccountTest() throws Exception {
 		when(accountService.getAccount(account.getId())).thenReturn(account);
 		ResultActions result = mockMvc
-				.perform(get("/practice/{practiceId}/accounts/{accountId}", account.getPracticeId(), account.getId())
-						.contentType(MediaType.APPLICATION_JSON_VALUE))
-				.andDo(print()).andExpect(status().isOk());
+			.perform(get("/practice/{practiceId}/accounts/{accountId}", account.getPracticeId(), account.getId())
+				.contentType(MediaType.APPLICATION_JSON_VALUE))
+			.andDo(print())
+			.andExpect(status().isOk());
 		assertNotNull(result);
 
 	}
@@ -129,14 +162,22 @@ class AccountControllerTest {
 	@Test
 	void accountNotFoundTest() throws Exception {
 
-		Account updatedAccount = Account.builder().id(1L).practiceId(100L).name("abcd").dcId("1234").dcName("dcname")
-				.user(null).isActive(true).build();
+		Account updatedAccount = Account.builder()
+			.id(1L)
+			.practiceId(100L)
+			.name("abcd")
+			.dcId("1234")
+			.dcName("dcname")
+			.user(null)
+			.isActive(true)
+			.build();
 		when(accountService.updateAccount(account.getId(), updatedAccount))
-				.thenThrow(new ResourceNotFoundException("Account not found"));
+			.thenThrow(new ResourceNotFoundException("Account not found"));
 
-		ResultActions result = mockMvc.perform(put("/{accountId}", account.getId())
-				.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updatedAccount)))
-				.andExpect(status().isNotFound());
+		ResultActions result = mockMvc
+			.perform(put("/{accountId}", account.getId()).contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(updatedAccount)))
+			.andExpect(status().isNotFound());
 		assertNotNull(result);
 	}
 
@@ -145,9 +186,9 @@ class AccountControllerTest {
 	void deleteaAccountTest() throws Exception {
 		doNothing().when(accountService).deleteAccount(account.getId());
 		ResultActions result = mockMvc
-				.perform(delete("/practice/{practiceId}/accounts/{accountId}", account.getPracticeId(), account.getId())
-						.contentType(MediaType.APPLICATION_JSON_VALUE))
-				.andExpect(status().isOk());
+			.perform(delete("/practice/{practiceId}/accounts/{accountId}", account.getPracticeId(), account.getId())
+				.contentType(MediaType.APPLICATION_JSON_VALUE))
+			.andExpect(status().isOk());
 		assertNotNull(result);
 
 	}
@@ -157,11 +198,15 @@ class AccountControllerTest {
 	void findAllTest() throws Exception {
 		Page<Account> accountPage = getAccountList();
 		when(accountService.findAll(any(PageRequest.class), any(String.class), any(List.class), any(String.class)))
-				.thenReturn(accountPage);
+			.thenReturn(accountPage);
 
-		ResultActions result = mockMvc.perform(get("/practice/{practiceId}/accounts", account.getPracticeId())
-				.param("pageNo", "0").param("pageSize", "20").param("sortBy", "first_name").param("sortOrder", "asc")
-				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+		ResultActions result = mockMvc
+			.perform(get("/practice/{practiceId}/accounts", account.getPracticeId()).param("pageNo", "0")
+				.param("pageSize", "20")
+				.param("sortBy", "first_name")
+				.param("sortOrder", "asc")
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk());
 		assertNotNull(result);
 	}
 
@@ -174,8 +219,9 @@ class AccountControllerTest {
 		doNothing().when(accountService).linkAccountsToPractice(practiceId, accountIds);
 
 		ResultActions result = mockMvc
-				.perform(patch("/practice/{practiceId}/accounts/{accountId}", practiceId, account.getId())
-						.contentType("application/json").content(objectMapper.writeValueAsString(accountIds)));
+			.perform(patch("/practice/{practiceId}/accounts/{accountId}", practiceId, account.getId())
+				.contentType("application/json")
+				.content(objectMapper.writeValueAsString(accountIds)));
 		assertNotNull(result);
 	}
 
@@ -185,20 +231,55 @@ class AccountControllerTest {
 		String sortBy = "name";
 		String sortOrder = "asc";
 
-		Account account1 = Account.builder().id(121L).practiceId(100L).name("abc").dcId("123").dcName("dcname1")
-				.user(null).isActive(true).build();
+		Account account1 = Account.builder()
+			.id(121L)
+			.practiceId(100L)
+			.name("abc")
+			.dcId("123")
+			.dcName("dcname1")
+			.user(null)
+			.isActive(true)
+			.build();
 
-		Account account2 = Account.builder().id(122L).practiceId(101L).name("abcd").dcId("1234").dcName("dcname2")
-				.user(null).isActive(true).build();
+		Account account2 = Account.builder()
+			.id(122L)
+			.practiceId(101L)
+			.name("abcd")
+			.dcId("1234")
+			.dcName("dcname2")
+			.user(null)
+			.isActive(true)
+			.build();
 
-		Account account3 = Account.builder().id(121L).practiceId(102L).name("abcde").dcId("12345").dcName("dcname3")
-				.user(null).isActive(true).build();
+		Account account3 = Account.builder()
+			.id(121L)
+			.practiceId(102L)
+			.name("abcde")
+			.dcId("12345")
+			.dcName("dcname3")
+			.user(null)
+			.isActive(true)
+			.build();
 
-		Account account4 = Account.builder().id(121L).practiceId(103L).name("abcdef").dcId("123456").dcName("dcname4")
-				.user(null).isActive(true).build();
+		Account account4 = Account.builder()
+			.id(121L)
+			.practiceId(103L)
+			.name("abcdef")
+			.dcId("123456")
+			.dcName("dcname4")
+			.user(null)
+			.isActive(true)
+			.build();
 
-		Account account5 = Account.builder().id(121L).practiceId(104L).name("abcdefg").dcId("1234567").dcName("dcname5")
-				.user(null).isActive(true).build();
+		Account account5 = Account.builder()
+			.id(121L)
+			.practiceId(104L)
+			.name("abcdefg")
+			.dcId("1234567")
+			.dcName("dcname5")
+			.user(null)
+			.isActive(true)
+			.build();
 		List<Account> accounts = Arrays.asList(account1, account2, account3, account4, account5);
 
 		Sort sort = "asc".equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
