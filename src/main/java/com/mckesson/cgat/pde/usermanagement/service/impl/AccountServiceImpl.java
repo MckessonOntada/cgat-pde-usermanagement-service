@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -41,7 +40,7 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public Account createAccount(Account account) throws BadRequestException {
+	public Account createAccount(Account account) {
 		return accountRepository.save(account);
 	}
 
@@ -63,8 +62,6 @@ public class AccountServiceImpl implements AccountService {
 	public void deleteAccount(Long accountId) throws ResourceNotFoundException {
 		Account account = accountRepository.findById(accountId)
 			.orElseThrow(() -> new ResourceNotFoundException(accountId.toString()));
-		if (Boolean.FALSE.equals(account.getIsActive()))
-			throw new ResourceNotFoundException(accountId.toString());
 		account.setIsActive(false);
 		accountRepository.save(account);
 	}
@@ -114,10 +111,12 @@ public class AccountServiceImpl implements AccountService {
 		existingAccounts.forEach(a -> {
 			if (accountIds.contains(a.getId()))
 				a.setPracticeId(practiceId);
+
 			else
 				a.setPracticeId(null);
 
 		});
+		accountRepository.saveAll(existingAccounts);
 	}
 
 	private void isAnyAccountLinkedToAnyOtherPractice(Long practiceId, List<Account> allAccounts)

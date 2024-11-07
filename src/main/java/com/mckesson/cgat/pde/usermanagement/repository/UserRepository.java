@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.model.User;
 
 @Repository
@@ -30,7 +31,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 					)
 			 )
 			   """)
-	Page<User> findAllByQueryText(@Param("query") String query, @Param("status") String status, Pageable paging,
+	Page<User> findAllByQueryText(@Param("status") String status, @Param("query") String query, Pageable paging,
 			@Param("practiceId") long practiceId);
 
 }
