@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import java.util.List;
 import java.util.Set;
 
+import com.mckesson.cgat.pde.usermanagement.model.Role;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -100,11 +101,12 @@ public class UserController {
 
 	@PatchMapping("/{userId}/roles-permissions")
 	@Operation(summary = "Link User with role and permissions")
-	public User linkUserToRole(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
+	public ResponseEntity<User> linkUserToRole(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
 			@RequestParam @NotNull(message = "Role Id can not be null") Long roleId,
-			@RequestBody @NotEmpty(message = "Permissions can not be empty") Set<Permission> permissions)
+			@RequestBody @NotEmpty(message = "Permissions can not be empty") @NotNull(message = "Permissions can not be null")
+								   Set<Permission> permissions)
 			throws ResourceNotFoundException {
-		return userService.linkUserToRoleAndPermissions(userId, roleId, permissions);
+		return ResponseEntity.status(HttpStatus.OK).body(userService.linkUserToRoleAndPermissions(userId, roleId, permissions));
 	}
 
 }
