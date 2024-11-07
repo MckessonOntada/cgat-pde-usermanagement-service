@@ -4,6 +4,7 @@ import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessE
 import com.mckesson.cgat.pde.usermanagement.model.LoggedInUserDetails;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.User;
+import com.mckesson.cgat.pde.usermanagement.model.UserType;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -14,15 +15,12 @@ public class UserManagementUtils {
 		return roleId == 1 && practiceId == 1;
 	}
 
-	public static void validateUserCreation(User user, LoggedInUserDetails loggedInUser)
+
+	public static void validateUserCreation(LoggedInUserDetails loggedInUser, UserType userType)
 			throws UnauthorizedAccessException {
-		Long roleId = user.getRole().getId();
-		Long practiceId = user.getPracticeId();
 
 		boolean ifSystemAdminUser = checkIfSystemAdmin(loggedInUser.getRole().getId(), loggedInUser.getPracticeId());
-		boolean isCreatingSystemAdminUser = checkIfSystemAdmin(roleId, practiceId);
-
-		if (isCreatingSystemAdminUser) {
+		if (UserType.SystemAdmin.equals(userType)) {
 			if (!ifSystemAdminUser) {
 				throw new UnauthorizedAccessException("User is not authorized for this action");
 			}

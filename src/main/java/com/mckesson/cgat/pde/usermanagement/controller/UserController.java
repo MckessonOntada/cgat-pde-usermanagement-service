@@ -59,11 +59,12 @@ public class UserController {
 
 	@PostMapping
 	@Operation(summary = "Create new user")
-	public ResponseEntity<User> createUser(@RequestBody User model) throws UnauthorizedAccessException {
+	public ResponseEntity<User> createUser(@RequestBody UserRequestModel model) throws UnauthorizedAccessException {
+		User user = model.getUser();
+		UserType userType = model.getUserType();
 		LoggedInUserDetails loggedInUser = userSecurityUtils.getLoggedInUser();
-		UserManagementUtils.validateUserCreation(model, loggedInUser);
-		return new ResponseEntity<>(userService.createUser(model), HttpStatus.OK);
-
+		UserManagementUtils.validateUserCreation(loggedInUser, userType);
+		return new ResponseEntity<>(userService.createUser(user), HttpStatus.OK);
 	}
 
 	@PutMapping("/{userId}")
