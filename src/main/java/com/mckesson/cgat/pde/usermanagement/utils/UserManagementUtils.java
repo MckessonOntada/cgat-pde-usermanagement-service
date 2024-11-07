@@ -15,7 +15,6 @@ public class UserManagementUtils {
 		return roleId == 1 && practiceId == 1;
 	}
 
-
 	public static void validateUserCreation(LoggedInUserDetails loggedInUser, UserType userType)
 			throws UnauthorizedAccessException {
 
