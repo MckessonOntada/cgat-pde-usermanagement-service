@@ -1,6 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import com.mckesson.cgat.pde.usermanagement.model.Account;
+import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
 import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
@@ -95,8 +97,10 @@ public class UserServiceImpl implements UserService {
 
 	}
 
+	@Transactional
 	@Override
-	public User linkUserToRole(Long userId, Long roleId) throws ResourceNotFoundException {
+	public User linkUserToRoleAndPermissions(Long userId, Long roleId, Set<Permission> permissions)
+			throws ResourceNotFoundException {
 
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new ResourceNotFoundException("User not found with this Id :" + userId));
@@ -105,6 +109,8 @@ public class UserServiceImpl implements UserService {
 			.orElseThrow(() -> new ResourceNotFoundException("Role not found with this Id :" + roleId));
 
 		user.setRole(role);
+		user.getPermissions().clear();
+		user.getPermissions().addAll(permissions);
 		return userRepository.save(user);
 
 	}

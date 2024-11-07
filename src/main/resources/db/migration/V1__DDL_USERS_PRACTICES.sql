@@ -119,7 +119,13 @@ CREATE SEQUENCE USER_SEQUENCE START WITH 1 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE
     
 CREATE SEQUENCE ACCOUNT_SEQUENCE START WITH 1 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE  CACHE 20;  
    
-
+CREATE TABLE IF NOT EXISTS user_permission_mapping (
+    user_id 					INTEGER NOT NULL,
+    permission_id 				INTEGER NOT NULL,
+    PRIMARY KEY 				(user_id, permission_id),
+    FOREIGN KEY 				(user_id) REFERENCES "user"(id),
+    FOREIGN KEY 				(permission_id) REFERENCES permission(id)
+);
 
 
 

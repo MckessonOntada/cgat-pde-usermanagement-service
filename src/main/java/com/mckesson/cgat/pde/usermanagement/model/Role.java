@@ -57,7 +57,7 @@ public class Role extends AuditColumns implements Serializable {
 	@Convert(converter = NumericBooleanConverter.class)
 	@JsonIgnore
 	@JsonProperty("isActive")
-	private Boolean isActive = false;
+	private Boolean isActive = true;
 
 	@OneToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "role_permissions_mapping", joinColumns = @JoinColumn(name = "role_id"),

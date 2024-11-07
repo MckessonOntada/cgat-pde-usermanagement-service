@@ -1,6 +1,6 @@
-FROM openjdk:17
+FROM mck-ontada-sre.jfrog.io/openjdk-17
 
-EXPOSE 8080
+EXPOSE 8082
 ARG JAR_FILE=build/libs/*.jar
 
 RUN useradd -ms /bin/bash nonrootuser

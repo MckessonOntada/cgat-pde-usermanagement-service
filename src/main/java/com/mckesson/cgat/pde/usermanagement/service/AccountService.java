@@ -19,7 +19,8 @@ public interface AccountService {
 
 	void deleteAccount(Long accountId) throws ResourceNotFoundException;
 
-	Page<Account> findAll(Pageable paging, String query, List<String> status, String practiceId);
+	Page<Account> findAll(Pageable paging, String query, List<String> status, Long userId, String practiceId)
+			throws ResourceNotFoundException;
 
 	Account createAccount(Account account);
 

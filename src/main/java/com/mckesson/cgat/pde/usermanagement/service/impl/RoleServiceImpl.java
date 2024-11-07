@@ -18,7 +18,6 @@ import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
 import com.mckesson.cgat.pde.usermanagement.service.RoleService;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
-import org.springframework.util.CollectionUtils;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -43,8 +42,9 @@ public class RoleServiceImpl implements RoleService {
 	@Override
 	@Transactional
 	public Role createOrUpdateRole(Role role, String practiceId) throws ResourceNotFoundException {
-		Optional<Practice> roleOpt = practiceRepository.findById(Long.valueOf(practiceId));
-		Practice practice = roleOpt.orElseThrow(() -> new ResourceNotFoundException(practiceId));
+		Optional<Practice> practiceOptionale = practiceRepository.findById(Long.valueOf(practiceId));
+		Practice practice = practiceOptionale
+			.orElseThrow(() -> new ResourceNotFoundException("Practice not found with id : " + practiceId));
 		role.setPracticeId(practice);
 		return roleRepository.save(role);
 	}
@@ -52,7 +52,7 @@ public class RoleServiceImpl implements RoleService {
 	@Override
 	public Role getRole(String roleId) throws ResourceNotFoundException {
 		Optional<Role> roleOpt = roleRepository.findById(Long.valueOf(roleId));
-		return roleOpt.orElseThrow(() -> new ResourceNotFoundException(roleId));
+		return roleOpt.orElseThrow(() -> new ResourceNotFoundException("Practice not found with id : " + roleId));
 	}
 
 	@Override
