@@ -51,12 +51,12 @@ CREATE TABLE IF NOT EXISTS permission (
 
 CREATE SEQUENCE permission_sequence START WITH 1 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE CACHE 20;
 
-CREATE TABLE role_permissions_mapping (
-    role_id INTEGER,
-    permission_id INTEGER,
-    PRIMARY KEY (role_id, permission_id),
-    FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE CASCADE,
-    FOREIGN KEY (permission_id) REFERENCES permission(id) ON DELETE CASCADE
+CREATE TABLE IF NOT EXISTS role_permissions_mapping (
+    role_id INTEGER NOT NULL,
+    permission VARCHAR(50) NOT NULL,
+    PRIMARY KEY (role_id, permission),
+    CONSTRAINT fk_role
+        FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE CASCADE
 );
 
 
@@ -120,11 +120,11 @@ CREATE SEQUENCE USER_SEQUENCE START WITH 1 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE
 CREATE SEQUENCE ACCOUNT_SEQUENCE START WITH 1 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE  CACHE 20;  
    
 CREATE TABLE IF NOT EXISTS user_permission_mapping (
-    user_id 					INTEGER NOT NULL,
-    permission_id 				INTEGER NOT NULL,
-    PRIMARY KEY 				(user_id, permission_id),
-    FOREIGN KEY 				(user_id) REFERENCES "user"(id),
-    FOREIGN KEY 				(permission_id) REFERENCES permission(id)
+     user_id INTEGER NOT NULL,
+     permission VARCHAR(50) NOT NULL,
+     PRIMARY KEY (user_id, permission),
+     CONSTRAINT fk_user
+     FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE
 );
 
 

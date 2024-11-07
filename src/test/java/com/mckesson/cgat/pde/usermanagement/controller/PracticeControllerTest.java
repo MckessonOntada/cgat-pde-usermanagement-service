@@ -80,7 +80,7 @@ class PracticeControllerTest {
 	void getPracticeTest() throws Exception {
 		String practiceId = "1";
 		when(practiceService.getPractice(practiceId)).thenReturn(practice);
-		mockMvc.perform(get("/practice/{practiceId}", practiceId)).andDo(print()).andExpect(status().isOk());
+		mockMvc.perform(get("/practices/{practiceId}", practiceId)).andDo(print()).andExpect(status().isOk());
 	}
 
 	@DisplayName("Test : Delete Practice")
@@ -88,7 +88,7 @@ class PracticeControllerTest {
 	void deletePracticeTest() throws Exception {
 		String practiceId = "1";
 		doNothing().when(practiceService).deletePractice(practiceId);
-		mockMvc.perform(delete("/practice/{practiceId}", practiceId)).andDo(print()).andExpect(status().isOk());
+		mockMvc.perform(delete("/practices/{practiceId}", practiceId)).andDo(print()).andExpect(status().isOk());
 	}
 
 	@DisplayName("Test : FindAll Practice")
@@ -106,7 +106,7 @@ class PracticeControllerTest {
 		when(practiceService.findAll(paging, query, List.of(statusActive))).thenReturn(mockResponse);
 
 		mockMvc
-			.perform(get("/practice").param("pageNo", pageNo)
+			.perform(get("/practices").param("pageNo", pageNo)
 				.param("pageSize", pageSize)
 				.param("sortBy", sortBy)
 				.param("sortOrder", sortOrder)
@@ -192,7 +192,7 @@ class PracticeControllerTest {
 
 		when(practiceService.createPractice(any(Practice.class), any(MockMultipartFile.class))).thenReturn(practice);
 
-		mockMvc.perform(MockMvcRequestBuilders.multipart("/practice").file(file).part(somePart))
+		mockMvc.perform(MockMvcRequestBuilders.multipart("/practices").file(file).part(somePart))
 			.andExpect(status().isCreated())
 			.andDo(print())
 			.andReturn();
@@ -222,7 +222,7 @@ class PracticeControllerTest {
 
 		when(practiceService.createPractice(any(Practice.class), any(MockMultipartFile.class))).thenReturn(newPractice);
 
-		MockMultipartHttpServletRequestBuilder builder = MockMvcRequestBuilders.multipart("/practice/{practiceId}",
+		MockMultipartHttpServletRequestBuilder builder = MockMvcRequestBuilders.multipart("/practices/{practiceId}",
 				newPractice.getId().toString());
 		builder.with(new RequestPostProcessor() {
 			@Override
