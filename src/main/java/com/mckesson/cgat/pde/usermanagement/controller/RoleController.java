@@ -55,6 +55,7 @@ public class RoleController {
 		return ResponseEntity.status(HttpStatus.OK).body(roleService.createOrUpdateRole(role, practiceId));
 	}
 
+	@PatchMapping("/{roleId}/permissions")
 	@Operation(summary = "Link/Unlink Roles to permission. Associated the permission in current request with the role.")
 	public ResponseEntity<Role> linkPermissionToRole(
 			@PathVariable @NotNull(message = "Role Id can not be null") Long roleId,
