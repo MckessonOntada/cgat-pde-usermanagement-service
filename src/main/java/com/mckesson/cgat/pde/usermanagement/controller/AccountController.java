@@ -50,7 +50,7 @@ public class AccountController {
 
 	@PostMapping(consumes = "application/json")
 	@Operation(summary = "Create new account")
-	public ResponseEntity<Account> createAccount(@Valid @RequestBody Account account) throws BadRequestException {
+	public ResponseEntity<Account> createAccount(@Valid @RequestBody Account account) {
 		return new ResponseEntity<>(accountService.createAccount(account), HttpStatus.OK);
 
 	}

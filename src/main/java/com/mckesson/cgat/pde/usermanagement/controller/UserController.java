@@ -31,6 +31,9 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
+import jakarta.validation.Valid;
+
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
@@ -55,7 +58,7 @@ public class UserController {
 
 	@PostMapping
 	@Operation(summary = "Create new user")
-	public ResponseEntity<User> createUser(@RequestBody User model) {
+	public ResponseEntity<User> createUser(@Valid @RequestBody User model) {
 		return new ResponseEntity<>(userService.createUser(model), HttpStatus.OK);
 
 	}
@@ -99,7 +102,7 @@ public class UserController {
 			summary = "Link/Delink User with accounts.(This API maps the accounts being passed in requst with the user "
 					+ "such as the requested mapping is the current state of user to account association")
 	public User linkUserToAccounts(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
-			@RequestParam List<Long> accountIds) throws ResourceNotFoundException {
+			@RequestBody List<Long> accountIds) throws ResourceNotFoundException {
 		return userService.linkUserToAccounts(userId, accountIds);
 
 	}

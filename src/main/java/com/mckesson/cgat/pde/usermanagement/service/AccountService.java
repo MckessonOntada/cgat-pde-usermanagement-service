@@ -22,7 +22,7 @@ public interface AccountService {
 	Page<Account> findAll(Pageable paging, String query, List<String> status, Long userId, String practiceId)
 			throws ResourceNotFoundException;
 
-	Account createAccount(Account account) throws BadRequestException;
+	Account createAccount(Account account);
 
 	Account updateAccount(Long accountId, Account account) throws ResourceNotFoundException;
 
