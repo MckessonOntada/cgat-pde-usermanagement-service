@@ -59,7 +59,7 @@ public class RoleController {
 	@Operation(summary = "Link/Unlink Roles to permission. Associated the permission in current request with the role.")
 	public ResponseEntity<Role> linkPermissionToRole(
 			@PathVariable @NotNull(message = "Role Id can not be null") Long roleId,
-			@RequestBody @NotNull(message = "Permissions can not be null") @NotNull(
+			@RequestBody @NotNull(message = "Permissions can not be null") @NotEmpty(
 					message = "Permissions can not be Empty") Set<Permission> permissions)
 			throws ResourceNotFoundException {
 		return ResponseEntity.status(HttpStatus.OK).body(roleService.linkPermissionToRole(roleId, permissions));
