@@ -43,4 +43,12 @@ public class UserManagementUtils {
 		return permissions.contains(permission);
 	}
 
+	public static void validateFetchUserRequest(LoggedInUserDetails loggedInUser, String practiceId)
+			throws UnauthorizedAccessException {
+		boolean ifSystemAdminUser = checkIfSystemAdmin(loggedInUser.getRole().getId(), loggedInUser.getPracticeId());
+		if (!ifSystemAdminUser && Long.parseLong(practiceId) == 1) {
+			throw new UnauthorizedAccessException("User is not authorized for this action");
+		}
+	}
+
 }

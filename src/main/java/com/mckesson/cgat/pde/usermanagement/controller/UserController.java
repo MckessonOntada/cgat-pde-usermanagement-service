@@ -93,10 +93,13 @@ public class UserController {
 			@RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(defaultValue = "first_name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
-			@PathVariable(required = false) String practiceId, @RequestParam(required = false) List<String> status) {
+			@PathVariable(required = false) String practiceId, @RequestParam(required = false) List<String> status)
+			throws UnauthorizedAccessException {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
+		LoggedInUserDetails loggedInUser = userSecurityUtils.getLoggedInUser();
+		UserManagementUtils.validateFetchUserRequest(loggedInUser, practiceId);
 		return userService.findAll(paging, query, status, practiceId);
 
 	}
