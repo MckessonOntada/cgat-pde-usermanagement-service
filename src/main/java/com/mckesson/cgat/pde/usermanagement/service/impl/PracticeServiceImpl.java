@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -11,8 +12,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.Practice;
+import com.mckesson.cgat.pde.usermanagement.model.Role;
 import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
+import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
 import com.mckesson.cgat.pde.usermanagement.service.PracticeService;
 import com.mckesson.cgat.pde.usermanagement.service.impl.utils.PracticeUtils;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
@@ -28,10 +32,14 @@ public class PracticeServiceImpl implements PracticeService {
 	private final PracticeUtils practiceUtils;
 
 	private final PracticeRepository practiceRepository;
+	
+	private final RoleRepository roleRepository;
 
-	public PracticeServiceImpl(PracticeUtils practiceUtils, PracticeRepository practiceRepository) {
+	public PracticeServiceImpl(PracticeUtils practiceUtils, PracticeRepository practiceRepository,
+			RoleRepository roleRepository) {
 		this.practiceRepository = practiceRepository;
 		this.practiceUtils = practiceUtils;
+		this.roleRepository = roleRepository;
 	}
 
 	@Override
@@ -39,7 +47,17 @@ public class PracticeServiceImpl implements PracticeService {
 	public Practice createPractice(Practice practice, MultipartFile logo) throws IllegalStateException, IOException {
 		String logoURL = practiceUtils.uploadLogo(logo); // "http://some-random-url.com";
 		practice.setLogoUrl(logoURL);
-		return practiceRepository.save(practice);
+		Practice savedPractice = practiceRepository.save(practice);
+		
+		Role practiceAdminRole = Role.builder()
+				.name(CustomUtils.ORG_ADMIN_ROLE_NAME)
+				.description(CustomUtils.ORG_ADMIN_ROLE_DESC)
+				.isActive(Boolean.TRUE)
+				.practiceId(savedPractice)
+				.permissions(Set.of( Permission.values()))
+				.build();
+		roleRepository.save(practiceAdminRole);
+		return savedPractice;
 	}
 
 	@Override
