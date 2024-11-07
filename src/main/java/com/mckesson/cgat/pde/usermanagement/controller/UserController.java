@@ -103,10 +103,11 @@ public class UserController {
 	@Operation(summary = "Link User with role and permissions")
 	public ResponseEntity<User> linkUserToRole(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
 			@RequestParam @NotNull(message = "Role Id can not be null") Long roleId,
-			@RequestBody @NotEmpty(message = "Permissions can not be empty") @NotNull(message = "Permissions can not be null")
-								   Set<Permission> permissions)
+			@RequestBody @NotEmpty(message = "Permissions can not be empty") @NotNull(
+					message = "Permissions can not be null") Set<Permission> permissions)
 			throws ResourceNotFoundException {
-		return ResponseEntity.status(HttpStatus.OK).body(userService.linkUserToRoleAndPermissions(userId, roleId, permissions));
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(userService.linkUserToRoleAndPermissions(userId, roleId, permissions));
 	}
 
 }
