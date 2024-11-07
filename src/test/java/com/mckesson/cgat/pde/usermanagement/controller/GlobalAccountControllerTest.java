@@ -65,8 +65,8 @@ public class GlobalAccountControllerTest {
 		Pageable pageable = PageRequest.of(0, 20, Sort.by("name").descending());
 		Page<Account> mockResponse = new PageImpl<>(accounts, paging, accounts.size());
 
-		when(accountService.findAll(paging, query, null, null)).thenReturn(mockResponse);
-		when(accountService.findAll(pageable, query, null, null)).thenReturn(mockResponse);
+		when(accountService.findAll(paging, query, null, null, null)).thenReturn(mockResponse);
+		when(accountService.findAll(pageable, query, null, null, null)).thenReturn(mockResponse);
 
 		mockMvc
 			.perform(get("/accounts").param("pageNo", pageNo)
