@@ -22,8 +22,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.User;
+import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
@@ -42,10 +44,13 @@ public class UserController {
 
 	private final UserService userService;
 
+	private final AccountService accountService;
+
 	private static final String SORT_ORDER_ASC = "asc";
 
-	public UserController(UserService userModelService) {
+	public UserController(UserService userModelService, AccountService accountService) {
 		this.userService = userModelService;
+		this.accountService = accountService;
 	}
 
 	@PostMapping
@@ -108,6 +113,20 @@ public class UserController {
 			throws ResourceNotFoundException {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(userService.linkUserToRoleAndPermissions(userId, roleId, permissions));
+	}
+
+	@GetMapping("/{userId}/accounts")
+	@Operation(summary = "Fetch all Users based on filter provided with pagination capabilities.")
+	Page<Account> findAllAccounts(@RequestParam(defaultValue = "0") Integer pageNo,
+			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "name") String sortBy,
+			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
+			@PathVariable(required = false) String practiceId, @PathVariable(required = false) Long userId,
+			@RequestParam(required = false) List<String> status) throws ResourceNotFoundException {
+		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
+				: Sort.by(sortBy).descending();
+		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
+		return accountService.findAll(paging, query, status, userId, practiceId);
+
 	}
 
 }

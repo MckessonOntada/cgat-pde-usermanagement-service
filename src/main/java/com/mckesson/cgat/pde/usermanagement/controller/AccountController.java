@@ -3,7 +3,6 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import java.util.List;
 import java.util.Set;
 
-import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -85,11 +84,12 @@ public class AccountController {
 	Page<Account> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
-			@PathVariable(required = false) String practiceId, @RequestParam(required = false) List<String> status) {
+			@PathVariable String practiceId, @RequestParam(required = false) List<String> status)
+			throws ResourceNotFoundException {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-		return accountService.findAll(paging, query, status, practiceId);
+		return accountService.findAll(paging, query, status, null, practiceId);
 	}
 
 	@PatchMapping
