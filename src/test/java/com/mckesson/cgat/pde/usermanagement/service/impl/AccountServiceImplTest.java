@@ -1,6 +1,5 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -19,7 +18,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -38,10 +36,9 @@ import com.mckesson.cgat.pde.usermanagement.model.Practice;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
-import com.mckesson.jbat.usermanagement.controller.AbstractTest;
 
 @ExtendWith(MockitoExtension.class)
-class AccountServiceImplTest extends AbstractTest {
+class AccountServiceImplTest {
 
 	@InjectMocks
 	private AccountServiceImpl accountService;
@@ -131,11 +128,11 @@ class AccountServiceImplTest extends AbstractTest {
 
 	@DisplayName("FindAllUser")
 	@Test
-	void findAllWithPageableTest() {
+	void findAllWithPageableTest() throws ResourceNotFoundException {
 		Page<Account> accountPage = getAccountList();
 		Pageable paging = PageRequest.of(0, 20, Sort.by("name").ascending());
 		when(accountRepository.findAllByQueryText(null, "ALL", paging, 1)).thenReturn(accountPage);
-		Page<Account> result = accountService.findAll(paging, null, List.of("ALL"), "1");
+		Page<Account> result = accountService.findAll(paging, null, List.of("ALL"), null, "1");
 		assertNotNull(result);
 		assertEquals(accountPage, result);
 		verify(accountRepository, times(1)).findAllByQueryText(null, "ALL", paging, 1);
