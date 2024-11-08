@@ -115,5 +115,4 @@ public class UserController {
 		return userService.linkUserToRoleAndPermissions(userId, roleId, permissions);
 	}
 
-
 }
