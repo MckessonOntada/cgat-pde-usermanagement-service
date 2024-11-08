@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Page<User> findAll(Pageable paging, String query, List<String> status, String praticeId) {
+	public Page<User> findAll(Pageable paging, String query, List<String> status, Long praticeId) {
 		query = StringUtils.toRootLowerCase(query);
 		String statusActive = "ALL";
 
@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
 			if (hasInactive)
 				statusActive = "ACTIVE".equals(statusActive) ? "ALL" : "INACTIVE";
 		}
-		return userRepository.findAllByQueryText(query, statusActive, paging, Long.valueOf(praticeId));
+		return userRepository.findAllByQueryText(query, statusActive, paging, praticeId);
 	}
 
 	@Override
@@ -110,7 +110,7 @@ public class UserServiceImpl implements UserService {
 
 		user.setRole(role);
 		user.getPermissions().clear();
-		user.getPermissions().addAll(permissions);
+		user.setPermissions(permissions);
 		return userRepository.save(user);
 
 	}

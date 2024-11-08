@@ -60,7 +60,7 @@ class UserServiceImplTest {
 
 	@BeforeEach
 	public void setUp() {
-		Set<Permission> permissions = new HashSet<>(Set.of(new Permission(123L, "READ", "read", Boolean.TRUE)));
+		Set<Permission> permissions = new HashSet<>(Arrays.asList(Permission.ADD_USER, Permission.APPROVER_GROUP_1));
 		user = User.builder()
 			.id(1L)
 			.practiceId(200L)
@@ -165,7 +165,7 @@ class UserServiceImplTest {
 		Page<User> userPage = getUserList();
 		Pageable paging = PageRequest.of(0, 20, Sort.by("first_name").ascending());
 		when(userRepository.findAllByQueryText(null, "ALL", paging, 1)).thenReturn(userPage);
-		Page<User> result = userService.findAll(paging, null, List.of("ALL"), "1");
+		Page<User> result = userService.findAll(paging, null, List.of("ALL"), Long.valueOf(1));
 		assertNotNull(result);
 		assertEquals(userPage, result);
 		verify(userRepository, times(1)).findAllByQueryText(null, "ALL", paging, 1);
@@ -288,7 +288,7 @@ class UserServiceImplTest {
 	// @Test
 	void linkUserToRoleTest() throws ResourceNotFoundException {
 
-		Set<Permission> permissions = new HashSet<>(Set.of(new Permission(123L, "READ", "read", Boolean.TRUE)));
+		Set<Permission> permissions = new HashSet<>(Arrays.asList(Permission.ADD_USER, Permission.APPROVER_GROUP_1));
 		user = User.builder()
 			.id(1L)
 			.practiceId(200L)
