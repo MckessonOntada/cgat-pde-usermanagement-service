@@ -1,7 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl.utils;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Set;
 
 import org.springframework.stereotype.Component;
@@ -19,7 +18,7 @@ import jakarta.validation.ValidatorFactory;
 @Component
 public class PracticeUtils {
 
-	public String uploadLogo(MultipartFile file) throws IllegalStateException, IOException {
+	public String uploadLogo(MultipartFile file) {
 		File directory = new File(
 				System.getProperty("user.dir") + "/src/main/resources/static/" + file.getOriginalFilename());
 		// Create the directory if it doesn't exist

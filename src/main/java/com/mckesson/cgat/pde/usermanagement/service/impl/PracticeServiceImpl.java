@@ -46,7 +46,7 @@ public class PracticeServiceImpl implements PracticeService {
 	@Transactional
 	public Practice createPractice(Practice practice, MultipartFile logo, boolean isCreatePractice)
 			throws IllegalStateException, IOException {
-		String logoURL = practiceUtils.uploadLogo(logo); // "http://some-random-url.com";
+		String logoURL = practiceUtils.uploadLogo(logo);
 		practice.setLogoUrl(logoURL);
 		Practice savedPractice = practiceRepository.save(practice);
 

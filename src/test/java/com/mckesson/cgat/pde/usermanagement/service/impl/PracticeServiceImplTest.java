@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -147,7 +146,7 @@ class PracticeServiceImplTest extends AbstractTest {
 		Mockito.when(practiceRepository.findAllByQueryText(query, statusActive, paging)).thenReturn(mockResponse);
 		Page<Practice> result = practiceService.findAll(paging, query, List.of(statusActive));
 		verify(practiceRepository, times(1)).findAllByQueryText(query, statusActive, paging);
-		assertTrue(result.getSize() == mockResponse.getSize());
+		assertEquals(result.getSize(), mockResponse.getSize());
 	}
 
 	private Page<Practice> getPractices() {
