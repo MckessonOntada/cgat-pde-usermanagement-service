@@ -51,10 +51,10 @@ public class UserRequestAuthorizationValidator {
 	}
 
 	private static boolean hasPermission(LoggedInUserDetails loggedInUser, String permission) {
-		Set<String> permissions = loggedInUser.getPermissions()
-			.stream()
-			.map(Permission::getName)
-			.collect(Collectors.toSet());
+		/*
+		 * Set<String> permissions = loggedInUser.getPermissions() .stream()
+		 * .map(Permission::getName) .collect(Collectors.toSet());
+		 */
 		// To:do return permissions.contains(permission);
 		return true;
 	}
