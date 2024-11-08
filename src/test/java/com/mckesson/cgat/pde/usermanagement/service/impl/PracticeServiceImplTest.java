@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,9 +34,13 @@ import com.mckesson.cgat.pde.usermanagement.AbstractTest;
 import com.mckesson.cgat.pde.usermanagement.model.Address;
 import com.mckesson.cgat.pde.usermanagement.model.Contact;
 import com.mckesson.cgat.pde.usermanagement.model.Name;
+import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.Practice;
+import com.mckesson.cgat.pde.usermanagement.model.Role;
 import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
+import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
 import com.mckesson.cgat.pde.usermanagement.service.impl.utils.PracticeUtils;
+import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 class PracticeServiceImplTest extends AbstractTest {
@@ -48,6 +53,9 @@ class PracticeServiceImplTest extends AbstractTest {
 
 	@Mock
 	private PracticeRepository practiceRepository;
+
+	@Mock
+	private RoleRepository roleRepository;
 
 	private Practice practice;
 
@@ -67,8 +75,18 @@ class PracticeServiceImplTest extends AbstractTest {
 	@DisplayName("Test : Create Practice")
 	@Test
 	void createPracticeTest() throws IllegalStateException, IOException {
+		Role adminRole = Role.builder()
+			.name(CustomUtils.ORG_ADMIN_ROLE_NAME)
+			.description(CustomUtils.ORG_ADMIN_ROLE_DESC)
+			.isActive(Boolean.TRUE)
+			.practiceId(practice)
+			.permissions(Set.of(Permission.values()))
+			.build();
+
+		when(roleRepository.save(any())).thenReturn(adminRole);
 		Mockito.when(practiceRepository.save(any())).thenReturn(practice);
-		assertEquals(practice, practiceService.createPractice(practice, new MockMultipartFile("logo", new byte[0])));
+		assertEquals(practice,
+				practiceService.createPractice(practice, new MockMultipartFile("logo", new byte[0]), true));
 		verify(practiceRepository, times(1)).save(practice);
 	}
 
@@ -76,7 +94,8 @@ class PracticeServiceImplTest extends AbstractTest {
 	@Test
 	void updatePracticeTest() throws IllegalStateException, IOException {
 		when(practiceRepository.save(any())).thenReturn(practice);
-		assertEquals(practice, practiceService.createPractice(practice, new MockMultipartFile("logo", new byte[0])));
+		assertEquals(practice,
+				practiceService.createPractice(practice, new MockMultipartFile("logo", new byte[0]), false));
 		verify(practiceRepository, times(1)).save(practice);
 	}
 

@@ -44,19 +44,22 @@ public class PracticeServiceImpl implements PracticeService {
 
 	@Override
 	@Transactional
-	public Practice createPractice(Practice practice, MultipartFile logo) throws IllegalStateException, IOException {
+	public Practice createPractice(Practice practice, MultipartFile logo, boolean isCreatePractice)
+			throws IllegalStateException, IOException {
 		String logoURL = practiceUtils.uploadLogo(logo); // "http://some-random-url.com";
 		practice.setLogoUrl(logoURL);
 		Practice savedPractice = practiceRepository.save(practice);
 
-		Role practiceAdminRole = Role.builder()
-			.name(CustomUtils.ORG_ADMIN_ROLE_NAME)
-			.description(CustomUtils.ORG_ADMIN_ROLE_DESC)
-			.isActive(Boolean.TRUE)
-			.practiceId(savedPractice)
-			.permissions(Set.of(Permission.values()))
-			.build();
-		roleRepository.save(practiceAdminRole);
+		if (isCreatePractice) {
+			Role adminRole = Role.builder()
+				.name(CustomUtils.ORG_ADMIN_ROLE_NAME)
+				.description(CustomUtils.ORG_ADMIN_ROLE_DESC)
+				.isActive(Boolean.TRUE)
+				.practiceId(savedPractice)
+				.permissions(Set.of(Permission.values()))
+				.build();
+			roleRepository.save(adminRole);
+		}
 		return savedPractice;
 	}
 

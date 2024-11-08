@@ -27,7 +27,7 @@ public class CustomUtils {
 
 	}
 
-	public static final String ORG_ADMIN_ROLE_NAME = "ORGANIZATION_ADMIN_ROLE";
+	public static final String ORG_ADMIN_ROLE_NAME = "Organization Admin";
 
 	public static final String ORG_ADMIN_ROLE_DESC = "Organization Specific Admin Role";
 

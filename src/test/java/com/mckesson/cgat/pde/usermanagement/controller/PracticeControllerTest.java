@@ -1,6 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -190,7 +191,8 @@ class PracticeControllerTest {
 		MockPart somePart = new MockPart("practiceStr", content);
 		somePart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
-		when(practiceService.createPractice(any(Practice.class), any(MockMultipartFile.class))).thenReturn(practice);
+		when(practiceService.createPractice(any(Practice.class), any(MockMultipartFile.class), anyBoolean()))
+			.thenReturn(practice);
 
 		mockMvc.perform(MockMvcRequestBuilders.multipart("/practices").file(file).part(somePart))
 			.andExpect(status().isCreated())
@@ -220,7 +222,8 @@ class PracticeControllerTest {
 		MockPart somePart = new MockPart("practiceStr", content);
 		somePart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
-		when(practiceService.createPractice(any(Practice.class), any(MockMultipartFile.class))).thenReturn(newPractice);
+		when(practiceService.createPractice(any(Practice.class), any(MockMultipartFile.class), anyBoolean()))
+			.thenReturn(newPractice);
 
 		MockMultipartHttpServletRequestBuilder builder = MockMvcRequestBuilders.multipart("/practices/{practiceId}",
 				newPractice.getId().toString());
