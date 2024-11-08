@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -25,7 +26,6 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -66,23 +66,18 @@ class UserControllerTest {
 
 	@Autowired
 	private ObjectMapper objectMapper;
+	
+	String apiUrl = "/practice/{practiceId}/users";
 
 	@BeforeEach
 	public void setUp() {
-		user = User.builder()
-			.id(1L)
-			.practiceId(200L)
-			.name(new Name("John", "Doe", "doe", "Mr"))
-			.contact(Contact.builder().email("john.doe@example.com").phone("1234567890").fax("9876543210").build())
-			.address(Address.builder()
-				.address1("123 Main St")
-				.address2("Suite 500")
-				.city("New York")
-				.state("NY")
-				.zip("10001")
-				.build())
-			.isActive(true)
-			.build();
+		user = User.builder().id(1L).practiceId(200L).name(new Name("John", "Doe", "doe", "Mr"))
+				.contact(Contact.builder().email("john.doe1@example.com").phone("1234567899").fax("9876543211").build())
+				.address(Address.builder()
+
+						.address1("122 Main St").address2("Suite 100").city("New York ").state("NY").zip("10000")
+						.build())
+				.permissions(null).isActive(true).build();
 	}
 
 	@DisplayName("CreateUserTest")
@@ -90,79 +85,49 @@ class UserControllerTest {
 	void createUserTest() throws Exception {
 		String objectString = objectMapper.writeValueAsString(user);
 		when(userService.createUser(any(User.class))).thenReturn(user);
-		mockMvc
-			.perform(post("/practice/{practiceId}/users", user.getPracticeId()).contentType(MediaType.APPLICATION_JSON)
-				.content(objectString))
-			.andExpect(status().isOk())
-			.andDo(print())
-			.andReturn();
+		mockMvc.perform(post(apiUrl, user.getPracticeId())
+				.contentType(MediaType.APPLICATION_JSON).content(objectString)).andExpect(status().isOk())
+				.andDo(print()).andReturn();
 
 	}
 
 	@DisplayName("ValidationError :CreateUserTest")
 	@Test
-	void createUser_ValidationErrorTest() throws Exception {
-		user = User.builder()
-			.id(1L)
-			.practiceId(200L)
-			.name(new Name("", "Doe", "doe", "Mr"))
-			.contact(Contact.builder().email("john.doe@example.com").phone("1234567890").fax("9876543210").build())
-			.address(Address.builder()
-				.address1("123 Main St")
-				.address2("Suite 500")
-				.city("New York")
-				.state("NY")
-				.zip("10001")
-				.build())
-			.isActive(true)
-			.build();
+	void createUser_validationErrorTest() throws Exception {
+		user = User.builder().id(1L).practiceId(200L).name(new Name("", "Doe", "doe", "Mr"))
+				.contact(Contact.builder().email("john.doe2@example.com").phone("1234567891").fax("9876543212").build())
+				.address(Address.builder().address1("124 Main St").address2("Suite 200").city("New York2").state("NY")
+						.zip("10002").build())
+				.isActive(true).build();
 
 		ResultActions result = mockMvc
-			.perform(post("/practice/{practiceId}/users", user.getPracticeId()).contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(user)))
-			.andExpect(status().isBadRequest());
+				.perform(post("/practice/{practiceId}/users", user.getPracticeId())
+						.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(user)))
+				.andExpect(status().isBadRequest());
 		assertNotNull(result);
 	}
 
 	@DisplayName("UpdateUserTest")
 	@Test
 	void updateUserTest() throws Exception {
-		User requestdUser = User.builder()
-			.id(null)
-			.practiceId(200L)
-			.name(new Name("John", "Doe", "doe", "Mr"))
-			.contact(Contact.builder().email("john.doe@example.com").phone("1234567890").fax("9876543210").build())
-			.address(Address.builder()
-				.address1("123 Main St")
-				.address2("Suite 500")
-				.city("New York")
-				.state("NY")
-				.zip("10001")
-				.build())
-			.isActive(true)
-			.build();
+		User requestdUser = User.builder().id(null).practiceId(200L).name(new Name("John", "Doe", "doe", "Mr"))
+				.contact(Contact.builder().email("john.doe3@example.com").phone("1234567893").fax("9876543213").build())
+				.address(Address.builder().address1("1234 Main St").address2("Suite 300").city("New York3").state("NY")
+						.zip("10003").build())
+				.isActive(true).build();
 
-		User updatedUser = User.builder()
-			.id(user.getId())
-			.practiceId(200L)
-			.name(new Name("John", "updated", "doe", "Mr"))
-			.contact(Contact.builder().email("john.doe@example.com").phone("1234567890").fax("9876543210").build())
-			.address(Address.builder()
-				.address1("123 Main St")
-				.address2("Suite 500")
-				.city("New York")
-				.state("NY")
-				.zip("10001")
-				.build())
-			.isActive(true)
-			.build();
+		User updatedUser = User.builder().id(user.getId()).practiceId(200L)
+				.name(new Name("John", "updated", "doe", "Mr"))
+				.contact(Contact.builder().email("john.doe@example.com").phone("1234567890").fax("9876543210").build())
+				.address(Address.builder().address1("123 Main St").address2("Suite 500").city("New York").state("NY")
+						.zip("10001").build())
+				.isActive(true).build();
 
 		when(userService.updateUser(user.getId(), requestdUser)).thenReturn(updatedUser);
 		ResultActions result = mockMvc
-			.perform(put("/practice/{practiceId}/users/{userId}", user.getPracticeId(), user.getId())
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(requestdUser)))
-			.andExpect(status().isOk());
+				.perform(put(apiUrl+"/{userId}", user.getPracticeId(), user.getId())
+						.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(requestdUser)))
+				.andExpect(status().isOk());
 		assertNotNull(result);
 	}
 
@@ -170,54 +135,38 @@ class UserControllerTest {
 	@Test
 	void getUserTest() throws Exception {
 		when(userService.getUser(user.getId())).thenReturn(user);
-		mockMvc
-			.perform(get("/practice/{practiceId}/users/{userId}", user.getPracticeId(), user.getId())
-				.contentType(MediaType.APPLICATION_JSON_VALUE))
-			.andDo(print())
-			.andExpect(status().isOk());
+		mockMvc.perform(get("/practice/{practiceId}/users/{userId}", user.getPracticeId(), user.getId())
+				.contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print()).andExpect(status().isOk());
 
 	}
 
 	@DisplayName("UserNotFoundException :UpdateUser")
 	@Test
-	void UserNotFoundTest() throws Exception {
-		User updatedUser = User.builder()
-			.id(1L)
-			.practiceId(200L)
-			.name(new Name("John", "Doe", "doe", "Mr"))
-			.contact(Contact.builder().email("john.doe@example.com").phone("1234567890").fax("9876543210").build())
-			.address(Address.builder()
-				.address1("123 Main St")
-				.address2("Suite 500")
-				.city("New York")
-				.state("NY")
-				.zip("10001")
-				.build())
-			.isActive(true)
-			.build();
+	void userNotFoundTest() throws Exception {
+		User updatedUser = User.builder().id(1L).practiceId(200L).name(new Name("John", "Doe", "doe", "Mr"))
+				.contact(Contact.builder().email("john.doe@example.com").phone("1234567890").fax("9876543210").build())
+				.address(Address.builder().address1("123 Main St").address2("Suite 500").city("New York").state("NY")
+						.zip("10001").build())
+				.isActive(true).build();
 		when(userService.updateUser(user.getId(), updatedUser))
-			.thenThrow(new ResourceNotFoundException("User not found"));
+				.thenThrow(new ResourceNotFoundException("User not found"));
 
-		mockMvc
-			.perform(put("/{userId}", user.getId()).contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(updatedUser)))
-			.andExpect(status().isNotFound());
+		mockMvc.perform(put("/{userId}", user.getId()).contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(updatedUser))).andExpect(status().isNotFound());
 	}
 
 	@DisplayName("DeleteUserTest")
 	@Test
 	void deleteUserTest() throws Exception {
 		doNothing().when(userService).deleteUser(user.getId());
-		mockMvc
-			.perform(delete("/practice/{practiceId}/users/{userId}", user.getPracticeId(), user.getId())
-				.contentType(MediaType.APPLICATION_JSON_VALUE))
-			.andExpect(status().isOk());
+		mockMvc.perform(delete("/practice/{practiceId}/users/{userId}", user.getPracticeId(), user.getId())
+				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
 
 	}
 
 	@DisplayName("UserNotFoundException :DeleteUser")
 	@Test
-	void deleteUser_UserNotFoundTest() throws Exception {
+	void deleteUser_userNotFoundTest() throws Exception {
 		doThrow(new ResourceNotFoundException("User not found")).when(userService).deleteUser(user.getId());
 		mockMvc.perform(delete("/{userId}", user.getId())).andExpect(status().isNotFound());
 	}
@@ -225,19 +174,49 @@ class UserControllerTest {
 	@DisplayName("FindAllTest")
 	@Test
 	void findAllTest() throws Exception {
-		Page<User> userPage = getUserList();
-		when(userService.findAll(any(PageRequest.class), any(String.class), any(List.class), any(String.class)))
-			.thenReturn(userPage);
+		Integer pageNo = 0;
+		Integer pageSize = 20;
+		String sortBy = "first_name";
+		String sortOrder = "ASC";
+		Sort sort = "asc".equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+		List<User> users = getUserList();
+		PageImpl<User> userPage = new PageImpl<>(users, pageable, users.size());
 
-		ResultActions result = mockMvc
-			.perform(get("/practice/{practiceId}/users", user.getPracticeId()).param("pageNo", "0")
-				.param("pageSize", "20")
-				.param("sortBy", "first_name")
-				.param("sortOrder", "asc")
-				.contentType(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk());
+		when(userService.findAll(any(PageRequest.class), any(String.class), any(List.class), any(String.class)))
+				.thenReturn(userPage);
+
+		ResultActions result = mockMvc.perform(get("/practice/{practiceId}/users", user.getPracticeId())
+				.param("pageNo", "0").param("pageSize", "20").param("sortBy", "first_name").param("sortOrder", "asc")
+				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+
 		assertNotNull(result);
+		verify(userService).findAll(pageable, null, null, "200");
 	}
+	
+	@DisplayName("FindAllTestForDesc")
+	@Test
+	void findAllTestForDesc() throws Exception {
+		Integer pageNo = 0;
+		Integer pageSize = 20;
+		String sortBy = "first_name";
+		String sortOrder = "DESC";
+		Sort sort = "asc".equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+		List<User> users = getUserList();
+		PageImpl<User> userPage = new PageImpl<>(users, pageable, users.size());
+
+		when(userService.findAll(any(PageRequest.class), any(String.class), any(List.class), any(String.class)))
+				.thenReturn(userPage);
+
+		ResultActions result = mockMvc.perform(get("/practice/{practiceId}/users", user.getPracticeId())
+				.param("pageNo", "0").param("pageSize", "20").param("sortBy", "first_name").param("sortOrder", "desc")
+				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+
+		assertNotNull(result);
+		verify(userService).findAll(pageable, null, null, "200");
+	}
+
 
 	@DisplayName("LinkUserToAccountsTest")
 	@Test
@@ -245,112 +224,62 @@ class UserControllerTest {
 		List<Long> accountIds = Arrays.asList(101L, 102L);
 		when(userService.linkUserToAccounts(user.getId(), accountIds)).thenReturn(user);
 		ResultActions result = mockMvc
-			.perform(patch("/practice/{practiceId}/users/{userId}/accounts", user.getPracticeId(), user.getId())
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(accountIds)))
-			.andExpect(status().isOk());
+				.perform(patch("/practice/{practiceId}/users/{userId}/accounts", user.getPracticeId(), user.getId())
+						.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(accountIds)))
+				.andExpect(status().isOk());
 		assertNotNull(result);
 	}
 
-	// @DisplayName("LinkUserToRoleTest")
-	// @Test
-	// void linkUserToRoleTest() throws Exception {
-	// Long roleId = 101L;
-	// when(userService.linkUserToRole(user.getId(), roleId)).thenReturn(user);
-	// ResultActions result = mockMvc
-	// .perform(patch("/practice/{practiceId}/users/{userId}/role",
-	// user.getPracticeId(),
-	// user.getId())
-	// .param("roleId", roleId.toString()).contentType(MediaType.APPLICATION_JSON))
-	// .andExpect(status().isOk());
-	// assertNotNull(result);
-	// }
+//	@DisplayName("LinkUserToRoleTest")
+//	@Test
+//	void linkUserToRoleTest() throws Exception {
+//		Long roleId = 101L;
+//		when(userService.linkUserToRoleAndPermissions(user.getId(), roleId ,user.getPermissions())).thenReturn(user);
+//		ResultActions result = mockMvc
+//				.perform(patch("/practice/{practiceId}/users/{userId}/role", user.getPracticeId(), user.getId())
+//						.param("roleId", roleId.toString()).contentType(MediaType.APPLICATION_JSON))
+//				.andExpect(status().isOk());
+//		assertNotNull(result);
+//	}
 
-	private Page<User> getUserList() {
-		Integer pageNo = 0;
-		Integer pageSize = 20;
-		String sortBy = "first_name";
-		String sortOrder = "asc";
+	private List<User> getUserList() {
 
-		User user1 = User.builder()
-			.id(1L)
-			.practiceId(100L)
-			.name(new Name("user1_firstName", "user1_middleName", "user1_lastName", "Mr"))
-			.contact(Contact.builder().email("user1@gmail.com").phone("1234567890").fax("9876543210").build())
-			.address(Address.builder()
-				.address1("10 Main Street")
-				.address2("Suite 500")
-				.city("New York")
-				.state("NY")
-				.zip("10001")
-				.build())
-			.isActive(true)
-			.build();
+		User user1 = User.builder().id(1L).practiceId(100L)
+				.name(new Name("user1_firstName", "user1_middleName", "user1_lastName", "Mr"))
+				.contact(Contact.builder().email("user1@gmail.com").phone("1234567890").fax("9876543210").build())
+				.address(Address.builder().address1("10 Main Street").address2("Suite 500").city("New York").state("NY")
+						.zip("10001").build())
+				.isActive(true).build();
 
-		User user2 = User.builder()
-			.id(2L)
-			.practiceId(101L)
-			.name(new Name("user2_firstName", "user2_middleName", "user2_lastName", "Mr"))
-			.contact(Contact.builder().email("user1@gmail.com").phone("1234567890").fax("9876543210").build())
-			.address(Address.builder()
-				.address1("11 Main Street")
-				.address2("Suite 501")
-				.city("New York")
-				.state("NY")
-				.zip("10002")
-				.build())
-			.isActive(true)
-			.build();
+		User user2 = User.builder().id(2L).practiceId(101L)
+				.name(new Name("user2_firstName", "user2_middleName", "user2_lastName", "Mr"))
+				.contact(Contact.builder().email("user2@gmail.com").phone("1234567890").fax("9876543210").build())
+				.address(Address.builder().address1("11 Main Street").address2("Suite 501").city("New York").state("NY")
+						.zip("10002").build())
+				.isActive(true).build();
 
-		User user3 = User.builder()
-			.id(3L)
-			.practiceId(102L)
-			.name(new Name("user3_firstName", "user3_middleName", "user3_lastName", "Mr"))
-			.contact(Contact.builder().email("user1@gmail.com").phone("1234567890").fax("9876543210").build())
-			.address(Address.builder()
-				.address1("12 Main Street")
-				.address2("Suite 503")
-				.city("New York")
-				.state("NY")
-				.zip("10003")
-				.build())
-			.isActive(true)
-			.build();
+		User user3 = User.builder().id(3L).practiceId(102L)
+				.name(new Name("user3_firstName", "user3_middleName", "user3_lastName", "Mr"))
+				.contact(Contact.builder().email("user3@gmail.com").phone("1234567890").fax("9876543210").build())
+				.address(Address.builder().address1("12 Main Street").address2("Suite 503").city("New York").state("NY")
+						.zip("10003").build())
+				.isActive(true).build();
 
-		User user4 = User.builder()
-			.id(4L)
-			.practiceId(104L)
-			.name(new Name("user4_firstName", "user4_middleName", "user4_lastName", "Mr"))
-			.contact(Contact.builder().email("user1@gmail.com").phone("1234567890").fax("9876543210").build())
-			.address(Address.builder()
-				.address1("13 Main Street")
-				.address2("Suite 504")
-				.city("New York")
-				.state("NY")
-				.zip("10004")
-				.build())
-			.isActive(true)
-			.build();
+		User user4 = User.builder().id(4L).practiceId(104L)
+				.name(new Name("user4_firstName", "user4_middleName", "user4_lastName", "Mr"))
+				.contact(Contact.builder().email("user4@gmail.com").phone("1234567890").fax("9876543210").build())
+				.address(Address.builder().address1("13 Main Street").address2("Suite 504").city("New York").state("NY")
+						.zip("10004").build())
+				.isActive(true).build();
 
-		User user5 = User.builder()
-			.id(5L)
-			.practiceId(105L)
-			.name(new Name("user5_firstName", "user5_middleName", "user5_lastName", "Mr"))
-			.contact(Contact.builder().email("user1@gmail.com").phone("1234567890").fax("9876543210").build())
-			.address(Address.builder()
-				.address1("15 Main Street")
-				.address2("Suite 505")
-				.city("New York")
-				.state("NY")
-				.zip("10005")
-				.build())
-			.isActive(true)
-			.build();
-		List<User> users = Arrays.asList(user1, user2, user3, user4, user5);
+		User user5 = User.builder().id(5L).practiceId(105L)
+				.name(new Name("user5_firstName", "user5_middleName", "user5_lastName", "Mr"))
+				.contact(Contact.builder().email("user5@gmail.com").phone("1234567890").fax("9876543210").build())
+				.address(Address.builder().address1("15 Main Street").address2("Suite 505").city("New York").state("NY")
+						.zip("10005").build())
+				.isActive(true).build();
+		return  Arrays.asList(user1, user2, user3, user4, user5);
 
-		Sort sort = "asc".equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
-		return new PageImpl<>(users, pageable, users.size());
 
 	}
 

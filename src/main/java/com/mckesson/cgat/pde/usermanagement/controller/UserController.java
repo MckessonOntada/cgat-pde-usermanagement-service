@@ -115,18 +115,5 @@ public class UserController {
 		return userService.linkUserToRoleAndPermissions(userId, roleId, permissions);
 	}
 
-	@GetMapping("/{userId}/accounts")
-	@Operation(summary = "Fetch all Users based on filter provided with pagination capabilities.")
-	Page<Account> findAllAccounts(@RequestParam(defaultValue = "0") Integer pageNo,
-			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "name") String sortBy,
-			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
-			@PathVariable(required = false) String practiceId, @PathVariable(required = false) Long userId,
-			@RequestParam(required = false) List<String> status) throws ResourceNotFoundException {
-		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
-				: Sort.by(sortBy).descending();
-		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-		return accountService.findAll(paging, query, status, userId, practiceId);
-
-	}
 
 }
