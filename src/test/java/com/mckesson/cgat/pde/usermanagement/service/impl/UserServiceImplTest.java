@@ -165,7 +165,7 @@ class UserServiceImplTest {
 		Page<User> userPage = getUserList();
 		Pageable paging = PageRequest.of(0, 20, Sort.by("first_name").ascending());
 		when(userRepository.findAllByQueryText(null, "ALL", paging, 1)).thenReturn(userPage);
-		Page<User> result = userService.findAll(paging, null, List.of("ALL"), "1");
+		Page<User> result = userService.findAll(paging, null, List.of("ALL"), Long.valueOf(1));
 		assertNotNull(result);
 		assertEquals(userPage, result);
 		verify(userRepository, times(1)).findAllByQueryText(null, "ALL", paging, 1);
