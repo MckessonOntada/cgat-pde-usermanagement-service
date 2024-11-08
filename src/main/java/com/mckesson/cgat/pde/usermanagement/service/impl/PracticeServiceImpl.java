@@ -32,7 +32,7 @@ public class PracticeServiceImpl implements PracticeService {
 	private final PracticeUtils practiceUtils;
 
 	private final PracticeRepository practiceRepository;
-	
+
 	private final RoleRepository roleRepository;
 
 	public PracticeServiceImpl(PracticeUtils practiceUtils, PracticeRepository practiceRepository,
@@ -48,14 +48,14 @@ public class PracticeServiceImpl implements PracticeService {
 		String logoURL = practiceUtils.uploadLogo(logo); // "http://some-random-url.com";
 		practice.setLogoUrl(logoURL);
 		Practice savedPractice = practiceRepository.save(practice);
-		
+
 		Role practiceAdminRole = Role.builder()
-				.name(CustomUtils.ORG_ADMIN_ROLE_NAME)
-				.description(CustomUtils.ORG_ADMIN_ROLE_DESC)
-				.isActive(Boolean.TRUE)
-				.practiceId(savedPractice)
-				.permissions(Set.of( Permission.values()))
-				.build();
+			.name(CustomUtils.ORG_ADMIN_ROLE_NAME)
+			.description(CustomUtils.ORG_ADMIN_ROLE_DESC)
+			.isActive(Boolean.TRUE)
+			.practiceId(savedPractice)
+			.permissions(Set.of(Permission.values()))
+			.build();
 		roleRepository.save(practiceAdminRole);
 		return savedPractice;
 	}
