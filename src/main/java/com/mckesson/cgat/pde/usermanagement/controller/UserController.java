@@ -5,7 +5,8 @@ import java.util.Set;
 
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.*;
-import com.mckesson.cgat.pde.usermanagement.utils.UserManagementUtils;
+import com.mckesson.cgat.pde.usermanagement.utils.OrganizationContext;
+import com.mckesson.cgat.pde.usermanagement.utils.UserRequestAuthorizationValidator;
 import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,6 +32,7 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
@@ -46,43 +48,46 @@ public class UserController {
 
 	private final AccountService accountService;
 
-	private final UserSecurityUtils userSecurityUtils;
-
 	private static final String SORT_ORDER_ASC = "asc";
 
-	public UserController(UserService userModelService, AccountService accountService,
-			UserSecurityUtils userSecurityUtils) {
+	public UserController(UserService userModelService, AccountService accountService) {
 		this.userService = userModelService;
 		this.accountService = accountService;
-		this.userSecurityUtils = userSecurityUtils;
 	}
 
 	@PostMapping
 	@Operation(summary = "Create new user")
-	public ResponseEntity<User> createUser(@RequestBody UserRequestModel model) throws UnauthorizedAccessException {
-		User user = model.getUser();
-		UserType userType = model.getUserType();
-		LoggedInUserDetails loggedInUser = userSecurityUtils.getLoggedInUser();
-		UserManagementUtils.validateUserCreation(loggedInUser, userType);
+	public ResponseEntity<User> createUser(@Valid @RequestBody User user,
+			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
+			throws UnauthorizedAccessException {
+		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
 		return new ResponseEntity<>(userService.createUser(user), HttpStatus.OK);
 	}
 
 	@PutMapping("/{userId}")
 	@Operation(summary = "Update existing user details byId")
-	public User updateUser(@PathVariable Long userId, @RequestBody User model) throws ResourceNotFoundException {
-		return userService.updateUser(userId, model);
-
+	public User updateUser(@PathVariable Long userId, @Valid @RequestBody User user,
+			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
+		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
+		return userService.updateUser(userId, user);
 	}
 
 	@GetMapping("/{userId}")
 	@Operation(summary = "Get user details byId ")
-	public ResponseEntity<User> getUser(@PathVariable Long userId) throws ResourceNotFoundException {
+	public ResponseEntity<User> getUser(@PathVariable Long userId,
+			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
+		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
 		return new ResponseEntity<>(userService.getUser(userId), HttpStatus.OK);
 	}
 
 	@DeleteMapping("/{userId}")
 	@Operation(summary = "Delete user details byId")
-	public void deleteUser(@PathVariable Long userId) throws ResourceNotFoundException {
+	public void deleteUser(@PathVariable Long userId,
+			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
+		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
 		userService.deleteUser(userId);
 
 	}
@@ -93,14 +98,14 @@ public class UserController {
 			@RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(defaultValue = "first_name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
-			@PathVariable(required = false) String practiceId, @RequestParam(required = false) List<String> status)
+			@RequestParam(required = false) List<String> status,
+			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
 			throws UnauthorizedAccessException {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-		LoggedInUserDetails loggedInUser = userSecurityUtils.getLoggedInUser();
-		UserManagementUtils.validateFetchUserRequest(loggedInUser, practiceId);
-		return userService.findAll(paging, query, status, practiceId);
+		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
+		return userService.findAll(paging, query, status, OrganizationContext.getCurrentOrgId());
 
 	}
 

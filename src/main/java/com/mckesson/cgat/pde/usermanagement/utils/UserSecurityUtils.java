@@ -42,7 +42,7 @@ public class UserSecurityUtils {
 
 	}
 
-	public LoggedInUserDetails getLoggedInUser() {
+	public static LoggedInUserDetails getLoggedInUser() {
 		UserCurrentRequestContext user = (UserCurrentRequestContext) SecurityContextHolder.getContext()
 			.getAuthentication()
 			.getPrincipal();
