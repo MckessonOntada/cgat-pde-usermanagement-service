@@ -8,6 +8,7 @@ import com.mckesson.cgat.pde.usermanagement.model.*;
 import com.mckesson.cgat.pde.usermanagement.utils.OrganizationContext;
 import com.mckesson.cgat.pde.usermanagement.utils.UserRequestAuthorizationValidator;
 import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
+import com.mckesson.cgat.pde.usermanagement.model.Role;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +34,8 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+
+
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
@@ -114,18 +117,20 @@ public class UserController {
 			summary = "Link/Delink User with accounts.(This API maps the accounts being passed in requst with the user "
 					+ "such as the requested mapping is the current state of user to account association")
 	public User linkUserToAccounts(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
-			@RequestParam List<Long> accountIds) throws ResourceNotFoundException {
+			@RequestBody List<Long> accountIds) throws ResourceNotFoundException {
 		return userService.linkUserToAccounts(userId, accountIds);
 
 	}
 
 	@PatchMapping("/{userId}/roles-permissions")
 	@Operation(summary = "Link User with role and permissions")
-	public User linkUserToRole(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
+	public ResponseEntity<User> linkUserToRole(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
 			@RequestParam @NotNull(message = "Role Id can not be null") Long roleId,
-			@RequestBody @NotEmpty(message = "Permissions can not be empty") Set<Permission> permissions)
+			@RequestBody @NotEmpty(message = "Permissions can not be empty") @NotNull(
+					message = "Permissions can not be null") Set<Permission> permissions)
 			throws ResourceNotFoundException {
-		return userService.linkUserToRoleAndPermissions(userId, roleId, permissions);
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(userService.linkUserToRoleAndPermissions(userId, roleId, permissions));
 	}
 
 	@GetMapping("/{userId}/accounts")

@@ -36,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Tag(name = "Practices", description = "Controller for Manages practices-related operations and data.")
-@RequestMapping(path = "/practice", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/practices", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class PracticeController {
 

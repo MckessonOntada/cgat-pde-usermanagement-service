@@ -1,7 +1,11 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -10,14 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
@@ -58,16 +55,20 @@ public class RoleController {
 		return ResponseEntity.status(HttpStatus.OK).body(roleService.createOrUpdateRole(role, practiceId));
 	}
 
+	@PatchMapping("/{roleId}/permissions")
+	@Operation(summary = "Link/Unlink Roles to permission. Associated the permission in current request with the role.")
+	public ResponseEntity<Role> linkPermissionToRole(
+			@PathVariable @NotNull(message = "Role Id can not be null") Long roleId,
+			@RequestBody @NotNull(message = "Permissions can not be null") @NotEmpty(
+					message = "Permissions can not be Empty") Set<Permission> permissions)
+			throws ResourceNotFoundException {
+		return ResponseEntity.status(HttpStatus.OK).body(roleService.linkPermissionToRole(roleId, permissions));
+	}
+
 	@GetMapping("/{roleId}")
 	@Operation(summary = "Get Role by Id")
 	public ResponseEntity<Role> getRole(@PathVariable String roleId) throws ResourceNotFoundException {
 		return new ResponseEntity<>(roleService.getRole(roleId), HttpStatus.OK);
-	}
-
-	@GetMapping("/permission")
-	@Operation(summary = "Fetch AllPermissions")
-	public ResponseEntity<List<Permission>> getPermissions() {
-		return new ResponseEntity<>(roleService.getAllPermissions(), HttpStatus.OK);
 	}
 
 	@GetMapping
