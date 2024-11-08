@@ -5,10 +5,9 @@ import java.util.Set;
 
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.*;
+import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
 import com.mckesson.cgat.pde.usermanagement.utils.OrganizationContext;
 import com.mckesson.cgat.pde.usermanagement.utils.UserRequestAuthorizationValidator;
-import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
-import com.mckesson.cgat.pde.usermanagement.model.Role;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -33,7 +33,6 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -59,7 +58,7 @@ public class UserController {
 
 	@PostMapping
 	@Operation(summary = "Create new user")
-	public ResponseEntity<User> createUser(@Valid @RequestBody User user,
+	public ResponseEntity<User> createUser(@Validated(BasicInfo.class) @RequestBody User user,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
 			throws UnauthorizedAccessException {
 		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
@@ -68,7 +67,7 @@ public class UserController {
 
 	@PutMapping("/{userId}")
 	@Operation(summary = "Update existing user details byId")
-	public User updateUser(@PathVariable Long userId, @Valid @RequestBody User user,
+	public User updateUser(@PathVariable Long userId, @Validated(BasicInfo.class) @RequestBody User user,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
@@ -116,7 +115,10 @@ public class UserController {
 			summary = "Link/Delink User with accounts.(This API maps the accounts being passed in requst with the user "
 					+ "such as the requested mapping is the current state of user to account association")
 	public User linkUserToAccounts(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
-			@RequestBody List<Long> accountIds) throws ResourceNotFoundException {
+			@RequestBody List<Long> accountIds,
+			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
+		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
 		return userService.linkUserToAccounts(userId, accountIds);
 
 	}
@@ -126,8 +128,10 @@ public class UserController {
 	public ResponseEntity<User> linkUserToRole(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
 			@RequestParam @NotNull(message = "Role Id can not be null") Long roleId,
 			@RequestBody @NotEmpty(message = "Permissions can not be empty") @NotNull(
-					message = "Permissions can not be null") Set<Permission> permissions)
-			throws ResourceNotFoundException {
+					message = "Permissions can not be null") Set<Permission> permissions,
+			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
+		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(userService.linkUserToRoleAndPermissions(userId, roleId, permissions));
 	}
@@ -138,7 +142,10 @@ public class UserController {
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
 			@PathVariable(required = false) String practiceId, @PathVariable(required = false) Long userId,
-			@RequestParam(required = false) List<String> status) throws ResourceNotFoundException {
+			@RequestParam(required = false) List<String> status,
+			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
+		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);

@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.model;
 
 import java.io.Serializable;
 
+import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -22,11 +23,11 @@ public class Contact implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@NotNull(message = "Email cannot be null")
+	@NotNull(message = "Email cannot be null", groups = BasicInfo.class)
 	@Email(message = "Invalid email format")
 	private String email;
 
-	@NotNull(message = "Phone number cannot be null")
+	@NotNull(message = "Phone number cannot be null", groups = BasicInfo.class)
 	@Pattern(regexp = "\\d{10}", message = "Phone number must be 10 digits")
 	private String phone;
 
