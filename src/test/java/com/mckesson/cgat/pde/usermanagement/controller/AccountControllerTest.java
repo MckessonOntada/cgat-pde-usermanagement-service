@@ -220,32 +220,32 @@ class AccountControllerTest {
 		assertNotNull(result);
 		verify(accountService).findAll(pageable, null, null, null, "100");
 	}
-	
+
 	@DisplayName("FindAllTestForDesc")
 	@Test
 	void findAllTestForDesc() throws Exception {
-			Integer pageNo = 0;
-			Integer pageSize = 20;
-			String sortBy = "name";
-			String sortOrder = "desc";
-			Sort sort = "asc".equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-			PageRequest pageable = PageRequest.of(pageNo, pageSize, sort);
-			List<Account> accounts = getAccountList();
-			PageImpl<Account> accountPage = new PageImpl<>(accounts, pageable, accounts.size());
-			when(accountService.findAll(any(PageRequest.class), Mockito.anyString(), Mockito.anyList(), Mockito.anyLong(),
-					Mockito.anyString()))
-				.thenReturn(accountPage);
+		Integer pageNo = 0;
+		Integer pageSize = 20;
+		String sortBy = "name";
+		String sortOrder = "desc";
+		Sort sort = "asc".equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+		PageRequest pageable = PageRequest.of(pageNo, pageSize, sort);
+		List<Account> accounts = getAccountList();
+		PageImpl<Account> accountPage = new PageImpl<>(accounts, pageable, accounts.size());
+		when(accountService.findAll(any(PageRequest.class), Mockito.anyString(), Mockito.anyList(), Mockito.anyLong(),
+				Mockito.anyString()))
+			.thenReturn(accountPage);
 
-			ResultActions result = mockMvc
-				.perform(get("/practice/{practiceId}/accounts", account.getPracticeId()).param("pageNo", "0")
-					.param("pageSize", "20")
-					.param("sortBy", "name")
-					.param("sortOrder", "desc")
-					.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk());
-			assertNotNull(result);
-			verify(accountService).findAll(pageable, null, null, null, "100");
-		}
+		ResultActions result = mockMvc
+			.perform(get("/practice/{practiceId}/accounts", account.getPracticeId()).param("pageNo", "0")
+				.param("pageSize", "20")
+				.param("sortBy", "name")
+				.param("sortOrder", "desc")
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk());
+		assertNotNull(result);
+		verify(accountService).findAll(pageable, null, null, null, "100");
+	}
 
 	@DisplayName("LinkAccountToPracticeTest")
 	@Test
