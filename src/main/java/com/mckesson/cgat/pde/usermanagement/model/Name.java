@@ -5,6 +5,7 @@ import java.io.Serializable;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,12 +25,14 @@ public class Name implements Serializable {
 
 	@NotNull(message = "First name cannot be null")
 	@Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
+	@Pattern(regexp = "^[A-Za-z]+$", message = "First Name must contain alphabetic characters only")
 	private String firstName;
 
-	@Size(max = 50, message = "First name must be between 2 and 50 characters")
+	@Size(max = 50, message = "Middle name must be between 2 and 50 characters")
+	@Pattern(regexp = "^[A-Za-z]+$", message = "Middle Name must contain alphabetic characters only")
 	private String middleName;
 
-	@NotNull(message = "First name cannot be null")
+	@NotEmpty(message = "Last name cannot be empty")
 	@Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
 	private String lastName;
 

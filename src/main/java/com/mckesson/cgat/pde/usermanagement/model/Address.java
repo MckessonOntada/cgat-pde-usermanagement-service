@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.model;
 import java.io.Serializable;
 
 import jakarta.persistence.Embeddable;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -24,21 +25,22 @@ public class Address implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@NotNull(message = "Address cannot be null")
-	@NotEmpty(message = "Address cannot be empty")
+	@NotEmpty(message = "Address 1 is required.")
 	private String address1;
 
 	private String address2;
 
-	@NotNull(message = "city cannot be null")
-	@NotEmpty(message = "city cannot be empty")
+	@NotNull(message = "City cannot be null")
+	@NotEmpty(message = "City is required.")
+	@Pattern(regexp = "^[A-Za-z]+$", message = "City must contain alphabetic characters only")
 	private String city;
 
 	@NotNull(message = "state cannot be null")
-	@NotEmpty(message = "state cannot be empty")
+	@NotEmpty(message = "State is required.")
 	private String state;
 
-	@NotNull(message = "zip cannot be null")
-	@Pattern(regexp = "^\\d{5}", message = "Zip code must be 5 digits")
+	@NotBlank(message = "ZIP code is required")
+	@Pattern(regexp = "^\\d{5}(-?\\d{4})?$", message = "ZIP code must be 5 digits or 9 digits in extended format (e.g., 12345 or 12345-6789)")
 	private String zip;
 
 }

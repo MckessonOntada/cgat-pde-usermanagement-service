@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.service.impl.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Set;
 
 import org.springframework.stereotype.Component;
@@ -37,6 +38,17 @@ public class PracticeUtils {
 		for (ConstraintViolation<Practice> violation : violations) {
 			bindingResult.addError(new ObjectError(violation.getPropertyPath().toString(), violation.getMessage()));
 		}
+	}
+	
+	
+	public boolean isValidImageFormat(String fileName) {
+	    String[] validExtensions = {"jpeg", "jpg", "png", "tiff", "tif", "bmp", "gif"};
+	    String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+	    return Arrays.asList(validExtensions).contains(fileExtension);
+	}
+	
+	public boolean isValidString(String input) {
+	    return input.matches("^[a-zA-Z0-9_-]+$");
 	}
 
 }

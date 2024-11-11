@@ -3,6 +3,8 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.coyote.BadRequestException;
+import org.ini4j.InvalidFileFormatException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -44,6 +46,8 @@ public class PracticeController {
 
 	private final PracticeUtils practiceUtils;
 
+	private static final long max_file_size = 1048576; // 1 MB in bytes
+
 	public PracticeController(PracticeService practiceService, PracticeUtils practiceUtils) {
 		this.practiceService = practiceService;
 		this.practiceUtils = practiceUtils;
@@ -52,8 +56,23 @@ public class PracticeController {
 	@PostMapping
 	@Operation(summary = "Create Practice")
 	public ResponseEntity<Object> createPractice(@RequestPart("practiceStr") @Valid String practiceStr,
-			@RequestPart("logo") MultipartFile logo, BindingResult bindingResult) throws IOException {
+			@RequestPart("logo") MultipartFile logo, BindingResult bindingResult)
+			throws IOException, ResourceNotFoundException {
 		Practice practiceObj = parsePractice(practiceStr);
+
+		if (!practiceUtils.isValidString(practiceObj.getName()))
+			throw new BadRequestException("The input must be a valid string without special characters.");
+
+		if (!logo.isEmpty()) {
+
+			if (!practiceUtils.isValidImageFormat(logo.getOriginalFilename()))
+				throw new InvalidFileFormatException(
+						"The file you uploaded is not in a supported image format. Please upload an image in one of the following formats: JPEG/JPG, PNG, GIF, BMP, TIFF/TIF.");
+		}
+		if (logo.getSize() > max_file_size)
+			throw new IOException(
+					"The file you uploaded exceeds the maximum allowed size of 1 MB. Please upload an image that is 1 MB or smaller");
+
 		practiceUtils.validatePractice(practiceObj, bindingResult);
 		if (bindingResult.hasErrors()) {
 			// Return validation errors as response
