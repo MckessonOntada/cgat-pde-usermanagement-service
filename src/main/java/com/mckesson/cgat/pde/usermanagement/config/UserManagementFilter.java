@@ -27,9 +27,7 @@ import static com.mckesson.jbat.auth.module.constant.UtilsConstant.SWAGGER_URL_T
 
 @Component
 @Slf4j
-public class UserManagementFilter extends OncePerRequestFilter {
-
-	private AntPathMatcher pathMatcher;
+public class UserManagementFilter extends GeneralFilter {
 
 	@Autowired
 	private SecurityUtils securityUtils;
@@ -40,10 +38,6 @@ public class UserManagementFilter extends OncePerRequestFilter {
 	@Autowired
 	private UserSecurityUtils userSecurityUtils;
 
-	@PostConstruct
-	public void init() {
-		this.pathMatcher = new AntPathMatcher();
-	}
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -64,9 +58,6 @@ public class UserManagementFilter extends OncePerRequestFilter {
 		else {
 			response.setStatus(HttpStatus.BAD_REQUEST.value());
 		}
-		if (userRequest != null) {
-			filterChain.doFilter(request, response);
-		}
 
 		filterChain.doFilter(request, response);
 
@@ -83,14 +74,6 @@ public class UserManagementFilter extends OncePerRequestFilter {
 					e.getMessage());
 			throw new UserAuthenticationException("Error in createUserRequestWithOKTAToken", e);
 		}
-	}
-
-	@Override
-	public boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-		if (pathMatcher == null) {
-			pathMatcher = new AntPathMatcher();
-		}
-		return Stream.of(SWAGGER_URL_TO_EXCLUDE).anyMatch(f -> pathMatcher.match(f, request.getServletPath()));
 	}
 
 }

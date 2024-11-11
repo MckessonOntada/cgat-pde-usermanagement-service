@@ -13,6 +13,8 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 @Configuration
 public class FilterConfiguration {
 
+	private int FILTER_ORDER = 1;
+
 	@Value("${filter.enabled:true}")
 	private boolean enableLoginFilter;
 
@@ -31,13 +33,30 @@ public class FilterConfiguration {
 	}
 
 	@Bean
+	public FilterRegistrationBean<GeneralFilter> generalFilterFilterRegistrationBean(
+			GeneralFilter generalFilter) {
+		FilterRegistrationBean<GeneralFilter> registrationBean = new FilterRegistrationBean<>(generalFilter);
+		registrationBean.addUrlPatterns("/*");
+		registrationBean.setOrder(FILTER_ORDER);
+		return registrationBean;
+	}
+
+	@Bean
 	public FilterRegistrationBean<UserManagementFilter> userManagementFilterFilterRegistrationBean(
 			UserManagementFilter userManagementFilter) {
 		FilterRegistrationBean<UserManagementFilter> registrationBean = new FilterRegistrationBean<>(
 				userManagementFilter);
 		registrationBean.addUrlPatterns("/*");
-		registrationBean.setOrder(1);
+		registrationBean.setOrder(++FILTER_ORDER);
 		registrationBean.setEnabled(enableLoginFilter);
+		return registrationBean;
+	}
+
+	@Bean
+	public FilterRegistrationBean<TenantFilter> tenantFilterFilterRegistrationBean(TenantFilter tenantFilter) {
+		FilterRegistrationBean<TenantFilter> registrationBean = new FilterRegistrationBean<>(tenantFilter);
+		registrationBean.addUrlPatterns("/*");
+		registrationBean.setOrder(++FILTER_ORDER);
 		return registrationBean;
 	}
 
