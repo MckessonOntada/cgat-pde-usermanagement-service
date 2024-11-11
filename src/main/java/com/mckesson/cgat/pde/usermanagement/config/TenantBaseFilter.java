@@ -20,7 +20,7 @@ import java.util.List;
 
 @Component
 @Slf4j
-public class TenantFilter extends GeneralFilter {
+public class TenantBaseFilter extends CGATBaseFilter {
 
 	private final String PRACTICE = "practice";
 
@@ -28,15 +28,23 @@ public class TenantFilter extends GeneralFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		try {
-			List<String> servletPatch = Arrays.asList(request.getServletPath().split("/"));
+			/*
+			 * Fetching practice id from the request url. It would be like:
+			 * /practice/{practiceId}/
+			 */
+			List<String> servletPath = Arrays.asList(request.getServletPath().split("/"));
 			long tenantIdFromRequest = 1L;
-			if (servletPatch.contains(PRACTICE)) {
-				tenantIdFromRequest = Long.parseLong(servletPatch.get(servletPatch.indexOf(PRACTICE) + 1));
+			if (servletPath.contains(PRACTICE)) {
+				tenantIdFromRequest = Long.parseLong(servletPath.get(servletPath.indexOf(PRACTICE) + 1));
 			}
 
 			LoggedInUserDetails loggedInUser = UserSecurityUtils.getLoggedInUser();
 			boolean systemAdmin = UserRequestAuthorizationValidator.isSystemAdmin(loggedInUser);
 
+			/*
+			 * Only system admins are allowed to fetch data of different practice ids.
+			 * Normal users can fetch data of only assigned practice.
+			 */
 			if (!systemAdmin && loggedInUser.getPracticeId() != tenantIdFromRequest) {
 				throw new UnauthorizedAccessException(CustomUtils.UNAUTHORIZED_MESSAGE);
 			}
@@ -51,6 +59,7 @@ public class TenantFilter extends GeneralFilter {
 			return;
 		}
 		filterChain.doFilter(request, response);
+		// TODO: kapil - clear id from thread local
 	}
 
 }

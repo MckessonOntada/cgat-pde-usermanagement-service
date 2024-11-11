@@ -1,30 +1,24 @@
 package com.mckesson.cgat.pde.usermanagement.config;
 
-import com.auth0.jwt.interfaces.Claim;
 import com.mckesson.cgat.pde.usermanagement.model.LoggedInUserDetails;
 import com.mckesson.cgat.pde.usermanagement.utils.UserFilterUtils;
 import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
-import com.mckesson.jbat.auth.module.exception.UserAuthenticationException;
-import com.mckesson.jbat.auth.module.util.JWTConstants;
-import com.mckesson.jbat.auth.module.util.SecurityUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.HashMap;
 
-@Component
 @Slf4j
-public class UserManagementFilter extends GeneralFilter {
-
-	@Autowired
-	private SecurityUtils securityUtils;
+@Component
+public class DevUserAuthenticationBaseFilter extends CGATBaseFilter {
 
 	@Autowired
 	private UserFilterUtils userFilterUtils;
@@ -36,11 +30,11 @@ public class UserManagementFilter extends GeneralFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 
-		LoggedInUserDetails userRequest = null;
-
-		if (null != request.getHeader(JWTConstants.JWT_HEADER)) {
+		LoggedInUserDetails userRequest;
+		String userId = request.getHeader("userId");
+		if (StringUtils.isNotEmpty(userId)) {
 			try {
-				userRequest = createUserRequestWithOKTAToken(request, response);
+				userRequest = userFilterUtils.buildUserContextDetail(userId, "devUserName", new HashMap<>());
 				userSecurityUtils.createContext(userRequest, request, response);
 			}
 			catch (Exception e) {
@@ -51,22 +45,7 @@ public class UserManagementFilter extends GeneralFilter {
 		else {
 			response.setStatus(HttpStatus.BAD_REQUEST.value());
 		}
-
 		filterChain.doFilter(request, response);
-
-	}
-
-	private LoggedInUserDetails createUserRequestWithOKTAToken(HttpServletRequest request,
-			HttpServletResponse response) {
-		try {
-			Map<String, Claim> payload = securityUtils.getPayloadByToken(request, response);
-			return userFilterUtils.buildUserContextDetail(request, payload);
-		}
-		catch (Exception e) {
-			log.error("Error in createUserRequestWithOKTAToken method while Setting Current User Id {}",
-					e.getMessage());
-			throw new UserAuthenticationException("Error in createUserRequestWithOKTAToken", e);
-		}
 	}
 
 }

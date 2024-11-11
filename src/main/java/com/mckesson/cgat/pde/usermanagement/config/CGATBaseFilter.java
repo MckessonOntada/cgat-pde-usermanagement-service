@@ -17,7 +17,7 @@ import static com.mckesson.jbat.auth.module.constant.UtilsConstant.SWAGGER_URL_T
 
 @Component
 @Slf4j
-public class GeneralFilter extends OncePerRequestFilter {
+public class CGATBaseFilter extends OncePerRequestFilter {
 
 	private AntPathMatcher pathMatcher;
 

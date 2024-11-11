@@ -13,10 +13,11 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 @Configuration
 public class FilterConfiguration {
 
-	private int FILTER_ORDER = 1;
-
 	@Value("${filter.enabled:true}")
 	private boolean enableLoginFilter;
+
+	@Value("${filter.enableDevLoginFilter:false}")
+	private boolean enableDevLoginFilter;
 
 	public FilterConfiguration(ObjectMapper objectMapper) {
 		SimpleFilterProvider simpleFilterProvider = new SimpleFilterProvider().setFailOnUnknownId(true);
@@ -33,30 +34,40 @@ public class FilterConfiguration {
 	}
 
 	@Bean
-	public FilterRegistrationBean<GeneralFilter> generalFilterFilterRegistrationBean(
-			GeneralFilter generalFilter) {
-		FilterRegistrationBean<GeneralFilter> registrationBean = new FilterRegistrationBean<>(generalFilter);
+	public FilterRegistrationBean<CGATBaseFilter> cgatBaseFilterFilterRegistrationBean(CGATBaseFilter CGATBaseFilter) {
+		FilterRegistrationBean<CGATBaseFilter> registrationBean = new FilterRegistrationBean<>(CGATBaseFilter);
 		registrationBean.addUrlPatterns("/*");
-		registrationBean.setOrder(FILTER_ORDER);
+		registrationBean.setOrder(1);
 		return registrationBean;
 	}
 
 	@Bean
-	public FilterRegistrationBean<UserManagementFilter> userManagementFilterFilterRegistrationBean(
-			UserManagementFilter userManagementFilter) {
-		FilterRegistrationBean<UserManagementFilter> registrationBean = new FilterRegistrationBean<>(
-				userManagementFilter);
+	public FilterRegistrationBean<DevUserAuthenticationBaseFilter> devUserAuthenticationFilterFilterRegistrationBean(
+			DevUserAuthenticationBaseFilter devUserAuthenticationBaseFilter) {
+		FilterRegistrationBean<DevUserAuthenticationBaseFilter> registrationBean = new FilterRegistrationBean<>(
+				devUserAuthenticationBaseFilter);
 		registrationBean.addUrlPatterns("/*");
-		registrationBean.setOrder(++FILTER_ORDER);
+		registrationBean.setOrder(2);
+		registrationBean.setEnabled(enableDevLoginFilter);
+		return registrationBean;
+	}
+
+	@Bean
+	public FilterRegistrationBean<UserAuthenticationBaseFilter> userAuthenticationFilterFilterRegistrationBean(
+			UserAuthenticationBaseFilter userAuthenticationFilter) {
+		FilterRegistrationBean<UserAuthenticationBaseFilter> registrationBean = new FilterRegistrationBean<>(
+				userAuthenticationFilter);
+		registrationBean.addUrlPatterns("/*");
+		registrationBean.setOrder(3);
 		registrationBean.setEnabled(enableLoginFilter);
 		return registrationBean;
 	}
 
 	@Bean
-	public FilterRegistrationBean<TenantFilter> tenantFilterFilterRegistrationBean(TenantFilter tenantFilter) {
-		FilterRegistrationBean<TenantFilter> registrationBean = new FilterRegistrationBean<>(tenantFilter);
+	public FilterRegistrationBean<TenantBaseFilter> tenantFilterFilterRegistrationBean(TenantBaseFilter tenantFilter) {
+		FilterRegistrationBean<TenantBaseFilter> registrationBean = new FilterRegistrationBean<>(tenantFilter);
 		registrationBean.addUrlPatterns("/*");
-		registrationBean.setOrder(++FILTER_ORDER);
+		registrationBean.setOrder(4);
 		return registrationBean;
 	}
 
