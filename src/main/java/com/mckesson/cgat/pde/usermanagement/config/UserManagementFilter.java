@@ -7,7 +7,6 @@ import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
 import com.mckesson.jbat.auth.module.exception.UserAuthenticationException;
 import com.mckesson.jbat.auth.module.util.JWTConstants;
 import com.mckesson.jbat.auth.module.util.SecurityUtils;
-import jakarta.annotation.PostConstruct;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,14 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.util.AntPathMatcher;
-import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.stream.Stream;
-
-import static com.mckesson.jbat.auth.module.constant.UtilsConstant.SWAGGER_URL_TO_EXCLUDE;
 
 @Component
 @Slf4j
@@ -37,7 +31,6 @@ public class UserManagementFilter extends GeneralFilter {
 
 	@Autowired
 	private UserSecurityUtils userSecurityUtils;
-
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
