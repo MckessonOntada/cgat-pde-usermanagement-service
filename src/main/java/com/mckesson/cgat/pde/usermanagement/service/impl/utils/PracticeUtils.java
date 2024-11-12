@@ -29,7 +29,7 @@ public class PracticeUtils {
 
 	public String uploadLogo(MultipartFile file, Long practiceId) throws IllegalStateException, IOException {
 		return azureBlobContainerFileUploadService.uploadAndGetURL(file.getBytes(),
-				Path.of("logos/" + practiceId + "."+ FilenameUtils.getExtension(file.getOriginalFilename())), true);
+				Path.of("logos/" + practiceId + "." + FilenameUtils.getExtension(file.getOriginalFilename())), true);
 	}
 
 	public void validatePractice(Practice practice, BindingResult bindingResult) {

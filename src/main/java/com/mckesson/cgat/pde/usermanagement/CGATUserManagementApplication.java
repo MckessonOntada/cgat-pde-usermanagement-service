@@ -9,7 +9,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 
 import com.mckesson.jbat.common.util.service.AzureBlobContainerFileUploadService;
 
-@ComponentScan(basePackages ="com.mckesson.cgat.pde")
+@ComponentScan(basePackages = "com.mckesson.cgat.pde")
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @SpringBootApplication
 @Import(AzureBlobContainerFileUploadService.class)
