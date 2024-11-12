@@ -157,7 +157,7 @@ class AccountServiceImplTest {
 			.id(practiceId)
 			.name("practice_name")
 			.logoUrl("logo_url")
-			.contactPerson(Name.builder().firstName("ram").middleName(" ").lastName("kumar").suffix("mr").build())
+			.contactPerson(Name.builder().firstName("ram").middleName(" ").lastName("kumar").build())
 			.address(Address.builder()
 				.address1("address1")
 				.address2("address1")

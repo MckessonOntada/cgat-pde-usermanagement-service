@@ -5,7 +5,6 @@ import java.io.Serializable;
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,22 +23,23 @@ public class Address implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@NotNull(message = "Address cannot be null")
-	@NotEmpty(message = "Address cannot be empty")
+	@NotEmpty(message = "Address 1 is required.")
 	private String address1;
 
 	private String address2;
 
-	@NotNull(message = "city cannot be null")
-	@NotEmpty(message = "city cannot be empty")
+	@NotEmpty(message = "City is required.")
+	@Pattern(regexp = "^[A-Za-z]+$", message = "City must contain alphabetic characters only")
 	private String city;
 
-	@NotNull(message = "state cannot be null")
-	@NotEmpty(message = "state cannot be empty")
+	@NotEmpty(message = "State is required.")
+	@Pattern(
+			regexp = "^(A[LKZR]|C[AOT]|D[EC]|FL|GA|HI|I[DLNA]|K[SY]|LA|M[DEHINSOT]|N[CDEHJMVY]|O[HKR]|P[AR]|RI|S[CD]|T[NX]|UT|V[AIT]|W[AIVY]|Alabama|Alaska|Arizona|Arkansas|California|Colorado|Connecticut|Delaware|Florida|Georgia|Hawaii|Idaho|Illinois|Indiana|Iowa|Kansas|Kentucky|Louisiana|Maine|Maryland|Massachusetts|Michigan|Minnesota|Mississippi|Missouri|Montana|Nebraska|Nevada|New Hampshire|New Jersey|New Mexico|New York|North Carolina|North Dakota|Ohio|Oklahoma|Oregon|Pennsylvania|Rhode Island|South Carolina|South Dakota|Tennessee|Texas|Utah|Vermont|Virginia|Washington|West Virginia|Wisconsin|Wyoming)$",
+			message = "State must be a valid state abbreviation (e.g., CA) or full name (e.g., California)")
 	private String state;
 
-	@NotNull(message = "zip cannot be null")
-	@Pattern(regexp = "^\\d{5}", message = "Zip code must be 5 digits")
+	@NotEmpty(message = "ZIP code is required")
+	@Pattern(regexp = "^\\d{5}(-?\\d{4})?$", message = "Zip code is required and must be in a valid format.")
 	private String zip;
 
 }

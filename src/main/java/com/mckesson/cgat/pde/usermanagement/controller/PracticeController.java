@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import java.io.IOException;
 import java.util.List;
 
+import org.ini4j.InvalidFileFormatException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -46,6 +47,8 @@ public class PracticeController {
 
 	private final PracticeUtils practiceUtils;
 
+	private static final long max_file_size = 1048576; // 1 MB in bytes
+
 	public PracticeController(PracticeService practiceService, PracticeUtils practiceUtils) {
 		this.practiceService = practiceService;
 		this.practiceUtils = practiceUtils;
@@ -78,7 +81,7 @@ public class PracticeController {
 			@RequestPart("logo") MultipartFile logo, @PathVariable String practiceId, BindingResult bindingResult)
 			throws IOException {
 		Practice practiceObj = parsePractice(practiceStr);
-		practiceUtils.validatePractice(practiceObj, bindingResult);
+		practiceUtils.validatePractice(practiceObj, bindingResult, null);
 		if (bindingResult.hasErrors()) {
 			// Return validation errors as response
 			return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
