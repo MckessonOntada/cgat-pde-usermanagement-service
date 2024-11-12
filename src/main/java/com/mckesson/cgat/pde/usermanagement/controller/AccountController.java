@@ -89,7 +89,7 @@ public class AccountController {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-		return accountService.findAll(paging, query, status, null, practiceId);
+		return accountService.findAll(paging, query, status, null, Long.valueOf(practiceId));
 	}
 
 	@PatchMapping
