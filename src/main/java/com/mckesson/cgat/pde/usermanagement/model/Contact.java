@@ -27,10 +27,10 @@ public class Contact implements Serializable {
 	private String email;
 
 	@NotEmpty(message = "Phone Number is required")
-	@Pattern(regexp = "\\d{10}", message = "Phone Number must be in a valid format (e.g., +1-123-456-7890 or (123) 456-7890)")
+	@Pattern(regexp = "\\d{10}", message = "Phone Number must be in a valid format")
 	private String phone;
 
-	@Pattern(regexp = "^(\\+\\d{1,3}[- ]?)?\\(?\\d{3}\\)?[- ]?\\d{3}[- ]?\\d{4}$", message = "Fax must be a valid format (e.g., +1-123-456-7890, (123) 456-7890, 123-456-7890)")
+	@Pattern(message = "Fax must be a valid format (e.g., +1-123-456-7890, (123) 456-7890, 123-456-7890)", regexp = "")
 	private String fax;
 
 }

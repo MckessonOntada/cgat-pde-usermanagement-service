@@ -55,11 +55,10 @@ public class PracticeController {
 	@PostMapping
 	@Operation(summary = "Create Practice")
 	public ResponseEntity<Object> createPractice(@RequestPart("practiceStr") @Valid String practiceStr,
-			 @RequestPart("logo") MultipartFile logo, BindingResult bindingResult)
-			throws IOException {
+			@RequestPart("logo") MultipartFile logo, BindingResult bindingResult) throws IOException {
 		Practice practiceObj = parsePractice(practiceStr);
 
-		practiceUtils.validatePractice(practiceObj, bindingResult ,logo);
+		practiceUtils.validatePractice(practiceObj, bindingResult, logo);
 		if (bindingResult.hasErrors()) {
 			// Return validation errors as response
 			return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
@@ -79,7 +78,7 @@ public class PracticeController {
 			@RequestPart("logo") MultipartFile logo, @PathVariable String practiceId, BindingResult bindingResult)
 			throws IOException {
 		Practice practiceObj = parsePractice(practiceStr);
-		practiceUtils.validatePractice(practiceObj, bindingResult,null);
+		practiceUtils.validatePractice(practiceObj, bindingResult, null);
 		if (bindingResult.hasErrors()) {
 			// Return validation errors as response
 			return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
