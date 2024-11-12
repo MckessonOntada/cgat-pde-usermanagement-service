@@ -16,6 +16,9 @@ public class FilterConfiguration {
 	@Value("${filter.enabled:true}")
 	private boolean enableLoginFilter;
 
+	@Value("${filter.enableDevLoginFilter:false}")
+	private boolean enableDevLoginFilter;
+
 	public FilterConfiguration(ObjectMapper objectMapper) {
 		SimpleFilterProvider simpleFilterProvider = new SimpleFilterProvider().setFailOnUnknownId(true);
 		simpleFilterProvider.addFilter("PermissionFilter", SimpleBeanPropertyFilter.filterOutAllExcept("id", "label",
@@ -31,13 +34,40 @@ public class FilterConfiguration {
 	}
 
 	@Bean
-	public FilterRegistrationBean<UserManagementFilter> userManagementFilterFilterRegistrationBean(
-			UserManagementFilter userManagementFilter) {
-		FilterRegistrationBean<UserManagementFilter> registrationBean = new FilterRegistrationBean<>(
-				userManagementFilter);
+	public FilterRegistrationBean<CGATBaseFilter> cgatBaseFilterFilterRegistrationBean(CGATBaseFilter CGATBaseFilter) {
+		FilterRegistrationBean<CGATBaseFilter> registrationBean = new FilterRegistrationBean<>(CGATBaseFilter);
 		registrationBean.addUrlPatterns("/*");
 		registrationBean.setOrder(1);
+		return registrationBean;
+	}
+
+	@Bean
+	public FilterRegistrationBean<DevUserAuthenticationBaseFilter> devUserAuthenticationFilterFilterRegistrationBean(
+			DevUserAuthenticationBaseFilter devUserAuthenticationBaseFilter) {
+		FilterRegistrationBean<DevUserAuthenticationBaseFilter> registrationBean = new FilterRegistrationBean<>(
+				devUserAuthenticationBaseFilter);
+		registrationBean.addUrlPatterns("/*");
+		registrationBean.setOrder(2);
+		registrationBean.setEnabled(enableDevLoginFilter);
+		return registrationBean;
+	}
+
+	@Bean
+	public FilterRegistrationBean<UserAuthenticationBaseFilter> userAuthenticationFilterFilterRegistrationBean(
+			UserAuthenticationBaseFilter userAuthenticationFilter) {
+		FilterRegistrationBean<UserAuthenticationBaseFilter> registrationBean = new FilterRegistrationBean<>(
+				userAuthenticationFilter);
+		registrationBean.addUrlPatterns("/*");
+		registrationBean.setOrder(3);
 		registrationBean.setEnabled(enableLoginFilter);
+		return registrationBean;
+	}
+
+	@Bean
+	public FilterRegistrationBean<TenantBaseFilter> tenantFilterFilterRegistrationBean(TenantBaseFilter tenantFilter) {
+		FilterRegistrationBean<TenantBaseFilter> registrationBean = new FilterRegistrationBean<>(tenantFilter);
+		registrationBean.addUrlPatterns("/*");
+		registrationBean.setOrder(4);
 		return registrationBean;
 	}
 

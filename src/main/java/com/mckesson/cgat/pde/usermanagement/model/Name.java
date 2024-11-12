@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.model;
 
 import java.io.Serializable;
 
+import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
@@ -35,6 +36,7 @@ public class Name implements Serializable {
 	@NotEmpty(message = "Last Name is required.")
 	@Size(max = 50, message = "Last name must be less than 50 characters")
 	@Pattern(regexp = "^[A-Za-z]+$", message = "Last Name must contain alphabetic characters only")
+
 	private String lastName;
 
 }
