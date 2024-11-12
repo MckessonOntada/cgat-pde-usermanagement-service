@@ -67,7 +67,7 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public Page<Account> findAll(Pageable paging, String query, List<String> status, Long userId, String practiceId)
+	public Page<Account> findAll(Pageable paging, String query, List<String> status, Long userId, Long practiceId)
 			throws ResourceNotFoundException {
 		query = StringUtils.toRootLowerCase(query);
 		String statusActive = CustomUtils.object_status.ALL.name();
@@ -88,9 +88,9 @@ public class AccountServiceImpl implements AccountService {
 			Optional<User> user = userRepository.findById(userId);
 			if (!user.isPresent())
 				throw new ResourceNotFoundException("User not found with id: " + userId);
-			return accountRepository.findAccountsByUser(userId, statusActive, paging, Long.valueOf(practiceId));
+			return accountRepository.findAccountsByUser(userId, statusActive, paging, practiceId);
 		}
-		return accountRepository.findAllByQueryText(query, statusActive, paging, Long.valueOf(practiceId));
+		return accountRepository.findAllByQueryText(query, statusActive, paging, practiceId);
 	}
 
 	@Transactional

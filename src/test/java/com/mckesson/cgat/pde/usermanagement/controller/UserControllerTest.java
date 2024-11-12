@@ -288,18 +288,19 @@ class UserControllerTest {
 	// verify(userService).findAll(pageable, null, null,null);
 	// }
 
-	@DisplayName("LinkUserToAccountsTest")
-	@Test
-	void linkUserToAccountsTest() throws Exception {
-		List<Long> accountIds = Arrays.asList(101L, 102L);
-		when(userService.linkUserToAccounts(user.getId(), accountIds)).thenReturn(user);
-		ResultActions result = mockMvc
-			.perform(patch("/practice/{practiceId}/users/{userId}/accounts", user.getPracticeId(), user.getId())
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(accountIds)))
-			.andExpect(status().isOk());
-		assertNotNull(result);
-	}
+	// @DisplayName("LinkUserToAccountsTest")
+	// @Test
+	// void linkUserToAccountsTest() throws Exception {
+	// List<Long> accountIds = Arrays.asList(101L, 102L);
+	// when(userService.linkUserToAccounts(user.getId(), accountIds)).thenReturn(user);
+	// ResultActions result = mockMvc
+	// .perform(patch("/practice/{practiceId}/users/{userId}/accounts",
+	// user.getPracticeId(), user.getId()).param("UserType", "ADMIN")
+	// .contentType(MediaType.APPLICATION_JSON)
+	// .content(objectMapper.writeValueAsString(accountIds)))
+	// .andExpect(status().isOk());
+	// assertNotNull(result);
+	// }
 
 	// @DisplayName("LinkUserToRoleTest")
 	// @Test

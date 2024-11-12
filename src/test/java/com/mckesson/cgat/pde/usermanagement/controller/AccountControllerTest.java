@@ -207,7 +207,7 @@ class AccountControllerTest {
 		List<Account> accounts = getAccountList();
 		PageImpl<Account> accountPage = new PageImpl<>(accounts, pageable, accounts.size());
 		when(accountService.findAll(any(PageRequest.class), Mockito.anyString(), Mockito.anyList(), Mockito.anyLong(),
-				Mockito.anyString()))
+				Mockito.anyLong()))
 			.thenReturn(accountPage);
 
 		ResultActions result = mockMvc
@@ -218,7 +218,7 @@ class AccountControllerTest {
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk());
 		assertNotNull(result);
-		verify(accountService).findAll(pageable, null, null, null, "100");
+		verify(accountService).findAll(pageable, null, null, null, 100L);
 	}
 
 	@DisplayName("FindAllTestForDesc")
@@ -233,7 +233,7 @@ class AccountControllerTest {
 		List<Account> accounts = getAccountList();
 		PageImpl<Account> accountPage = new PageImpl<>(accounts, pageable, accounts.size());
 		when(accountService.findAll(any(PageRequest.class), Mockito.anyString(), Mockito.anyList(), Mockito.anyLong(),
-				Mockito.anyString()))
+				Mockito.anyLong()))
 			.thenReturn(accountPage);
 
 		ResultActions result = mockMvc
@@ -244,7 +244,7 @@ class AccountControllerTest {
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk());
 		assertNotNull(result);
-		verify(accountService).findAll(pageable, null, null, null, "100");
+		verify(accountService).findAll(pageable, null, null, null, 100L);
 	}
 
 	@DisplayName("LinkAccountToPracticeTest")

@@ -8,6 +8,7 @@ import java.util.Set;
 import org.ini4j.InvalidFileFormatException;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -42,7 +43,8 @@ public class PracticeUtils {
 		Set<ConstraintViolation<Practice>> violations = validator.validate(practice);
 
 		for (ConstraintViolation<Practice> violation : violations) {
-			bindingResult.addError(new ObjectError(violation.getPropertyPath().toString(), violation.getMessage()));
+			bindingResult
+				.addError(new FieldError("Practice", violation.getPropertyPath().toString(), violation.getMessage()));
 		}
 	}
 

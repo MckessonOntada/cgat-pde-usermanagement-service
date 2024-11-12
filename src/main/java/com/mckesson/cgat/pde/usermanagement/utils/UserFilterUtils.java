@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.utils;
 
 import com.auth0.jwt.interfaces.Claim;
 import com.mckesson.cgat.pde.usermanagement.model.LoggedInUserDetails;
+import com.mckesson.cgat.pde.usermanagement.model.Name;
 import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;
 import com.mckesson.jbat.auth.module.exception.BadRequestException;
@@ -30,10 +31,12 @@ public class UserFilterUtils {
 		if (loggedInUserId != null) {
 			User user = userService.getUser(Long.parseLong(loggedInUserId));
 			if (user != null) {
-				loggedInUser.setName(user.getName());
+				Name userName = user.getName();
+				loggedInUser.setName(userName);
 				loggedInUser.setRole(user.getRole());
 				loggedInUser.setPermissions(user.getPermissions());
 				loggedInUser.setPracticeId(user.getPracticeId());
+				loggedInUser.setUserName(userName.getFirstName() + " " + userName.getLastName());
 			}
 		}
 
