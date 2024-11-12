@@ -24,21 +24,21 @@ public class Address implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@NotNull(message = "Address cannot be null", groups = BasicInfo.class)
+	@NotNull(message = "Address cannot be null")
 	@NotEmpty(message = "Address cannot be empty")
 	private String address1;
 
 	private String address2;
 
-	@NotNull(message = "city cannot be null", groups = BasicInfo.class)
+	@NotNull(message = "city cannot be null")
 	@NotEmpty(message = "city cannot be empty")
 	private String city;
 
-	@NotNull(message = "state cannot be null", groups = BasicInfo.class)
+	@NotNull(message = "state cannot be null")
 	@NotEmpty(message = "state cannot be empty")
 	private String state;
 
-	@NotNull(message = "zip cannot be null", groups = BasicInfo.class)
+	@NotNull(message = "zip cannot be null")
 	@Pattern(regexp = "^\\d{5}", message = "Zip code must be 5 digits")
 	private String zip;
 

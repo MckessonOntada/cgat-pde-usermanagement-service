@@ -23,11 +23,11 @@ public class Contact implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@NotNull(message = "Email cannot be null", groups = BasicInfo.class)
+	@NotNull(message = "Email cannot be null")
 	@Email(message = "Invalid email format")
 	private String email;
 
-	@NotNull(message = "Phone number cannot be null", groups = BasicInfo.class)
+	@NotNull(message = "Phone number cannot be null")
 	@Pattern(regexp = "\\d{10}", message = "Phone number must be 10 digits")
 	private String phone;
 

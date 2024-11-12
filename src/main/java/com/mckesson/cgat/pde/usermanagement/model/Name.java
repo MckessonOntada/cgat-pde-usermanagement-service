@@ -23,18 +23,18 @@ public class Name implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@NotNull(message = "First name cannot be null", groups = BasicInfo.class)
+	@NotNull(message = "First name cannot be null")
 	@Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
 	private String firstName;
 
-	@Size(max = 50, message = "First name must be between 2 and 50 characters")
+	@Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
 	private String middleName;
 
-	@NotNull(message = "Last name cannot be null", groups = BasicInfo.class)
+	@NotNull(message = "Last name cannot be null")
 	@Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
 	private String lastName;
 
-	@NotNull(message = "Suffix must not be null", groups = BasicInfo.class)
+	@NotNull(message = "Suffix must not be null")
 	@NotEmpty
 	private String suffix;
 
