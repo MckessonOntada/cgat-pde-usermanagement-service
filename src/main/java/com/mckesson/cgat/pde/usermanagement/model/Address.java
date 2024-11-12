@@ -33,20 +33,12 @@ public class Address implements Serializable {
 
 	@NotEmpty(message = "State is required.")
 	@Pattern(
-			// regexp =
-			// "^(A[LKZR]|C[AOT]|D[EC]|FL|GA|HI|I[DLNA]|K[SY]|LA|M[DEHINSOT]|N[CDEHJMVY]|O[HKR]|P[AR]|RI|S[CD]|T[NX]|UT|V[AIT]|W[AIVY]|Alabama|Alaska|Arizona|Arkansas|California|Colorado|Connecticut|Delaware|Florida|Georgia|Hawaii|Idaho|Illinois|Indiana|Iowa|Kansas|Kentucky|Louisiana|Maine|Maryland|Massachusetts|Michigan|Minnesota|Mississippi|Missouri|Montana|Nebraska|Nevada|New
-			// Hampshire|New Jersey|New Mexico|New York|North Carolina|North
-			// Dakota|Ohio|Oklahoma|Oregon|Pennsylvania|Rhode Island|South Carolina|South
-			// Dakota|Tennessee|Texas|Utah|Vermont|Virginia|Washington|West
-			// Virginia|Wisconsin|Wyoming)$",
-
-			regexp = "",
+			regexp = "^(A[LKZR]|C[AOT]|D[EC]|FL|GA|HI|I[DLNA]|K[SY]|LA|M[DEHINSOT]|N[CDEHJMVY]|O[HKR]|P[AR]|RI|S[CD]|T[NX]|UT|V[AIT]|W[AIVY]|Alabama|Alaska|Arizona|Arkansas|California|Colorado|Connecticut|Delaware|Florida|Georgia|Hawaii|Idaho|Illinois|Indiana|Iowa|Kansas|Kentucky|Louisiana|Maine|Maryland|Massachusetts|Michigan|Minnesota|Mississippi|Missouri|Montana|Nebraska|Nevada|New Hampshire|New Jersey|New Mexico|New York|North Carolina|North Dakota|Ohio|Oklahoma|Oregon|Pennsylvania|Rhode Island|South Carolina|South Dakota|Tennessee|Texas|Utah|Vermont|Virginia|Washington|West Virginia|Wisconsin|Wyoming)$",
 			message = "State must be a valid state abbreviation (e.g., CA) or full name (e.g., California)")
 	private String state;
 
 	@NotEmpty(message = "ZIP code is required")
-	@Pattern(regexp = "^\\d{5}(-?\\d{4})?$",
-			message = "Zip code is required and must be in a valid format.(e.g., 12345 or 12345-6789)")
+	@Pattern(regexp = "^\\d{5}(-?\\d{4})?$", message = "Zip code is required and must be in a valid format.")
 	private String zip;
 
 }
