@@ -59,7 +59,7 @@ public class PracticeController {
 
 		Practice practiceObj = parsePractice(practiceStr);
 		practiceUtils.validatePractice(practiceObj, bindingResult);
-		if (bindingResult.hasErrors()) { // Return validation errors as response return
+		if (bindingResult.hasErrors()) {
 			throw new MethodArgumentNotValidException(null, bindingResult);
 		}
 
