@@ -199,7 +199,7 @@ class AccountControllerTest {
 	void findAllTest() throws Exception {
 		Page<Account> accountPage = getAccountList();
 		when(accountService.findAll(any(PageRequest.class), Mockito.anyString(), Mockito.anyList(), 100L,
-				Mockito.anyString()))
+				Mockito.anyLong()))
 			.thenReturn(accountPage);
 
 		ResultActions result = mockMvc
