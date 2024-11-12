@@ -15,7 +15,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -41,8 +41,9 @@ public class Practice extends AuditColumns implements Serializable {
 	@SequenceGenerator(name = "practice_sequence", sequenceName = "practice_sequence", allocationSize = 1)
 	private Long id;
 
-	@NotNull(message = "Name cannot be null")
-	@Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
+	@NotEmpty(message = "Organization Name is required.")
+	@Size(min = 2, max = 100, message = "Organization Name must be between 2 and 100 characters")
+	@Pattern(regexp = "^[A-Za-z0-9_-]+$", message = "Organization Name must contain only letters, numbers, hyphens (-), or underscores (_)")
 	private String name;
 
 	private String logoUrl;

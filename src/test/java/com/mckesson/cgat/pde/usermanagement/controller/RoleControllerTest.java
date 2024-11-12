@@ -65,7 +65,7 @@ class RoleControllerTest {
 			.id(1L)
 			.address(new Address("address1", "address2", "city", "state", "12345"))
 			.contact(new Contact("email@gmail.com", "1212121212", "fax"))
-			.contactPerson(new Name("first", "", "last", "MR"))
+			.contactPerson(new Name("first", "", "last"))
 			.isActive(Boolean.TRUE)
 			.logoUrl("logo")
 			.name("DefaultName")

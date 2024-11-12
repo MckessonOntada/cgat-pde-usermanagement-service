@@ -6,7 +6,6 @@ CREATE TABLE IF NOT EXISTS practice
     first_name  	VARCHAR(50) NOT NULL,
     middle_name	    VARCHAR(50),
     last_name 		VARCHAR(50) NOT NULL,
-    suffix			VARCHAR(50),
     address1		VARCHAR(250)NOT NULL,
     address2		VARCHAR(250),
     city		    VARCHAR(100) NOT NULL,

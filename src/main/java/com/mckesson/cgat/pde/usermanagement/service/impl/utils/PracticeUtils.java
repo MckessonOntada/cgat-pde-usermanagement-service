@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Set;
 
+import org.ini4j.InvalidFileFormatException;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -30,7 +31,12 @@ public class PracticeUtils {
 		return directory.getPath();
 	}
 
-	public void validatePractice(Practice practice, BindingResult bindingResult) {
+	public void validatePractice(Practice practice, BindingResult bindingResult, MultipartFile logo)
+			throws InvalidFileFormatException {
+		if (!logo.isEmpty() && !isValidImageFormat(logo.getOriginalFilename()))
+			throw new InvalidFileFormatException(
+					"The file you uploaded is not in a supported image format. Please upload an image in one of the following formats: JPEG/JPG, PNG, GIF, BMP, TIFF/TIF.");
+
 		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 		Validator validator = factory.getValidator();
 		Set<ConstraintViolation<Practice>> violations = validator.validate(practice);
@@ -39,16 +45,11 @@ public class PracticeUtils {
 			bindingResult.addError(new ObjectError(violation.getPropertyPath().toString(), violation.getMessage()));
 		}
 	}
-	
-	
+
 	public boolean isValidImageFormat(String fileName) {
-	    String[] validExtensions = {"jpeg", "jpg", "png", "tiff", "tif", "bmp", "gif"};
-	    String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
-	    return Arrays.asList(validExtensions).contains(fileExtension);
-	}
-	
-	public boolean isValidString(String input) {
-	    return input.matches("^[a-zA-Z0-9_-]+$");
+		String[] validExtensions = { "jpeg", "jpg", "png", "tiff", "tif", "bmp", "gif" };
+		String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+		return Arrays.asList(validExtensions).contains(fileExtension);
 	}
 
 }
