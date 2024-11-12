@@ -62,13 +62,14 @@ public class ServiceExceptionHandler {
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<Map<String, List<String>>> handleValidationErrors(MethodArgumentNotValidException ex) {
+	public ResponseEntity<ApiErrorResponse> handleValidationErrors(MethodArgumentNotValidException ex) {
 		List<String> errors = ex.getBindingResult()
 			.getFieldErrors()
 			.stream()
 			.map(FieldError::getDefaultMessage)
 			.collect(Collectors.toList());
-		return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+		ApiErrorResponse apiErrorResponse = new ApiErrorResponse(HttpStatus.BAD_REQUEST, new Date(), errors.toString());
+		return new ResponseEntity<>(apiErrorResponse, HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler({ AccessDeniedException.class })
