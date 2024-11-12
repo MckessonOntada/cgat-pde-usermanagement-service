@@ -42,7 +42,6 @@ import com.mckesson.cgat.pde.usermanagement.model.Name;
 import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;
-import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 @WebMvcTest(UserController.class)
@@ -90,8 +89,8 @@ class UserControllerTest {
 			.build();
 	}
 
-	// @DisplayName("CreateUserTest")
-	// @Test
+	@DisplayName("CreateUserTest")
+	@Test
 	void createUserTest() throws Exception {
 		String objectString = objectMapper.writeValueAsString(user);
 		when(userService.createUser(any(User.class))).thenReturn(user);
@@ -130,8 +129,8 @@ class UserControllerTest {
 		assertNotNull(result);
 	}
 
-	// @DisplayName("UpdateUserTest")
-	// @Test
+	@DisplayName("UpdateUserTest")
+	@Test
 	void updateUserTest() throws Exception {
 		User requestdUser = User.builder()
 			.id(null)
@@ -172,8 +171,8 @@ class UserControllerTest {
 		assertNotNull(result);
 	}
 
-	// @DisplayName("GetUserTest")
-	// @Test
+	@DisplayName("GetUserTest")
+	@Test
 	void getUserTest() throws Exception {
 		when(userService.getUser(user.getId())).thenReturn(user);
 		mockMvc
@@ -211,12 +210,12 @@ class UserControllerTest {
 			.andExpect(status().isNotFound());
 	}
 
-	// @DisplayName("DeleteUserTest")
-	// @Test
+	@DisplayName("DeleteUserTest")
+	@Test
 	void deleteUserTest() throws Exception {
 		doNothing().when(userService).deleteUser(user.getId());
 		mockMvc
-			.perform(delete("/practice/{practiceId}/users/{userId}", user.getPracticeId(), user.getId())
+			.perform(delete(apiUrl + "/{userId}", user.getPracticeId(), user.getId()).param("userType", "ADMIN")
 				.contentType(MediaType.APPLICATION_JSON_VALUE))
 			.andExpect(status().isOk());
 
@@ -229,93 +228,104 @@ class UserControllerTest {
 		mockMvc.perform(delete("/{userId}", user.getId())).andExpect(status().isNotFound());
 	}
 
-	// @DisplayName("FindAllTest")
-	// @Test
-	// void findAllTest() throws Exception {
-	// Integer pageNo = 0;
-	// Integer pageSize = 20;
-	// String sortBy = "first_name";
-	// String sortOrder = "ASC";
-	// Sort sort = "asc".equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending() :
-	// Sort.by(sortBy).descending();
-	// Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
-	// List<User> users = getUserList();
-	// PageImpl<User> userPage = new PageImpl<>(users, pageable, users.size());
-	//
-	// when(userService.findAll(any(PageRequest.class), any(String.class),
-	// any(List.class), any(Long.class)))
-	// .thenReturn(userPage);
-	//
-	// ResultActions result = mockMvc
-	// .perform(get("/practice/{practiceId}/users",
-	// user.getPracticeId()).param("userType", "ADMIN")
-	// .param("pageNo", "0").param("pageSize", "20").param("sortBy", sortBy)
-	// .param("sortOrder", sortOrder).param("userType",
-	// "1L").contentType(MediaType.APPLICATION_JSON))
-	// .andExpect(status().isOk());
-	//
-	// assertNotNull(result);
-	// verify(userService).findAll(pageable, null, null, null);
-	// }
+	@DisplayName("FindAllTest")
+	@Test
+	void findAllTest() throws Exception {
+		Integer pageNo = 0;
+		Integer pageSize = 20;
+		String sortBy = "first_name";
+		String sortOrder = "ASC";
+		Sort sort = "asc".equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+		List<User> users = getUserList();
+		PageImpl<User> userPage = new PageImpl<>(users, pageable, users.size());
 
-	// @DisplayName("FindAllTestForDesc")
-	// @Test
-	// void findAllTestForDesc() throws Exception {
-	// Integer pageNo = 0;
-	// Integer pageSize = 20;
-	// String sortBy = "first_name";
-	// String sortOrder = "DESC";
-	// Sort sort = "asc".equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending() :
-	// Sort.by(sortBy).descending();
-	// Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
-	// List<User> users = getUserList();
-	// PageImpl<User> userPage = new PageImpl<>(users, pageable, users.size());
-	//
-	// when(userService.findAll(any(PageRequest.class), any(String.class),
-	// any(List.class),any(Long.class)))
-	// .thenReturn(userPage);
-	//
-	// ResultActions result = mockMvc
-	// .perform(get("/practice/{practiceId}/users", user.getPracticeId()).param("pageNo",
-	// "0")
-	// .param("pageSize", "20")
-	// .param("sortBy", "first_name")
-	// .param("sortOrder", "desc")
-	// .contentType(MediaType.APPLICATION_JSON))
-	// .andExpect(status().isOk());
-	//
-	// assertNotNull(result);
-	// verify(userService).findAll(pageable, null, null,null);
-	// }
+		when(userService.findAll(any(PageRequest.class), any(String.class), any(List.class), any(Long.class)))
+			.thenReturn(userPage);
 
-	// @DisplayName("LinkUserToAccountsTest")
-	// @Test
-	// void linkUserToAccountsTest() throws Exception {
-	// List<Long> accountIds = Arrays.asList(101L, 102L);
-	// when(userService.linkUserToAccounts(user.getId(), accountIds)).thenReturn(user);
-	// ResultActions result = mockMvc
-	// .perform(patch("/practice/{practiceId}/users/{userId}/accounts",
-	// user.getPracticeId(), user.getId()).param("UserType", "ADMIN")
-	// .contentType(MediaType.APPLICATION_JSON)
-	// .content(objectMapper.writeValueAsString(accountIds)))
-	// .andExpect(status().isOk());
-	// assertNotNull(result);
-	// }
+		ResultActions result = mockMvc
+			.perform(get("/practice/{practiceId}/users", user.getPracticeId()).param("userType", "ADMIN")
+				.param("pageNo", "0")
+				.param("pageSize", "20")
+				.param("sortBy", sortBy)
+				.param("sortOrder", sortOrder)
+				.param("userType", "1L")
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk());
 
-	// @DisplayName("LinkUserToRoleTest")
+		assertNotNull(result);
+		verify(userService).findAll(pageable, null, null, null);
+	}
+
+	@DisplayName("FindAllTestForDesc")
+	@Test
+	void findAllTestForDesc() throws Exception {
+		Integer pageNo = 0;
+		Integer pageSize = 20;
+		String sortBy = "first_name";
+		String sortOrder = "DESC";
+		Sort sort = "asc".equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+		List<User> users = getUserList();
+		PageImpl<User> userPage = new PageImpl<>(users, pageable, users.size());
+
+		when(userService.findAll(any(PageRequest.class), any(String.class), any(List.class), any(Long.class)))
+			.thenReturn(userPage);
+
+		ResultActions result = mockMvc
+			.perform(get(apiUrl, user.getPracticeId()).param("userType", "ADMIN")
+				.param("pageNo", "0")
+				.param("pageSize", "20")
+				.param("sortBy", "first_name")
+				.param("sortOrder", "desc")
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk());
+
+		assertNotNull(result);
+		verify(userService).findAll(pageable, null, null, null);
+	}
+
+	@DisplayName("LinkUserToAccountsTest")
+	@Test
+	void linkUserToAccountsTest() throws Exception {
+		List<Long> accountIds = Arrays.asList(101L, 102L);
+		when(userService.linkUserToAccounts(user.getId(), accountIds)).thenReturn(user);
+		ResultActions result = mockMvc
+			.perform(patch(apiUrl + "/{userId}/accounts", user.getPracticeId(), user.getId()).param("userType", "ADMIN")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(accountIds)))
+			.andExpect(status().isOk());
+		assertNotNull(result);
+	}
+
+	// @DisplayName("GetUserTest")
 	// @Test
-	// void linkUserToRoleTest() throws Exception {
-	// Long roleId = 101L;
-	// when(userService.linkUserToRoleAndPermissions(user.getId(), roleId
-	// ,user.getPermissions())).thenReturn(user);
-	// ResultActions result = mockMvc
-	// .perform(patch("/practice/{practiceId}/users/{userId}/role",
-	// user.getPracticeId(),
+	// void getUserTest() throws Exception {
+	// when(userService.getUser(user.getId())).thenReturn(user);
+	// mockMvc.perform(get("/practice/{practiceId}/users/{userId}", user.getPracticeId(),
 	// user.getId())
-	// .param("roleId", roleId.toString()).contentType(MediaType.APPLICATION_JSON))
+	// .param("userType",
+	// "ADMIN").contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print())
 	// .andExpect(status().isOk());
-	// assertNotNull(result);
+	//
 	// }
+
+	@DisplayName("LinkUserToRoleTest")
+	@Test
+	void linkUserToRoles_permissionsTest() throws Exception {
+		Long roleId = 101L;
+		List<Long> accountIds = List.of(1L, 2L);
+		when(userService.linkUserToRoleAndPermissions(user.getId(), roleId, user.getPermissions())).thenReturn(user);
+		ResultActions result = mockMvc
+			.perform(patch(apiUrl + "/{userId}/roles-permissions", user.getPracticeId(), user.getId())
+				.param("userType", "ADMIN")
+				.param("roleId", roleId.toString())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(accountIds.toString()))
+
+			.andExpect(status().isOk());
+		assertNotNull(result);
+	}
 
 	private List<User> getUserList() {
 
