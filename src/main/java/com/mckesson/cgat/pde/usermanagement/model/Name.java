@@ -27,7 +27,7 @@ public class Name implements Serializable {
 	@Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
 	private String firstName;
 
-	@Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
+	@Size(max = 50, message = "First name must be between 2 and 50 characters")
 	private String middleName;
 
 	@NotNull(message = "Last name cannot be null")
