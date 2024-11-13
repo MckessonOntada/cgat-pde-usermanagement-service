@@ -96,20 +96,6 @@ class RoleControllerTest {
 			.andReturn();
 	}
 
-	// @Test
-	// @DisplayName("Test : Update Role")
-	// void updateRoleTest() throws Exception {
-	// String practiceId = "1";
-	// String roleId = role.getId().toString();
-	// String roleJsonString = objectMapper.writeValueAsString(role);
-	//
-	// when(roleService.createOrUpdateRole(any(Role.class),
-	// anyString())).thenReturn(role);
-	// mockMvc.perform(put("/practice/{practiceId}/roles/{roleId}", practiceId, roleId)
-	// .content(roleJsonString)
-	// .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(print()).andReturn();
-	// }
-
 	@Test
 	@DisplayName("Test : Get Role")
 	void getRoleTest() throws Exception {
