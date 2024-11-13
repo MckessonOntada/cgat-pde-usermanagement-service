@@ -55,7 +55,6 @@ import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;
 import com.mckesson.cgat.pde.usermanagement.utils.OrganizationContext;
 import com.mckesson.cgat.pde.usermanagement.utils.UserCurrentRequestContext;
-import com.mckesson.jbat.auth.module.dto.LoggedInUser;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 @WebMvcTest(UserController.class)
@@ -290,12 +289,12 @@ class UserControllerTest {
 				.param("pageSize", "20")
 				.param("sortBy", sortBy)
 				.param("sortOrder", sortOrder)
-				.param("userType", "1L")
+				.param("userType", "ADMIN")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk());
 
 		assertNotNull(result);
-		// verify(userService).findAll(pageable, null, null, null);
+		verify(userService).findAll(pageable, null, null, 1L);
 	}
 
 	@DisplayName("FindAllTestForDesc")
@@ -323,7 +322,7 @@ class UserControllerTest {
 			.andExpect(status().isOk());
 
 		assertNotNull(result);
-		// verify(userService).findAll(pageable, null, null, null);
+		verify(userService).findAll(pageable, null, null, 1L);
 	}
 
 	@DisplayName("LinkUserToAccountsTest")
@@ -338,18 +337,6 @@ class UserControllerTest {
 			.andExpect(status().isOk());
 		assertNotNull(result);
 	}
-
-	// @DisplayName("GetUserTest")
-	// @Test
-	// void getUserTest() throws Exception {
-	// when(userService.getUser(user.getId())).thenReturn(user);
-	// mockMvc.perform(get("/practice/{practiceId}/users/{userId}", user.getPracticeId(),
-	// user.getId())
-	// .param("userType",
-	// "ADMIN").contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print())
-	// .andExpect(status().isOk());
-	//
-	// }
 
 	@DisplayName("LinkUserToRoleTest")
 	@Test
