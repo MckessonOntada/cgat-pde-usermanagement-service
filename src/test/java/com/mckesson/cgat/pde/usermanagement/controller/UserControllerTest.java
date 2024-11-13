@@ -14,9 +14,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,6 +35,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -38,10 +46,15 @@ import org.springframework.test.web.servlet.ResultActions;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mckesson.cgat.pde.usermanagement.model.Address;
 import com.mckesson.cgat.pde.usermanagement.model.Contact;
+import com.mckesson.cgat.pde.usermanagement.model.LoggedInUserDetails;
 import com.mckesson.cgat.pde.usermanagement.model.Name;
+import com.mckesson.cgat.pde.usermanagement.model.Permission;
+import com.mckesson.cgat.pde.usermanagement.model.Role;
 import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;
+import com.mckesson.cgat.pde.usermanagement.utils.OrganizationContext;
+import com.mckesson.cgat.pde.usermanagement.utils.UserCurrentRequestContext;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 @WebMvcTest(UserController.class)
@@ -87,6 +100,33 @@ class UserControllerTest {
 			.permissions(null)
 			.isActive(true)
 			.build();
+		setupPrincipal();
+	}
+
+	private void setupPrincipal() {
+		LoggedInUserDetails loggedInUser = LoggedInUserDetails.builder()
+			.id("1")
+			.name(Name.builder().firstName("John").lastName("Doe").build())
+			.role(Role.builder().name("SYSTEM_ADMIN").build())
+			.permissions(new HashSet(Arrays.asList(Permission.values())))
+			.practiceId(1)
+			.userName("John Doe")
+			.build();
+		List<String> roleNames = new ArrayList<>();
+		roleNames.add(loggedInUser.getRole().getName());
+		Collection<? extends GrantedAuthority> authorities = roleNames.stream()
+			.map(SimpleGrantedAuthority::new)
+			.toList();
+		UserCurrentRequestContext principal = new UserCurrentRequestContext(loggedInUser.getUserName(), "", authorities,
+				loggedInUser);
+		SecurityContextHolder.getContext()
+			.setAuthentication(new UsernamePasswordAuthenticationToken(principal, null, authorities));
+		OrganizationContext.setCurrentOrgId(1L);
+	}
+
+	@AfterEach
+	public void tearDown() {
+		OrganizationContext.clear();
 	}
 
 	@DisplayName("CreateUserTest")
@@ -249,12 +289,12 @@ class UserControllerTest {
 				.param("pageSize", "20")
 				.param("sortBy", sortBy)
 				.param("sortOrder", sortOrder)
-				.param("userType", "1L")
+				.param("userType", "ADMIN")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk());
 
 		assertNotNull(result);
-		verify(userService).findAll(pageable, null, null, null);
+		verify(userService).findAll(pageable, null, null, 1L);
 	}
 
 	@DisplayName("FindAllTestForDesc")
@@ -282,7 +322,7 @@ class UserControllerTest {
 			.andExpect(status().isOk());
 
 		assertNotNull(result);
-		verify(userService).findAll(pageable, null, null, null);
+		verify(userService).findAll(pageable, null, null, 1L);
 	}
 
 	@DisplayName("LinkUserToAccountsTest")
@@ -297,18 +337,6 @@ class UserControllerTest {
 			.andExpect(status().isOk());
 		assertNotNull(result);
 	}
-
-	// @DisplayName("GetUserTest")
-	// @Test
-	// void getUserTest() throws Exception {
-	// when(userService.getUser(user.getId())).thenReturn(user);
-	// mockMvc.perform(get("/practice/{practiceId}/users/{userId}", user.getPracticeId(),
-	// user.getId())
-	// .param("userType",
-	// "ADMIN").contentType(MediaType.APPLICATION_JSON_VALUE)).andDo(print())
-	// .andExpect(status().isOk());
-	//
-	// }
 
 	@DisplayName("LinkUserToRoleTest")
 	@Test
