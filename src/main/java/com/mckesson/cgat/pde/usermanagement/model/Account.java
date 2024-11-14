@@ -1,19 +1,11 @@
 package com.mckesson.cgat.pde.usermanagement.model;
 
+import com.mckesson.cgat.pde.usermanagement.model.converters.AccountPartnerFunctionConverter;
+import jakarta.persistence.*;
+
 import java.io.Serializable;
 import java.util.Set;
 
-<<<<<<< HEAD
-import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.type.NumericBooleanConverter;
-
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-=======
-import com.mckesson.cgat.pde.usermanagement.model.converters.AccountPartnerFunctionConverter;
-import jakarta.persistence.*;
->>>>>>> caf22a7 (account to customer entity mapping)
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;

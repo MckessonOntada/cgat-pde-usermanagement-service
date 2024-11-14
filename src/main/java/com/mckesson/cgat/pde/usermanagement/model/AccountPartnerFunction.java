@@ -28,4 +28,5 @@ public enum AccountPartnerFunction {
 	public String getValue() {
 		return value;
 	}
+
 }
