@@ -61,7 +61,7 @@ public class PracticeController {
 			throws IOException, MethodArgumentNotValidException {
 
 		Practice practiceObj = parsePractice(practiceStr);
-		practiceUtils.validatePractice(practiceObj, bindingResult);
+		practiceUtils.validatePractice(practiceObj, bindingResult, logo);
 		if (bindingResult.hasErrors()) {
 			throw new MethodArgumentNotValidException(null, bindingResult);
 		}
