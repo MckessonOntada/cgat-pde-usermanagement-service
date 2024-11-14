@@ -59,7 +59,7 @@ public class UserController {
 	public ResponseEntity<User> createUser(@Valid @RequestBody User user,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
 			throws UnauthorizedAccessException {
-		// UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
+		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
 		return new ResponseEntity<>(userService.createUser(user), HttpStatus.OK);
 	}
 
@@ -99,12 +99,11 @@ public class UserController {
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
 			@RequestParam(required = false) List<String> status,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType,
-			@RequestParam String startDate, @RequestParam String endDate) {
-		// throws UnauthorizedAccessException {
+			@RequestParam String startDate, @RequestParam String endDate) throws UnauthorizedAccessException {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-		// UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
+		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
 		return userService.findAll(paging, query, status, 1L, startDate, endDate);
 
 	}

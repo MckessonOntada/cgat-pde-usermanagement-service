@@ -129,6 +129,16 @@ CREATE TABLE IF NOT EXISTS user_permission_mapping (
      FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE
 );
 
+CREATE INDEX role_name_index  ON usermanagement.role 
+USING GIN (name gin_trgm_ops);
 
+CREATE INDEX user_name_email_index ON usermanagement.user 
+USING GIN (first_name gin_trgm_ops, middle_name gin_trgm_ops, last_name gin_trgm_ops, email gin_trgm_ops);
+
+CREATE INDEX user_status_createdat_index  ON usermanagement.user 
+USING btree(is_active, created_at);
+
+CREATE INDEX role_status_updatedat_index ON usermanagement.role 
+USING btree(is_active, updated_at);
 
 
