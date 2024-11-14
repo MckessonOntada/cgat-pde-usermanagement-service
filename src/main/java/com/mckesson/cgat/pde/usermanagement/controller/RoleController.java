@@ -52,7 +52,7 @@ public class RoleController {
 	}
 
 	@PutMapping("/{roleId}")
-	@Operation(summary = "Update Role / Add permissions to Role")
+	@Operation(summary = "Update Role (Add/Remove permissions to Role)")
 	public ResponseEntity<Role> updateRole(@Validated @RequestBody Role role, @PathVariable String practiceId,
 			@PathVariable String roleId) throws ResourceNotFoundException {
 		Role roleObj = roleService.getRole(roleId);

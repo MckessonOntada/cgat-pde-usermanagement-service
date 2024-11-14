@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import java.io.IOException;
 import java.util.List;
 
+import org.ini4j.InvalidFileFormatException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +34,7 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -44,21 +47,28 @@ public class PracticeController {
 
 	private final PracticeUtils practiceUtils;
 
+	private static final long max_file_size = 1048576; // 1 MB in bytes
+
 	public PracticeController(PracticeService practiceService, PracticeUtils practiceUtils) {
 		this.practiceService = practiceService;
 		this.practiceUtils = practiceUtils;
 	}
 
-	@PostMapping
+	@PostMapping(consumes = { "multipart/form-data" })
 	@Operation(summary = "Create Practice")
-	public ResponseEntity<Object> createPractice(@RequestPart("practiceStr") @Valid String practiceStr,
-			@RequestPart("logo") MultipartFile logo, BindingResult bindingResult) throws IOException {
+	public ResponseEntity<Object> createPractice(@RequestPart("practiceStr") String practiceStr,
+			@RequestPart("logo") MultipartFile logo, BindingResult bindingResult)
+			throws IOException, MethodArgumentNotValidException {
+
 		Practice practiceObj = parsePractice(practiceStr);
-		practiceUtils.validatePractice(practiceObj, bindingResult);
+
+		practiceUtils.validatePractice(practiceObj, bindingResult, logo);
 		if (bindingResult.hasErrors()) {
 			// Return validation errors as response
 			return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+
 		}
+
 		Practice savedPractice = practiceService.createPractice(practiceObj, logo);
 		return ResponseEntity.status(HttpStatus.CREATED).body(savedPractice);
 	}
@@ -74,7 +84,7 @@ public class PracticeController {
 			@RequestPart("logo") MultipartFile logo, @PathVariable String practiceId, BindingResult bindingResult)
 			throws IOException {
 		Practice practiceObj = parsePractice(practiceStr);
-		practiceUtils.validatePractice(practiceObj, bindingResult);
+		practiceUtils.validatePractice(practiceObj, bindingResult, null);
 		if (bindingResult.hasErrors()) {
 			// Return validation errors as response
 			return ResponseEntity.badRequest().body(bindingResult.getAllErrors());

@@ -3,7 +3,6 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -89,7 +88,7 @@ public class AccountController {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-		return accountService.findAll(paging, query, status, null, practiceId);
+		return accountService.findAll(paging, query, status, null, Long.valueOf(practiceId));
 	}
 
 	@PatchMapping
