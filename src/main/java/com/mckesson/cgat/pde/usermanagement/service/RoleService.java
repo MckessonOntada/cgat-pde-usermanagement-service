@@ -20,6 +20,7 @@ public interface RoleService {
 
 	Role linkPermissionToRole(Long roleId, Set<Permission> permissions) throws ResourceNotFoundException;
 
-	Page<Role> findAll(Pageable paging, String query, String practiceId, List<String> status);
+	Page<Role> findAll(Pageable paging, String query, String practiceId, List<String> status, String startDate,
+			String endDate);
 
 }

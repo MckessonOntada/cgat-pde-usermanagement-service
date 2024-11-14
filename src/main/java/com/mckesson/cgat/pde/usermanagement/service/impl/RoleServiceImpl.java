@@ -51,9 +51,9 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	@Override
-	public Page<Role> findAll(Pageable paging, String query, String practiceId, List<String> status) {
+	public Page<Role> findAll(Pageable paging, String query, String practiceId, List<String> status, String startDate,
+			String endDate) {
 		query = StringUtils.toRootLowerCase(query);
-		Page<Role> response;
 		String statusActive = CustomUtils.object_status.ALL.name();
 		if (!CollectionUtils.isEmpty(status)) {
 			if (status.stream().anyMatch(i -> i.equalsIgnoreCase(CustomUtils.object_status.ACTIVE.name()))) {
@@ -64,8 +64,11 @@ public class RoleServiceImpl implements RoleService {
 						? CustomUtils.object_status.ALL.name() : CustomUtils.object_status.INACTIVE.name();
 			}
 		}
-		response = roleRepository.findAllByQueryText(query, statusActive, Long.valueOf(practiceId), paging);
-		return response;
+		if (!startDate.isEmpty() && !endDate.isEmpty())
+			return roleRepository.findAllByQueryText(query, statusActive, Long.valueOf(practiceId), paging,
+					java.sql.Date.valueOf(startDate), java.sql.Date.valueOf(endDate));
+		else
+			return roleRepository.findAllByQueryText(query, statusActive, Long.valueOf(practiceId), paging);
 	}
 
 	@Override

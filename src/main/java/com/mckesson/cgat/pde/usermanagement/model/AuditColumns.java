@@ -33,7 +33,6 @@ public abstract class AuditColumns implements Serializable {
 	@Column(name = "CREATED_AT")
 	@CreatedDate
 	@Temporal(TemporalType.TIMESTAMP)
-	@JsonIgnore
 	private Date createdAt;
 
 	@Column(name = "CREATED_BY")
@@ -44,7 +43,6 @@ public abstract class AuditColumns implements Serializable {
 	@Column(name = "UPDATED_AT")
 	@LastModifiedDate
 	@Temporal(TemporalType.TIMESTAMP)
-	@JsonIgnore
 	private Date updatedAt;
 
 	@Column(name = "UPDATED_BY")

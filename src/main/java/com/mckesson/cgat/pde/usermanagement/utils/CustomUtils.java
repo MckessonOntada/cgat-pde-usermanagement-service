@@ -1,7 +1,10 @@
 package com.mckesson.cgat.pde.usermanagement.utils;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 public class CustomUtils {
@@ -50,6 +53,11 @@ public class CustomUtils {
 		String formattedDateWithMicroseconds = formattedDate + "000";
 
 		return formattedDateWithMicroseconds;
+	}
+
+	public static LocalDate convertStringToDate(String stringfyDate) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH);
+		return LocalDate.parse(stringfyDate, formatter);
 	}
 
 }

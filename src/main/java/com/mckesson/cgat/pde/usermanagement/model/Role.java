@@ -3,13 +3,27 @@ package com.mckesson.cgat.pde.usermanagement.model;
 import java.io.Serializable;
 import java.util.Set;
 
-import jakarta.persistence.*;
 import org.hibernate.type.NumericBooleanConverter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,10 +47,12 @@ public class Role extends AuditColumns implements Serializable {
 	@SequenceGenerator(name = "role_sequence", sequenceName = "role_sequence", allocationSize = 1)
 	private Long id;
 
-	@NotEmpty(message = "Role Name cannot be Empty")
 	@Column(unique = true)
+	@Size(min = 2, max = 50)
+	@Pattern(regexp = "^[a-zA-Z ]+$", message = "Role Name must only contain alphabets.")
 	private String name;
 
+	@Size(max = 100)
 	private String description;
 
 	@ManyToOne
@@ -51,8 +67,6 @@ public class Role extends AuditColumns implements Serializable {
 	private Set<Permission> permissions;
 
 	@Convert(converter = NumericBooleanConverter.class)
-	@JsonIgnore
-	@JsonProperty("isActive")
 	private Boolean isActive = true;
 
 }

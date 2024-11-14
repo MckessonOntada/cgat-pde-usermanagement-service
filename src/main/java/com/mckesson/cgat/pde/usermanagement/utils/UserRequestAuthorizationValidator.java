@@ -2,17 +2,11 @@ package com.mckesson.cgat.pde.usermanagement.utils;
 
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.LoggedInUserDetails;
-import com.mckesson.cgat.pde.usermanagement.model.Permission;
-import com.mckesson.cgat.pde.usermanagement.model.Role;
-import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.model.UserType;
-
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class UserRequestAuthorizationValidator {
 
-	private static final String SYSTEM_ADMIN_ROLE = "SYSTEM_ADMIN";
+	public static final String SYSTEM_ADMIN_ROLE = "System Admin";
 
 	private static final String UNAUTHORIZED_MESSAGE = "User is not authorized for this action";
 

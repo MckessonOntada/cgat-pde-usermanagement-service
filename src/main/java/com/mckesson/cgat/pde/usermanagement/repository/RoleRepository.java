@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,6 +29,28 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
 				and
 				practice_id =:practiceId
 				and
+				updated_at >= :from and updated_at < :to
+				and
+					(
+					(:status = 'ALL' and (is_active = 1 or is_active = 0))
+					or ('ACTIVE' = :status and is_active = 1 )
+					or ('INACTIVE' = :status and is_active = 0 )
+					)
+				)
+			""", nativeQuery = true)
+	public Page<Role> findAllByQueryText(@Param("query") String query, @Param("status") String status,
+			@Param("practiceId") Long practiceId, Pageable paging, @Param("from") Date from, @Param("to") Date to);
+
+	@Query(value = """
+			SELECT *
+			FROM usermanagement.role
+			WHERE
+				(
+				:query is null
+				or LOWER(name) like %:query%
+				and
+				practice_id =:practiceId
+				and
 					(
 					(:status = 'ALL' and (is_active = 1 or is_active = 0))
 					or ('ACTIVE' = :status and is_active = 1 )
@@ -41,5 +64,7 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
 	// Role findByIdAndIsActive(Long roleId, int isActive);
 
 	Optional<Role> findByIdAndIsActiveTrue(Long roleId);
+
+	Role findByName(String name);
 
 }

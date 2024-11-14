@@ -20,15 +20,17 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDto;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.model.Address;
 import com.mckesson.cgat.pde.usermanagement.model.Contact;
@@ -36,12 +38,13 @@ import com.mckesson.cgat.pde.usermanagement.model.Name;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
 import com.mckesson.cgat.pde.usermanagement.model.User;
+import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
-@SpringBootTest(classes = UserServiceImplTest.class)
+@ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
 
 	@InjectMocks
@@ -64,7 +67,7 @@ class UserServiceImplTest {
 		user = User.builder()
 			.id(1L)
 			.practiceId(200L)
-			.name(new Name("John", "Doe", "doe", "Mr"))
+			.name(new Name("John", "Doe", "doe"))
 			.permissions(permissions)
 			.contact(Contact.builder().email("john.doe@example.com").phone("1234567890").fax("9876543210").build())
 			.address(Address.builder()
@@ -103,7 +106,7 @@ class UserServiceImplTest {
 		User existingUser = User.builder()
 			.id(1L)
 			.practiceId(200L)
-			.name(new Name("ram", "kumar", "kumar", "Mr"))
+			.name(new Name("ram", "kumar", "kumar"))
 			.contact(Contact.builder().email("ram.kumar@gmail.com").phone("1234567890").fax("9876543210").build())
 			.address(Address.builder()
 				.address1("12 Main Street")
@@ -118,7 +121,7 @@ class UserServiceImplTest {
 		User updateUser = User.builder()
 			.id(1L)
 			.practiceId(300L)
-			.name(new Name("neeraj", "kumar", "kumar", "Mr"))
+			.name(new Name("neeraj", "kumar", "kumar"))
 			.contact(Contact.builder().email("neeraj.kumar@gmail.com").phone("1234567890").fax("9876543210").build())
 			.address(Address.builder()
 				.address1("15 Main Street")
@@ -164,11 +167,15 @@ class UserServiceImplTest {
 	void findAllWithPageableTest() {
 		Page<User> userPage = getUserList();
 		Pageable paging = PageRequest.of(0, 20, Sort.by("first_name").ascending());
-		when(userRepository.findAllByQueryText(null, "ALL", paging, 1)).thenReturn(userPage);
-		Page<User> result = userService.findAll(paging, null, List.of("ALL"), Long.valueOf(1));
+		when(userRepository.findAllByQueryText("ALL", "", paging, 1L, java.sql.Date.valueOf("2024-11-10"),
+				java.sql.Date.valueOf("2024-11-12")))
+			.thenReturn(userPage);
+		Page<User> result = userService.findAll(paging, "", List.of("ALL"), Long.valueOf(1), "2024-11-10",
+				"2024-11-12");
 		assertNotNull(result);
 		assertEquals(userPage, result);
-		verify(userRepository, times(1)).findAllByQueryText(null, "ALL", paging, 1);
+		verify(userRepository, times(1)).findAllByQueryText("ALL", "", paging, 1L, java.sql.Date.valueOf("2024-11-10"),
+				java.sql.Date.valueOf("2024-11-12"));
 	}
 
 	@DisplayName("UserNotFoundException : GetUser")
@@ -292,7 +299,7 @@ class UserServiceImplTest {
 		user = User.builder()
 			.id(1L)
 			.practiceId(200L)
-			.name(new Name("John", "Doe", "doe", "Mr"))
+			.name(new Name("John", "Doe", "doe"))
 			.permissions(permissions)
 			.contact(Contact.builder().email("john.doe@example.com").phone("1234567890").fax("9876543210").build())
 			.address(Address.builder()
@@ -316,8 +323,8 @@ class UserServiceImplTest {
 		when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 		when(roleRepository.findByIdAndIsActiveTrue(role.getId())).thenReturn(Optional.of(role));
 		when(userRepository.save(user)).thenReturn(user);
-
-		User result = userService.linkUserToRoleAndPermissions(user.getId(), role.getId(), permissions);
+		RolePermissionsPatchDto dto = new RolePermissionsPatchDto(UserType.ADMIN, role.getId(), permissions);
+		User result = userService.linkUserToRoleAndPermissions(user.getId(), dto);
 
 		assertNotNull(result);
 		assertEquals(role, result.getRole());
@@ -331,10 +338,11 @@ class UserServiceImplTest {
 	// @Test
 	void linkUserToRole_UserNotFoundTest() {
 		Long roleId = 2L;
-		Set<Permission> permissions = new HashSet<>();
+		Set<Permission> permissions = Set.of(Permission.values());
+		RolePermissionsPatchDto dto = new RolePermissionsPatchDto(UserType.ADMIN, roleId, permissions);
 		when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
 		assertThrows(ResourceNotFoundException.class,
-				() -> userService.linkUserToRoleAndPermissions(user.getId(), roleId, permissions));
+				() -> userService.linkUserToRoleAndPermissions(user.getId(), dto));
 
 		verify(userRepository, times(1)).findById(user.getId());
 		verify(roleRepository, never()).findByIdAndIsActiveTrue(roleId);
@@ -345,12 +353,13 @@ class UserServiceImplTest {
 	// @Test
 	void linkUserToRole_RoleNotFoundTest() {
 		Long roleId = 2L;
-		Set<Permission> permissions = new HashSet<>();
+		Set<Permission> permissions = Set.of(Permission.values());
+		RolePermissionsPatchDto dto = new RolePermissionsPatchDto(UserType.ADMIN, roleId, permissions);
 		when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 		when(roleRepository.findByIdAndIsActiveTrue(roleId)).thenReturn(Optional.empty());
 
 		assertThrows(ResourceNotFoundException.class,
-				() -> userService.linkUserToRoleAndPermissions(user.getId(), roleId, permissions));
+				() -> userService.linkUserToRoleAndPermissions(user.getId(), dto));
 
 		verify(userRepository, times(1)).findById(user.getId());
 		verify(roleRepository, times(1)).findByIdAndIsActiveTrue(roleId);
@@ -366,7 +375,7 @@ class UserServiceImplTest {
 		User user1 = User.builder()
 			.id(1L)
 			.practiceId(100L)
-			.name(new Name("user1_firstName", "user1_middleName", "user1_lastName", "Mr"))
+			.name(new Name("user1_firstName", "user1_middleName", "user1_lastName"))
 			.contact(Contact.builder().email("user1@gmail.com").phone("1234567890").fax("9876543210").build())
 			.address(Address.builder()
 				.address1("10 Main Street")
@@ -381,7 +390,7 @@ class UserServiceImplTest {
 		User user2 = User.builder()
 			.id(2L)
 			.practiceId(101L)
-			.name(new Name("user2_firstName", "user2_middleName", "user2_lastName", "Mr"))
+			.name(new Name("user2_firstName", "user2_middleName", "user2_lastName"))
 			.contact(Contact.builder().email("user1@gmail.com").phone("1234567890").fax("9876543210").build())
 			.address(Address.builder()
 				.address1("11 Main Street")
@@ -396,7 +405,7 @@ class UserServiceImplTest {
 		User user3 = User.builder()
 			.id(3L)
 			.practiceId(102L)
-			.name(new Name("user3_firstName", "user3_middleName", "user3_lastName", "Mr"))
+			.name(new Name("user3_firstName", "user3_middleName", "user3_lastName"))
 			.contact(Contact.builder().email("user1@gmail.com").phone("1234567890").fax("9876543210").build())
 			.address(Address.builder()
 				.address1("12 Main Street")
@@ -411,7 +420,7 @@ class UserServiceImplTest {
 		User user4 = User.builder()
 			.id(4L)
 			.practiceId(104L)
-			.name(new Name("user4_firstName", "user4_middleName", "user4_lastName", "Mr"))
+			.name(new Name("user4_firstName", "user4_middleName", "user4_lastName"))
 			.contact(Contact.builder().email("user1@gmail.com").phone("1234567890").fax("9876543210").build())
 			.address(Address.builder()
 				.address1("13 Main Street")
@@ -426,7 +435,7 @@ class UserServiceImplTest {
 		User user5 = User.builder()
 			.id(5L)
 			.practiceId(105L)
-			.name(new Name("user5_firstName", "user5_middleName", "user5_lastName", "Mr"))
+			.name(new Name("user5_firstName", "user5_middleName", "user5_lastName"))
 			.contact(Contact.builder().email("user1@gmail.com").phone("1234567890").fax("9876543210").build())
 			.address(Address.builder()
 				.address1("15 Main Street")
