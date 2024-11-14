@@ -29,6 +29,10 @@ public class CustomUtils {
 
 	}
 
+	public static final String ORG_ADMIN_ROLE_NAME = "Organization Admin";
+
+	public static final String ORG_ADMIN_ROLE_DESC = "Organization Specific Admin Role";
+
 	public static final String SORT_ORDER_ASC = "asc";
 
 	public static boolean validateEmail(String emailAddress) {

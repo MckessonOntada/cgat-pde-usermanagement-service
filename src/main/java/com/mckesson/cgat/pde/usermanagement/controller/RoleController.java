@@ -1,11 +1,8 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +21,8 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 @RestController
 @Tag(name = "roles", description = "Controller for Manages role/permission related operations and data.")
@@ -45,7 +44,7 @@ public class RoleController {
 	}
 
 	@PutMapping("/{roleId}")
-	@Operation(summary = "Update Role / Add permissions to Role")
+	@Operation(summary = "Update Role (Add/Remove permissions to Role)")
 	public ResponseEntity<Role> updateRole(@Validated @RequestBody Role role, @PathVariable String practiceId,
 			@PathVariable String roleId) throws ResourceNotFoundException {
 		Role roleObj = roleService.getRole(roleId);
