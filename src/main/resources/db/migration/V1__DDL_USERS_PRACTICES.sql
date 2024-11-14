@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS "user"
 
 CREATE TABLE IF NOT EXISTS account (
         id                          INTEGER NOT NULL,
-        practice_id					INTEGER,
+        tenant_id					INTEGER,
         vistex_customer             VARCHAR(10) NOT NULL,
         sap_customer                VARCHAR(20) NOT NULL,
         partner_function            VARCHAR(50) NOT NULL,

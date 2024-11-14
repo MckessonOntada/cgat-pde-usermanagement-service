@@ -3,12 +3,17 @@ package com.mckesson.cgat.pde.usermanagement.model;
 import java.io.Serializable;
 import java.util.Set;
 
+<<<<<<< HEAD
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.type.NumericBooleanConverter;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+=======
+import com.mckesson.cgat.pde.usermanagement.model.converters.AccountPartnerFunctionConverter;
+import jakarta.persistence.*;
+>>>>>>> caf22a7 (account to customer entity mapping)
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -23,7 +28,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @EqualsAndHashCode
 @Builder
-public class Account extends AuditColumns implements Serializable {
+public class Account implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -41,7 +46,8 @@ public class Account extends AuditColumns implements Serializable {
 	private String accountNumber;
 
 	@Column(name = "partner_function")
-	private AccountPartnerFunction	partnerFunction;
+	@Convert(converter = AccountPartnerFunctionConverter.class)
+	private AccountPartnerFunction partnerFunction;
 
 	@Column(name = "sales_org")
 	private String salesOrg;
@@ -62,8 +68,5 @@ public class Account extends AuditColumns implements Serializable {
 	@JoinTable(name = "user_account_mapping", joinColumns = @JoinColumn(name = "user_id"),
 			inverseJoinColumns = @JoinColumn(name = "account_id"))
 	private Set<User> user;
-
-	@Convert(converter = NumericBooleanConverter.class)
-	private Boolean isActive = false;
 
 }

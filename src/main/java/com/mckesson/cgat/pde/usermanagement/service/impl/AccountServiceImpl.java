@@ -62,7 +62,7 @@ public class AccountServiceImpl implements AccountService {
 	public void deleteAccount(Long accountId) throws ResourceNotFoundException {
 		Account account = accountRepository.findById(accountId)
 			.orElseThrow(() -> new ResourceNotFoundException(accountId.toString()));
-		account.setIsActive(false);
+//		account.setIsActive(false);
 		accountRepository.save(account);
 	}
 

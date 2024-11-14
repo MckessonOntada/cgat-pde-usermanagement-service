@@ -14,34 +14,33 @@ import java.io.Serializable;
 @Builder
 public class AccountAddress implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    @Column(name = "house_number")
-    private String houseNumber;
+	@Column(name = "house_number")
+	private String houseNumber;
 
-    @Column(name = "street")
-    private String street;
+	@Column(name = "street")
+	private String street;
 
-    @Column(name = "street_2")
-    private String street2;
+	@Column(name = "street_2")
+	private String street2;
 
-    @Column(name = "street_3")
-    private String street3;
+	@Column(name = "street_3")
+	private String street3;
 
-    @Column(name = "city")
-    private String city;
+	@Column(name = "city")
+	private String city;
 
-    @Column(name = "district")
-    private String district;
+	@Column(name = "district")
+	private String district;
 
-    @Column(name = "state")
-    private String state;
+	@Column(name = "state")
+	private String state;
 
-    @Column(name = "country")
-    private String country;
+	@Column(name = "country")
+	private String country;
 
-    @Column(name = "zip_code")
-    private String zipCode;
-
+	@Column(name = "zip_code")
+	private String zipCode;
 
 }
