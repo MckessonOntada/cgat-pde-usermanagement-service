@@ -2,9 +2,10 @@ package com.mckesson.cgat.pde.usermanagement.model;
 
 import java.io.Serializable;
 
+import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,19 +23,20 @@ public class Name implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@NotNull(message = "First name cannot be null")
+	@NotEmpty(message = "First Name is required.")
 	@Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
+	@Pattern(regexp = "^[A-Za-z]+$",
+			message = "First Name must contain alphabetic characters only,Special characters not allowed")
 	private String firstName;
 
-	@Size(max = 50, message = "First name must be between 2 and 50 characters")
+	@Size(max = 50, message = "Middle name must be less than 50 characters")
+	@Pattern(regexp = "^[A-Za-z]+$", message = "Middle Name must contain alphabetic characters only")
 	private String middleName;
 
-	@NotNull(message = "First name cannot be null")
-	@Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
-	private String lastName;
+	@NotEmpty(message = "Last Name is required.")
+	@Size(max = 50, message = "Last name must be less than 50 characters")
+	@Pattern(regexp = "^[A-Za-z]+$", message = "Last Name must contain alphabetic characters only")
 
-	@NotNull(message = "Suffix must not be null")
-	@NotEmpty
-	private String suffix;
+	private String lastName;
 
 }

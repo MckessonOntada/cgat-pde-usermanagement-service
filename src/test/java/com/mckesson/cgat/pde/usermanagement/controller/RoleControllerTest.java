@@ -62,7 +62,7 @@ class RoleControllerTest {
 			.id(1L)
 			.address(new Address("address1", "address2", "city", "state", "12345"))
 			.contact(new Contact("email@gmail.com", "1212121212", "fax"))
-			.contactPerson(new Name("first", "", "last", "MR"))
+			.contactPerson(new Name("first", "", "last"))
 			.isActive(Boolean.TRUE)
 			.logoUrl("logo")
 			.name("DefaultName")
@@ -92,20 +92,6 @@ class RoleControllerTest {
 			.andDo(print())
 			.andReturn();
 	}
-
-	// @Test
-	// @DisplayName("Test : Update Role")
-	// void updateRoleTest() throws Exception {
-	// String practiceId = "1";
-	// String roleId = role.getId().toString();
-	// String roleJsonString = objectMapper.writeValueAsString(role);
-	//
-	// when(roleService.createOrUpdateRole(any(Role.class),
-	// anyString())).thenReturn(role);
-	// mockMvc.perform(put("/practice/{practiceId}/roles/{roleId}", practiceId, roleId)
-	// .content(roleJsonString)
-	// .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(print()).andReturn();
-	// }
 
 	@Test
 	@DisplayName("Test : Get Role")

@@ -64,7 +64,7 @@ class UserServiceImplTest {
 		user = User.builder()
 			.id(1L)
 			.practiceId(200L)
-			.name(new Name("John", "Doe", "doe", "Mr"))
+			.name(new Name("John", "Doe", "doe"))
 			.permissions(permissions)
 			.contact(Contact.builder().email("john.doe@example.com").phone("1234567890").fax("9876543210").build())
 			.address(Address.builder()
@@ -103,7 +103,7 @@ class UserServiceImplTest {
 		User existingUser = User.builder()
 			.id(1L)
 			.practiceId(200L)
-			.name(new Name("ram", "kumar", "kumar", "Mr"))
+			.name(new Name("ram", "kumar", "kumar"))
 			.contact(Contact.builder().email("ram.kumar@gmail.com").phone("1234567890").fax("9876543210").build())
 			.address(Address.builder()
 				.address1("12 Main Street")
@@ -118,7 +118,7 @@ class UserServiceImplTest {
 		User updateUser = User.builder()
 			.id(1L)
 			.practiceId(300L)
-			.name(new Name("neeraj", "kumar", "kumar", "Mr"))
+			.name(new Name("neeraj", "kumar", "kumar"))
 			.contact(Contact.builder().email("neeraj.kumar@gmail.com").phone("1234567890").fax("9876543210").build())
 			.address(Address.builder()
 				.address1("15 Main Street")
@@ -165,7 +165,7 @@ class UserServiceImplTest {
 		Page<User> userPage = getUserList();
 		Pageable paging = PageRequest.of(0, 20, Sort.by("first_name").ascending());
 		when(userRepository.findAllByQueryText(null, "ALL", paging, 1)).thenReturn(userPage);
-		Page<User> result = userService.findAll(paging, null, List.of("ALL"), "1");
+		Page<User> result = userService.findAll(paging, null, List.of("ALL"), Long.valueOf(1));
 		assertNotNull(result);
 		assertEquals(userPage, result);
 		verify(userRepository, times(1)).findAllByQueryText(null, "ALL", paging, 1);
@@ -292,7 +292,7 @@ class UserServiceImplTest {
 		user = User.builder()
 			.id(1L)
 			.practiceId(200L)
-			.name(new Name("John", "Doe", "doe", "Mr"))
+			.name(new Name("John", "Doe", "doe"))
 			.permissions(permissions)
 			.contact(Contact.builder().email("john.doe@example.com").phone("1234567890").fax("9876543210").build())
 			.address(Address.builder()
@@ -366,7 +366,7 @@ class UserServiceImplTest {
 		User user1 = User.builder()
 			.id(1L)
 			.practiceId(100L)
-			.name(new Name("user1_firstName", "user1_middleName", "user1_lastName", "Mr"))
+			.name(new Name("user1_firstName", "user1_middleName", "user1_lastName"))
 			.contact(Contact.builder().email("user1@gmail.com").phone("1234567890").fax("9876543210").build())
 			.address(Address.builder()
 				.address1("10 Main Street")
@@ -381,7 +381,7 @@ class UserServiceImplTest {
 		User user2 = User.builder()
 			.id(2L)
 			.practiceId(101L)
-			.name(new Name("user2_firstName", "user2_middleName", "user2_lastName", "Mr"))
+			.name(new Name("user2_firstName", "user2_middleName", "user2_lastName"))
 			.contact(Contact.builder().email("user1@gmail.com").phone("1234567890").fax("9876543210").build())
 			.address(Address.builder()
 				.address1("11 Main Street")
@@ -396,7 +396,7 @@ class UserServiceImplTest {
 		User user3 = User.builder()
 			.id(3L)
 			.practiceId(102L)
-			.name(new Name("user3_firstName", "user3_middleName", "user3_lastName", "Mr"))
+			.name(new Name("user3_firstName", "user3_middleName", "user3_lastName"))
 			.contact(Contact.builder().email("user1@gmail.com").phone("1234567890").fax("9876543210").build())
 			.address(Address.builder()
 				.address1("12 Main Street")
@@ -411,7 +411,7 @@ class UserServiceImplTest {
 		User user4 = User.builder()
 			.id(4L)
 			.practiceId(104L)
-			.name(new Name("user4_firstName", "user4_middleName", "user4_lastName", "Mr"))
+			.name(new Name("user4_firstName", "user4_middleName", "user4_lastName"))
 			.contact(Contact.builder().email("user1@gmail.com").phone("1234567890").fax("9876543210").build())
 			.address(Address.builder()
 				.address1("13 Main Street")
@@ -426,7 +426,7 @@ class UserServiceImplTest {
 		User user5 = User.builder()
 			.id(5L)
 			.practiceId(105L)
-			.name(new Name("user5_firstName", "user5_middleName", "user5_lastName", "Mr"))
+			.name(new Name("user5_firstName", "user5_middleName", "user5_lastName"))
 			.contact(Contact.builder().email("user1@gmail.com").phone("1234567890").fax("9876543210").build())
 			.address(Address.builder()
 				.address1("15 Main Street")

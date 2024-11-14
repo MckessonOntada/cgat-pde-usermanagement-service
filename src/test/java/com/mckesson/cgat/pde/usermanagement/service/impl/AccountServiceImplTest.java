@@ -132,7 +132,7 @@ class AccountServiceImplTest {
 		Page<Account> accountPage = getAccountList();
 		Pageable paging = PageRequest.of(0, 20, Sort.by("name").ascending());
 		when(accountRepository.findAllByQueryText(null, "ALL", paging, 1)).thenReturn(accountPage);
-		Page<Account> result = accountService.findAll(paging, null, List.of("ALL"), null, "1");
+		Page<Account> result = accountService.findAll(paging, null, List.of("ALL"), null, 1L);
 		assertNotNull(result);
 		assertEquals(accountPage, result);
 		verify(accountRepository, times(1)).findAllByQueryText(null, "ALL", paging, 1);
@@ -157,7 +157,7 @@ class AccountServiceImplTest {
 			.id(practiceId)
 			.name("practice_name")
 			.logoUrl("logo_url")
-			.contactPerson(Name.builder().firstName("ram").middleName(" ").lastName("kumar").suffix("mr").build())
+			.contactPerson(Name.builder().firstName("ram").middleName(" ").lastName("kumar").build())
 			.address(Address.builder()
 				.address1("address1")
 				.address2("address1")
