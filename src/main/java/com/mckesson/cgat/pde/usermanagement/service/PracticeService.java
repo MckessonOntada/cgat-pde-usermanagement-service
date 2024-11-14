@@ -20,7 +20,6 @@ public interface PracticeService {
 
 	Page<Practice> findAll(Pageable paging, String query, List<String> status);
 
-	Practice createPractice(Practice practice, MultipartFile logo, boolean isCreatePractice)
-			throws IllegalStateException, IOException;
+	Practice createPractice(Practice practice, MultipartFile logo) throws IllegalStateException, IOException;
 
 }

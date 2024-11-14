@@ -74,18 +74,9 @@ class PracticeServiceImplTest extends AbstractTest {
 	@DisplayName("Test : Create Practice")
 	@Test
 	void createPracticeTest() throws IllegalStateException, IOException {
-		Role adminRole = Role.builder()
-			.name(CustomUtils.ORG_ADMIN_ROLE_NAME)
-			.description(CustomUtils.ORG_ADMIN_ROLE_DESC)
-			.isActive(Boolean.TRUE)
-			.practiceId(practice)
-			.permissions(Set.of(Permission.values()))
-			.build();
 
-		when(roleRepository.save(any())).thenReturn(adminRole);
 		Mockito.when(practiceRepository.save(any())).thenReturn(practice);
-		assertEquals(practice,
-				practiceService.createPractice(practice, new MockMultipartFile("logo", new byte[0]), true));
+		assertEquals(practice, practiceService.createPractice(practice, new MockMultipartFile("logo", new byte[0])));
 		verify(practiceRepository, times(1)).save(practice);
 	}
 
@@ -93,8 +84,7 @@ class PracticeServiceImplTest extends AbstractTest {
 	@Test
 	void updatePracticeTest() throws IllegalStateException, IOException {
 		when(practiceRepository.save(any())).thenReturn(practice);
-		assertEquals(practice,
-				practiceService.createPractice(practice, new MockMultipartFile("logo", new byte[0]), false));
+		assertEquals(practice, practiceService.createPractice(practice, new MockMultipartFile("logo", new byte[0])));
 		verify(practiceRepository, times(1)).save(practice);
 	}
 

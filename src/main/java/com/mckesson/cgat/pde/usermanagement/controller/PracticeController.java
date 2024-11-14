@@ -59,7 +59,7 @@ public class PracticeController {
 			// Return validation errors as response
 			return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
 		}
-		Practice savedPractice = practiceService.createPractice(practiceObj, logo, true);
+		Practice savedPractice = practiceService.createPractice(practiceObj, logo);
 		return ResponseEntity.status(HttpStatus.CREATED).body(savedPractice);
 	}
 
@@ -80,7 +80,7 @@ public class PracticeController {
 			return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
 		}
 		practiceObj.setId(Long.valueOf(practiceId));
-		Practice practice = practiceService.createPractice(practiceObj, logo, false);
+		Practice practice = practiceService.createPractice(practiceObj, logo);
 		return ResponseEntity.status(HttpStatus.OK).body(practice);
 	}
 

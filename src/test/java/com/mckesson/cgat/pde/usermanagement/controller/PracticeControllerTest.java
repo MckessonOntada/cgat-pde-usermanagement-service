@@ -191,8 +191,7 @@ class PracticeControllerTest {
 		MockPart somePart = new MockPart("practiceStr", content);
 		somePart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
-		when(practiceService.createPractice(any(Practice.class), any(MockMultipartFile.class), anyBoolean()))
-			.thenReturn(practice);
+		when(practiceService.createPractice(any(Practice.class), any(MockMultipartFile.class))).thenReturn(practice);
 
 		mockMvc.perform(MockMvcRequestBuilders.multipart("/practices").file(file).part(somePart))
 			.andExpect(status().isCreated())
@@ -222,8 +221,7 @@ class PracticeControllerTest {
 		MockPart somePart = new MockPart("practiceStr", content);
 		somePart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
-		when(practiceService.createPractice(any(Practice.class), any(MockMultipartFile.class), anyBoolean()))
-			.thenReturn(newPractice);
+		when(practiceService.createPractice(any(Practice.class), any(MockMultipartFile.class))).thenReturn(newPractice);
 
 		MockMultipartHttpServletRequestBuilder builder = MockMvcRequestBuilders.multipart("/practices/{practiceId}",
 				newPractice.getId().toString());
