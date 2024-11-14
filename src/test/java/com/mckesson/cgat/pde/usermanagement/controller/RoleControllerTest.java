@@ -26,11 +26,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mckesson.cgat.pde.usermanagement.model.Address;
@@ -95,20 +92,6 @@ class RoleControllerTest {
 			.andDo(print())
 			.andReturn();
 	}
-
-	// @Test
-	// @DisplayName("Test : Update Role")
-	// void updateRoleTest() throws Exception {
-	// String practiceId = "1";
-	// String roleId = role.getId().toString();
-	// String roleJsonString = objectMapper.writeValueAsString(role);
-	//
-	// when(roleService.createOrUpdateRole(any(Role.class),
-	// anyString())).thenReturn(role);
-	// mockMvc.perform(put("/practice/{practiceId}/roles/{roleId}", practiceId, roleId)
-	// .content(roleJsonString)
-	// .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andDo(print()).andReturn();
-	// }
 
 	@Test
 	@DisplayName("Test : Get Role")
