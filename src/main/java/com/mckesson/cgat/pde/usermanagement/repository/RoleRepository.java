@@ -38,8 +38,6 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
 	public Page<Role> findAllByQueryText(@Param("query") String query, @Param("status") String status,
 			@Param("practiceId") Long practiceId, Pageable paging);
 
-	// Role findByIdAndIsActive(Long roleId, int isActive);
-
 	Optional<Role> findByIdAndIsActiveTrue(Long roleId);
 
 }

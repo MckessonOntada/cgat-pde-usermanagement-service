@@ -22,7 +22,7 @@ import jakarta.validation.ValidatorFactory;
 @Component
 public class PracticeUtils {
 
-	public String uploadLogo(MultipartFile file) throws IllegalStateException, IOException {
+	public String uploadLogo(MultipartFile file) {
 		File directory = new File(
 				System.getProperty("user.dir") + "/src/main/resources/static/" + file.getOriginalFilename());
 		// Create the directory if it doesn't exist

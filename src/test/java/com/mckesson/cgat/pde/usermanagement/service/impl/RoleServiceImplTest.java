@@ -3,7 +3,6 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -19,8 +18,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -125,7 +122,7 @@ class RoleServiceImplTest extends AbstractTest {
 		when(roleRepository.findAllByQueryText(query, statusActive, practiceId, paging)).thenReturn(mockResponse);
 		Page<Role> result = roleService.findAll(paging, query, practiceId.toString(), List.of(statusActive));
 		verify(roleRepository, times(1)).findAllByQueryText(query, statusActive, practiceId, paging);
-		assertTrue(result.getSize() == mockResponse.getSize());
+		assertEquals(result.getSize(), mockResponse.getSize());
 		assertIterableEquals(mockResponse, result);
 	}
 
