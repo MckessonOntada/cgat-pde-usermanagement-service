@@ -51,7 +51,7 @@ public class PracticeServiceImpl implements PracticeService {
 		if (practice.getId() == null)
 			isCreatePractice = true;
 		Practice savedPractice = practiceRepository.save(practice);
-    if (null != logo && !logo.isEmpty()) {
+		if (null != logo && !logo.isEmpty()) {
 			String logoURL = practiceUtils.uploadLogo(logo, savedPractice.getId());
 			practice.setLogoUrl(logoURL);
 		}
