@@ -82,7 +82,7 @@ class AccountControllerTest {
 		String objectString = objectMapper.writeValueAsString(account);
 		when(accountService.createAccount(any(Account.class))).thenReturn(account);
 		MvcResult result = mockMvc
-			.perform(post("/practice/{practiceId}/accounts", account.getPracticeId())
+			.perform(post("/practices/{practiceId}/accounts", account.getPracticeId())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectString))
 			.andExpect(status().isOk())
@@ -107,7 +107,7 @@ class AccountControllerTest {
 			.build();
 
 		ResultActions result = mockMvc
-			.perform(post("/practice/{practiceId}/accounts", account.getPracticeId())
+			.perform(post("/practices/{practiceId}/accounts", account.getPracticeId())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(account)))
 			.andExpect(status().isBadRequest());
@@ -140,7 +140,7 @@ class AccountControllerTest {
 
 		when(accountService.updateAccount(account.getId(), requestedAccount)).thenReturn(updatedAccount);
 		ResultActions result = mockMvc
-			.perform(put("/practice/{practiceId}/accounts/{accountId}", account.getPracticeId(), account.getId())
+			.perform(put("/practices/{practiceId}/accounts/{accountId}", account.getPracticeId(), account.getId())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(requestedAccount)))
 			.andExpect(status().isOk());
@@ -152,7 +152,7 @@ class AccountControllerTest {
 	void getAccountTest() throws Exception {
 		when(accountService.getAccount(account.getId())).thenReturn(account);
 		ResultActions result = mockMvc
-			.perform(get("/practice/{practiceId}/accounts/{accountId}", account.getPracticeId(), account.getId())
+			.perform(get("/practices/{practiceId}/accounts/{accountId}", account.getPracticeId(), account.getId())
 				.contentType(MediaType.APPLICATION_JSON_VALUE))
 			.andDo(print())
 			.andExpect(status().isOk());
@@ -188,7 +188,7 @@ class AccountControllerTest {
 	void deleteaAccountTest() throws Exception {
 		doNothing().when(accountService).deleteAccount(account.getId());
 		ResultActions result = mockMvc
-			.perform(delete("/practice/{practiceId}/accounts/{accountId}", account.getPracticeId(), account.getId())
+			.perform(delete("/practices/{practiceId}/accounts/{accountId}", account.getPracticeId(), account.getId())
 				.contentType(MediaType.APPLICATION_JSON_VALUE))
 			.andExpect(status().isOk());
 		assertNotNull(result);
@@ -211,7 +211,7 @@ class AccountControllerTest {
 			.thenReturn(accountPage);
 
 		ResultActions result = mockMvc
-			.perform(get("/practice/{practiceId}/accounts", account.getPracticeId()).param("pageNo", "0")
+			.perform(get("/practices/{practiceId}/accounts", account.getPracticeId()).param("pageNo", "0")
 				.param("pageSize", "20")
 				.param("sortBy", "name")
 				.param("sortOrder", "asc")
@@ -237,7 +237,7 @@ class AccountControllerTest {
 			.thenReturn(accountPage);
 
 		ResultActions result = mockMvc
-			.perform(get("/practice/{practiceId}/accounts", account.getPracticeId()).param("pageNo", "0")
+			.perform(get("/practices/{practiceId}/accounts", account.getPracticeId()).param("pageNo", "0")
 				.param("pageSize", "20")
 				.param("sortBy", "name")
 				.param("sortOrder", "desc")
@@ -256,7 +256,7 @@ class AccountControllerTest {
 		doNothing().when(accountService).linkAccountsToPractice(practiceId, accountIds);
 
 		ResultActions result = mockMvc
-			.perform(patch("/practice/{practiceId}/accounts/{accountId}", practiceId, account.getId())
+			.perform(patch("/practices/{practiceId}/accounts/{accountId}", practiceId, account.getId())
 				.contentType("application/json")
 				.content(objectMapper.writeValueAsString(accountIds)));
 		assertNotNull(result);
