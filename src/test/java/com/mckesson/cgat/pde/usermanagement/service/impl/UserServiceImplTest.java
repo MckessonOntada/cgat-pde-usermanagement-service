@@ -60,7 +60,7 @@ class UserServiceImplTest {
 
 	@BeforeEach
 	public void setUp() {
-		Set<Permission> permissions = new HashSet<>(Arrays.asList(Permission.ADD_USER, Permission.APPROVER_GROUP_1));
+		Set<Permission> permissions = new HashSet<>(Arrays.asList(Permission.ADD_USERS, Permission.ADD_ROLES));
 		user = User.builder()
 			.id(1L)
 			.practiceId(200L)
@@ -293,7 +293,7 @@ class UserServiceImplTest {
 	// @Test
 	void linkUserToRoleTest() throws ResourceNotFoundException {
 
-		Set<Permission> permissions = new HashSet<>(Arrays.asList(Permission.ADD_USER, Permission.APPROVER_GROUP_1));
+		Set<Permission> permissions = new HashSet<>(Arrays.asList(Permission.ADD_USERS, Permission.ADD_ROLES));
 		user = User.builder()
 			.id(1L)
 			.practiceId(200L)
