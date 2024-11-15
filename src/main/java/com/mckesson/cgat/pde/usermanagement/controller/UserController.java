@@ -152,4 +152,5 @@ public class UserController {
 		return accountService.findAll(paging, query, status, userId, practiceId);
 
 	}
+
 }
