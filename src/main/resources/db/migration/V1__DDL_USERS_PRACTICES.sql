@@ -118,6 +118,7 @@ CREATE TABLE IF NOT EXISTS account (
         distribution_channel        VARCHAR(2) NOT NULL,
         division                    VARCHAR(2) NOT NULL,
         company_code                VARCHAR(4),
+        is_active                   INTEGER,
         name_1                      VARCHAR(40) NOT NULL,
         name_2                      VARCHAR(40),
         name_3                      VARCHAR(40),

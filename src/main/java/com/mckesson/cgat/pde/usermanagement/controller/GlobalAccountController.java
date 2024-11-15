@@ -5,6 +5,7 @@ import java.util.Set;
 
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
+import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
@@ -46,7 +47,8 @@ public class GlobalAccountController {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-		Page<Account> accounts = accountService.findAll(paging, query, null, null, null);
+		Page<Account> accounts = accountService.findAll(paging, query, null, null, null,
+				AccountPartnerFunction.SHIP_TO);
 
 		return new ResponseEntity<>(accounts, HttpStatus.OK);
 	}

@@ -6,12 +6,15 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.type.NumericBooleanConverter;
 
 @Entity
 @Setter
@@ -31,8 +34,13 @@ public class Account implements Serializable {
 	@SequenceGenerator(name = SEQUENCE_GENERATOR_NAME, sequenceName = SEQUENCE_GENERATOR_NAME, allocationSize = 1)
 	private Long id;
 
-	@Column(name = "practice_id")
+	@Column(name = "tenant_id")
 	private Long practiceId;
+
+	@NotEmpty(message = "Name is required.")
+	@Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters")
+	@Column(name = "name_1")
+	private String accountName;
 
 	@Column(name = "sap_customer")
 	private String accountNumber;
@@ -60,5 +68,8 @@ public class Account implements Serializable {
 	@JoinTable(name = "user_account_mapping", joinColumns = @JoinColumn(name = "user_id"),
 			inverseJoinColumns = @JoinColumn(name = "account_id"))
 	private Set<User> user;
+
+	@Convert(converter = NumericBooleanConverter.class)
+	private Boolean isActive = false;
 
 }

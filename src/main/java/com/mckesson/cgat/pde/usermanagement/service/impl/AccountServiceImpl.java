@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -62,13 +63,13 @@ public class AccountServiceImpl implements AccountService {
 	public void deleteAccount(Long accountId) throws ResourceNotFoundException {
 		Account account = accountRepository.findById(accountId)
 			.orElseThrow(() -> new ResourceNotFoundException(accountId.toString()));
-		// account.setIsActive(false);
+		account.setIsActive(false);
 		accountRepository.save(account);
 	}
 
 	@Override
-	public Page<Account> findAll(Pageable paging, String query, List<String> status, Long userId, Long practiceId)
-			throws ResourceNotFoundException {
+	public Page<Account> findAll(Pageable paging, String query, List<String> status, Long userId, Long practiceId,
+			AccountPartnerFunction partnerFunction) throws ResourceNotFoundException {
 		query = StringUtils.toRootLowerCase(query);
 		String statusActive = CustomUtils.object_status.ALL.name();
 		if (!CollectionUtils.isEmpty(status)) {
@@ -88,9 +89,11 @@ public class AccountServiceImpl implements AccountService {
 			Optional<User> user = userRepository.findById(userId);
 			if (!user.isPresent())
 				throw new ResourceNotFoundException("User not found with id: " + userId);
-			return accountRepository.findAccountsByUser(userId, statusActive, paging, practiceId);
+			return accountRepository.findAccountsByUser(userId, statusActive, paging, practiceId,
+					partnerFunction.getValue());
 		}
-		return accountRepository.findAllByQueryText(query, statusActive, paging, practiceId);
+		return accountRepository.findAllByQueryText(query, statusActive, paging, practiceId,
+				partnerFunction.getValue());
 	}
 
 	@Transactional
