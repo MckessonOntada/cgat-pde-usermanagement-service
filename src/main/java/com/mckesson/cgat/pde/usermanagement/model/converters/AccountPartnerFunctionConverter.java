@@ -7,7 +7,7 @@ public class AccountPartnerFunctionConverter implements AttributeConverter<Accou
 
 	@Override
 	public String convertToDatabaseColumn(AccountPartnerFunction accountPartnerFunction) {
-		return accountPartnerFunction.getValue();
+		return accountPartnerFunction.getPartnerFunctionType();
 	}
 
 	@Override

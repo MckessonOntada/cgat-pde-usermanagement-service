@@ -5,19 +5,19 @@ import java.util.Map;
 
 public enum AccountPartnerFunction {
 
-	SOLD_TO("SH"), SHIP_TO("SP"), PAYER("PY");
+	SOLD_TO("SH"), SHIP_TO("SP"), PAYER("PY"), BILL_TO("BP");
 
-	private String value;
+	private String partnerFunctionType;
 
 	private static Map<String, AccountPartnerFunction> valueToEnumMap = new HashMap<>();
 
-	private AccountPartnerFunction(String value) {
-		this.value = value;
+	private AccountPartnerFunction(String partnerFunctionType) {
+		this.partnerFunctionType = partnerFunctionType;
 	}
 
 	static {
 		for (AccountPartnerFunction e : values()) {
-			valueToEnumMap.put(e.value, e);
+			valueToEnumMap.put(e.partnerFunctionType, e);
 		}
 	}
 
@@ -25,8 +25,8 @@ public enum AccountPartnerFunction {
 		return valueToEnumMap.get(label);
 	}
 
-	public String getValue() {
-		return value;
+	public String getPartnerFunctionType() {
+		return partnerFunctionType;
 	}
 
 }
