@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.mckesson.cgat.pde.usermanagement.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,11 +29,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import com.mckesson.cgat.pde.usermanagement.model.Account;
-import com.mckesson.cgat.pde.usermanagement.model.Address;
-import com.mckesson.cgat.pde.usermanagement.model.Contact;
-import com.mckesson.cgat.pde.usermanagement.model.Name;
-import com.mckesson.cgat.pde.usermanagement.model.Practice;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -56,9 +52,10 @@ class AccountServiceImplTest {
 		account = Account.builder()
 			.id(1L)
 			.practiceId(100L)
-			.name("account")
-			.dcId("123")
-			.dcName("dcname")
+			.accountName("account")
+			.salesOrg("1234")
+			.distributionChannel("dc")
+			.division("dv")
 			.user(null)
 			.isActive(true)
 			.build();
@@ -90,18 +87,20 @@ class AccountServiceImplTest {
 		Account oldAccount = Account.builder()
 			.id(1L)
 			.practiceId(100L)
-			.name("abc")
-			.dcId("123")
-			.dcName("dcname")
+			.accountName("account")
+			.salesOrg("1234")
+			.distributionChannel("dc")
+			.division("dv")
 			.user(null)
 			.isActive(true)
 			.build();
 		Account newAccount = Account.builder()
 			.id(2L)
 			.practiceId(100L)
-			.name("abcd")
-			.dcId("1243")
-			.dcName("dcname2")
+			.accountName("account")
+			.salesOrg("1234")
+			.distributionChannel("dc")
+			.division("dv")
 			.user(null)
 			.isActive(true)
 			.build();
@@ -111,7 +110,7 @@ class AccountServiceImplTest {
 		Account result = accountService.updateAccount(oldAccount.getId(), newAccount);
 
 		assertNotNull(result);
-		assertEquals(newAccount.getName(), result.getName());
+		assertEquals(newAccount.getAccountName(), result.getAccountName());
 		verify(accountRepository).findById(oldAccount.getId());
 		verify(accountRepository).save(newAccount);
 	}
@@ -131,11 +130,15 @@ class AccountServiceImplTest {
 	void findAllWithPageableTest() throws ResourceNotFoundException {
 		Page<Account> accountPage = getAccountList();
 		Pageable paging = PageRequest.of(0, 20, Sort.by("name").ascending());
-		when(accountRepository.findAllByQueryText(null, "ALL", paging, 1)).thenReturn(accountPage);
-		Page<Account> result = accountService.findAll(paging, null, List.of("ALL"), null, 1L);
+		when(accountRepository.findAllByQueryText(null, "ALL", paging, 1,
+				AccountPartnerFunction.SHIP_TO.getPartnerFunctionType()))
+			.thenReturn(accountPage);
+		Page<Account> result = accountService.findAll(paging, null, List.of("ALL"), null, 1L,
+				AccountPartnerFunction.SHIP_TO);
 		assertNotNull(result);
 		assertEquals(accountPage, result);
-		verify(accountRepository, times(1)).findAllByQueryText(null, "ALL", paging, 1);
+		verify(accountRepository, times(1)).findAllByQueryText(null, "ALL", paging, 1,
+				AccountPartnerFunction.SHIP_TO.getPartnerFunctionType());
 	}
 
 	@DisplayName("UserNotFoundException : GetUser")
@@ -172,9 +175,10 @@ class AccountServiceImplTest {
 		Account account1 = Account.builder()
 			.id(1L)
 			.practiceId(1L)
-			.name("account1")
-			.dcId("123")
-			.dcName("dcname1")
+			.accountName("account1")
+			.salesOrg("1234")
+			.distributionChannel("dc")
+			.division("dv")
 			.user(null)
 			.isActive(true)
 			.build();
@@ -182,9 +186,10 @@ class AccountServiceImplTest {
 		Account account2 = Account.builder()
 			.id(2L)
 			.practiceId(1L)
-			.name("account2")
-			.dcId("1243")
-			.dcName("dcname2")
+			.accountName("account2")
+			.salesOrg("1234")
+			.distributionChannel("dc")
+			.division("dv")
 			.user(null)
 			.isActive(true)
 			.build();
@@ -222,9 +227,10 @@ class AccountServiceImplTest {
 		Account account1 = Account.builder()
 			.id(1L)
 			.practiceId(100L)
-			.name("account1")
-			.dcId("123")
-			.dcName("dcname1")
+			.accountName("account1")
+			.salesOrg("1234")
+			.distributionChannel("dc")
+			.division("dv")
 			.user(null)
 			.isActive(true)
 			.build();
@@ -232,9 +238,10 @@ class AccountServiceImplTest {
 		Account account2 = Account.builder()
 			.id(2L)
 			.practiceId(200L)
-			.name("account2")
-			.dcId("1243")
-			.dcName("dcname2")
+			.accountName("account2")
+			.salesOrg("1234")
+			.distributionChannel("dc")
+			.division("dv")
 			.user(null)
 			.isActive(true)
 			.build();
@@ -242,9 +249,10 @@ class AccountServiceImplTest {
 		Account account3 = Account.builder()
 			.id(1L)
 			.practiceId(100L)
-			.name("account3")
-			.dcId("12345")
-			.dcName("dcname3")
+			.accountName("account3")
+			.salesOrg("12345")
+			.distributionChannel("d3")
+			.division("d3")
 			.user(null)
 			.isActive(true)
 			.build();
@@ -252,9 +260,10 @@ class AccountServiceImplTest {
 		Account account4 = Account.builder()
 			.id(2L)
 			.practiceId(200L)
-			.name("account4")
-			.dcId("12434")
-			.dcName("dcname4")
+			.accountName("account4")
+			.salesOrg("12434")
+			.distributionChannel("d4")
+			.division("d4")
 			.user(null)
 			.isActive(true)
 			.build();
@@ -262,9 +271,10 @@ class AccountServiceImplTest {
 		Account account5 = Account.builder()
 			.id(1L)
 			.practiceId(100L)
-			.name("account5")
-			.dcId("12345")
-			.dcName("dcname5")
+			.accountName("account5")
+			.salesOrg("12345")
+			.distributionChannel("d5")
+			.division("d5")
 			.user(null)
 			.isActive(true)
 			.build();
@@ -272,9 +282,10 @@ class AccountServiceImplTest {
 		Account account6 = Account.builder()
 			.id(2L)
 			.practiceId(200L)
-			.name("account6")
-			.dcId("12435")
-			.dcName("dcname6")
+			.accountName("account6")
+			.salesOrg("12435")
+			.distributionChannel("d6")
+			.division("d6")
 			.user(null)
 			.isActive(true)
 			.build();
