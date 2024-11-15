@@ -40,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Tag(name = "Users", description = "Controller for Managing user-related operations and data.")
-@RequestMapping(path = "/practice/{practiceId}/users", consumes = "application/json",
+@RequestMapping(path = "/practices/{practiceId}/users", consumes = "application/json",
 		produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class UserController {

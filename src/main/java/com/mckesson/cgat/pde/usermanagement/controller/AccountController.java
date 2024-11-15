@@ -36,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Tag(name = "Accounts", description = "Controller for Manages account-related operations and data.")
-@RequestMapping(path = "/practice/{practiceId}/accounts", consumes = "application/json",
+@RequestMapping(path = "/practices/{practiceId}/accounts", consumes = "application/json",
 		produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class AccountController {

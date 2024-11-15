@@ -25,7 +25,7 @@ CREATE SEQUENCE practice_sequence START WITH 1 INCREMENT BY 1 MINVALUE 1 NO MAXV
 
 CREATE TABLE  IF NOT EXISTS role (
     id INTEGER PRIMARY KEY,
-    name VARCHAR(255) NOT NULL UNIQUE,
+    name VARCHAR(255) NOT NULL,
     description VARCHAR(255),
     practice_id INTEGER,
     is_active INTEGER,

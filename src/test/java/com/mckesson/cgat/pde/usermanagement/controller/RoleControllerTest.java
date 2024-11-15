@@ -26,11 +26,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mckesson.cgat.pde.usermanagement.model.Address;
@@ -89,7 +86,7 @@ class RoleControllerTest {
 		when(roleService.createOrUpdateRole(any(Role.class), any(String.class))).thenReturn(role);
 
 		mockMvc
-			.perform(post("/practice/{practiceId}/roles", practiceId).content(roleJsonString)
+			.perform(post("/practices/{practiceId}/roles", practiceId).content(roleJsonString)
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isCreated())
 			.andDo(print())
@@ -104,7 +101,7 @@ class RoleControllerTest {
 
 		when(roleService.getRole(anyString())).thenReturn(role);
 		mockMvc
-			.perform(get("/practice/{practiceId}/roles/{roleId}", practiceId, roleId)
+			.perform(get("/practices/{practiceId}/roles/{roleId}", practiceId, roleId)
 				.contentType(MediaType.APPLICATION_JSON_VALUE))
 			.andDo(print())
 			.andExpect(status().isOk());
@@ -119,7 +116,7 @@ class RoleControllerTest {
 		when(roleService.getRole(roleId))
 			.thenThrow(new ResourceNotFoundException("Role not found with id : " + roleId));
 		mockMvc
-			.perform(get("/practice/{practiceId}/roles/{roleId}", practiceId, roleId)
+			.perform(get("/practices/{practiceId}/roles/{roleId}", practiceId, roleId)
 				.contentType(MediaType.APPLICATION_JSON_VALUE))
 			.andDo(print())
 			.andExpect(status().isNotFound())
@@ -142,7 +139,7 @@ class RoleControllerTest {
 		when(roleService.findAll(paging, query, practiceId.toString(), List.of(statusActive))).thenReturn(mockResponse);
 
 		mockMvc
-			.perform(get("/practice/{practiceId}/roles", practiceId).param("pageNo", pageNo)
+			.perform(get("/practices/{practiceId}/roles", practiceId).param("pageNo", pageNo)
 				.param("pageSize", pageSize)
 				.param("sortBy", sortBy)
 				.param("sortOrder", sortOrder)
