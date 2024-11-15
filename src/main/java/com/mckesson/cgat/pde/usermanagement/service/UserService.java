@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDto;
 import com.mckesson.cgat.pde.usermanagement.model.User;
+import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 public interface UserService {
@@ -24,6 +25,7 @@ public interface UserService {
 
 	User linkUserToAccounts(Long userId, List<Long> accountIds) throws ResourceNotFoundException;
 
-	User linkUserToRoleAndPermissions(Long userId, RolePermissionsPatchDto dto) throws ResourceNotFoundException;
+	User linkUserToRoleAndPermissions(Long userId, UserType userType, RolePermissionsPatchDto dto)
+			throws ResourceNotFoundException;
 
 }

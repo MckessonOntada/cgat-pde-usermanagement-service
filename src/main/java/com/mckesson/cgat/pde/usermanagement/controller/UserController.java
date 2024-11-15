@@ -27,6 +27,7 @@ import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;
+import com.mckesson.cgat.pde.usermanagement.utils.OrganizationContext;
 import com.mckesson.cgat.pde.usermanagement.utils.UserRequestAuthorizationValidator;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
@@ -99,12 +100,13 @@ public class UserController {
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
 			@RequestParam(required = false) List<String> status,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType,
-			@RequestParam String startDate, @RequestParam String endDate) throws UnauthorizedAccessException {
+			@RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate)
+			throws UnauthorizedAccessException {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
-		return userService.findAll(paging, query, status, 1L, startDate, endDate);
+		return userService.findAll(paging, query, status, OrganizationContext.getCurrentOrgId(), startDate, endDate);
 
 	}
 
@@ -121,8 +123,11 @@ public class UserController {
 	@PatchMapping("/{userId}/roles-permissions")
 	@Operation(summary = "Link User with role and permissions")
 	public ResponseEntity<User> linkUserToRole(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
-			@RequestBody RolePermissionsPatchDto dto) throws ResourceNotFoundException {
-		return ResponseEntity.status(HttpStatus.OK).body(userService.linkUserToRoleAndPermissions(userId, dto));
+			@NotNull(message = "User Type should not be null") @RequestParam UserType userType,
+			@RequestBody RolePermissionsPatchDto dto) throws ResourceNotFoundException, UnauthorizedAccessException {
+		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(userService.linkUserToRoleAndPermissions(userId, userType, dto));
 	}
 
 	@GetMapping("/{userId}/accounts")

@@ -84,7 +84,7 @@ public class RoleController {
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "name") String sortBy,
 			@RequestParam(required = false) List<String> status, @RequestParam(defaultValue = "asc") String sortOrder,
 			@RequestParam(required = false) String query, @PathVariable String practiceId,
-			@RequestParam String startDate, @RequestParam String endDate) {
+			@RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate) {
 		Sort sort = CustomUtils.SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);

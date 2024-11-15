@@ -106,7 +106,7 @@ public class UserServiceImpl implements UserService {
 
 	@Transactional
 	@Override
-	public User linkUserToRoleAndPermissions(Long userId, RolePermissionsPatchDto dto)
+	public User linkUserToRoleAndPermissions(Long userId, UserType userType, RolePermissionsPatchDto dto)
 			throws ResourceNotFoundException {
 
 		User user = userRepository.findById(userId)
@@ -116,7 +116,7 @@ public class UserServiceImpl implements UserService {
 			.orElseThrow(() -> new ResourceNotFoundException("Role not found with this Id :" + dto.getRoleId()));
 
 		user.setRole(role);
-		if (dto.getUserType().equals(UserType.ADMIN)) {
+		if (userType.equals(UserType.ADMIN)) {
 			Role systemAdminRole = roleRepository.findByName(UserRequestAuthorizationValidator.SYSTEM_ADMIN_ROLE);
 			if (systemAdminRole != null)
 				user.setRole(systemAdminRole);

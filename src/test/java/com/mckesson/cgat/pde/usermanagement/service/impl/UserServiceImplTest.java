@@ -69,7 +69,12 @@ class UserServiceImplTest {
 			.practiceId(200L)
 			.name(new Name("John", "Doe", "doe"))
 			.permissions(permissions)
-			.contact(Contact.builder().email("john.doe@example.com").phone("1234567890").fax("9876543210").build())
+			.contact(Contact.builder()
+				.email("john.doe@example.com")
+				.countryCode("+1")
+				.phone("1234567890")
+				.fax("9876543210")
+				.build())
 			.address(Address.builder()
 				.address1("123 Main St")
 				.address2("Suite 500")
@@ -107,7 +112,12 @@ class UserServiceImplTest {
 			.id(1L)
 			.practiceId(200L)
 			.name(new Name("ram", "kumar", "kumar"))
-			.contact(Contact.builder().email("ram.kumar@gmail.com").phone("1234567890").fax("9876543210").build())
+			.contact(Contact.builder()
+				.email("ram.kumar@gmail.com")
+				.countryCode("+1")
+				.phone("1234567890")
+				.fax("9876543210")
+				.build())
 			.address(Address.builder()
 				.address1("12 Main Street")
 				.address2("Suite 501")
@@ -122,7 +132,12 @@ class UserServiceImplTest {
 			.id(1L)
 			.practiceId(300L)
 			.name(new Name("neeraj", "kumar", "kumar"))
-			.contact(Contact.builder().email("neeraj.kumar@gmail.com").phone("1234567890").fax("9876543210").build())
+			.contact(Contact.builder()
+				.email("neeraj.kumar@gmail.com")
+				.countryCode("+1")
+				.phone("1234567890")
+				.fax("9876543210")
+				.build())
 			.address(Address.builder()
 				.address1("15 Main Street")
 				.address2("Suite 502")
@@ -301,7 +316,12 @@ class UserServiceImplTest {
 			.practiceId(200L)
 			.name(new Name("John", "Doe", "doe"))
 			.permissions(permissions)
-			.contact(Contact.builder().email("john.doe@example.com").phone("1234567890").fax("9876543210").build())
+			.contact(Contact.builder()
+				.email("john.doe@example.com")
+				.countryCode("+1")
+				.phone("1234567890")
+				.fax("9876543210")
+				.build())
 			.address(Address.builder()
 				.address1("123 Main St")
 				.address2("Suite 500")
@@ -323,8 +343,8 @@ class UserServiceImplTest {
 		when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 		when(roleRepository.findByIdAndIsActiveTrue(role.getId())).thenReturn(Optional.of(role));
 		when(userRepository.save(user)).thenReturn(user);
-		RolePermissionsPatchDto dto = new RolePermissionsPatchDto(UserType.ADMIN, role.getId(), permissions);
-		User result = userService.linkUserToRoleAndPermissions(user.getId(), dto);
+		RolePermissionsPatchDto dto = new RolePermissionsPatchDto(role.getId(), permissions);
+		User result = userService.linkUserToRoleAndPermissions(user.getId(), UserType.ADMIN, dto);
 
 		assertNotNull(result);
 		assertEquals(role, result.getRole());
@@ -339,10 +359,10 @@ class UserServiceImplTest {
 	void linkUserToRole_UserNotFoundTest() {
 		Long roleId = 2L;
 		Set<Permission> permissions = Set.of(Permission.values());
-		RolePermissionsPatchDto dto = new RolePermissionsPatchDto(UserType.ADMIN, roleId, permissions);
+		RolePermissionsPatchDto dto = new RolePermissionsPatchDto(roleId, permissions);
 		when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
 		assertThrows(ResourceNotFoundException.class,
-				() -> userService.linkUserToRoleAndPermissions(user.getId(), dto));
+				() -> userService.linkUserToRoleAndPermissions(user.getId(), UserType.ADMIN, dto));
 
 		verify(userRepository, times(1)).findById(user.getId());
 		verify(roleRepository, never()).findByIdAndIsActiveTrue(roleId);
@@ -354,12 +374,12 @@ class UserServiceImplTest {
 	void linkUserToRole_RoleNotFoundTest() {
 		Long roleId = 2L;
 		Set<Permission> permissions = Set.of(Permission.values());
-		RolePermissionsPatchDto dto = new RolePermissionsPatchDto(UserType.ADMIN, roleId, permissions);
+		RolePermissionsPatchDto dto = new RolePermissionsPatchDto(roleId, permissions);
 		when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 		when(roleRepository.findByIdAndIsActiveTrue(roleId)).thenReturn(Optional.empty());
 
 		assertThrows(ResourceNotFoundException.class,
-				() -> userService.linkUserToRoleAndPermissions(user.getId(), dto));
+				() -> userService.linkUserToRoleAndPermissions(user.getId(), UserType.ADMIN, dto));
 
 		verify(userRepository, times(1)).findById(user.getId());
 		verify(roleRepository, times(1)).findByIdAndIsActiveTrue(roleId);
