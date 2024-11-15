@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -27,7 +28,6 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -40,6 +40,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
+import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
@@ -194,22 +195,56 @@ class AccountControllerTest {
 
 	}
 
-	// @DisplayName("FindAllTest")
-	// @Test
+	@DisplayName("FindAllTest")
+	@Test
 	void findAllTest() throws Exception {
-		Page<Account> accountPage = getAccountList();
-		when(accountService.findAll(any(PageRequest.class), Mockito.anyString(), Mockito.anyList(), 100L,
-				Mockito.anyString()))
+		Integer pageNo = 0;
+		Integer pageSize = 20;
+		String sortBy = "name";
+		String sortOrder = "asc";
+		Sort sort = "asc".equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+		PageRequest pageable = PageRequest.of(pageNo, pageSize, sort);
+		List<Account> accounts = getAccountList();
+		PageImpl<Account> accountPage = new PageImpl<>(accounts, pageable, accounts.size());
+		when(accountService.findAll(any(PageRequest.class), Mockito.anyString(), Mockito.anyList(), Mockito.anyLong(),
+				Mockito.anyLong()))
 			.thenReturn(accountPage);
 
 		ResultActions result = mockMvc
 			.perform(get("/practice/{practiceId}/accounts", account.getPracticeId()).param("pageNo", "0")
 				.param("pageSize", "20")
-				.param("sortBy", "first_name")
+				.param("sortBy", "name")
 				.param("sortOrder", "asc")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk());
 		assertNotNull(result);
+		verify(accountService).findAll(pageable, null, null, null, 100L);
+	}
+
+	@DisplayName("FindAllTestForDesc")
+	@Test
+	void findAllTestForDesc() throws Exception {
+		Integer pageNo = 0;
+		Integer pageSize = 20;
+		String sortBy = "name";
+		String sortOrder = "desc";
+		Sort sort = "asc".equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+		PageRequest pageable = PageRequest.of(pageNo, pageSize, sort);
+		List<Account> accounts = getAccountList();
+		PageImpl<Account> accountPage = new PageImpl<>(accounts, pageable, accounts.size());
+		when(accountService.findAll(any(PageRequest.class), Mockito.anyString(), Mockito.anyList(), Mockito.anyLong(),
+				Mockito.anyLong()))
+			.thenReturn(accountPage);
+
+		ResultActions result = mockMvc
+			.perform(get("/practice/{practiceId}/accounts", account.getPracticeId()).param("pageNo", "0")
+				.param("pageSize", "20")
+				.param("sortBy", "name")
+				.param("sortOrder", "desc")
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk());
+		assertNotNull(result);
+		verify(accountService).findAll(pageable, null, null, null, 100L);
 	}
 
 	@DisplayName("LinkAccountToPracticeTest")
@@ -227,11 +262,7 @@ class AccountControllerTest {
 		assertNotNull(result);
 	}
 
-	private Page<com.mckesson.cgat.pde.usermanagement.model.Account> getAccountList() {
-		Integer pageNo = 0;
-		Integer pageSize = 20;
-		String sortBy = "name";
-		String sortOrder = "asc";
+	private List<Account> getAccountList() {
 
 		Account account1 = Account.builder()
 			.id(121L)
@@ -282,11 +313,7 @@ class AccountControllerTest {
 			.user(null)
 			.isActive(true)
 			.build();
-		List<Account> accounts = Arrays.asList(account1, account2, account3, account4, account5);
-
-		Sort sort = "asc".equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
-		return new PageImpl<>(accounts, pageable, accounts.size());
+		return Arrays.asList(account1, account2, account3, account4, account5);
 
 	}
 

@@ -1,12 +1,11 @@
 CREATE TABLE IF NOT EXISTS practice
 (
 	id 				INTEGER PRIMARY KEY,
-    name           	VARCHAR(255) UNIQUE NOT NULL,
+    name           	VARCHAR(100) UNIQUE NOT NULL,
     logo_url       	VARCHAR(255),
     first_name  	VARCHAR(50) NOT NULL,
     middle_name	    VARCHAR(50),
     last_name 		VARCHAR(50) NOT NULL,
---    suffix			VARCHAR(50),
     address1		VARCHAR(255)NOT NULL,
     address2		VARCHAR(255),
     city		    VARCHAR(50) NOT NULL,
@@ -27,7 +26,7 @@ CREATE SEQUENCE practice_sequence START WITH 1 INCREMENT BY 1 MINVALUE 1 NO MAXV
 
 CREATE TABLE  IF NOT EXISTS role (
     id INTEGER PRIMARY KEY,
-    name VARCHAR(255) NOT NULL UNIQUE,
+    name VARCHAR(255) NOT NULL,
     description VARCHAR(255),
     practice_id INTEGER,
     is_active INTEGER,
@@ -70,7 +69,6 @@ CREATE TABLE IF NOT EXISTS "user"
     first_name  				VARCHAR(255) 	NOT NULL,
     middle_name 				VARCHAR(255),
     last_name	 				VARCHAR(255) 	NOT NULL,
---    suffix						VARCHAR(50),
     address1					VARCHAR(255) 	NOT NULL,
     address2					VARCHAR(255),
     city						VARCHAR(255) 	NOT NULL,

@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,9 +34,13 @@ import org.springframework.mock.web.MockMultipartFile;
 import com.mckesson.cgat.pde.usermanagement.model.Address;
 import com.mckesson.cgat.pde.usermanagement.model.Contact;
 import com.mckesson.cgat.pde.usermanagement.model.Name;
+import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.Practice;
+import com.mckesson.cgat.pde.usermanagement.model.Role;
 import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
+import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
 import com.mckesson.cgat.pde.usermanagement.service.impl.utils.PracticeUtils;
+import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,6 +54,9 @@ class PracticeServiceImplTest {
 
 	@Mock
 	private PracticeRepository practiceRepository;
+
+	@Mock
+	private RoleRepository roleRepository;
 
 	private Practice practice;
 
@@ -68,6 +76,7 @@ class PracticeServiceImplTest {
 	@DisplayName("Test : Create Practice")
 	@Test
 	void createPracticeTest() throws IllegalStateException, IOException {
+
 		Mockito.when(practiceRepository.save(any())).thenReturn(practice);
 		assertEquals(practice, practiceService.createPractice(practice, new MockMultipartFile("logo", new byte[0])));
 		verify(practiceRepository, times(1)).save(practice);
@@ -129,7 +138,7 @@ class PracticeServiceImplTest {
 		Mockito.when(practiceRepository.findAllByQueryText(query, statusActive, paging)).thenReturn(mockResponse);
 		Page<Practice> result = practiceService.findAll(paging, query, List.of(statusActive));
 		verify(practiceRepository, times(1)).findAllByQueryText(query, statusActive, paging);
-		assertTrue(result.getSize() == mockResponse.getSize());
+		assertEquals(result.getSize(), mockResponse.getSize());
 	}
 
 	private Page<Practice> getPractices() {

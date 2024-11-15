@@ -8,11 +8,9 @@ public class UserRequestAuthorizationValidator {
 
 	public static final String SYSTEM_ADMIN_ROLE = "System Admin";
 
-	private static final String UNAUTHORIZED_MESSAGE = "User is not authorized for this action";
-
 	private static final Long SYSTEM_LEVEL_ORGANISATION_ID = 1L;
 
-	private static boolean isSystemAdmin(LoggedInUserDetails loggedInUser) {
+	public static boolean isSystemAdmin(LoggedInUserDetails loggedInUser) {
 		return SYSTEM_ADMIN_ROLE.equals(loggedInUser.getRole().getName());
 	}
 
@@ -27,7 +25,7 @@ public class UserRequestAuthorizationValidator {
 			 */
 			if (!isSystemAdmin(loggedInUser)
 					|| !OrganizationContext.getCurrentOrgId().equals(SYSTEM_LEVEL_ORGANISATION_ID)) {
-				throw new UnauthorizedAccessException(UNAUTHORIZED_MESSAGE);
+				throw new UnauthorizedAccessException(CustomUtils.UNAUTHORIZED_MESSAGE);
 			}
 		}
 		else {
@@ -38,7 +36,7 @@ public class UserRequestAuthorizationValidator {
 			 */
 			if (!hasPermission(loggedInUser, "User_Create")
 					|| OrganizationContext.getCurrentOrgId().equals(SYSTEM_LEVEL_ORGANISATION_ID)) {
-				throw new UnauthorizedAccessException(UNAUTHORIZED_MESSAGE);
+				throw new UnauthorizedAccessException(CustomUtils.UNAUTHORIZED_MESSAGE);
 			}
 
 		}
