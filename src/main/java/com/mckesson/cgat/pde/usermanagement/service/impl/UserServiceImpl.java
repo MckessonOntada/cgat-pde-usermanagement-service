@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User getUser(Long userId) throws ResourceNotFoundException {
-		return userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(userId.toString()));
+		 return userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(userId.toString()));
 	}
 
 	@Override

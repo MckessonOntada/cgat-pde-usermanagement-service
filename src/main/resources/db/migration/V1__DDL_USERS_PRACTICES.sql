@@ -68,7 +68,6 @@ CREATE TABLE IF NOT EXISTS "user"
     first_name  				VARCHAR(255) 	UNIQUE NOT NULL,
     middle_name 				VARCHAR(255),
     last_name	 				VARCHAR(255) 	NOT NULL,
-    suffix						VARCHAR(50),
     address1					VARCHAR(255) 	NOT NULL,
     address2					VARCHAR(255),
     city						VARCHAR(255) 	NOT NULL,
@@ -191,6 +190,29 @@ CREATE TABLE IF NOT EXISTS user_permission_mapping (
      FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE
 );
 
-
+CREATE TABLE IF NOT EXISTS user_provisioning_request(
+	
+    id        					INTEGER 		NOT NULL,
+    practice_id					INTEGER,
+    first_name  				VARCHAR(255) 	UNIQUE NOT NULL,
+    middle_name 				VARCHAR(255),
+    last_name	 				VARCHAR(255) 	NOT NULL,
+    address1					VARCHAR(255) 	NOT NULL,
+    address2					VARCHAR(255),
+    city						VARCHAR(255) 	NOT NULL,
+    state 						VARCHAR(255) 	NOT NULL,
+    zip 						VARCHAR(255) 	NOT NULL,
+    email	 					VARCHAR(255) 	NOT NULL,
+    phone						VARCHAR(255) 	NOT NULL,
+    fax							VARCHAR(50),
+    comment						VARCHAR(255),
+    status						VARCHAR(255),
+    is_active      				INTEGER,
+    created_at   				TIMESTAMP,
+    created_by 					VARCHAR(255),
+    updated_at  				TIMESTAMP,
+    updated_by 					VARCHAR(255)
+    
+);
 
 
