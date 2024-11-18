@@ -14,6 +14,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -50,12 +51,12 @@ public class UserProvisioningRequest extends AuditColumns implements Serializabl
 	@Embedded
 	private Address address;
 
-	// todo
+	@Size(min = 2, max = 250, message = "Comment must be between 2 and 250 characters")
 	private String comment;
 
 	@Convert(converter = NumericBooleanConverter.class)
 	private Boolean isActive = false;
 
-	private UserProvisioningStaus status = UserProvisioningStaus.PENDING;
+	private String status = UserProvisioningStaus.PENDING.name();
 
 }
