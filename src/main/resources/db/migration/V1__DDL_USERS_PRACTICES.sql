@@ -139,4 +139,13 @@ USING btree(is_active, created_at);
 CREATE INDEX role_status_updatedat_index ON usermanagement.role 
 USING btree(is_active, updated_at);
 
+INSERT INTO ROLE (ID,  NAME, DESCRIPTION, IS_ACTIVE, CREATED_BY, UPDATED_BY) VALUES ('1', 'SYSTEM_ADMIN', 'System Admin', 1, 'SYSTEM', 'SYSTEM');
 
+INSERT INTO ROLE_PERMISSIONS_MAPPING (ROLE_ID, PERMISSION) VALUES
+('1','ADD_USER'),
+('1','MANAGE_USER'),
+('1','MANAGE_ROLE'),
+('1','CREATE_ORDER'),
+('1','ON_BEHALF_OF'),
+('1','APPROVER_GROUP_1'),
+('1','APPROVER_GROUP_2');

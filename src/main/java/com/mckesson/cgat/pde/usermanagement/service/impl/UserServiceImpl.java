@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -112,16 +113,18 @@ public class UserServiceImpl implements UserService {
 			.orElseThrow(
 					() -> new ResourceNotFoundException("Role not found with this Id :" + rolePermissions.getRoleId()));
 
-		user.setRole(role);
 		if (userType.equals(UserType.ADMIN)) {
 			Role systemAdminRole = roleRepository.findByName(UserRequestAuthorizationValidator.SYSTEM_ADMIN_ROLE);
-			if (systemAdminRole != null)
-				user.setRole(systemAdminRole);
+			user.getPermissions().clear();
+			user.setRole(systemAdminRole);
+			user.setPermissions(new HashSet<>(systemAdminRole.getPermissions()));
 		}
-		user.getPermissions().clear();
-		user.setPermissions(rolePermissions.getPermissions());
+		else {
+			user.setRole(role);
+			user.getPermissions().clear();
+			user.setPermissions(rolePermissions.getPermissions());
+		}
 		return userRepository.save(user);
-
 	}
 
 }
