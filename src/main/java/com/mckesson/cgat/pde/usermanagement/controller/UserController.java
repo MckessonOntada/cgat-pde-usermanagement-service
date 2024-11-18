@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDto;
+import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.model.User;
@@ -134,10 +134,11 @@ public class UserController {
 	@Operation(summary = "Link User with role and permissions")
 	public ResponseEntity<User> linkUserToRole(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType,
-			@RequestBody RolePermissionsPatchDto dto) throws ResourceNotFoundException, UnauthorizedAccessException {
+			@RequestBody RolePermissionsPatchDTO rolePermissions)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
 		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
 		return ResponseEntity.status(HttpStatus.OK)
-			.body(userService.linkUserToRoleAndPermissions(userId, userType, dto));
+			.body(userService.linkUserToRoleAndPermissions(userId, userType, rolePermissions));
 	}
 
 	@GetMapping("/{userId}/accounts")

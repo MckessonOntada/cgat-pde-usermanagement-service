@@ -47,7 +47,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDto;
+import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Address;
 import com.mckesson.cgat.pde.usermanagement.model.Contact;
 import com.mckesson.cgat.pde.usermanagement.model.LoggedInUserDetails;
@@ -358,14 +358,14 @@ class UserControllerTest {
 	void linkUserToRoles_permissionsTest() throws Exception {
 		Long roleId = 101L;
 		List<Long> accountIds = List.of(1L, 2L);
-		RolePermissionsPatchDto dto = new RolePermissionsPatchDto(roleId, user.getPermissions());
-		when(userService.linkUserToRoleAndPermissions(user.getId(), UserType.ADMIN, dto)).thenReturn(user);
+		RolePermissionsPatchDTO rolePermissions = new RolePermissionsPatchDTO(roleId, user.getPermissions());
+		when(userService.linkUserToRoleAndPermissions(user.getId(), UserType.ADMIN, rolePermissions)).thenReturn(user);
 		ResultActions result = mockMvc
 			.perform(patch(apiUrl + "/{userId}/roles-permissions", user.getPracticeId(), user.getId())
 				.param("userType", "ADMIN")
 				.param("roleId", roleId.toString())
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(dto)))
+				.content(objectMapper.writeValueAsString(rolePermissions)))
 
 			.andExpect(status().isOk());
 		assertNotNull(result);

@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDto;
+import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
 import com.mckesson.cgat.pde.usermanagement.model.User;
@@ -102,14 +102,15 @@ public class UserServiceImpl implements UserService {
 
 	@Transactional
 	@Override
-	public User linkUserToRoleAndPermissions(Long userId, UserType userType, RolePermissionsPatchDto dto)
+	public User linkUserToRoleAndPermissions(Long userId, UserType userType, RolePermissionsPatchDTO rolePermissions)
 			throws ResourceNotFoundException {
 
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new ResourceNotFoundException("User not found with this Id :" + userId));
 
-		Role role = roleRepository.findByIdAndIsActiveTrue(dto.getRoleId())
-			.orElseThrow(() -> new ResourceNotFoundException("Role not found with this Id :" + dto.getRoleId()));
+		Role role = roleRepository.findByIdAndIsActiveTrue(rolePermissions.getRoleId())
+			.orElseThrow(
+					() -> new ResourceNotFoundException("Role not found with this Id :" + rolePermissions.getRoleId()));
 
 		user.setRole(role);
 		if (userType.equals(UserType.ADMIN)) {
@@ -118,7 +119,7 @@ public class UserServiceImpl implements UserService {
 				user.setRole(systemAdminRole);
 		}
 		user.getPermissions().clear();
-		user.setPermissions(dto.getPermissions());
+		user.setPermissions(rolePermissions.getPermissions());
 		return userRepository.save(user);
 
 	}

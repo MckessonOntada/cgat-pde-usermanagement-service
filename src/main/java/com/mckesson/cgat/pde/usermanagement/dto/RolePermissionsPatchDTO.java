@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RolePermissionsPatchDto {
+public class RolePermissionsPatchDTO {
 
 	@NotNull(message = "Role Id can not be null")
 	private Long roleId;

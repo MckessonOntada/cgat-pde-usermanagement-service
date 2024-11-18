@@ -30,7 +30,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDto;
+import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.model.Address;
 import com.mckesson.cgat.pde.usermanagement.model.Contact;
@@ -343,8 +343,8 @@ class UserServiceImplTest {
 		when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 		when(roleRepository.findByIdAndIsActiveTrue(role.getId())).thenReturn(Optional.of(role));
 		when(userRepository.save(user)).thenReturn(user);
-		RolePermissionsPatchDto dto = new RolePermissionsPatchDto(role.getId(), permissions);
-		User result = userService.linkUserToRoleAndPermissions(user.getId(), UserType.ADMIN, dto);
+		RolePermissionsPatchDTO rolePermissions = new RolePermissionsPatchDTO(role.getId(), permissions);
+		User result = userService.linkUserToRoleAndPermissions(user.getId(), UserType.ADMIN, rolePermissions);
 
 		assertNotNull(result);
 		assertEquals(role, result.getRole());
@@ -359,10 +359,10 @@ class UserServiceImplTest {
 	void linkUserToRole_UserNotFoundTest() {
 		Long roleId = 2L;
 		Set<Permission> permissions = Set.of(Permission.values());
-		RolePermissionsPatchDto dto = new RolePermissionsPatchDto(roleId, permissions);
+		RolePermissionsPatchDTO rolePermissions = new RolePermissionsPatchDTO(roleId, permissions);
 		when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
 		assertThrows(ResourceNotFoundException.class,
-				() -> userService.linkUserToRoleAndPermissions(user.getId(), UserType.ADMIN, dto));
+				() -> userService.linkUserToRoleAndPermissions(user.getId(), UserType.ADMIN, rolePermissions));
 
 		verify(userRepository, times(1)).findById(user.getId());
 		verify(roleRepository, never()).findByIdAndIsActiveTrue(roleId);
@@ -374,12 +374,12 @@ class UserServiceImplTest {
 	void linkUserToRole_RoleNotFoundTest() {
 		Long roleId = 2L;
 		Set<Permission> permissions = Set.of(Permission.values());
-		RolePermissionsPatchDto dto = new RolePermissionsPatchDto(roleId, permissions);
+		RolePermissionsPatchDTO rolePermissions = new RolePermissionsPatchDTO(roleId, permissions);
 		when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 		when(roleRepository.findByIdAndIsActiveTrue(roleId)).thenReturn(Optional.empty());
 
 		assertThrows(ResourceNotFoundException.class,
-				() -> userService.linkUserToRoleAndPermissions(user.getId(), UserType.ADMIN, dto));
+				() -> userService.linkUserToRoleAndPermissions(user.getId(), UserType.ADMIN, rolePermissions));
 
 		verify(userRepository, times(1)).findById(user.getId());
 		verify(roleRepository, times(1)).findByIdAndIsActiveTrue(roleId);
