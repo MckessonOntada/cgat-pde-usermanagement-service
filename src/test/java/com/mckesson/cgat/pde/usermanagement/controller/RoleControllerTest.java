@@ -9,7 +9,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -37,6 +39,8 @@ import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.Practice;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
 import com.mckesson.cgat.pde.usermanagement.service.RoleService;
+import com.mckesson.cgat.pde.usermanagement.util.TestUtils;
+import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 @WebMvcTest(RoleController.class)
@@ -133,8 +137,8 @@ class RoleControllerTest {
 		String sortOrder = "asc";
 		String query = "";
 		String statusActive = "ALL";
-		String startDate = "2024-11-10";
-		String endDate = "2024-11-13";
+		LocalDate startDate = TestUtils.parseLocalDate("10/11/2024", CustomUtils.API_DATE_FORMAT);
+		LocalDate endDate = TestUtils.parseLocalDate("13/11/2014", CustomUtils.API_DATE_FORMAT);
 		Pageable paging = PageRequest.of(0, 20, Sort.by("name").ascending());
 		Page<Role> mockResponse = getRoles();
 

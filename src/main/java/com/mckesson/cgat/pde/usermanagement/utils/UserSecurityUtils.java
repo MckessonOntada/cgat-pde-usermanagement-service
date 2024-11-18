@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,6 +25,9 @@ public class UserSecurityUtils {
 	@Autowired
 	private SecurityUtils securityUtils;
 
+	@Value("${filter.enableDevLoginFilter:false}")
+	private boolean enableDevLoginFilter;
+
 	public void createContext(LoggedInUserDetails loggedInUser, HttpServletRequest request,
 			HttpServletResponse response) {
 		List<String> roleNames = new ArrayList<>();
@@ -36,7 +40,7 @@ public class UserSecurityUtils {
 				loggedInUser);
 		SecurityContextHolder.getContext()
 			.setAuthentication(new UsernamePasswordAuthenticationToken(principal,
-					securityUtils.getToken(request, response), authorities));
+					enableDevLoginFilter ? null : securityUtils.getToken(request, response), authorities));
 		MDC.put("correlation_id", ("Correlation Id: " + securityUtils.getCorrelationId(request)));
 		MDC.put("user_Id", (" User Id: " + loggedInUser.getId()));
 

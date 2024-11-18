@@ -1,5 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -51,8 +53,8 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	@Override
-	public Page<Role> findAll(Pageable paging, String query, String practiceId, List<String> status, String startDate,
-			String endDate) {
+	public Page<Role> findAll(Pageable paging, String query, String practiceId, List<String> status,
+			LocalDate startDate, LocalDate endDate) {
 		query = StringUtils.toRootLowerCase(query);
 		String statusActive = CustomUtils.object_status.ALL.name();
 		if (!CollectionUtils.isEmpty(status)) {
@@ -64,8 +66,8 @@ public class RoleServiceImpl implements RoleService {
 						? CustomUtils.object_status.ALL.name() : CustomUtils.object_status.INACTIVE.name();
 			}
 		}
-		return roleRepository.findAllByQueryText(query, statusActive, Long.valueOf(practiceId), paging,
-				java.sql.Date.valueOf(startDate), java.sql.Date.valueOf(endDate));
+		return roleRepository.findAllByQueryText(query, statusActive, Long.valueOf(practiceId), paging, startDate,
+				endDate);
 
 	}
 

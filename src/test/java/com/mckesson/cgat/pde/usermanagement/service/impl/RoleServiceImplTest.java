@@ -9,7 +9,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -35,6 +37,8 @@ import com.mckesson.cgat.pde.usermanagement.model.Practice;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
 import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
+import com.mckesson.cgat.pde.usermanagement.util.TestUtils;
+import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
@@ -121,14 +125,15 @@ class RoleServiceImplTest {
 		Long practiceId = 1L;
 		String statusActive = "ALL";
 		Page<Role> mockResponse = getRoles();
+		LocalDate startDate = TestUtils.parseLocalDate("10/11/2024", CustomUtils.API_DATE_FORMAT);
+		LocalDate endDate = TestUtils.parseLocalDate("10/11/2024", CustomUtils.API_DATE_FORMAT);
 
-		when(roleRepository.findAllByQueryText(query, statusActive, practiceId, paging,
-				java.sql.Date.valueOf("2024-11-10"), java.sql.Date.valueOf("2024-11-10")))
+		when(roleRepository.findAllByQueryText(query, statusActive, practiceId, paging, startDate, endDate))
 			.thenReturn(mockResponse);
-		Page<Role> result = roleService.findAll(paging, query, practiceId.toString(), List.of(statusActive),
-				"2024-11-10", "2024-11-10");
-		verify(roleRepository, times(1)).findAllByQueryText(query, statusActive, practiceId, paging,
-				java.sql.Date.valueOf("2024-11-10"), java.sql.Date.valueOf("2024-11-10"));
+		Page<Role> result = roleService.findAll(paging, query, practiceId.toString(), List.of(statusActive), startDate,
+				endDate);
+		verify(roleRepository, times(1)).findAllByQueryText(query, statusActive, practiceId, paging, startDate,
+				endDate);
 		assertIterableEquals(mockResponse, result);
 	}
 

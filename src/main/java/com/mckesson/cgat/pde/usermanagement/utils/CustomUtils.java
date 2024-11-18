@@ -36,6 +36,8 @@ public class CustomUtils {
 
 	public static final String SORT_ORDER_ASC = "asc";
 
+	public static final String API_DATE_FORMAT = "dd/MM/yyyy";
+
 	public static boolean validateEmail(String emailAddress) {
 		return Pattern.compile(regexPattern).matcher(emailAddress).matches();
 	}

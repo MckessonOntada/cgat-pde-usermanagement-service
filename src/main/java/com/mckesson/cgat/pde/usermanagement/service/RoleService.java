@@ -1,5 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.service;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -20,7 +22,7 @@ public interface RoleService {
 
 	Role linkPermissionToRole(Long roleId, Set<Permission> permissions) throws ResourceNotFoundException;
 
-	Page<Role> findAll(Pageable paging, String query, String practiceId, List<String> status, String startDate,
-			String endDate);
+	Page<Role> findAll(Pageable paging, String query, String practiceId, List<String> status, LocalDate startDate,
+			LocalDate endDate);
 
 }
