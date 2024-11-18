@@ -25,24 +25,24 @@ import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@Tag(name = "Users Provisioning", description = "Controller for Managing user-provisioning related operations and data.")
+@Tag(name = "Users Provisioning",
+		description = "Controller for Managing user-provisioning related operations and data.")
 @RequestMapping(path = "/practices/{practiceId}/users-provisioning", consumes = "application/json",
 		produces = MediaType.APPLICATION_JSON_VALUE)
 
 @Slf4j
 public class UserProvisioningRequestController {
-	
+
 	@Autowired
 	private UserProvisioningRequestService userProvisioningRequestService;
-	
-	
+
 	@PostMapping
 	@Operation(summary = "Create user provisioning ")
-	public ResponseEntity<UserProvisioningRequest> createUserProvisioning(@Valid @RequestBody UserProvisioningRequest request,
+	public ResponseEntity<UserProvisioningRequest> createUserProvisioning(
+			@Valid @RequestBody UserProvisioningRequest request,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
 			throws UnauthorizedAccessException {
 		return new ResponseEntity<>(userProvisioningRequestService.createUserProvisioning(request), HttpStatus.OK);
 	}
-	
 
 }

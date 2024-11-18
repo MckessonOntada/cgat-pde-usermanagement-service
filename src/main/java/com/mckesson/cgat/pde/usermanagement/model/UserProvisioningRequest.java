@@ -49,13 +49,13 @@ public class UserProvisioningRequest extends AuditColumns implements Serializabl
 	@Valid
 	@Embedded
 	private Address address;
-	
-//	todo
+
+	// todo
 	private String comment;
 
 	@Convert(converter = NumericBooleanConverter.class)
 	private Boolean isActive = false;
-	
+
 	private UserProvisioningStaus status = UserProvisioningStaus.PENDING;
 
 }

@@ -11,7 +11,7 @@ import jakarta.validation.Valid;
 
 @Service
 public class UserProvisioningRequestServiceImpl implements UserProvisioningRequestService {
-	
+
 	@Autowired
 	private UserProvisioningRequestRepo userProvisioningRequestRepo;
 
