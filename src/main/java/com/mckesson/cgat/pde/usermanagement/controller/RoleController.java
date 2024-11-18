@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -84,10 +85,15 @@ public class RoleController {
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "name") String sortBy,
 			@RequestParam(required = false) List<String> status, @RequestParam(defaultValue = "asc") String sortOrder,
 			@RequestParam(required = false) String query, @PathVariable String practiceId,
-			@RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate) {
+			@RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate)
+			throws BadRequestException {
 		Sort sort = CustomUtils.SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
+		if ((!startDate.isEmpty() && endDate.isEmpty()) || (startDate.isEmpty() && !endDate.isEmpty()))
+			throw new BadRequestException("Either enter both dates or none");
+		if (!CustomUtils.isValidDate(startDate) || !CustomUtils.isValidDate(endDate))
+			throw new BadRequestException("Enter date in valid format - yyyy-mm-dd");
 		return roleService.findAll(paging, query, practiceId, status, startDate, endDate);
 	}
 

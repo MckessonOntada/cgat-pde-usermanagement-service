@@ -28,30 +28,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 					and
 					practice_id =:practiceId
 					and
-						(
-							(:status = 'ALL' and (is_active = 1 or is_active = 0))
-							or ('ACTIVE' = :status and is_active = 1 )
-							or ('INACTIVE' = :status and is_active = 0 )
-						)
-					)
-			""", nativeQuery = true)
-	Page<User> findAllByQueryText(@Param("status") String status, @Param("query") String query, Pageable paging,
-			@Param("practiceId") long practiceId);
-
-	@Query(value = """
-				SELECT *
-				FROM usermanagement.user
-				WHERE
-					(
-					:query is null
-					OR LOWER(email) LIKE %:query%
-					OR LOWER(first_name) LIKE %:query%
-					OR LOWER(middle_name) LIKE %:query%
-					OR LOWER(last_name) LIKE %:query%
-					and
-					practice_id =:practiceId
-					and
-						created_at >= :from and created_at < :to
+						( cast(:from as date) is null
+						  OR cast(:to as date) is null
+						  OR created_at between :from and :to )
 					and
 						(
 							(:status = 'ALL' and (is_active = 1 or is_active = 0))

@@ -79,12 +79,8 @@ public class UserServiceImpl implements UserService {
 			if (hasInactive)
 				statusActive = "ACTIVE".equals(statusActive) ? "ALL" : "INACTIVE";
 		}
-		if (!startDate.isEmpty() && !endDate.isEmpty()) {
-			return userRepository.findAllByQueryText(statusActive, query, paging, praticeId,
-					java.sql.Date.valueOf(startDate), java.sql.Date.valueOf(endDate));
-		}
-		else
-			return userRepository.findAllByQueryText(statusActive, query, paging, praticeId);
+		return userRepository.findAllByQueryText(statusActive, query, paging, praticeId,
+				java.sql.Date.valueOf(startDate), java.sql.Date.valueOf(endDate));
 	}
 
 	@Override

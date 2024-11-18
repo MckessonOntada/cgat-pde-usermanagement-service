@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import java.util.List;
 
+import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +30,7 @@ import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;
+import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.cgat.pde.usermanagement.utils.OrganizationContext;
 import com.mckesson.cgat.pde.usermanagement.utils.UserRequestAuthorizationValidator;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -61,7 +63,7 @@ public class UserController {
 	public ResponseEntity<User> createUser(@Validated(BasicInfo.class) @RequestBody User user,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
 			throws UnauthorizedAccessException {
-		// UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
+		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
 		return new ResponseEntity<>(userService.createUser(user), HttpStatus.OK);
 	}
 
@@ -102,7 +104,11 @@ public class UserController {
 			@RequestParam(required = false) List<String> status,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType,
 			@RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate)
-			throws UnauthorizedAccessException {
+			throws Exception {
+		if ((!startDate.isEmpty() && endDate.isEmpty()) || (startDate.isEmpty() && !endDate.isEmpty()))
+			throw new BadRequestException("Either enter both dates or none");
+		if (!CustomUtils.isValidDate(startDate) || !CustomUtils.isValidDate(endDate))
+			throw new BadRequestException("Enter date in valid format - yyyy-mm-dd");
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);

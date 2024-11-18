@@ -64,11 +64,9 @@ public class RoleServiceImpl implements RoleService {
 						? CustomUtils.object_status.ALL.name() : CustomUtils.object_status.INACTIVE.name();
 			}
 		}
-		if (!startDate.isEmpty() && !endDate.isEmpty())
-			return roleRepository.findAllByQueryText(query, statusActive, Long.valueOf(practiceId), paging,
-					java.sql.Date.valueOf(startDate), java.sql.Date.valueOf(endDate));
-		else
-			return roleRepository.findAllByQueryText(query, statusActive, Long.valueOf(practiceId), paging);
+		return roleRepository.findAllByQueryText(query, statusActive, Long.valueOf(practiceId), paging,
+				java.sql.Date.valueOf(startDate), java.sql.Date.valueOf(endDate));
+
 	}
 
 	@Override

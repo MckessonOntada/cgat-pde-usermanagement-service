@@ -1,10 +1,8 @@
 package com.mckesson.cgat.pde.usermanagement.utils;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.Locale;
 import java.util.regex.Pattern;
 
 public class CustomUtils {
@@ -61,9 +59,15 @@ public class CustomUtils {
 		return formattedDateWithMicroseconds;
 	}
 
-	public static LocalDate convertStringToDate(String stringfyDate) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH);
-		return LocalDate.parse(stringfyDate, formatter);
+	public static boolean isValidDate(String input) {
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd");
+		try {
+			format.parse(input);
+			return true;
+		}
+		catch (ParseException e) {
+			return false;
+		}
 	}
 
 }
