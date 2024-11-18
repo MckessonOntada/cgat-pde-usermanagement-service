@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.TenantId;
 import org.hibernate.type.NumericBooleanConverter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -33,6 +34,7 @@ public class User extends AuditColumns implements Serializable {
 	@SequenceGenerator(name = SEQUENCE_GENERATOR_NAME, sequenceName = SEQUENCE_GENERATOR_NAME, allocationSize = 1)
 	private Long id;
 
+//	@TenantId
 	private Long practiceId;
 
 	@Valid
