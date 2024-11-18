@@ -193,11 +193,36 @@ CREATE TABLE IF NOT EXISTS user_permission_mapping (
      FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE
 );
 
-CREATE INDEX role_name_index  ON usermanagement.role 
+CREATE INDEX role_name_index  ON usermanagement.role
 USING GIN (name gin_trgm_ops);
 
 CREATE INDEX user_name_email_index ON usermanagement.user 
 USING GIN (first_name gin_trgm_ops, middle_name gin_trgm_ops, last_name gin_trgm_ops, email gin_trgm_ops);
+
+CREATE TABLE IF NOT EXISTS user_provisioning_request(
+	
+    id        					INTEGER 		NOT NULL,
+    practice_id					INTEGER,
+    first_name  				VARCHAR(255) 	UNIQUE NOT NULL,
+    middle_name 				VARCHAR(255),
+    last_name	 				VARCHAR(255) 	NOT NULL,
+    address1					VARCHAR(255) 	NOT NULL,
+    address2					VARCHAR(255),
+    city						VARCHAR(255) 	NOT NULL,
+    state 						VARCHAR(255) 	NOT NULL,
+    zip 						VARCHAR(255) 	NOT NULL,
+    email	 					VARCHAR(255) 	NOT NULL,
+    phone						VARCHAR(255) 	NOT NULL,
+    fax							VARCHAR(50),
+    comment						VARCHAR(255),
+    status						VARCHAR(255),
+    is_active      				INTEGER,
+    created_at   				TIMESTAMP,
+    created_by 					VARCHAR(255),
+    updated_at  				TIMESTAMP,
+    updated_by 					VARCHAR(255)
+    
+);
 
 CREATE INDEX user_status_createdat_index  ON usermanagement.user 
 USING btree(is_active, created_at);
