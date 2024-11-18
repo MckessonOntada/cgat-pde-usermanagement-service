@@ -43,7 +43,7 @@ public class Role extends AuditColumns implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "practice_id")
 	@JsonIgnore
-//	@TenantId
+	// @TenantId
 	private Practice practiceId;
 
 	@ElementCollection(fetch = FetchType.EAGER)

@@ -34,7 +34,7 @@ public class User extends AuditColumns implements Serializable {
 	@SequenceGenerator(name = SEQUENCE_GENERATOR_NAME, sequenceName = SEQUENCE_GENERATOR_NAME, allocationSize = 1)
 	private Long id;
 
-//	@TenantId
+	// @TenantId
 	private Long practiceId;
 
 	@Valid

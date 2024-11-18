@@ -36,7 +36,7 @@ public class Account implements Serializable {
 	private Long id;
 
 	@Column(name = "tenant_id")
-//	@TenantId
+	// @TenantId
 	private Long practiceId;
 
 	@NotEmpty(message = "Name is required.")
