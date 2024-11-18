@@ -14,6 +14,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.TenantId;
 import org.hibernate.type.NumericBooleanConverter;
 
 @Entity
@@ -35,6 +36,7 @@ public class Account implements Serializable {
 	private Long id;
 
 	@Column(name = "tenant_id")
+//	@TenantId
 	private Long practiceId;
 
 	@NotEmpty(message = "Name is required.")
