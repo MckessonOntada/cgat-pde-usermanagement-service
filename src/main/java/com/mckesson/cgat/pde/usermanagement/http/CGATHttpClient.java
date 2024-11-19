@@ -78,12 +78,12 @@ public class CGATHttpClient {
 		return httpResponse.body();
 	}
 
+
 	private HttpResponse<String> getHttpResponse(HttpRequest request) {
 		try {
 			HttpResponse<String> httpResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
 			int statusCode = httpResponse.statusCode();
-
 			boolean isValid = (statusCode == HttpStatus.SC_OK || statusCode == HttpStatus.SC_NO_CONTENT);
 
 			if (!isValid) {
