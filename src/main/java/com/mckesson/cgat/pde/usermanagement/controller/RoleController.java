@@ -38,7 +38,7 @@ import jakarta.validation.constraints.NotNull;
 
 @RestController
 @Tag(name = "roles", description = "Controller for Manages role/permission related operations and data.")
-@RequestMapping(path = "/practice/{practiceId}/roles", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/practices/{practiceId}/roles", produces = MediaType.APPLICATION_JSON_VALUE)
 
 public class RoleController {
 

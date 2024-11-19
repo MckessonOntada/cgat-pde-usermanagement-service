@@ -72,7 +72,7 @@ class UserServiceImplTest {
 
 	@BeforeEach
 	public void setUp() {
-		Set<Permission> permissions = new HashSet<>(Arrays.asList(Permission.ADD_USER, Permission.APPROVER_GROUP_1));
+		Set<Permission> permissions = new HashSet<>(Arrays.asList(Permission.ADD_USERS, Permission.ADD_ROLES));
 		user = User.builder()
 			.id(1L)
 			.practiceId(200L)
@@ -218,10 +218,11 @@ class UserServiceImplTest {
 
 		Account oldAccount = Account.builder()
 			.id(100L)
-			.dcId("100")
 			.practiceId(100L)
-			.dcName("name")
-			.name("acc_name")
+			.accountName("acc_name")
+			.salesOrg("100")
+			.distributionChannel("dn")
+			.division("dv")
 			.isActive(true)
 			.user(null)
 			.build();
@@ -230,20 +231,22 @@ class UserServiceImplTest {
 
 		Account account1 = Account.builder()
 			.id(200L)
-			.dcId("200")
 			.practiceId(200L)
-			.dcName("name")
-			.name("acc1_name")
+			.accountName("acc1_name")
+			.salesOrg("200")
+			.distributionChannel("dn")
+			.division("dv")
 			.isActive(true)
 			.user(null)
 			.build();
 
 		Account account2 = Account.builder()
 			.id(201L)
-			.dcId("201")
 			.practiceId(201L)
-			.dcName("name")
-			.name("acc2_name")
+			.accountName("acc2_name")
+			.salesOrg("201")
+			.distributionChannel("dn")
+			.division("dv")
 			.isActive(true)
 			.user(null)
 			.build();
@@ -286,20 +289,22 @@ class UserServiceImplTest {
 
 		Account account1 = Account.builder()
 			.id(200L)
-			.dcId("200")
 			.practiceId(200L)
-			.dcName("name")
-			.name("acc1_name")
+			.accountName("acc1_name")
+			.salesOrg("200")
+			.distributionChannel("dn")
+			.division("dv")
 			.isActive(true)
 			.user(null)
 			.build();
 
 		Account account2 = Account.builder()
 			.id(201L)
-			.dcId("201")
 			.practiceId(201L)
-			.dcName("name")
-			.name("acc2_name")
+			.accountName("acc2_name")
+			.salesOrg("201")
+			.distributionChannel("dn")
+			.division("dv")
 			.isActive(true)
 			.user(null)
 			.build();
@@ -319,7 +324,7 @@ class UserServiceImplTest {
 	// @Test
 	void linkUserToRoleTest() throws ResourceNotFoundException {
 
-		Set<Permission> permissions = new HashSet<>(Arrays.asList(Permission.ADD_USER, Permission.APPROVER_GROUP_1));
+		Set<Permission> permissions = new HashSet<>(Arrays.asList(Permission.ADD_USERS, Permission.ADD_ROLES));
 		user = User.builder()
 			.id(1L)
 			.practiceId(200L)

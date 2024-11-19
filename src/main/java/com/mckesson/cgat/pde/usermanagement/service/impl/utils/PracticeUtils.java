@@ -1,7 +1,10 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl.utils;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Set;
+
+import org.apache.commons.io.FilenameUtils;
 import java.util.Arrays;
 import java.util.Set;
 
@@ -9,10 +12,10 @@ import org.ini4j.InvalidFileFormatException;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.mckesson.cgat.pde.usermanagement.model.Practice;
+import com.mckesson.jbat.common.util.service.AzureBlobContainerFileUploadService;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -22,14 +25,15 @@ import jakarta.validation.ValidatorFactory;
 @Component
 public class PracticeUtils {
 
-	public String uploadLogo(MultipartFile file) {
-		File directory = new File(
-				System.getProperty("user.dir") + "/src/main/resources/static/" + file.getOriginalFilename());
-		// Create the directory if it doesn't exist
-		// if (!directory.exists())
-		// directory.mkdirs();
-		// file.transferTo(directory);
-		return directory.getPath();
+	private final AzureBlobContainerFileUploadService azureBlobContainerFileUploadService;
+
+	public PracticeUtils(AzureBlobContainerFileUploadService azureBlobContainerFileUploadService) {
+		this.azureBlobContainerFileUploadService = azureBlobContainerFileUploadService;
+	}
+
+	public String uploadLogo(MultipartFile file, Long practiceId) throws IllegalStateException, IOException {
+		return azureBlobContainerFileUploadService.uploadAndGetURL(file.getBytes(),
+				Path.of("logos/" + practiceId + "." + FilenameUtils.getExtension(file.getOriginalFilename())), true);
 	}
 
 	public void validatePractice(Practice practice, BindingResult bindingResult, MultipartFile logo)

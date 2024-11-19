@@ -46,12 +46,13 @@ public class PracticeServiceImpl implements PracticeService {
 	@Transactional
 	public Practice createPractice(Practice practice, MultipartFile logo) throws IllegalStateException, IOException {
 		boolean isCreatePractice = false;
-		String logoURL = practiceUtils.uploadLogo(logo);
-		practice.setLogoUrl(logoURL);
 		if (practice.getId() == null)
 			isCreatePractice = true;
 		Practice savedPractice = practiceRepository.save(practice);
-
+		if (null != logo && !logo.isEmpty()) {
+			String logoURL = practiceUtils.uploadLogo(logo, savedPractice.getId());
+			practice.setLogoUrl(logoURL);
+		}
 		if (isCreatePractice) {
 			Role adminRole = Role.builder()
 				.name(CustomUtils.ORG_ADMIN_ROLE_NAME)

@@ -89,9 +89,7 @@ class UserControllerTest {
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-
-	String apiUrl = "/practice/{practiceId}/users";
+	String apiUrl = "/practices/{practiceId}/users";
 
 	@BeforeEach
 	public void setUp() {
@@ -174,7 +172,7 @@ class UserControllerTest {
 			.build();
 
 		ResultActions result = mockMvc
-			.perform(post("/practice/{practiceId}/users", user.getPracticeId()).contentType(MediaType.APPLICATION_JSON)
+			.perform(post("/practices/{practiceId}/users", user.getPracticeId()).contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(user)))
 			.andExpect(status().isBadRequest());
 		assertNotNull(result);
@@ -227,7 +225,7 @@ class UserControllerTest {
 	void getUserTest() throws Exception {
 		when(userService.getUser(user.getId())).thenReturn(user);
 		mockMvc
-			.perform(get("/practice/{practiceId}/users/{userId}", user.getPracticeId(), user.getId())
+			.perform(get("/practices/{practiceId}/users/{userId}", user.getPracticeId(), user.getId())
 				.param("userType", "ADMIN")
 				.contentType(MediaType.APPLICATION_JSON_VALUE))
 			// .andDo(print())
@@ -299,7 +297,7 @@ class UserControllerTest {
 			.thenReturn(userPage);
 
 		ResultActions result = mockMvc
-			.perform(get("/practice/{practiceId}/users", user.getPracticeId()).param("userType", "ADMIN")
+			.perform(get("/practices/{practiceId}/users", user.getPracticeId()).param("userType", "ADMIN")
 				.param("pageNo", "0")
 				.param("pageSize", "20")
 				.param("sortBy", sortBy)

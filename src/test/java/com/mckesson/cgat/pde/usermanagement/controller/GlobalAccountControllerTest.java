@@ -48,9 +48,10 @@ public class GlobalAccountControllerTest {
 		Account account1 = Account.builder()
 			.id(1L)
 			.practiceId(null)
-			.name("Account1")
-			.dcId("DC1")
-			.dcName("DataCenter1")
+			.accountName("Account1")
+			.salesOrg("DC1")
+			.distributionChannel("DC1")
+			.division("dv")
 			.isActive(true)
 			.build();
 
@@ -65,8 +66,10 @@ public class GlobalAccountControllerTest {
 		Pageable pageable = PageRequest.of(0, 20, Sort.by("name").descending());
 		Page<Account> mockResponse = new PageImpl<>(accounts, paging, accounts.size());
 
-		when(accountService.findAll(paging, query, null, null, null)).thenReturn(mockResponse);
-		when(accountService.findAll(pageable, query, null, null, null)).thenReturn(mockResponse);
+		when(accountService.findAll(paging, query, null, null, null, AccountPartnerFunction.SHIP_TO))
+			.thenReturn(mockResponse);
+		when(accountService.findAll(pageable, query, null, null, null, AccountPartnerFunction.SHIP_TO))
+			.thenReturn(mockResponse);
 
 		mockMvc
 			.perform(get("/accounts").param("pageNo", pageNo)

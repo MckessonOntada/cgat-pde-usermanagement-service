@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.mckesson.jbat</groupId>
 		<artifactId>jbat-parent</artifactId>
-		<version>2.0.2</version>
+		<version>2.0.4</version>
 	</parent>
 	<groupId>com.mckesson.cgat.pde</groupId>
 	<artifactId>cgat-pde-usermanagement-service</artifactId>
@@ -18,6 +18,7 @@
 		<common-util.version>2.0.4</common-util.version>
 		<auth-module.version>2.0.4</auth-module.version>
 		<springdoc-starter-webmvc.version>2.5.0</springdoc-starter-webmvc.version>
+		<hibernate-core.version>6.6.0.CR1</hibernate-core.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -31,6 +32,12 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.hibernate</groupId>
+					<artifactId>hibernate-core</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.postgresql</groupId>
@@ -121,6 +128,13 @@
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>${springdoc-starter-webmvc.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-core -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>${hibernate-core.version}</version>
 		</dependency>
 
 

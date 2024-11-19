@@ -89,20 +89,85 @@ CREATE TABLE IF NOT EXISTS "user"
 );
 
 
-CREATE TABLE IF NOT EXISTS account
-(
-    id          				INTEGER NOT NULL,
-    practice_id					INTEGER,
-    name  						VARCHAR(255) 	UNIQUE NOT NULL,
-    dc_id 						VARCHAR(255) ,
-    dc_name						VARCHAR(50) 	NOT NULL ,
-    is_active					INTEGER ,
-    created_at   				TIMESTAMP,
-    created_by 					VARCHAR(255),
-    updated_at  				TIMESTAMP,
-    updated_by 					VARCHAR(255),
-    CONSTRAINT account_pk 		PRIMARY KEY (id)
-);
+-- CREATE TABLE IF NOT EXISTS account
+-- (
+--     id          				INTEGER NOT NULL,
+--     practice_id					INTEGER,
+--     name  						VARCHAR(255) 	UNIQUE NOT NULL,
+--     dc_id 						VARCHAR(255) ,
+--     dc_name						VARCHAR(50) 	NOT NULL ,
+--     is_active					INTEGER ,
+--     created_at   				TIMESTAMP,
+--     created_by 					VARCHAR(255),
+--     updated_at  				TIMESTAMP,
+--     updated_by 					VARCHAR(255),
+--     CONSTRAINT account_pk 		PRIMARY KEY (id)
+-- );
+
+
+
+CREATE TABLE IF NOT EXISTS account (
+        id                          INTEGER NOT NULL,
+        tenant_id					INTEGER,
+        vistex_customer             VARCHAR(10) NOT NULL,
+        sap_customer                VARCHAR(20) NOT NULL,
+        partner_function            VARCHAR(50) NOT NULL,
+        vistex_partner_number       VARCHAR(10),
+        sap_partner                 VARCHAR(10),
+        vistex_customer_type        VARCHAR(4),
+        sales_org                   VARCHAR(4) NOT NULL,
+        distribution_channel        VARCHAR(2) NOT NULL,
+        division                    VARCHAR(2) NOT NULL,
+        company_code                VARCHAR(4),
+        is_active                   INTEGER,
+        name_1                      VARCHAR(40) NOT NULL,
+        name_2                      VARCHAR(40),
+        name_3                      VARCHAR(40),
+        name_4                      VARCHAR(40),
+        search_term_1               VARCHAR(20),
+        house_number                VARCHAR(10) NOT NULL,
+        street                      VARCHAR(60) NOT NULL,
+        street_2                    VARCHAR(40),
+        street_3                    VARCHAR(40),
+        city                        VARCHAR(40) NOT NULL,
+        district                    VARCHAR(40) NOT NULL,
+        state                       VARCHAR(40) NOT NULL,   --(was 3 in customer entity)
+        zip_code                    VARCHAR(10) NOT NULL,
+        country                     VARCHAR(10) NOT NULL,   --(was 3 in customer entity)
+        telephone                   VARCHAR(30) NOT NULL,
+        email                       VARCHAR(255) NOT NULL,
+        fax                         VARCHAR(40),
+        product_type                VARCHAR(4),
+        corporate_group             VARCHAR(10),
+        gln                         VARCHAR(20),       --(was 13 in customer entity)
+        sales_district              VARCHAR(6),
+        sales_office                VARCHAR(4),
+        sales_group                 VARCHAR(3),
+        customer_group              VARCHAR(2),
+        currency                    VARCHAR(5),
+        relevant_for_pod            VARCHAR(1),
+        pod_timeframe               NUMERIC,
+        shipping_conditions         VARCHAR(2),
+        transportation_zone         VARCHAR(10),
+        delivering_plant            VARCHAR(4),
+        order_combination           VARCHAR(1),
+        delivery_priority           INTEGER,
+        comp_code_terms_of_payment  VARCHAR(4),
+        sales_terms_of_payment      VARCHAR(4),
+        national_group              VARCHAR(10),
+        cgat_identifier             VARCHAR(3),
+        split_invoice               VARCHAR(2),
+        deleted                     VARCHAR(1),
+        customer_termination_date   TIMESTAMP,
+        termination_reason          VARCHAR(2),
+        central_order_block         VARCHAR(2),
+        order_block_for_sales_area  VARCHAR(2),
+        payment_method              VARCHAR(10),
+        pmt_meth_supplement         VARCHAR(2),
+        bank_statement              VARCHAR(1),
+        CONSTRAINT account_pk 		PRIMARY KEY (id)
+        );
+
 
 CREATE TABLE IF NOT EXISTS user_account_mapping (
     user_id 					INTEGER NOT NULL,
