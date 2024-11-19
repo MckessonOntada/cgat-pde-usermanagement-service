@@ -52,14 +52,13 @@ public class UserProvisioningRequestController {
 		return new ResponseEntity<>(userProvisioningRequestService.createUserProvisioning(request), HttpStatus.OK);
 	}
 
-	@PatchMapping("/{userId}")
+	@PatchMapping("/status/{userProvisioningReqId}")
 	@Operation(summary = "Update user provisioning status")
-	public ResponseEntity<Object> updateUserProvisioningStatus(
-			@NotNull(message = "User Type should not be null") @RequestParam UserType userType,
-			@RequestParam UserProvisioningStaus status, @PathVariable Long userId)
-			throws ResourceNotFoundException, UnauthorizedAccessException {
-		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
-		return new ResponseEntity<>(userProvisioningRequestService.updateUserProvisioningStatus(userId, status),
+	public ResponseEntity<Object> updateUserProvisioningStatus(@RequestParam UserProvisioningStaus status,
+			@PathVariable Long userProvisioningReqId) throws ResourceNotFoundException, UnauthorizedAccessException {
+		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(UserType.GENERAL);
+		return new ResponseEntity<>(
+				userProvisioningRequestService.updateUserProvisioningStatus(userProvisioningReqId, status),
 				HttpStatus.OK);
 	}
 
@@ -70,14 +69,12 @@ public class UserProvisioningRequestController {
 			@RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(defaultValue = "first_name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
-			@RequestParam(required = false) String status,
-			@NotNull(message = "User Type should not be null") @RequestParam UserType userType,
-			@PathVariable Long practiceId) throws UnauthorizedAccessException {
+			@RequestParam(required = false) String status) throws UnauthorizedAccessException {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
-		return userProvisioningRequestService.findAll(paging, query, status, practiceId);
+		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(UserType.GENERAL);
+		return userProvisioningRequestService.findAll(paging, query, status, OrganizationContext.getCurrentOrgId());
 
 	}
 
