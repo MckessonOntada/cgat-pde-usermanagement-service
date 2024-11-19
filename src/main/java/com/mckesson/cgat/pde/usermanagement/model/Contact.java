@@ -2,11 +2,13 @@ package com.mckesson.cgat.pde.usermanagement.model;
 
 import java.io.Serializable;
 
-import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.Email;
+import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,14 +26,22 @@ public class Contact implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@NotEmpty(message = "Email ID is required")
-	@Email(message = "Email ID is required and must be in a valid format.")
+	@Email(regexp = "^[_a-zA-Z0-9!#$%&'*+/=?``{|}~^.-]+@[a-zA-Z0-9.-]+$", message = "Must be valid email format")
+	@Size(min = 2, max = 100, message = "Enter a valid Email Address")
+	@Column(unique = true)
 	private String email;
 
+	@Size(min = 2, max = 5, message = "Must be valid Country code")
+	@Pattern(regexp = "^[+0-9]+$", message = "Must be numeric")
+	private String countryCode;
+
 	@NotEmpty(message = "Phone Number is required")
-	@Pattern(regexp = "\\d{10}", message = "Phone Number must be in a valid format")
+	@Pattern(regexp = "\\d{10}", message = "Phone number must be 10 digits")
+	@Column(unique = true)
 	private String phone;
 
-	@Pattern(message = "Fax must be a valid format (e.g., +1-123-456-7890, (123) 456-7890, 123-456-7890)", regexp = "")
+	@Size(max = 15)
+	@Pattern(regexp = "^[\\d ]*$", message = "Must be numeric")
 	private String fax;
 
 }

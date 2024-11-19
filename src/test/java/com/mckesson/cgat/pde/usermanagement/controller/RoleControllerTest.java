@@ -9,8 +9,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,16 +28,19 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mckesson.cgat.pde.usermanagement.model.Address;
 import com.mckesson.cgat.pde.usermanagement.model.Contact;
 import com.mckesson.cgat.pde.usermanagement.model.Name;
+import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.Practice;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
 import com.mckesson.cgat.pde.usermanagement.service.RoleService;
+import com.mckesson.cgat.pde.usermanagement.util.TestUtils;
+import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 @WebMvcTest(RoleController.class)
@@ -60,8 +65,8 @@ class RoleControllerTest {
 	public void beforeEach() {
 		practice = Practice.builder()
 			.id(1L)
-			.address(new Address("address1", "address2", "city", "state", "12345"))
-			.contact(new Contact("email@gmail.com", "1212121212", "fax"))
+			.address(new Address("address1", "", "city", "state", "12345"))
+			.contact(new Contact("email@gmail.com", "+1", "1212121212", ""))
 			.contactPerson(new Name("first", "", "last"))
 			.isActive(Boolean.TRUE)
 			.logoUrl("logo")
@@ -70,10 +75,9 @@ class RoleControllerTest {
 
 		role = Role.builder()
 			.id(1L)
-			.name("ADMIN_ROLE")
-			.description("Admin role")
+			.name("ORG ADMIN")
 			.isActive(Boolean.TRUE)
-			.permissions(null)
+			.permissions(Set.of(Permission.values()))
 			.practiceId(practice)
 			.build();
 	}
@@ -133,10 +137,13 @@ class RoleControllerTest {
 		String sortOrder = "asc";
 		String query = "";
 		String statusActive = "ALL";
+		LocalDate startDate = TestUtils.parseLocalDate("10/11/2024", CustomUtils.API_DATE_FORMAT);
+		LocalDate endDate = TestUtils.parseLocalDate("13/11/2014", CustomUtils.API_DATE_FORMAT);
 		Pageable paging = PageRequest.of(0, 20, Sort.by("name").ascending());
 		Page<Role> mockResponse = getRoles();
 
-		when(roleService.findAll(paging, query, practiceId.toString(), List.of(statusActive))).thenReturn(mockResponse);
+		when(roleService.findAll(paging, query, practiceId.toString(), List.of(statusActive), startDate, endDate))
+			.thenReturn(mockResponse);
 
 		mockMvc
 			.perform(get("/practices/{practiceId}/roles", practiceId).param("pageNo", pageNo)
@@ -145,6 +152,8 @@ class RoleControllerTest {
 				.param("sortOrder", sortOrder)
 				.param("query", query)
 				.param("status", statusActive)
+				.param("startDate", "2024-11-10")
+				.param("endDate", "2024-11-13")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andDo(print())
