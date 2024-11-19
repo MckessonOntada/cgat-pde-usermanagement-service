@@ -19,8 +19,8 @@ public interface UserProvisioningRequestService {
 
 	UserProvisioningRequest createUserProvisioning(@Valid UserProvisioningRequest request);
 
-	UserProvisioningRequest updateUserProvisioningStatus(@NotNull(message = "User Type should not be null") Long userId,
-			UserProvisioningStaus status) throws ResourceNotFoundException;
+	UserProvisioningRequest updateUserProvisioningStatus(Long userProvisioningReqId, UserProvisioningStaus status)
+			throws ResourceNotFoundException;
 
 	Page<UserProvisioningRequest> findAll(Pageable paging, String query, String status, Long praticeId);
 

@@ -226,11 +226,17 @@ USING GIN (name gin_trgm_ops);
 CREATE INDEX user_name_email_index ON usermanagement.user 
 USING GIN (first_name gin_trgm_ops, middle_name gin_trgm_ops, last_name gin_trgm_ops, email gin_trgm_ops);
 
+CREATE INDEX user_provisioning_request_name_index  ON usermanagement.user_provisioning_request 
+USING GIN (first_name gin_trgm_ops, middle_name gin_trgm_ops, last_name gin_trgm_ops, email gin_trgm_ops);
+
 CREATE INDEX user_status_createdat_index  ON usermanagement.user 
 USING btree(is_active, created_at);
 
 CREATE INDEX role_status_updatedat_index ON usermanagement.role 
 USING btree(is_active, updated_at);
+
+CREATE INDEX user_provisioning_request_status_createdat_index  ON usermanagement.user_provisioning_request 
+USING btree(status, created_at);
 
 INSERT INTO ROLE (ID,  NAME, DESCRIPTION, IS_ACTIVE, CREATED_BY, UPDATED_BY) VALUES ('1', 'SYSTEM_ADMIN', 'System Admin', 1, 'SYSTEM', 'SYSTEM');
 

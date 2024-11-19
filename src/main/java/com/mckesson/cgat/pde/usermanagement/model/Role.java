@@ -3,7 +3,6 @@ package com.mckesson.cgat.pde.usermanagement.model;
 import java.io.Serializable;
 import java.util.Set;
 
-
 import jakarta.persistence.*;
 import org.hibernate.annotations.TenantId;
 import org.hibernate.type.NumericBooleanConverter;

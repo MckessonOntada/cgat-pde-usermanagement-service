@@ -27,8 +27,7 @@ public class UserProvisioningRequestServiceImpl implements UserProvisioningReque
 	}
 
 	@Override
-	public UserProvisioningRequest updateUserProvisioningStatus(
-			@NotNull(message = "User Type should not be null") Long userId, UserProvisioningStaus status)
+	public UserProvisioningRequest updateUserProvisioningStatus(Long userId, UserProvisioningStaus status)
 			throws ResourceNotFoundException {
 		UserProvisioningRequest user = userProvisioningRequestRepo.findById(userId)
 			.orElseThrow(() -> new ResourceNotFoundException("User id not found : " + userId));

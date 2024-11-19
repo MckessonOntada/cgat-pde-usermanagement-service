@@ -41,7 +41,6 @@ public class Contact implements Serializable {
 	@Column(unique = true)
 	private String phone;
 
-
 	@Size(max = 15)
 	@Pattern(regexp = "^[\\d ]*$", message = "Must be numeric")
 	private String fax;
