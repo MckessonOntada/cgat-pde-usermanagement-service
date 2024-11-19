@@ -1,0 +1,71 @@
+package com.mckesson.cgat.pde.usermanagement.http;
+
+import com.mckesson.cgat.pde.usermanagement.exception.custom.CGATHttpException;
+import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpStatus;
+import org.springframework.stereotype.Component;
+
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.stream.Collectors;
+
+@Component
+@Slf4j
+public class CGATHttpClient {
+
+	private HttpClient httpClient = null;
+
+	@PostConstruct
+	public void init() {
+
+		httpClient = newClient();
+	}
+
+	private HttpClient newClient() {
+		return HttpClient.newBuilder().build();
+	}
+
+	public String sendPostRequest(String url, HashMap<String, String> queryParams, String payload, String oktaApiToken)
+			throws CGATHttpException {
+		String query = queryParams.keySet()
+			.stream()
+			.map(key -> key + "=" + URLEncoder.encode(queryParams.get(key), StandardCharsets.UTF_8))
+			.collect(Collectors.joining("&"));
+
+		HttpRequest request = HttpRequest.newBuilder()
+			.POST(HttpRequest.BodyPublishers.ofString(payload))
+			.uri(URI.create(url + '?' + query))
+			.header("Content-Type", "application/json")
+			.header("Authorization", oktaApiToken)
+			.build();
+
+		HttpResponse<String> httpResponse = getHttpResponse(request);
+		return httpResponse.body();
+	}
+
+	private HttpResponse<String> getHttpResponse(HttpRequest request) {
+		try {
+			HttpResponse<String> httpResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+			int statusCode = httpResponse.statusCode();
+			boolean isValid = statusCode == HttpStatus.SC_OK;
+			if (!isValid) {
+				throw new CGATHttpException("Communication Response - Received Response From report server with Status="
+						+ httpResponse.body());
+			}
+
+			return httpResponse;
+		}
+		catch (Exception e) {
+			log.error("error occurred ", e);
+			throw new CGATHttpException(e);
+		}
+	}
+
+}
