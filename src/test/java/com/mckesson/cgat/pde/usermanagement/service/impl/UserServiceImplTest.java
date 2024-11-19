@@ -6,11 +6,16 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -20,15 +25,17 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.model.Address;
 import com.mckesson.cgat.pde.usermanagement.model.Contact;
@@ -36,12 +43,15 @@ import com.mckesson.cgat.pde.usermanagement.model.Name;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
 import com.mckesson.cgat.pde.usermanagement.model.User;
+import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
+import com.mckesson.cgat.pde.usermanagement.util.TestUtils;
+import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
-@SpringBootTest(classes = UserServiceImplTest.class)
+@ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
 
 	@InjectMocks
@@ -56,6 +66,8 @@ class UserServiceImplTest {
 	@Mock
 	private RoleRepository roleRepository;
 
+	private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
 	private User user;
 
 	@BeforeEach
@@ -66,7 +78,12 @@ class UserServiceImplTest {
 			.practiceId(200L)
 			.name(new Name("John", "Doe", "doe"))
 			.permissions(permissions)
-			.contact(Contact.builder().email("john.doe@example.com").phone("1234567890").fax("9876543210").build())
+			.contact(Contact.builder()
+				.email("john.doe@example.com")
+				.countryCode("+1")
+				.phone("1234567890")
+				.fax("9876543210")
+				.build())
 			.address(Address.builder()
 				.address1("123 Main St")
 				.address2("Suite 500")
@@ -104,7 +121,12 @@ class UserServiceImplTest {
 			.id(1L)
 			.practiceId(200L)
 			.name(new Name("ram", "kumar", "kumar"))
-			.contact(Contact.builder().email("ram.kumar@gmail.com").phone("1234567890").fax("9876543210").build())
+			.contact(Contact.builder()
+				.email("ram.kumar@gmail.com")
+				.countryCode("+1")
+				.phone("1234567890")
+				.fax("9876543210")
+				.build())
 			.address(Address.builder()
 				.address1("12 Main Street")
 				.address2("Suite 501")
@@ -119,7 +141,12 @@ class UserServiceImplTest {
 			.id(1L)
 			.practiceId(300L)
 			.name(new Name("neeraj", "kumar", "kumar"))
-			.contact(Contact.builder().email("neeraj.kumar@gmail.com").phone("1234567890").fax("9876543210").build())
+			.contact(Contact.builder()
+				.email("neeraj.kumar@gmail.com")
+				.countryCode("+1")
+				.phone("1234567890")
+				.fax("9876543210")
+				.build())
 			.address(Address.builder()
 				.address1("15 Main Street")
 				.address2("Suite 502")
@@ -161,14 +188,18 @@ class UserServiceImplTest {
 
 	@DisplayName("FindAllUser")
 	@Test
-	void findAllWithPageableTest() {
+	void findAllWithPageableTest() throws ParseException {
 		Page<User> userPage = getUserList();
+		LocalDate startDate = TestUtils.parseLocalDate("10/11/2024", CustomUtils.API_DATE_FORMAT);
+		LocalDate endDate = TestUtils.parseLocalDate("18/11/2024", CustomUtils.API_DATE_FORMAT);
 		Pageable paging = PageRequest.of(0, 20, Sort.by("first_name").ascending());
-		when(userRepository.findAllByQueryText(null, "ALL", paging, 1)).thenReturn(userPage);
-		Page<User> result = userService.findAll(paging, null, List.of("ALL"), Long.valueOf(1));
+		when(userRepository.findAllByQueryText(anyString(), anyString(), any(paging.getClass()), anyLong(),
+				any(LocalDate.class), any(LocalDate.class)))
+			.thenReturn(userPage);
+		Page<User> result = userService.findAll(paging, "", List.of("ALL"), Long.valueOf(1), startDate, endDate);
 		assertNotNull(result);
 		assertEquals(userPage, result);
-		verify(userRepository, times(1)).findAllByQueryText(null, "ALL", paging, 1);
+		verify(userRepository, times(1)).findAllByQueryText("ALL", "", paging, 1L, startDate, endDate);
 	}
 
 	@DisplayName("UserNotFoundException : GetUser")
@@ -299,7 +330,12 @@ class UserServiceImplTest {
 			.practiceId(200L)
 			.name(new Name("John", "Doe", "doe"))
 			.permissions(permissions)
-			.contact(Contact.builder().email("john.doe@example.com").phone("1234567890").fax("9876543210").build())
+			.contact(Contact.builder()
+				.email("john.doe@example.com")
+				.countryCode("+1")
+				.phone("1234567890")
+				.fax("9876543210")
+				.build())
 			.address(Address.builder()
 				.address1("123 Main St")
 				.address2("Suite 500")
@@ -321,8 +357,8 @@ class UserServiceImplTest {
 		when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 		when(roleRepository.findByIdAndIsActiveTrue(role.getId())).thenReturn(Optional.of(role));
 		when(userRepository.save(user)).thenReturn(user);
-
-		User result = userService.linkUserToRoleAndPermissions(user.getId(), role.getId(), permissions);
+		RolePermissionsPatchDTO rolePermissions = new RolePermissionsPatchDTO(role.getId(), permissions);
+		User result = userService.linkUserToRoleAndPermissions(user.getId(), UserType.ADMIN, rolePermissions);
 
 		assertNotNull(result);
 		assertEquals(role, result.getRole());
@@ -336,10 +372,11 @@ class UserServiceImplTest {
 	// @Test
 	void linkUserToRole_UserNotFoundTest() {
 		Long roleId = 2L;
-		Set<Permission> permissions = new HashSet<>();
+		Set<Permission> permissions = Set.of(Permission.values());
+		RolePermissionsPatchDTO rolePermissions = new RolePermissionsPatchDTO(roleId, permissions);
 		when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
 		assertThrows(ResourceNotFoundException.class,
-				() -> userService.linkUserToRoleAndPermissions(user.getId(), roleId, permissions));
+				() -> userService.linkUserToRoleAndPermissions(user.getId(), UserType.ADMIN, rolePermissions));
 
 		verify(userRepository, times(1)).findById(user.getId());
 		verify(roleRepository, never()).findByIdAndIsActiveTrue(roleId);
@@ -350,12 +387,13 @@ class UserServiceImplTest {
 	// @Test
 	void linkUserToRole_RoleNotFoundTest() {
 		Long roleId = 2L;
-		Set<Permission> permissions = new HashSet<>();
+		Set<Permission> permissions = Set.of(Permission.values());
+		RolePermissionsPatchDTO rolePermissions = new RolePermissionsPatchDTO(roleId, permissions);
 		when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 		when(roleRepository.findByIdAndIsActiveTrue(roleId)).thenReturn(Optional.empty());
 
 		assertThrows(ResourceNotFoundException.class,
-				() -> userService.linkUserToRoleAndPermissions(user.getId(), roleId, permissions));
+				() -> userService.linkUserToRoleAndPermissions(user.getId(), UserType.ADMIN, rolePermissions));
 
 		verify(userRepository, times(1)).findById(user.getId());
 		verify(roleRepository, times(1)).findByIdAndIsActiveTrue(roleId);

@@ -9,41 +9,49 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import com.mckesson.cgat.pde.usermanagement.AbstractTest;
 import com.mckesson.cgat.pde.usermanagement.model.Address;
 import com.mckesson.cgat.pde.usermanagement.model.Contact;
 import com.mckesson.cgat.pde.usermanagement.model.Name;
+import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.Practice;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
 import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
+import com.mckesson.cgat.pde.usermanagement.util.TestUtils;
+import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
-class RoleServiceImplTest extends AbstractTest {
+@ExtendWith(MockitoExtension.class)
+class RoleServiceImplTest {
+
+	@InjectMocks
+	RoleServiceImpl roleService;
 
 	@Mock
 	RoleRepository roleRepository;
 
 	@Mock
 	PracticeRepository practiceRepository;
-
-	@InjectMocks
-	RoleServiceImpl roleService;
 
 	private Role role;
 
@@ -53,8 +61,8 @@ class RoleServiceImplTest extends AbstractTest {
 	public void beforeEach() {
 		practice = Practice.builder()
 			.id(1L)
-			.address(new Address("address1", "address2", "city", "state", "12345"))
-			.contact(new Contact("email@gmail.com", "1212121212", "fax"))
+			.address(new Address("address1", "", "city", "state", "12345"))
+			.contact(new Contact("email@gmail.com", "+1", "1212121212", ""))
 			.contactPerson(new Name("first", "", "last"))
 			.isActive(Boolean.TRUE)
 			.logoUrl("logo")
@@ -63,17 +71,16 @@ class RoleServiceImplTest extends AbstractTest {
 
 		role = Role.builder()
 			.id(1L)
-			.name("ADMIN_ROLE")
-			.description("Admin role")
+			.name("ORG ADMIN")
 			.isActive(Boolean.TRUE)
-			.permissions(null)
+			.permissions(Set.of(Permission.values()))
 			.practiceId(practice)
 			.build();
 	}
 
 	@DisplayName("Test : Create Role")
 	@Test
-	void createRoleTest() throws IllegalStateException, IOException, ResourceNotFoundException {
+	void createRoleTest() throws IllegalStateException, ResourceNotFoundException {
 		String practiceId = "1";
 
 		when(practiceRepository.findById(Long.valueOf(practiceId))).thenReturn(Optional.of(practice));
@@ -118,11 +125,15 @@ class RoleServiceImplTest extends AbstractTest {
 		Long practiceId = 1L;
 		String statusActive = "ALL";
 		Page<Role> mockResponse = getRoles();
+		LocalDate startDate = TestUtils.parseLocalDate("10/11/2024", CustomUtils.API_DATE_FORMAT);
+		LocalDate endDate = TestUtils.parseLocalDate("10/11/2024", CustomUtils.API_DATE_FORMAT);
 
-		when(roleRepository.findAllByQueryText(query, statusActive, practiceId, paging)).thenReturn(mockResponse);
-		Page<Role> result = roleService.findAll(paging, query, practiceId.toString(), List.of(statusActive));
-		verify(roleRepository, times(1)).findAllByQueryText(query, statusActive, practiceId, paging);
-		assertEquals(result.getSize(), mockResponse.getSize());
+		when(roleRepository.findAllByQueryText(query, statusActive, practiceId, paging, startDate, endDate))
+			.thenReturn(mockResponse);
+		Page<Role> result = roleService.findAll(paging, query, practiceId.toString(), List.of(statusActive), startDate,
+				endDate);
+		verify(roleRepository, times(1)).findAllByQueryText(query, statusActive, practiceId, paging, startDate,
+				endDate);
 		assertIterableEquals(mockResponse, result);
 	}
 
