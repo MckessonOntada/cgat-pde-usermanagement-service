@@ -36,7 +36,6 @@ public class Name implements Serializable {
 	@NotEmpty(message = "Last Name is required.")
 	@Size(max = 50, message = "Last name must be less than 50 characters")
 	@Pattern(regexp = "^[A-Za-z]+$", message = "Last Name must contain alphabetic characters only")
-
 	private String lastName;
 
 }

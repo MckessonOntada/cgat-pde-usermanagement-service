@@ -3,6 +3,8 @@ package com.mckesson.cgat.pde.usermanagement.model;
 import java.io.Serializable;
 
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
@@ -25,13 +27,17 @@ public class Contact implements Serializable {
 
 	@NotEmpty(message = "Email ID is required")
 	@Email(message = "Email ID is required and must be in a valid format.")
+	@Column(unique = true)
 	private String email;
 
 	@NotEmpty(message = "Phone Number is required")
 	@Pattern(regexp = "\\d{10}", message = "Phone Number must be in a valid format")
 	private String phone;
 
-	@Pattern(message = "Fax must be a valid format (e.g., +1-123-456-7890, (123) 456-7890, 123-456-7890)", regexp = "")
+	// @Pattern(message = "Fax must be a valid format (e.g., +1-123-456-7890, (123)
+	// 456-7890, 123-456-7890)", regexp = "")
+	@Pattern(regexp = "^\\+?[0-9]{1,4}?[-.\\s]?\\(?[0-9]{1,3}?\\)?[-.\\s]?[0-9]{3,4}[-.\\s]?[0-9]{3,4}$",
+			message = "Invalid fax number format")
 	private String fax;
 
 }

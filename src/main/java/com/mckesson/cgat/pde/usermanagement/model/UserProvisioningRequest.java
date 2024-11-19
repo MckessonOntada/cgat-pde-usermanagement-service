@@ -14,6 +14,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,6 +39,7 @@ public class UserProvisioningRequest extends AuditColumns implements Serializabl
 	@SequenceGenerator(name = SEQUENCE_GENERATOR_NAME, sequenceName = SEQUENCE_GENERATOR_NAME, allocationSize = 1)
 	private Long id;
 
+	@NotNull(message = "PracticeId is required.")
 	private Long practiceId;
 
 	@Valid
@@ -51,7 +54,7 @@ public class UserProvisioningRequest extends AuditColumns implements Serializabl
 	@Embedded
 	private Address address;
 
-	@Size(min = 2, max = 250, message = "Comment must be between 2 and 250 characters")
+	@Size(max = 5000, message = "Comment size max upto 5000 characters")
 	private String comment;
 
 	@Convert(converter = NumericBooleanConverter.class)

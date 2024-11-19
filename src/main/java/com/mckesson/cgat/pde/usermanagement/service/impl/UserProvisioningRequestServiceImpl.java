@@ -28,17 +28,18 @@ public class UserProvisioningRequestServiceImpl implements UserProvisioningReque
 
 	@Override
 	public UserProvisioningRequest updateUserProvisioningStatus(
-			@NotNull(message = "User Type should not be null") Long userId) throws ResourceNotFoundException {
+			@NotNull(message = "User Type should not be null") Long userId, UserProvisioningStaus status)
+			throws ResourceNotFoundException {
 		UserProvisioningRequest user = userProvisioningRequestRepo.findById(userId)
 			.orElseThrow(() -> new ResourceNotFoundException("User id not found : " + userId));
-		user.setStatus(UserProvisioningStaus.REJECTED.name());
+		user.setStatus(status.name());
 		return userProvisioningRequestRepo.save(user);
 	}
 
 	@Override
-	public Page<UserProvisioningRequest> findAll(Pageable paging, String query, Long praticeId) {
-		return userProvisioningRequestRepo.findAllByQueryText(query = StringUtils.toRootLowerCase(query), paging,
-				praticeId);
+	public Page<UserProvisioningRequest> findAll(Pageable paging, String query, String status, Long praticeId) {
+		return userProvisioningRequestRepo.findAllByQueryText(query = StringUtils.toRootLowerCase(query), status,
+				paging, praticeId);
 	}
 
 }

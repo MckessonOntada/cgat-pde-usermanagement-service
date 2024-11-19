@@ -61,7 +61,7 @@ public class UserController {
 	public ResponseEntity<User> createUser(@Validated(BasicInfo.class) @RequestBody User user,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
 			throws UnauthorizedAccessException {
-		// UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
+		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
 		return new ResponseEntity<>(userService.createUser(user), HttpStatus.OK);
 	}
 

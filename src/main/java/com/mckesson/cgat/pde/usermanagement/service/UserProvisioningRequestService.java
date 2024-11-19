@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.model.UserProvisioningRequest;
+import com.mckesson.cgat.pde.usermanagement.model.UserProvisioningStaus;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import jakarta.validation.Valid;
@@ -18,9 +19,9 @@ public interface UserProvisioningRequestService {
 
 	UserProvisioningRequest createUserProvisioning(@Valid UserProvisioningRequest request);
 
-	UserProvisioningRequest updateUserProvisioningStatus(@NotNull(message = "User Type should not be null") Long userId)
-			throws ResourceNotFoundException;
+	UserProvisioningRequest updateUserProvisioningStatus(@NotNull(message = "User Type should not be null") Long userId,
+			UserProvisioningStaus status) throws ResourceNotFoundException;
 
-	Page<UserProvisioningRequest> findAll(Pageable paging, String query, Long praticeId);
+	Page<UserProvisioningRequest> findAll(Pageable paging, String query, String status, Long praticeId);
 
 }
