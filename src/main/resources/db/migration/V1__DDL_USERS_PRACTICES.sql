@@ -184,6 +184,8 @@ CREATE SEQUENCE USER_SEQUENCE START WITH 1 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE
     
     
 CREATE SEQUENCE ACCOUNT_SEQUENCE START WITH 1 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE  CACHE 20;  
+
+CREATE SEQUENCE USER_PROVISIONING_SEQUENCE START WITH 1 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE  CACHE 20;
    
 CREATE TABLE IF NOT EXISTS user_permission_mapping (
      user_id INTEGER NOT NULL,
@@ -203,7 +205,7 @@ CREATE TABLE IF NOT EXISTS user_provisioning_request(
 	
     id        					INTEGER 		NOT NULL,
     practice_id					INTEGER,
-    first_name  				VARCHAR(255) 	UNIQUE NOT NULL,
+    first_name  				VARCHAR(255) 	NOT NULL,
     middle_name 				VARCHAR(255),
     last_name	 				VARCHAR(255) 	NOT NULL,
     address1					VARCHAR(255) 	NOT NULL,
@@ -211,10 +213,10 @@ CREATE TABLE IF NOT EXISTS user_provisioning_request(
     city						VARCHAR(255) 	NOT NULL,
     state 						VARCHAR(255) 	NOT NULL,
     zip 						VARCHAR(255) 	NOT NULL,
-    email	 					VARCHAR(255) 	NOT NULL,
+    email	 					VARCHAR(255) 	UNIQUE NOT NULL,
     phone						VARCHAR(255) 	NOT NULL,
     fax							VARCHAR(50),
-    comment						VARCHAR(255),
+    comment						VARCHAR(5000),
     status						VARCHAR(255),
     is_active      				INTEGER,
     created_at   				TIMESTAMP,

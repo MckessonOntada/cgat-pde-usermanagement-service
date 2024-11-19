@@ -41,7 +41,10 @@ public class Contact implements Serializable {
 	private String phone;
 
 	@Size(max = 15)
-	@Pattern(regexp = "^[\\d ]*$", message = "Must be numeric")
+	// @Pattern(message = "Fax must be a valid format (e.g., +1-123-456-7890, (123)
+	// 456-7890, 123-456-7890)", regexp = "")
+	@Pattern(regexp = "^\\+?[0-9]{1,4}?[-.\\s]?\\(?[0-9]{1,3}?\\)?[-.\\s]?[0-9]{3,4}[-.\\s]?[0-9]{3,4}$",
+			message = "Invalid fax number format")
 	private String fax;
 
 }

@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.model.UserProvisioningRequest;
 
 @Repository
@@ -19,14 +18,15 @@ public interface UserProvisioningRequestRepo extends JpaRepository<UserProvision
 				WHERE
 					(
 						(:query IS NULL
-							OR LOWER(first_name) LIKE %:query%
-							OR LOWER(email) LIKE %:query%
+							first_name LIKE %:query%
+							OR email LIKE %:query%
 						 )
 				AND practice_id =:practiceId
+				AND status =:status
 
 				 	 )
 			""")
-	Page<UserProvisioningRequest> findAllByQueryText(@Param("query") String query, Pageable paging,
-			@Param("practiceId") long practiceId);
+	Page<UserProvisioningRequest> findAllByQueryText(@Param("query") String query, @Param("status") String status,
+			Pageable paging, @Param("practiceId") long practiceId);
 
 }
