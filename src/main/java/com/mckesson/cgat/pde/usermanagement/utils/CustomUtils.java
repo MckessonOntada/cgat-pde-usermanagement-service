@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.utils;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Pattern;
@@ -35,6 +36,8 @@ public class CustomUtils {
 
 	public static final String SORT_ORDER_ASC = "asc";
 
+	public static final String API_DATE_FORMAT = "dd/MM/yyyy";
+
 	public static boolean validateEmail(String emailAddress) {
 		return Pattern.compile(regexPattern).matcher(emailAddress).matches();
 	}
@@ -56,6 +59,17 @@ public class CustomUtils {
 		String formattedDateWithMicroseconds = formattedDate + "000";
 
 		return formattedDateWithMicroseconds;
+	}
+
+	public static boolean isValidDate(String input) {
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd");
+		try {
+			format.parse(input);
+			return true;
+		}
+		catch (ParseException e) {
+			return false;
+		}
 	}
 
 }

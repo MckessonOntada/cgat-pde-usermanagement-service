@@ -2,8 +2,12 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -11,9 +15,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -44,6 +49,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Address;
 import com.mckesson.cgat.pde.usermanagement.model.Contact;
 import com.mckesson.cgat.pde.usermanagement.model.LoggedInUserDetails;
@@ -51,8 +57,11 @@ import com.mckesson.cgat.pde.usermanagement.model.Name;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
 import com.mckesson.cgat.pde.usermanagement.model.User;
+import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;
+import com.mckesson.cgat.pde.usermanagement.util.TestUtils;
+import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.cgat.pde.usermanagement.utils.OrganizationContext;
 import com.mckesson.cgat.pde.usermanagement.utils.UserCurrentRequestContext;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -139,7 +148,7 @@ class UserControllerTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectString))
 			.andExpect(status().isOk())
-			.andDo(print())
+			// .andDo(print())
 			.andReturn();
 
 	}
@@ -219,7 +228,7 @@ class UserControllerTest {
 			.perform(get("/practices/{practiceId}/users/{userId}", user.getPracticeId(), user.getId())
 				.param("userType", "ADMIN")
 				.contentType(MediaType.APPLICATION_JSON_VALUE))
-			.andDo(print())
+			// .andDo(print())
 			.andExpect(status().isOk());
 
 	}
@@ -275,12 +284,16 @@ class UserControllerTest {
 		Integer pageSize = 20;
 		String sortBy = "first_name";
 		String sortOrder = "ASC";
+		String statusActive = "ALL";
 		Sort sort = "asc".equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 		List<User> users = getUserList();
 		PageImpl<User> userPage = new PageImpl<>(users, pageable, users.size());
+		LocalDate startDate = TestUtils.parseLocalDate("10/11/2024", CustomUtils.API_DATE_FORMAT);
+		LocalDate endDate = TestUtils.parseLocalDate("18/11/2024", CustomUtils.API_DATE_FORMAT);
 
-		when(userService.findAll(any(PageRequest.class), any(String.class), any(List.class), any(Long.class)))
+		when(userService.findAll(any(PageRequest.class), anyString(), anyList(), anyLong(), any(LocalDate.class),
+				any(LocalDate.class)))
 			.thenReturn(userPage);
 
 		ResultActions result = mockMvc
@@ -290,11 +303,15 @@ class UserControllerTest {
 				.param("sortBy", sortBy)
 				.param("sortOrder", sortOrder)
 				.param("userType", "ADMIN")
+				.param("query", "")
+				.param("status", statusActive)
+				.param("startDate", "2024-11-10")
+				.param("endDate", "2024-11-18")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk());
 
 		assertNotNull(result);
-		verify(userService).findAll(pageable, null, null, 1L);
+		verify(userService, times(1)).findAll(pageable, "", List.of(statusActive), 1L, startDate, endDate);
 	}
 
 	@DisplayName("FindAllTestForDesc")
@@ -304,12 +321,16 @@ class UserControllerTest {
 		Integer pageSize = 20;
 		String sortBy = "first_name";
 		String sortOrder = "DESC";
+		String statusActive = "ALL";
 		Sort sort = "asc".equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 		List<User> users = getUserList();
 		PageImpl<User> userPage = new PageImpl<>(users, pageable, users.size());
+		LocalDate startDate = TestUtils.parseLocalDate("10/11/2024", CustomUtils.API_DATE_FORMAT);
+		LocalDate endDate = TestUtils.parseLocalDate("18/11/2024", CustomUtils.API_DATE_FORMAT);
 
-		when(userService.findAll(any(PageRequest.class), any(String.class), any(List.class), any(Long.class)))
+		when(userService.findAll(any(Pageable.class), anyString(), anyList(), anyLong(), any(LocalDate.class),
+				any(LocalDate.class)))
 			.thenReturn(userPage);
 
 		ResultActions result = mockMvc
@@ -318,11 +339,15 @@ class UserControllerTest {
 				.param("pageSize", "20")
 				.param("sortBy", "first_name")
 				.param("sortOrder", "desc")
+				.param("query", "")
+				.param("status", statusActive)
+				.param("startDate", "2024-11-10")
+				.param("endDate", "2024-11-18")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk());
 
 		assertNotNull(result);
-		verify(userService).findAll(pageable, null, null, 1L);
+		verify(userService).findAll(pageable, "", List.of(statusActive), 1L, startDate, endDate);
 	}
 
 	@DisplayName("LinkUserToAccountsTest")
@@ -343,13 +368,14 @@ class UserControllerTest {
 	void linkUserToRoles_permissionsTest() throws Exception {
 		Long roleId = 101L;
 		List<Long> accountIds = List.of(1L, 2L);
-		when(userService.linkUserToRoleAndPermissions(user.getId(), roleId, user.getPermissions())).thenReturn(user);
+		RolePermissionsPatchDTO rolePermissions = new RolePermissionsPatchDTO(roleId, user.getPermissions());
+		when(userService.linkUserToRoleAndPermissions(user.getId(), UserType.ADMIN, rolePermissions)).thenReturn(user);
 		ResultActions result = mockMvc
 			.perform(patch(apiUrl + "/{userId}/roles-permissions", user.getPracticeId(), user.getId())
 				.param("userType", "ADMIN")
 				.param("roleId", roleId.toString())
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(accountIds.toString()))
+				.content(objectMapper.writeValueAsString(rolePermissions)))
 
 			.andExpect(status().isOk());
 		assertNotNull(result);

@@ -59,7 +59,7 @@ public class FilterConfiguration {
 				userAuthenticationFilter);
 		registrationBean.addUrlPatterns("/*");
 		registrationBean.setOrder(3);
-		registrationBean.setEnabled(enableLoginFilter);
+		registrationBean.setEnabled(!enableDevLoginFilter);
 		return registrationBean;
 	}
 

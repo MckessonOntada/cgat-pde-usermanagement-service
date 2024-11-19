@@ -1,7 +1,8 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
+import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -9,14 +10,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
-import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
 import com.mckesson.cgat.pde.usermanagement.model.User;
+import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;
+import com.mckesson.cgat.pde.usermanagement.utils.UserRequestAuthorizationValidator;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import jakarta.transaction.Transactional;
@@ -63,7 +66,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Page<User> findAll(Pageable paging, String query, List<String> status, Long praticeId) {
+	public Page<User> findAll(Pageable paging, String query, List<String> status, Long praticeId, LocalDate startDate,
+			LocalDate endDate) {
 		query = StringUtils.toRootLowerCase(query);
 		String statusActive = "ALL";
 
@@ -77,7 +81,7 @@ public class UserServiceImpl implements UserService {
 			if (hasInactive)
 				statusActive = "ACTIVE".equals(statusActive) ? "ALL" : "INACTIVE";
 		}
-		return userRepository.findAllByQueryText(query, statusActive, paging, praticeId);
+		return userRepository.findAllByQueryText(statusActive, query, paging, praticeId, startDate, endDate);
 	}
 
 	@Override
@@ -99,20 +103,28 @@ public class UserServiceImpl implements UserService {
 
 	@Transactional
 	@Override
-	public User linkUserToRoleAndPermissions(Long userId, Long roleId, Set<Permission> permissions)
+	public User linkUserToRoleAndPermissions(Long userId, UserType userType, RolePermissionsPatchDTO rolePermissions)
 			throws ResourceNotFoundException {
 
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new ResourceNotFoundException("User not found with this Id :" + userId));
 
-		Role role = roleRepository.findByIdAndIsActiveTrue(roleId)
-			.orElseThrow(() -> new ResourceNotFoundException("Role not found with this Id :" + roleId));
+		Role role = roleRepository.findByIdAndIsActiveTrue(rolePermissions.getRoleId())
+			.orElseThrow(
+					() -> new ResourceNotFoundException("Role not found with this Id :" + rolePermissions.getRoleId()));
 
-		user.setRole(role);
-		user.getPermissions().clear();
-		user.setPermissions(permissions);
+		if (userType.equals(UserType.ADMIN)) {
+			Role systemAdminRole = roleRepository.findByName(UserRequestAuthorizationValidator.SYSTEM_ADMIN_ROLE);
+			user.getPermissions().clear();
+			user.setRole(systemAdminRole);
+			user.setPermissions(new HashSet<>(systemAdminRole.getPermissions()));
+		}
+		else {
+			user.setRole(role);
+			user.getPermissions().clear();
+			user.setPermissions(rolePermissions.getPermissions());
+		}
 		return userRepository.save(user);
-
 	}
 
 }
