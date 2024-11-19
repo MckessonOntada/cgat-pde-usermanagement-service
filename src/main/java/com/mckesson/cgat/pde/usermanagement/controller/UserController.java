@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.apache.coyote.BadRequestException;
@@ -7,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -103,15 +105,15 @@ public class UserController {
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
 			@RequestParam(required = false) List<String> status,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType,
-			@RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate)
-			throws Exception {
-		if ((!startDate.isEmpty() && endDate.isEmpty()) || (startDate.isEmpty() && !endDate.isEmpty()))
-			throw new BadRequestException("Either enter both dates or none");
-		if (!CustomUtils.isValidDate(startDate) || !CustomUtils.isValidDate(endDate))
-			throw new BadRequestException("Enter date in valid format - yyyy-mm-dd");
+			@RequestParam(required = false) @DateTimeFormat(pattern = CustomUtils.API_DATE_FORMAT) LocalDate startDate,
+			@RequestParam(required = false) @DateTimeFormat(pattern = CustomUtils.API_DATE_FORMAT) LocalDate endDate)
+			throws BadRequestException, UnauthorizedAccessException {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
+		if (!((null == startDate && null == endDate) || (null != startDate && null != endDate)))
+			throw new BadRequestException("Either enter both dates or none for the filter as its a part of date range");
+
 		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
 		return userService.findAll(paging, query, status, OrganizationContext.getCurrentOrgId(), startDate, endDate);
 

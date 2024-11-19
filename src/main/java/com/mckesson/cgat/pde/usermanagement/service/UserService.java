@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -16,8 +17,8 @@ public interface UserService {
 
 	void deleteUser(Long userId) throws ResourceNotFoundException;
 
-	Page<User> findAll(Pageable paging, String query, List<String> status, Long practiceId, String startDate,
-			String endDate);
+	Page<User> findAll(Pageable paging, String query, List<String> status, Long practiceId, LocalDate startDate,
+			LocalDate endDate);
 
 	User updateUser(Long userId, User model) throws ResourceNotFoundException;
 

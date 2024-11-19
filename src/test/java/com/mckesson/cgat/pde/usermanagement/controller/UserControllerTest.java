@@ -17,6 +17,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -58,6 +60,8 @@ import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;
+import com.mckesson.cgat.pde.usermanagement.util.TestUtils;
+import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.cgat.pde.usermanagement.utils.OrganizationContext;
 import com.mckesson.cgat.pde.usermanagement.utils.UserCurrentRequestContext;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -84,6 +88,8 @@ class UserControllerTest {
 
 	@Autowired
 	private ObjectMapper objectMapper;
+
+	private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
 	String apiUrl = "/practice/{practiceId}/users";
 
@@ -285,8 +291,11 @@ class UserControllerTest {
 		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 		List<User> users = getUserList();
 		PageImpl<User> userPage = new PageImpl<>(users, pageable, users.size());
+		LocalDate startDate = TestUtils.parseLocalDate("10/11/2024", CustomUtils.API_DATE_FORMAT);
+		LocalDate endDate = TestUtils.parseLocalDate("18/11/2024", CustomUtils.API_DATE_FORMAT);
 
-		when(userService.findAll(any(PageRequest.class), anyString(), anyList(), anyLong(), anyString(), anyString()))
+		when(userService.findAll(any(PageRequest.class), anyString(), anyList(), anyLong(), any(LocalDate.class),
+				any(LocalDate.class)))
 			.thenReturn(userPage);
 
 		ResultActions result = mockMvc
@@ -299,12 +308,12 @@ class UserControllerTest {
 				.param("query", "")
 				.param("status", statusActive)
 				.param("startDate", "2024-11-10")
-				.param("endDate", "2024-11-14")
+				.param("endDate", "2024-11-18")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk());
 
 		assertNotNull(result);
-		verify(userService, times(1)).findAll(pageable, "", List.of(statusActive), 1L, "2024-11-10", "2024-11-14");
+		verify(userService, times(1)).findAll(pageable, "", List.of(statusActive), 1L, startDate, endDate);
 	}
 
 	@DisplayName("FindAllTestForDesc")
@@ -319,8 +328,11 @@ class UserControllerTest {
 		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 		List<User> users = getUserList();
 		PageImpl<User> userPage = new PageImpl<>(users, pageable, users.size());
+		LocalDate startDate = TestUtils.parseLocalDate("10/11/2024", CustomUtils.API_DATE_FORMAT);
+		LocalDate endDate = TestUtils.parseLocalDate("18/11/2024", CustomUtils.API_DATE_FORMAT);
 
-		when(userService.findAll(any(Pageable.class), anyString(), anyList(), anyLong(), anyString(), anyString()))
+		when(userService.findAll(any(Pageable.class), anyString(), anyList(), anyLong(), any(LocalDate.class),
+				any(LocalDate.class)))
 			.thenReturn(userPage);
 
 		ResultActions result = mockMvc
@@ -331,13 +343,13 @@ class UserControllerTest {
 				.param("sortOrder", "desc")
 				.param("query", "")
 				.param("status", statusActive)
-				.param("startDate", "24-11-10")
-				.param("endDate", "2024-11-14")
+				.param("startDate", "2024-11-10")
+				.param("endDate", "2024-11-18")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk());
 
 		assertNotNull(result);
-		verify(userService).findAll(pageable, "", List.of(statusActive), 1L, "24-11-10", "2024-11-14");
+		verify(userService).findAll(pageable, "", List.of(statusActive), 1L, startDate, endDate);
 	}
 
 	@DisplayName("LinkUserToAccountsTest")

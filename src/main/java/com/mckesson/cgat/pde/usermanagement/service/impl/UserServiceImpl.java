@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 
@@ -65,8 +66,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Page<User> findAll(Pageable paging, String query, List<String> status, Long praticeId, String startDate,
-			String endDate) {
+	public Page<User> findAll(Pageable paging, String query, List<String> status, Long praticeId, LocalDate startDate,
+			LocalDate endDate) {
 		query = StringUtils.toRootLowerCase(query);
 		String statusActive = "ALL";
 
@@ -80,8 +81,7 @@ public class UserServiceImpl implements UserService {
 			if (hasInactive)
 				statusActive = "ACTIVE".equals(statusActive) ? "ALL" : "INACTIVE";
 		}
-		return userRepository.findAllByQueryText(statusActive, query, paging, praticeId,
-				java.sql.Date.valueOf(startDate), java.sql.Date.valueOf(endDate));
+		return userRepository.findAllByQueryText(statusActive, query, paging, praticeId, startDate, endDate);
 	}
 
 	@Override

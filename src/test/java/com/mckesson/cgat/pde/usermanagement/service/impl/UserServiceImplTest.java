@@ -6,11 +6,16 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -42,6 +47,8 @@ import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
+import com.mckesson.cgat.pde.usermanagement.util.TestUtils;
+import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
@@ -58,6 +65,8 @@ class UserServiceImplTest {
 
 	@Mock
 	private RoleRepository roleRepository;
+
+	private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
 	private User user;
 
@@ -179,18 +188,18 @@ class UserServiceImplTest {
 
 	@DisplayName("FindAllUser")
 	@Test
-	void findAllWithPageableTest() {
+	void findAllWithPageableTest() throws ParseException {
 		Page<User> userPage = getUserList();
+		LocalDate startDate = TestUtils.parseLocalDate("10/11/2024", CustomUtils.API_DATE_FORMAT);
+		LocalDate endDate = TestUtils.parseLocalDate("18/11/2024", CustomUtils.API_DATE_FORMAT);
 		Pageable paging = PageRequest.of(0, 20, Sort.by("first_name").ascending());
-		when(userRepository.findAllByQueryText("ALL", "", paging, 1L, java.sql.Date.valueOf("2024-11-10"),
-				java.sql.Date.valueOf("2024-11-12")))
+		when(userRepository.findAllByQueryText(anyString(), anyString(), any(paging.getClass()), anyLong(),
+				any(LocalDate.class), any(LocalDate.class)))
 			.thenReturn(userPage);
-		Page<User> result = userService.findAll(paging, "", List.of("ALL"), Long.valueOf(1), "2024-11-10",
-				"2024-11-12");
+		Page<User> result = userService.findAll(paging, "", List.of("ALL"), Long.valueOf(1), startDate, endDate);
 		assertNotNull(result);
 		assertEquals(userPage, result);
-		verify(userRepository, times(1)).findAllByQueryText("ALL", "", paging, 1L, java.sql.Date.valueOf("2024-11-10"),
-				java.sql.Date.valueOf("2024-11-12"));
+		verify(userRepository, times(1)).findAllByQueryText("ALL", "", paging, 1L, startDate, endDate);
 	}
 
 	@DisplayName("UserNotFoundException : GetUser")

@@ -6,7 +6,6 @@ import java.util.Set;
 import org.hibernate.type.NumericBooleanConverter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -47,7 +46,6 @@ public class Role extends AuditColumns implements Serializable {
 	@SequenceGenerator(name = "role_sequence", sequenceName = "role_sequence", allocationSize = 1)
 	private Long id;
 
-	@Column(unique = true)
 	@Size(min = 2, max = 50)
 	@Pattern(regexp = "^[a-zA-Z ]+$", message = "Role Name must only contain alphabets.")
 	private String name;

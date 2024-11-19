@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.repository;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -16,31 +17,40 @@ import com.mckesson.cgat.pde.usermanagement.model.User;
 public interface UserRepository extends JpaRepository<User, Long> {
 
 	@Query(value = """
-				SELECT *
-				FROM usermanagement.user
-				WHERE
+			SELECT *
+			FROM usermanagement.user
+			WHERE
+				(
 					(
 					:query is null
-					OR LOWER(email) LIKE %:query%
-					OR LOWER(first_name) LIKE %:query%
-					OR LOWER(middle_name) LIKE %:query%
-					OR LOWER(last_name) LIKE %:query%
-					and
-					practice_id =:practiceId
-					and
-						( cast(:from as date) is null
-						  OR cast(:to as date) is null
-						  OR created_at between :from and :to )
-					and
-						(
-							(:status = 'ALL' and (is_active = 1 or is_active = 0))
-							or ('ACTIVE' = :status and is_active = 1 )
-							or ('INACTIVE' = :status and is_active = 0 )
-						)
+					or LOWER(first_name) like %:query%
+					or LOWER(middle_name) like %:query%
+					or LOWER(last_name) like %:query%
+					or LOWER(email) like %:query%
 					)
+				and
+				practice_id =:practiceId
+				and
+					(
+					  (
+					   (cast(:from as date) is null and cast(:to as date) is null)
+					    or
+					   (created_at between :from and :to)
+					  )
+					  and
+					  (
+							(:status = 'ALL' and (is_active = 1 or is_active = 0))
+							or
+							('ACTIVE' = :status and is_active = 1 )
+							or
+							('INACTIVE' = :status and is_active = 0 )
+					  )
+				     )
+				  )
+
 			""", nativeQuery = true)
 	Page<User> findAllByQueryText(@Param("status") String status, @Param("query") String query, Pageable paging,
-			@Param("practiceId") long practiceId, @Param("from") Date from, @Param("to") Date to);
+			@Param("practiceId") long practiceId, @Param("from") LocalDate from, @Param("to") LocalDate to);
 
 	List<User> findByCreatedAt(Date createdAt);
 
