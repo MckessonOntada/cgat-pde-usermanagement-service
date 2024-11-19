@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
+import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
@@ -153,7 +154,8 @@ public class UserController {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-		return accountService.findAll(paging, query, status, userId, Long.valueOf(practiceId));
+		return accountService.findAll(paging, query, status, userId, Long.valueOf(practiceId),
+				AccountPartnerFunction.SHIP_TO);
 
 	}
 
