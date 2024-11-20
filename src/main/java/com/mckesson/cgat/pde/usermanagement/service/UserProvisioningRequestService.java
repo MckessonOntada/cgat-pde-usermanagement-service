@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -22,6 +23,8 @@ public interface UserProvisioningRequestService {
 	UserProvisioningRequest updateUserProvisioningStatus(Long userProvisioningReqId, UserProvisioningStaus status)
 			throws ResourceNotFoundException;
 
-	Page<UserProvisioningRequest> findAll(Pageable paging, String query, String status, Long praticeId);
+	Page<UserProvisioningRequest> findAll(Pageable paging, String query, UserProvisioningStaus status, Long praticeId, LocalDate startDate, LocalDate endDate);
+
+	List<UserProvisioningRequest> getAllUserProvisioning() throws ResourceNotFoundException;
 
 }

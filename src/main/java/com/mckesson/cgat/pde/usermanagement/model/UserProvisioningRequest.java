@@ -5,6 +5,7 @@ import java.io.Serializable;
 import org.hibernate.type.NumericBooleanConverter;
 
 import com.google.auto.value.AutoValue.Builder;
+import com.mckesson.cgat.pde.usermanagement.model.converters.UserProvisioningStatusConverter;
 
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
@@ -60,6 +61,7 @@ public class UserProvisioningRequest extends AuditColumns implements Serializabl
 	@Convert(converter = NumericBooleanConverter.class)
 	private Boolean isActive = false;
 
+	@Convert(converter = UserProvisioningStatusConverter.class)
 	private UserProvisioningStaus status = UserProvisioningStaus.PENDING;
 
 }

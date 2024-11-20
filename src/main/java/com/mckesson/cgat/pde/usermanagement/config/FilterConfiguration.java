@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 @Configuration
 public class FilterConfiguration {
 
-	@Value("${filter.enabled:false}")
+	@Value("${filter.enabled:true}")
 	private boolean enableLoginFilter;
 
 	@Value("${filter.enableDevLoginFilter:false}")

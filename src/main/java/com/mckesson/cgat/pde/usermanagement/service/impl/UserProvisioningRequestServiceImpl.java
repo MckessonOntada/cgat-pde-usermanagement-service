@@ -1,5 +1,8 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -31,15 +34,24 @@ public class UserProvisioningRequestServiceImpl implements UserProvisioningReque
 			throws ResourceNotFoundException {
 		UserProvisioningRequest userRequest = userProvisioningRequestRepo.findById(userId)
 			.orElseThrow(() -> new ResourceNotFoundException("User id not found : " + userId));
-		userRequest.setStatus(status.name());
+		userRequest.setStatus(status);
 		return userProvisioningRequestRepo.save(userRequest);
 	}
 
 	@Override
-	public Page<UserProvisioningRequest> findAll(Pageable paging, String query, String status, Long praticeId) {
+	public Page<UserProvisioningRequest> findAll(Pageable paging, String query, UserProvisioningStaus status, Long praticeId ,LocalDate startDate ,LocalDate endDate) {
 		query = StringUtils.toRootLowerCase(query);
-		return userProvisioningRequestRepo.findAllByQueryText(query, status,
-				paging, praticeId);
+		return userProvisioningRequestRepo.findAllByQueryText(query, status.getUserRequestType(),
+				paging, praticeId,startDate,endDate);
+	}
+
+	@Override
+	public List<UserProvisioningRequest> getAllUserProvisioning() throws ResourceNotFoundException {
+		List<UserProvisioningRequest> userRequest = userProvisioningRequestRepo.findAll();
+		if (userRequest.isEmpty())
+			throw new ResourceNotFoundException("User Request is empty");
+		
+		return userRequest;
 	}
 
 }

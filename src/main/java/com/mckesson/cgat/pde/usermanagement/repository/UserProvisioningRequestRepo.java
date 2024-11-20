@@ -1,5 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.repository;
 
+import java.time.LocalDate;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.mckesson.cgat.pde.usermanagement.model.UserProvisioningRequest;
+import com.mckesson.cgat.pde.usermanagement.model.UserProvisioningStaus;
 
 @Repository
 public interface UserProvisioningRequestRepo extends JpaRepository<UserProvisioningRequest, Long> {
@@ -18,17 +21,22 @@ public interface UserProvisioningRequestRepo extends JpaRepository<UserProvision
 				WHERE
 					(
 						(   :query IS NULL
-						    OR
-							first_name LIKE %:query%
-							OR 
-							email LIKE %:query%
+						    OR first_name LIKE %:query%
+							OR middle_name LIKE %:query%
+							OR last_name LIKE %:query%
+							OR email LIKE %:query%
 						 )
-				AND practice_id =:practiceId
-				AND status =:status
-
-				 	 )
+					AND practice_id =:practiceId
+					AND status =:status
+					AND
+				 		(cast(:from as date) is null and cast(:to as date) is null)
+					 	OR
+					 	(created_at between :from and :to)
+					 )
+					  
+				 	 
 			""")
 	Page<UserProvisioningRequest> findAllByQueryText(@Param("query") String query, @Param("status") String status,
-			Pageable paging, @Param("practiceId") long practiceId);
+			Pageable paging, @Param("practiceId") long practiceId,@Param("from") LocalDate from, @Param("to") LocalDate to);
 
 }
