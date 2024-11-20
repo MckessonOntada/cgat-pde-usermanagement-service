@@ -22,22 +22,23 @@ public class UserProvisioningRequestServiceImpl implements UserProvisioningReque
 	private UserProvisioningRequestRepo userProvisioningRequestRepo;
 
 	@Override
-	public UserProvisioningRequest createUserProvisioning(@Valid UserProvisioningRequest request) {
+	public UserProvisioningRequest createUserProvisioning(UserProvisioningRequest request) {
 		return userProvisioningRequestRepo.save(request);
 	}
 
 	@Override
 	public UserProvisioningRequest updateUserProvisioningStatus(Long userId, UserProvisioningStaus status)
 			throws ResourceNotFoundException {
-		UserProvisioningRequest user = userProvisioningRequestRepo.findById(userId)
+		UserProvisioningRequest userRequest = userProvisioningRequestRepo.findById(userId)
 			.orElseThrow(() -> new ResourceNotFoundException("User id not found : " + userId));
-		user.setStatus(status.name());
-		return userProvisioningRequestRepo.save(user);
+		userRequest.setStatus(status.name());
+		return userProvisioningRequestRepo.save(userRequest);
 	}
 
 	@Override
 	public Page<UserProvisioningRequest> findAll(Pageable paging, String query, String status, Long praticeId) {
-		return userProvisioningRequestRepo.findAllByQueryText(query = StringUtils.toRootLowerCase(query), status,
+		query = StringUtils.toRootLowerCase(query);
+		return userProvisioningRequestRepo.findAllByQueryText(query, status,
 				paging, praticeId);
 	}
 
