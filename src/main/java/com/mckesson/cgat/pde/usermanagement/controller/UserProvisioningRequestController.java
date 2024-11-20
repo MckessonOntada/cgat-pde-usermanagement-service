@@ -67,10 +67,10 @@ public class UserProvisioningRequestController {
 			@RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(defaultValue = "first_name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
-			@RequestParam UserProvisioningStaus status,
+			@RequestParam(required = false) UserProvisioningStaus status,
 			@RequestParam(required = false) @DateTimeFormat(pattern = CustomUtils.API_DATE_FORMAT) LocalDate startDate,
 			@RequestParam(required = false) @DateTimeFormat(pattern = CustomUtils.API_DATE_FORMAT) LocalDate endDate)
-			throws BadRequestException, UnauthorizedAccessException {
+			throws BadRequestException {
 
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
