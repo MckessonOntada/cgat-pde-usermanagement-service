@@ -222,15 +222,15 @@ CREATE TABLE IF NOT EXISTS user_provisioning_request(
 
 CREATE SEQUENCE USER_PROVISIONING_SEQUENCE START WITH 1 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE  CACHE 20;
 
-CREATE INDEX user_provisioning_request_name_index  ON usermanagement.user_provisioning_request 
-USING GIN (first_name gin_trgm_ops, middle_name gin_trgm_ops, last_name gin_trgm_ops, email gin_trgm_ops);
+--CREATE INDEX user_provisioning_request_name_index  ON usermanagement.user_provisioning_request 
+--USING GIN (first_name gin_trgm_ops, middle_name gin_trgm_ops, last_name gin_trgm_ops, email gin_trgm_ops);
 
 CREATE INDEX user_provisioning_request_status_createdat_index  ON usermanagement.user_provisioning_request 
 USING btree(status, created_at);
 
 
-CREATE INDEX role_name_index  ON usermanagement.role 
-USING GIN (name gin_trgm_ops);
+--CREATE INDEX role_name_index  ON usermanagement.role 
+--USING GIN (name gin_trgm_ops);
 
 
 -- CREATE INDEX user_name_email_index ON usermanagement.user 
@@ -242,39 +242,4 @@ USING btree(is_active, created_at);
 CREATE INDEX role_status_updatedat_index ON usermanagement.role 
 USING btree(is_active, updated_at);
 
-INSERT INTO ROLE (ID,  NAME, DESCRIPTION, IS_ACTIVE, CREATED_BY, UPDATED_BY) VALUES ('1', 'SYSTEM_ADMIN', 'System Admin', 1, 'SYSTEM', 'SYSTEM');
 
-INSERT INTO ROLE_PERMISSIONS_MAPPING (ROLE_ID, PERMISSION) VALUES
-('1','MANAGE_USERS_SCREEN'),
-('1','ADD_USERS'),
-('1','VIEW_USERS'),
-('1','EDIT_USERS'),
-('1','UPLOAD_USERS'),
-('1','CREATE_USER_FOR_PENDING_USER_REQUEST'),
-('1','ADD_SYSTEM_ADMINISTRATOR'),
-('1','VIEW_SYSTEM_ADMINISTRATOR'),
-('1','EDIT_SYSTEM_ADMINISTRATOR'),
-('1','VIEW_ROLES'),
-('1','ADD_ROLES'),
-('1','ON_BEHALF_OF_USER'),
-('1','MANAGE_ORGANIZATION_SCREEN'),
-('1','VIEW_ORGANIZATION'),
-('1','ADD_ORGANIZATION'),
-('1','EDIT_ORGANIZATION'),
-('1','MANAGE_ORDERS'),
-('1','VIEW_ORDERS'),
-('1','CREATE_ORDERS'),
-('1','EDIT_ORDERS'),
-('1','APPROVE_ORDERS'),
-('1','MANAGE_CATALOG_CONFIGURATIONS'),
-('1','MANAGE_SYSTEM_CONFIGURATIONS'),
-('1','CREATE_QUESTIONNIARE'),
-('1','VIEW_ACCOUNTS'),
-('1','VIEW_INVOICES'),
-('1','CREATE_INVOICES'),
-('1','MANAGE_INVOICES'),
-('1','VIEW_PAYMENT_HISTORY'),
-('1','VIEW_CUSTOMER_STATEMENT'),
-('1','VIEW_PAYMENT_METHOD'),
-('1','ADD_PAYMENT_METHOD'),
-('1','MANAGE_PAYMENT_METHODS');

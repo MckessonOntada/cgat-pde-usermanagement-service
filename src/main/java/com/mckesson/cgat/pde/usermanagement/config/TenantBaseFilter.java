@@ -56,6 +56,7 @@ public class TenantBaseFilter extends CGATBaseFilter {
 
 		}
 		catch (Exception e) {
+
 			log.error("Error occurred in TenantFilter. Message: {} ", e.getMessage(), e);
 			response.setStatus(HttpStatus.UNAUTHORIZED.value());
 			return;

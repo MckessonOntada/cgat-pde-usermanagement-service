@@ -5,7 +5,7 @@ import java.util.Map;
 
 public enum UserProvisioningStaus {
 
-	PENDING("P"), REJECTED("R"), APPROVED("A");
+	PENDING("PENDING"), REJECTED("REJECTED"), APPROVED("APPROVED");
 
 	private String userRequestType;
 

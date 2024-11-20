@@ -15,9 +15,6 @@ import com.mckesson.cgat.pde.usermanagement.repository.UserProvisioningRequestRe
 import com.mckesson.cgat.pde.usermanagement.service.UserProvisioningRequestService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-
 @Service
 public class UserProvisioningRequestServiceImpl implements UserProvisioningRequestService {
 
@@ -42,16 +39,15 @@ public class UserProvisioningRequestServiceImpl implements UserProvisioningReque
 	public Page<UserProvisioningRequest> findAll(Pageable paging, String query, UserProvisioningStaus status,
 			Long praticeId, LocalDate startDate, LocalDate endDate) {
 		query = StringUtils.toRootLowerCase(query);
-		return userProvisioningRequestRepo.findAllByQueryText(query, status.getUserRequestType(), paging, praticeId,
-				startDate, endDate);
+		return userProvisioningRequestRepo.findAllByQueryText(query,
+				status == null ? null : status.getUserRequestType(), paging, praticeId, startDate, endDate);
 	}
 
 	@Override
 	public List<UserProvisioningRequest> getAllUserProvisioning() throws ResourceNotFoundException {
-		List<UserProvisioningRequest> userRequest = userProvisioningRequestRepo.findAll();
+		List<UserProvisioningRequest> userRequest = userProvisioningRequestRepo.findAllByPracticeId(1L);
 		if (userRequest.isEmpty())
 			throw new ResourceNotFoundException("User Request is empty");
-
 		return userRequest;
 	}
 
