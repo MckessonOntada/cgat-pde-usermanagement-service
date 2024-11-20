@@ -1,4 +1,4 @@
-CREATE EXTENSION IF NOT EXISTS PG_TRGM with schema pg_catalog;
+-- CREATE EXTENSION IF NOT EXISTS PG_TRGM with schema pg_catalog;
 
 CREATE TABLE IF NOT EXISTS practice
 (
@@ -195,11 +195,11 @@ CREATE TABLE IF NOT EXISTS user_permission_mapping (
      FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE
 );
 
-CREATE INDEX role_name_index  ON usermanagement.role
-USING GIN (name gin_trgm_ops);
+-- CREATE INDEX role_name_index  ON usermanagement.role
+-- USING GIN (name gin_trgm_ops);
 
-CREATE INDEX user_name_email_index ON usermanagement.user 
-USING GIN (first_name gin_trgm_ops, middle_name gin_trgm_ops, last_name gin_trgm_ops, email gin_trgm_ops);
+-- CREATE INDEX user_name_email_index ON usermanagement.user 
+-- USING GIN (first_name gin_trgm_ops, middle_name gin_trgm_ops, last_name gin_trgm_ops, email gin_trgm_ops);
 
 CREATE TABLE IF NOT EXISTS user_provisioning_request(
 	
