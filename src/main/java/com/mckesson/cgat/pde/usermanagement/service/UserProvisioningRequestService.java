@@ -17,7 +17,7 @@ import jakarta.validation.constraints.NotNull;
 @Service
 public interface UserProvisioningRequestService {
 
-	UserProvisioningRequest createUserProvisioning(@Valid UserProvisioningRequest request);
+	UserProvisioningRequest createUserProvisioning(UserProvisioningRequest request);
 
 	UserProvisioningRequest updateUserProvisioningStatus(Long userProvisioningReqId, UserProvisioningStaus status)
 			throws ResourceNotFoundException;

@@ -56,11 +56,12 @@ public class UserProvisioningRequestController {
 	@Operation(summary = "Update user provisioning status")
 	public ResponseEntity<Object> updateUserProvisioningStatus(@RequestParam UserProvisioningStaus status,
 			@PathVariable Long userProvisioningReqId) throws ResourceNotFoundException, UnauthorizedAccessException {
-		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(UserType.GENERAL);
 		return new ResponseEntity<>(
 				userProvisioningRequestService.updateUserProvisioningStatus(userProvisioningReqId, status),
 				HttpStatus.OK);
 	}
+	
+	//To-Do: Get an UserProvisioningRequest
 
 	@GetMapping
 	@Operation(
@@ -73,7 +74,6 @@ public class UserProvisioningRequestController {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(UserType.GENERAL);
 		return userProvisioningRequestService.findAll(paging, query, status, OrganizationContext.getCurrentOrgId());
 
 	}

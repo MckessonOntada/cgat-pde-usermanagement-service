@@ -60,6 +60,6 @@ public class UserProvisioningRequest extends AuditColumns implements Serializabl
 	@Convert(converter = NumericBooleanConverter.class)
 	private Boolean isActive = false;
 
-	private String status = UserProvisioningStaus.PENDING.name();
+	private UserProvisioningStaus status = UserProvisioningStaus.PENDING;
 
 }
