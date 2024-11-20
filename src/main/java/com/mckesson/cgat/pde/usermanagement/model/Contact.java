@@ -26,22 +26,23 @@ public class Contact implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@NotEmpty(message = "Email ID is required")
-	@Email(regexp = "^[_a-zA-Z0-9!#$%&'*+/=?``{|}~^.-]+@[a-zA-Z0-9.-]+$", message = "Must be valid email format")
-	@Size(min = 2, max = 100, message = "Enter a valid Email Address")
+	@Email(regexp = "^[_a-zA-Z0-9!#$%&'*+/=?``{|}~^.-]+@[a-zA-Z0-9.-]+$", message = "Must be valid email format",
+			groups = BasicInfo.class)
+	@Size(min = 2, max = 100, message = "Enter a valid Email Address", groups = BasicInfo.class)
 	@Column(unique = true)
 	private String email;
 
-	@Size(min = 2, max = 5, message = "Must be valid Country code")
-	@Pattern(regexp = "^[+0-9]+$", message = "Must be numeric")
+	@Size(min = 2, max = 5, message = "Must be valid Country code", groups = BasicInfo.class)
+	@Pattern(regexp = "^[+0-9]+$", message = "Must be numeric", groups = BasicInfo.class)
 	private String countryCode;
 
-	@NotEmpty(message = "Phone Number is required")
-	@Pattern(regexp = "\\d{10}", message = "Phone number must be 10 digits")
+	@NotEmpty(message = "Phone Number is required", groups = BasicInfo.class)
+	@Pattern(regexp = "\\d{10}", message = "Phone number must be 10 digits", groups = BasicInfo.class)
 	@Column(unique = true)
 	private String phone;
 
-	@Size(max = 15)
-	@Pattern(regexp = "^[\\d ]*$", message = "Must be numeric")
+	@Size(max = 15, groups = BasicInfo.class)
+	@Pattern(regexp = "^[\\d ]*$", message = "Must be numeric", groups = BasicInfo.class)
 	private String fax;
 
 }
