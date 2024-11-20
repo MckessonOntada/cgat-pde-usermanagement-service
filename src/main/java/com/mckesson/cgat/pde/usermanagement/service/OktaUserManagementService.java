@@ -5,6 +5,6 @@ import com.mckesson.cgat.pde.usermanagement.model.User;
 
 public interface OktaUserManagementService {
 
-	void createUser(User user) throws CGATHttpException;
+	void updateOrCreateOktaUser(User user) throws CGATHttpException;
 
 }

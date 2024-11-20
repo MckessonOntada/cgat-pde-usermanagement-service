@@ -4,6 +4,8 @@ import com.mckesson.cgat.pde.usermanagement.exception.custom.CGATHttpException;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
@@ -33,10 +35,7 @@ public class CGATHttpClient {
 
 	public String sendPostRequest(String url, HashMap<String, String> queryParams, String payload, String oktaApiToken)
 			throws CGATHttpException {
-		String query = queryParams.keySet()
-			.stream()
-			.map(key -> key + "=" + URLEncoder.encode(queryParams.get(key), StandardCharsets.UTF_8))
-			.collect(Collectors.joining("&"));
+		String query = getQueryParams(queryParams);
 
 		HttpRequest request = HttpRequest.newBuilder()
 			.POST(HttpRequest.BodyPublishers.ofString(payload))
@@ -49,12 +48,44 @@ public class CGATHttpClient {
 		return httpResponse.body();
 	}
 
+	private String getQueryParams(HashMap<String, String> queryParams) {
+		return queryParams.keySet()
+			.stream()
+			.map(key -> key + "=" + URLEncoder.encode(queryParams.get(key), StandardCharsets.UTF_8))
+			.collect(Collectors.joining("&"));
+	}
+
+	public String sendGetRequest(String url, HashMap<String, String> queryParams, String oktaApiToken) {
+		String query = getQueryParams(queryParams);
+		HttpRequest request = HttpRequest.newBuilder()
+			.GET()
+			.uri(URI.create(url + '?' + query))
+			.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+			.header(HttpHeaders.AUTHORIZATION, oktaApiToken)
+			.build();
+
+		HttpResponse<String> httpResponse = getHttpResponse(request);
+		return httpResponse.body();
+	}
+
+	public String sendPutRequest(String url, String oktaApiToken) {
+		HttpRequest request = HttpRequest.newBuilder()
+			.PUT(HttpRequest.BodyPublishers.ofString("Assigning user to group"))
+			.uri(URI.create(url))
+			.header(HttpHeaders.AUTHORIZATION, oktaApiToken)
+			.build();
+		HttpResponse<String> httpResponse = getHttpResponse(request);
+		return httpResponse.body();
+	}
+
 	private HttpResponse<String> getHttpResponse(HttpRequest request) {
 		try {
 			HttpResponse<String> httpResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
 			int statusCode = httpResponse.statusCode();
-			boolean isValid = statusCode == HttpStatus.SC_OK;
+
+			boolean isValid = (statusCode == HttpStatus.SC_OK || statusCode == HttpStatus.SC_NO_CONTENT);
+
 			if (!isValid) {
 				throw new CGATHttpException("Communication Response - Received Response From report server with Status="
 						+ httpResponse.body());
