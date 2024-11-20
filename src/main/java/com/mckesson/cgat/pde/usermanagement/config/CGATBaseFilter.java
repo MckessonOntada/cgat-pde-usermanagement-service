@@ -22,7 +22,7 @@ public class CGATBaseFilter extends OncePerRequestFilter {
 	private AntPathMatcher pathMatcher;
 
 	public static final String[] URLS_TO_EXCLUDE = { "/actuator/**", "/swagger-ui.html", "/swagger-ui/**",
-			"/v3/api-docs/**", "/ws", "/favicon.ico", "/users-provisioning"};
+			"/v3/api-docs/**", "/ws", "/favicon.ico", "/users-provisioning" };
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

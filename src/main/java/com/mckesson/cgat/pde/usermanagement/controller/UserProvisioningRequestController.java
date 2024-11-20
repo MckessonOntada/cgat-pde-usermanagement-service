@@ -33,8 +33,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@Tag(name = "Users Provisioning", description = "Controller for Managing user-provisioning related operations and data.")
-@RequestMapping(path = "/practices/{practiceId}/users-provisioning", consumes = "application/json", produces = MediaType.APPLICATION_JSON_VALUE)
+@Tag(name = "Users Provisioning",
+		description = "Controller for Managing user-provisioning related operations and data.")
+@RequestMapping(path = "/practices/{practiceId}/users-provisioning", consumes = "application/json",
+		produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class UserProvisioningRequestController {
 
@@ -59,7 +61,8 @@ public class UserProvisioningRequestController {
 	}
 
 	@GetMapping
-	@Operation(summary = "Fetch all user provisioning request List based on filter provided with pagination capabilities.")
+	@Operation(
+			summary = "Fetch all user provisioning request List based on filter provided with pagination capabilities.")
 	Page<UserProvisioningRequest> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(defaultValue = "first_name") String sortBy,
@@ -78,4 +81,5 @@ public class UserProvisioningRequestController {
 				startDate, endDate);
 
 	}
+
 }
