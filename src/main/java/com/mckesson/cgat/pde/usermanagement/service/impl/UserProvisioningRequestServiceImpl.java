@@ -39,10 +39,11 @@ public class UserProvisioningRequestServiceImpl implements UserProvisioningReque
 	}
 
 	@Override
-	public Page<UserProvisioningRequest> findAll(Pageable paging, String query, UserProvisioningStaus status, Long praticeId ,LocalDate startDate ,LocalDate endDate) {
+	public Page<UserProvisioningRequest> findAll(Pageable paging, String query, UserProvisioningStaus status,
+			Long praticeId, LocalDate startDate, LocalDate endDate) {
 		query = StringUtils.toRootLowerCase(query);
-		return userProvisioningRequestRepo.findAllByQueryText(query, status.getUserRequestType(),
-				paging, praticeId,startDate,endDate);
+		return userProvisioningRequestRepo.findAllByQueryText(query, status.getUserRequestType(), paging, praticeId,
+				startDate, endDate);
 	}
 
 	@Override
@@ -50,7 +51,7 @@ public class UserProvisioningRequestServiceImpl implements UserProvisioningReque
 		List<UserProvisioningRequest> userRequest = userProvisioningRequestRepo.findAll();
 		if (userRequest.isEmpty())
 			throw new ResourceNotFoundException("User Request is empty");
-		
+
 		return userRequest;
 	}
 

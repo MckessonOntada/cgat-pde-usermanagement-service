@@ -33,10 +33,11 @@ public interface UserProvisioningRequestRepo extends JpaRepository<UserProvision
 					 	OR
 					 	(created_at between :from and :to)
 					 )
-					  
-				 	 
+
+
 			""")
 	Page<UserProvisioningRequest> findAllByQueryText(@Param("query") String query, @Param("status") String status,
-			Pageable paging, @Param("practiceId") long practiceId,@Param("from") LocalDate from, @Param("to") LocalDate to);
+			Pageable paging, @Param("practiceId") long practiceId, @Param("from") LocalDate from,
+			@Param("to") LocalDate to);
 
 }
