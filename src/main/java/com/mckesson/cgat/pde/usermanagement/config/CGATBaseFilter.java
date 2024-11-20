@@ -19,6 +19,9 @@ import static com.mckesson.jbat.auth.module.constant.UtilsConstant.SWAGGER_URL_T
 @Slf4j
 public class CGATBaseFilter extends OncePerRequestFilter {
 
+	public static final String[] SWAGGER_URL_TO_EXCLUDE = { "/actuator/**", "/swagger-ui.html", "/swagger-ui/**",
+			"/v3/api-docs/**", "/ws", "/favicon.ico", "/public/idpConfig" };
+
 	private AntPathMatcher pathMatcher;
 
 	@Override
