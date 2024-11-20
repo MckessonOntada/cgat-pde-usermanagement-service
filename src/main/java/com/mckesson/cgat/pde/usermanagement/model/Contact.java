@@ -2,6 +2,8 @@ package com.mckesson.cgat.pde.usermanagement.model;
 
 import java.io.Serializable;
 
+import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.Email;
@@ -26,25 +28,23 @@ public class Contact implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@NotEmpty(message = "Email ID is required")
-	@Email(regexp = "^[_a-zA-Z0-9!#$%&'*+/=?``{|}~^.-]+@[a-zA-Z0-9.-]+$", message = "Must be valid email format")
-	@Size(min = 2, max = 100, message = "Enter a valid Email Address")
+	@Email(regexp = "^[_a-zA-Z0-9!#$%&'*+/=?``{|}~^.-]+@[a-zA-Z0-9.-]+$", message = "Must be valid email format",
+			groups = BasicInfo.class)
+	@Size(min = 2, max = 100, message = "Enter a valid Email Address", groups = BasicInfo.class)
 	@Column(unique = true)
 	private String email;
 
-	@Size(min = 2, max = 5, message = "Must be valid Country code")
-	@Pattern(regexp = "^[+0-9]+$", message = "Must be numeric")
+	@Size(min = 2, max = 5, message = "Must be valid Country code", groups = BasicInfo.class)
+	@Pattern(regexp = "^[+0-9]+$", message = "Must be numeric", groups = BasicInfo.class)
 	private String countryCode;
 
-	@NotEmpty(message = "Phone Number is required")
-	@Pattern(regexp = "\\d{10}", message = "Phone number must be 10 digits")
+	@NotEmpty(message = "Phone Number is required", groups = BasicInfo.class)
+	@Pattern(regexp = "\\d{10}", message = "Phone number must be 10 digits", groups = BasicInfo.class)
 	@Column(unique = true)
 	private String phone;
 
-	@Size(max = 15)
-	// @Pattern(message = "Fax must be a valid format (e.g., +1-123-456-7890, (123)
-	// 456-7890, 123-456-7890)", regexp = "")
-	@Pattern(regexp = "^\\+?[0-9]{1,4}?[-.\\s]?\\(?[0-9]{1,3}?\\)?[-.\\s]?[0-9]{3,4}[-.\\s]?[0-9]{3,4}$",
-			message = "Invalid fax number format")
+	@Size(max = 15, groups = BasicInfo.class)
+	@Pattern(regexp = "^[\\d ]*$", message = "Must be numeric", groups = BasicInfo.class)
 	private String fax;
 
 }
