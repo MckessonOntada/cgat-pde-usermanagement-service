@@ -4,6 +4,10 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 
+import com.mckesson.cgat.pde.usermanagement.exception.custom.CGATHttpException;
+import com.mckesson.cgat.pde.usermanagement.model.*;
+import com.mckesson.cgat.pde.usermanagement.service.OktaUserManagementService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,10 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
-import com.mckesson.cgat.pde.usermanagement.model.Account;
-import com.mckesson.cgat.pde.usermanagement.model.Role;
-import com.mckesson.cgat.pde.usermanagement.model.User;
-import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
@@ -24,6 +24,7 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import jakarta.transaction.Transactional;
 
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -33,14 +34,26 @@ public class UserServiceImpl implements UserService {
 
 	private final RoleRepository roleRepository;
 
-	public UserServiceImpl(UserRepository userRepository, AccountRepository repository, RoleRepository roleRepository) {
+	private final OktaUserManagementService oktaUserManagementService;
+
+	public UserServiceImpl(UserRepository userRepository, AccountRepository repository, RoleRepository roleRepository, OktaUserManagementService oktaUserManagementService) {
 		this.userRepository = userRepository;
 		this.accountRepository = repository;
 		this.roleRepository = roleRepository;
+		this.oktaUserManagementService = oktaUserManagementService;
 	}
 
 	@Override
 	public User createUser(User model) {
+		UserProvisionedInOktaStatus oktaStatus = UserProvisionedInOktaStatus.PENDING;
+		try {
+			oktaUserManagementService.updateOrCreateOktaUser(model);
+			oktaStatus = UserProvisionedInOktaStatus.PROVISIONED;
+		}catch (CGATHttpException e) {
+			log.error("Error occurred while provisioning user in okta, e: {}", e.getMessage());
+
+		}
+		model.setProvisionedInOktaStatus(oktaStatus);
 		return userRepository.save(model);
 
 	}

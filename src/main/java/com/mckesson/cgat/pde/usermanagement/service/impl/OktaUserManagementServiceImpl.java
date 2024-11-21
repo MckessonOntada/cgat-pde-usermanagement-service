@@ -52,7 +52,7 @@ public class OktaUserManagementServiceImpl implements OktaUserManagementService 
 		Contact contact = Contact.builder().email("k10@yopmail.com").build();
 		User newUser = User.builder().name(name).contact(contact).build();
 
-		// createUser(newUser);
+		// updateOrCreateOktaUser(newUser);
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public class OktaUserManagementServiceImpl implements OktaUserManagementService 
 		}
 		catch (Exception e) {
 			log.error("Error occurred while creating user: {} ", e.getMessage());
-			throw new CGATHttpException(e);
+			throw new CGATHttpException(e.getMessage());
 		}
 	}
 
@@ -121,7 +121,6 @@ public class OktaUserManagementServiceImpl implements OktaUserManagementService 
 
 		String userCreatedResponse = cgatHttpClient.sendPostRequest(OKTA_USER_PATH, queryParams, payload,
 				"SSWS " + oktaApiToken);
-		System.out.println(userCreatedResponse);
 	}
 
 	private OktaUserPayload getOktaUser(User user) {
