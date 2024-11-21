@@ -1,4 +1,4 @@
-CREATE EXTENSION IF NOT EXISTS PG_TRGM with schema pg_catalog;
+--CREATE EXTENSION IF NOT EXISTS PG_TRGM with schema pg_catalog;
 
 CREATE TABLE IF NOT EXISTS practice
 (

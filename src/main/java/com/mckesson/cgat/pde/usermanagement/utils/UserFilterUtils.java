@@ -26,8 +26,6 @@ public class UserFilterUtils {
 			Map<String, Claim> payload) throws Exception {
 		log.info("Building User Context Detail for userId {}.", loggedInUserId);
 		LoggedInUserDetails loggedInUser = LoggedInUserDetails.builder().id(loggedInUserId).build();
-		// TODO - kapil, remove the following code to fetch the data from db. Use payload
-		// claims for it
 		if (loggedInUserId != null) {
 			User user = userService.getUser(Long.parseLong(loggedInUserId));
 			if (user != null) {
@@ -51,6 +49,20 @@ public class UserFilterUtils {
 		// loggedInUser.setUserName(loggedInUserName);
 		// }
 
+		return loggedInUser;
+	}
+
+	public LoggedInUserDetails buildUserContextDetailFromOkta(String loggedInUserIdentifier) throws Exception {
+		log.info("Building User Context Detail for user identifier {}.", loggedInUserIdentifier);
+		User user = userService.getUserByEmail(loggedInUserIdentifier);
+		LoggedInUserDetails loggedInUser = LoggedInUserDetails.builder()
+			.id(String.valueOf(user.getId()))
+			.name(user.getName())
+			.role(user.getRole())
+			.permissions(user.getPermissions())
+			.practiceId(user.getPracticeId())
+			.userName(loggedInUserIdentifier)
+			.build();
 		return loggedInUser;
 	}
 

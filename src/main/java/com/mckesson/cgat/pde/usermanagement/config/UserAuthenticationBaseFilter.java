@@ -46,10 +46,12 @@ public class UserAuthenticationBaseFilter extends CGATBaseFilter {
 			catch (Exception e) {
 				log.error("Error occurred while creating context in GenericFilter {}", e.getMessage());
 				response.setStatus(HttpStatus.UNAUTHORIZED.value());
+				return;
 			}
 		}
 		else {
-			response.setStatus(HttpStatus.BAD_REQUEST.value());
+			response.setStatus(HttpStatus.UNAUTHORIZED.value());
+			return;
 		}
 
 		filterChain.doFilter(request, response);
@@ -60,7 +62,9 @@ public class UserAuthenticationBaseFilter extends CGATBaseFilter {
 			HttpServletResponse response) {
 		try {
 			Map<String, Claim> payload = securityUtils.getPayloadByToken(request, response);
-			return userFilterUtils.buildUserContextDetail(request, payload);
+			Map<String, Object> profileMap = payload.get("Profile").asMap();
+			String userIdentifier = String.valueOf(profileMap.get("login"));
+			return userFilterUtils.buildUserContextDetailFromOkta(userIdentifier);
 		}
 		catch (Exception e) {
 			log.error("Error in createUserRequestWithOKTAToken method while Setting Current User Id {}",
