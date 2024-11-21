@@ -1,28 +1,30 @@
 package com.mckesson.cgat.pde.usermanagement.config;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
+
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.LoggedInUserDetails;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.cgat.pde.usermanagement.utils.OrganizationContext;
 import com.mckesson.cgat.pde.usermanagement.utils.UserRequestAuthorizationValidator;
 import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 @Component
 @Slf4j
 public class TenantBaseFilter extends CGATBaseFilter {
 
-	private final String PRACTICE = "practice";
+	private final String PRACTICE = "practices";
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -54,7 +56,8 @@ public class TenantBaseFilter extends CGATBaseFilter {
 
 		}
 		catch (Exception e) {
-			log.error("Error occurred in TenantFilter. Message: {} ", e.getMessage());
+
+			log.error("Error occurred in TenantFilter. Message: {} ", e.getMessage(), e);
 			response.setStatus(HttpStatus.UNAUTHORIZED.value());
 			return;
 		}

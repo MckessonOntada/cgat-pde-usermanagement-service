@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.exception.handler;
 
+import com.mckesson.cgat.pde.usermanagement.exception.custom.ForbiddenActionException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.jbat.auth.module.exception.BadRequestException;
 import com.mckesson.jbat.auth.module.exception.JWTNotFoundException;
@@ -56,7 +57,7 @@ public class ServiceExceptionHandler {
 	}
 
 	private ResponseEntity<?> buildResponseEntity(Exception ex, WebRequest request, HttpStatus httpStatus) {
-		log.error("Error occurred {} for request:: {}", ex.getMessage(), request.getDescription(false));
+		log.error("Error occurred for request:: {}", request.getDescription(false), ex);
 		ApiErrorResponse apiErrorResponse = new ApiErrorResponse(httpStatus, new Date(), ex.getMessage());
 		return new ResponseEntity<>(apiErrorResponse, httpStatus);
 	}
@@ -70,6 +71,11 @@ public class ServiceExceptionHandler {
 			.collect(Collectors.toList());
 		ApiErrorResponse apiErrorResponse = new ApiErrorResponse(HttpStatus.BAD_REQUEST, new Date(), errors.toString());
 		return new ResponseEntity<>(apiErrorResponse, HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(ForbiddenActionException.class)
+	public ResponseEntity<?> handleValidationErrors(ForbiddenActionException ex, WebRequest request) {
+		return buildResponseEntity(ex, request, HttpStatus.FORBIDDEN);
 	}
 
 	@ExceptionHandler({ AccessDeniedException.class })

@@ -32,6 +32,7 @@ public class DevUserAuthenticationBaseFilter extends CGATBaseFilter {
 
 		LoggedInUserDetails userRequest;
 		String userId = request.getHeader("userId");
+
 		if (StringUtils.isNotEmpty(userId)) {
 			try {
 				userRequest = userFilterUtils.buildUserContextDetail(userId, "devUserName", new HashMap<>());
@@ -42,8 +43,11 @@ public class DevUserAuthenticationBaseFilter extends CGATBaseFilter {
 				response.setStatus(HttpStatus.UNAUTHORIZED.value());
 			}
 		}
+
 		else {
-			response.setStatus(HttpStatus.BAD_REQUEST.value());
+			response.setStatus(HttpStatus.UNAUTHORIZED.value());
+			log.error("User Id not found in header");
+			return;
 		}
 		filterChain.doFilter(request, response);
 	}
