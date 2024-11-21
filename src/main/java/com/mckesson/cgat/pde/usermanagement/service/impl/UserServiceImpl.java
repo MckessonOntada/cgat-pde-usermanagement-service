@@ -36,7 +36,8 @@ public class UserServiceImpl implements UserService {
 
 	private final OktaUserManagementService oktaUserManagementService;
 
-	public UserServiceImpl(UserRepository userRepository, AccountRepository repository, RoleRepository roleRepository, OktaUserManagementService oktaUserManagementService) {
+	public UserServiceImpl(UserRepository userRepository, AccountRepository repository, RoleRepository roleRepository,
+			OktaUserManagementService oktaUserManagementService) {
 		this.userRepository = userRepository;
 		this.accountRepository = repository;
 		this.roleRepository = roleRepository;
@@ -49,7 +50,8 @@ public class UserServiceImpl implements UserService {
 		try {
 			oktaUserManagementService.updateOrCreateOktaUser(model);
 			oktaStatus = UserProvisionedInOktaStatus.PROVISIONED;
-		}catch (CGATHttpException e) {
+		}
+		catch (CGATHttpException e) {
 			log.error("Error occurred while provisioning user in okta, e: {}", e.getMessage());
 
 		}
