@@ -20,12 +20,12 @@ public interface UserProvisioningRequestService {
 
 	UserProvisioningRequest createUserProvisioning(UserProvisioningRequest request);
 
-	UserProvisioningRequest updateUserProvisioningStatus(Long userProvisioningReqId, UserProvisioningStaus status)
-			throws ResourceNotFoundException;
+	UserProvisioningRequest updateUserProvisioningStatus(Long userProvisioningReqId,
+			UserProvisioningStaus statusToBeUpdated) throws ResourceNotFoundException;
 
 	Page<UserProvisioningRequest> findAll(Pageable paging, String query, UserProvisioningStaus status, Long praticeId,
 			LocalDate startDate, LocalDate endDate);
 
-	List<UserProvisioningRequest> getAllUserProvisioning() throws ResourceNotFoundException;
+	UserProvisioningRequest getUserProvisioningRequest(Long requestId) throws ResourceNotFoundException;
 
 }

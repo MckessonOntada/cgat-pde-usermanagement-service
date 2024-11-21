@@ -54,4 +54,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 	List<User> findByCreatedAt(Date createdAt);
 
+	User findByContactEmail(String email);
+
 }

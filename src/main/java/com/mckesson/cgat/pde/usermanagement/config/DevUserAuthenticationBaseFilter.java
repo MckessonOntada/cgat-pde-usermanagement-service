@@ -45,8 +45,8 @@ public class DevUserAuthenticationBaseFilter extends CGATBaseFilter {
 		}
 
 		else {
-			response.setStatus(HttpStatus.BAD_REQUEST.value());
-			log.error("userId not found in header");
+			response.setStatus(HttpStatus.UNAUTHORIZED.value());
+			log.error("User Id not found in header");
 			return;
 		}
 		filterChain.doFilter(request, response);

@@ -5,8 +5,10 @@ import static com.mckesson.jbat.common.util.constant.HeaderConstant.ROLE_CLAIM;
 import static com.mckesson.jbat.common.util.constant.HeaderConstant.USER_CLAIM;
 import static com.mckesson.jbat.common.util.constant.HeaderConstant.USER_NAME_CLAIM;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -22,7 +24,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.auth0.jwt.interfaces.Claim;
 import com.mckesson.cgat.pde.usermanagement.dto.IdentityProviderMetaData;
 import com.mckesson.cgat.pde.usermanagement.dto.JwtResponseDto;
+import com.mckesson.cgat.pde.usermanagement.model.Permission;
+import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.service.IDPService;
+import com.mckesson.cgat.pde.usermanagement.service.UserService;
 import com.mckesson.jbat.auth.module.service.JWTExtractor;
 import com.mckesson.jbat.auth.module.util.JWTHelper;
 
@@ -50,6 +55,9 @@ public class PublicAccessController {
 	private IDPService idpService;
 
 	@Autowired
+	private UserService userService;
+
+	@Autowired
 	JWTExtractor bearerJWTExtractor;
 
 	@GetMapping(value = { "/idpConfig" })
@@ -71,15 +79,14 @@ public class PublicAccessController {
 		String bearerToken = bearerJWTExtractor.getJWTTokenFromHeader(authToken);
 		Map<String, Claim> payload = JWTHelper.getPayload(bearerToken);
 		if (!CollectionUtils.isEmpty(payload)) {
-			List<String> roleNames = payload.get(ROLE_CLAIM).asList(String.class);
-			List<String> permissions = payload.get(PERMISSION_CLAIM).asList(String.class);
-			String userName = payload.get(USER_NAME_CLAIM).asString();
-			String userId = payload.get(USER_CLAIM).asString();
+			Map<String, Object> profileMap = payload.get("Profile").asMap();
+			String userIdentifier = String.valueOf(profileMap.get("login"));
+			User principal = userService.getUserByEmail(userIdentifier);
 			return JwtResponseDto.builder()
-				.roles(roleNames)
-				.permissions(permissions)
-				.userName(userName)
-				.userId(userId)
+				.roles(Collections.singletonList(principal.getRole().getName()))
+				.permissions(principal.getPermissions().stream().map(Permission::name).toList())
+				.userName(principal.getName().getFirstName() + " " + principal.getName().getLastName())
+				.userId(String.valueOf(principal.getId()))
 				.build();
 		}
 		return null;

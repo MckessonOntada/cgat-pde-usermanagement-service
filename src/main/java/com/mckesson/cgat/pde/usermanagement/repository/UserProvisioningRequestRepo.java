@@ -29,11 +29,11 @@ public interface UserProvisioningRequestRepo extends JpaRepository<UserProvision
 						 )
 
 					AND
-						(practice_id =:practiceId)
+						practice_id =:practiceId
 					AND
 						(
-						 	(:status is null AND status = 'PENDING')
-							or status =:status
+						 	cast(:requestStatus as varchar) IS NULL
+							OR status =:requestStatus
 						)
 
 					AND
@@ -46,9 +46,9 @@ public interface UserProvisioningRequestRepo extends JpaRepository<UserProvision
 
 			""")
 
-	Page<UserProvisioningRequest> findAllByQueryText(@Param("query") String query, @Param("status") String status,
-			Pageable paging, @Param("practiceId") long practiceId, @Param("from") LocalDate from,
-			@Param("to") LocalDate to);
+	Page<UserProvisioningRequest> findAllByQueryText(@Param("query") String query,
+			@Param("requestStatus") String requestStatus, Pageable paging, @Param("practiceId") long practiceId,
+			@Param("from") LocalDate from, @Param("to") LocalDate to);
 
 	List<UserProvisioningRequest> findAllByPracticeId(Long id);
 

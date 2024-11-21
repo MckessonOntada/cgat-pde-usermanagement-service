@@ -29,4 +29,6 @@ public interface UserService {
 	User linkUserToRoleAndPermissions(Long userId, UserType userType, RolePermissionsPatchDTO rolePermissions)
 			throws ResourceNotFoundException;
 
+	User getUserByEmail(String email);
+
 }

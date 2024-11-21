@@ -33,9 +33,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@Tag(name = "Users Provisioning",
+@Tag(name = "Users Provisioning Request",
 		description = "Controller for Managing user-provisioning related operations and data.")
-@RequestMapping(path = "/practices/{practiceId}/users-provisioning", consumes = "application/json",
+@RequestMapping(path = "/practices/{practiceId}/users-provisioning-requests",
 		produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class UserProvisioningRequestController {
@@ -45,7 +45,7 @@ public class UserProvisioningRequestController {
 
 	private static final String SORT_ORDER_ASC = "asc";
 
-	@PatchMapping("/status/{userProvisioningReqId}")
+	@PatchMapping("/{userProvisioningReqId}/status")
 	@Operation(summary = "Update user provisioning status")
 	public ResponseEntity<Object> updateUserProvisioningStatus(@RequestParam UserProvisioningStaus status,
 			@PathVariable Long userProvisioningReqId) throws ResourceNotFoundException {
@@ -54,10 +54,12 @@ public class UserProvisioningRequestController {
 				HttpStatus.OK);
 	}
 
-	@GetMapping("/request")
-	@Operation(summary = "Fetch all user provisioning request List.")
-	public List<UserProvisioningRequest> getAllUserProvisioning() throws ResourceNotFoundException {
-		return userProvisioningRequestService.getAllUserProvisioning();
+	@GetMapping("/{userProvisioningReqId}")
+	@Operation(summary = "Fetch a user provisioning request.")
+	public ResponseEntity<UserProvisioningRequest> getUserProvisioningRequest(@PathVariable Long userProvisioningReqId)
+			throws ResourceNotFoundException {
+		return new ResponseEntity<>(userProvisioningRequestService.getUserProvisioningRequest(userProvisioningReqId),
+				HttpStatus.OK);
 	}
 
 	@GetMapping
@@ -67,7 +69,7 @@ public class UserProvisioningRequestController {
 			@RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(defaultValue = "first_name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
-			@RequestParam(required = false) UserProvisioningStaus status,
+			@RequestParam(defaultValue = "PENDING") UserProvisioningStaus status,
 			@RequestParam(required = false) @DateTimeFormat(pattern = CustomUtils.API_DATE_FORMAT) LocalDate startDate,
 			@RequestParam(required = false) @DateTimeFormat(pattern = CustomUtils.API_DATE_FORMAT) LocalDate endDate)
 			throws BadRequestException {

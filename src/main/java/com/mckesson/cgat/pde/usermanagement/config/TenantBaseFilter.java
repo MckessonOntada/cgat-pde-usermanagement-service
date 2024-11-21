@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TenantBaseFilter extends CGATBaseFilter {
 
-	private final String PRACTICE = "practice";
+	private final String PRACTICE = "practices";
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
