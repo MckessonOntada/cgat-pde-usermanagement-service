@@ -5,17 +5,17 @@ import java.io.Serializable;
 import org.hibernate.type.NumericBooleanConverter;
 
 import com.google.auto.value.AutoValue.Builder;
-import com.mckesson.cgat.pde.usermanagement.model.converters.UserProvisioningStatusConverter;
 
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -61,7 +61,7 @@ public class UserProvisioningRequest extends AuditColumns implements Serializabl
 	@Convert(converter = NumericBooleanConverter.class)
 	private Boolean isActive = false;
 
-	@Convert(converter = UserProvisioningStatusConverter.class)
+	@Enumerated(EnumType.STRING)
 	private UserProvisioningStaus status = UserProvisioningStaus.PENDING;
 
 }

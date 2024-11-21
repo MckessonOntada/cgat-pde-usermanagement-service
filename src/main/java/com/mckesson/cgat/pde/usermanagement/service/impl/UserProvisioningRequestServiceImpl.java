@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.mckesson.cgat.pde.usermanagement.exception.custom.ForbiddenActionException;
 import com.mckesson.cgat.pde.usermanagement.model.UserProvisioningRequest;
 import com.mckesson.cgat.pde.usermanagement.model.UserProvisioningStaus;
 import com.mckesson.cgat.pde.usermanagement.repository.UserProvisioningRequestRepo;
@@ -27,11 +28,19 @@ public class UserProvisioningRequestServiceImpl implements UserProvisioningReque
 	}
 
 	@Override
-	public UserProvisioningRequest updateUserProvisioningStatus(Long userId, UserProvisioningStaus status)
+	public UserProvisioningRequest updateUserProvisioningStatus(Long requestId, UserProvisioningStaus statusToBeUpdated)
 			throws ResourceNotFoundException {
-		UserProvisioningRequest userRequest = userProvisioningRequestRepo.findById(userId)
-			.orElseThrow(() -> new ResourceNotFoundException("User id not found : " + userId));
-		userRequest.setStatus(status);
+		UserProvisioningRequest userRequest = userProvisioningRequestRepo.findById(requestId)
+			.orElseThrow(
+					() -> new ResourceNotFoundException("User provisoning request not found for id: " + requestId));
+		// First clause is to make request Idempotent. Second clause is to make sure
+		// Approved or Rejected request cant be updated.
+		if (userRequest.getStatus() == statusToBeUpdated || userRequest.getStatus() == UserProvisioningStaus.PENDING)
+			userRequest.setStatus(statusToBeUpdated);
+		else
+			throw new ForbiddenActionException(
+					"User provisoning request once approved or rejected cant be updated. Forbidden Action for id :"
+							+ requestId);
 		return userProvisioningRequestRepo.save(userRequest);
 	}
 
@@ -39,15 +48,15 @@ public class UserProvisioningRequestServiceImpl implements UserProvisioningReque
 	public Page<UserProvisioningRequest> findAll(Pageable paging, String query, UserProvisioningStaus status,
 			Long praticeId, LocalDate startDate, LocalDate endDate) {
 		query = StringUtils.toRootLowerCase(query);
-		return userProvisioningRequestRepo.findAllByQueryText(query,
-				status == null ? null : status.getUserRequestType(), paging, praticeId, startDate, endDate);
+		return userProvisioningRequestRepo.findAllByQueryText(query, status.name(), paging, praticeId, startDate,
+				endDate);
 	}
 
 	@Override
-	public List<UserProvisioningRequest> getAllUserProvisioning() throws ResourceNotFoundException {
-		List<UserProvisioningRequest> userRequest = userProvisioningRequestRepo.findAllByPracticeId(1L);
-		if (userRequest.isEmpty())
-			throw new ResourceNotFoundException("User Request is empty");
+	public UserProvisioningRequest getUserProvisioningRequest(Long requestId) throws ResourceNotFoundException {
+		UserProvisioningRequest userRequest = userProvisioningRequestRepo.findById(requestId)
+			.orElseThrow(
+					() -> new ResourceNotFoundException("User provisoning request not found for id: :" + requestId));
 		return userRequest;
 	}
 

@@ -20,19 +20,19 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @Tag(name = "Users Provisioning Request",
 		description = "Controller for Managing user-provisioning request related operations and data.")
-@RequestMapping(path = "/users-provisioning", consumes = "application/json",
+@RequestMapping(path = "/users-provisioning-requests", consumes = "application/json",
 		produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
-public class UserProvisionRequest {
+public class GlobalUserProvisioningRequestController {
 
 	@Autowired
 	private UserProvisioningRequestService userProvisioningRequestService;
 
 	@PostMapping
-	@Operation(summary = "Create user provisioning ")
+	@Operation(summary = "Create user provisioning request")
 	public ResponseEntity<UserProvisioningRequest> createUserProvisioning(
 			@Valid @RequestBody UserProvisioningRequest request) {
-		return new ResponseEntity<>(userProvisioningRequestService.createUserProvisioning(request), HttpStatus.OK);
+		return new ResponseEntity<>(userProvisioningRequestService.createUserProvisioning(request), HttpStatus.CREATED);
 	}
 
 }
