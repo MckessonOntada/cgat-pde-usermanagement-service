@@ -23,7 +23,7 @@ public class CorsFilter extends CGATBaseFilter {
 		response.setHeader("Access-Control-Allow-Headers", "*");
 
 		if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-			response.setStatus(HttpStatus.UNAUTHORIZED.value());
+			response.setStatus(HttpStatus.OK.value());
 			return;
 		}
 		filterChain.doFilter(request, response);
