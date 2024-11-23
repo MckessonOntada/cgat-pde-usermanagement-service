@@ -1,23 +1,32 @@
 package com.mckesson.cgat.pde.usermanagement.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 public class CustomDTOs {
 
-	@AllArgsConstructor
-	@Data
-	@NoArgsConstructor
-	public static class PermissionDto {
+	public interface TherapyCatalogResponseDTO {
 
-		public String id;
+		String getId();
 
-		public String name;
+		String getMaterialDescription();
 
-		public String label;
+		String getNdc();
 
-		public boolean is_active;
+		String getUdi();
+
+	}
+
+	public interface SoldToAccountsResponseDTO {
+
+		String getSoldToCustomer();
+
+		String getsoldToCustomerName();
+
+	}
+
+	public interface ShipToAccountsResponseDTO {
+
+		String getShipToCustomer();
+
+		String getshipToCustomerName();
 
 	}
 
