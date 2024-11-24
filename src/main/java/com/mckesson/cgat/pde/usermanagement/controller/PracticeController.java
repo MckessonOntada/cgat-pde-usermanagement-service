@@ -57,7 +57,7 @@ public class PracticeController {
 	@PostMapping(consumes = { "multipart/form-data" })
 	@Operation(summary = "Create Practice")
 	public ResponseEntity<Object> createPractice(@RequestPart("practiceStr") String practiceStr,
-			@RequestPart("logo") MultipartFile logo, BindingResult bindingResult)
+			@RequestPart(value = "logo", required = false) MultipartFile logo, BindingResult bindingResult)
 			throws IOException, MethodArgumentNotValidException {
 
 		Practice practiceObj = parsePractice(practiceStr);
