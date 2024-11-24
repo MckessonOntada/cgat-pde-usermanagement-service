@@ -11,10 +11,10 @@ import com.mckesson.cgat.pde.usermanagement.dto.CustomDTOs.TherapyCatalogRespons
 @Service
 public interface TherapyService {
 
-	Page<TherapyCatalogResponseDTO> getAllTherapies(Long userId, Pageable paging);
+	Page<TherapyCatalogResponseDTO> findAllTherapies(Long userId, String query, String salesOrg, Pageable paging);
 
-	Page<SoldToAccountsResponseDTO> getAllSoldToAccounts(Long userId, Long therapyId, Pageable paging);
+	Page<SoldToAccountsResponseDTO> findAllSoldToAccounts(Long userId, Long therapyId, String query, Pageable paging);
 
-	Page<ShipToAccountsResponseDTO> getAllShipToAccounts(String soldToAccountId, Long therapyId, Pageable paging);
+	Page<ShipToAccountsResponseDTO> findAllShipToAccounts(String soldToAccountId, Long therapyId, Pageable paging);
 
 }

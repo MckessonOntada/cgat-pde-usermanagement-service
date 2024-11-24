@@ -28,7 +28,8 @@ public class TherapyServiceImpl implements TherapyService {
 		this.accountRepository = accountRepository;
 	}
 
-	public Page<TherapyCatalogResponseDTO> getAllTherapies(Long userId, Pageable paging) {
+	public Page<TherapyCatalogResponseDTO> findAllTherapies(Long userId, String query, String salesOrg,
+			Pageable paging) {
 		Page<Account> allSoldToAccountsOfUser = accountRepository.findAccountsByUser(userId, "ALL", paging,
 				OrganizationContext.getCurrentOrgId(), AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 
@@ -36,26 +37,27 @@ public class TherapyServiceImpl implements TherapyService {
 			.stream()
 			.map(a -> a.getId().toString())
 			.toList();
-		return therapyRepository.getAllTherapiesCatalogs(soldtoAccountIds, paging);
+		return therapyRepository.findAllTherapiesCatalogs(soldtoAccountIds, query, salesOrg, paging);
 	}
 
-	public Page<SoldToAccountsResponseDTO> getAllSoldToAccounts(Long userId, Long therapyId, Pageable paging) {
+	public Page<SoldToAccountsResponseDTO> findAllSoldToAccounts(Long userId, Long therapyId, String query,
+			Pageable paging) {
 		Page<Account> allSoldToAccountsOfUser = accountRepository.findAccountsByUser(userId, "ALL", paging,
 				OrganizationContext.getCurrentOrgId(), AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 		List<String> soldtoAccountIds = allSoldToAccountsOfUser.getContent()
 			.stream()
 			.map(a -> a.getId().toString())
 			.toList();
-		return therapyRepository.getSoldToAccounts(therapyId, soldtoAccountIds, paging);
+		return therapyRepository.findAllSoldToAccounts(therapyId, soldtoAccountIds, query, paging);
 		// allSoldToAccountsOfUser.getContent().stream()
 		// .filter(a ->
 		// soldToAccounts.getContent().contains(String.valueOf(a.getId()))).toList();
 		// return allSoldToAccountsOfUser;
 	}
 
-	public Page<ShipToAccountsResponseDTO> getAllShipToAccounts(String soldToAccountId, Long therapyId,
+	public Page<ShipToAccountsResponseDTO> findAllShipToAccounts(String soldToAccountId, Long therapyId,
 			Pageable paging) {
-		return therapyRepository.getAllShipToAccounts(soldToAccountId, therapyId, paging);
+		return therapyRepository.findAllShipToAccounts(soldToAccountId, therapyId, paging);
 	}
 
 }
