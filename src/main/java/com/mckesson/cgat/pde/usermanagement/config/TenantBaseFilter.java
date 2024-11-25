@@ -34,9 +34,11 @@ public class TenantBaseFilter extends CGATBaseFilter {
 			 * Fetching practice id from the request url. It would be like:
 			 * /practice/{practiceId}/
 			 */
-			List<String> servletPath = Arrays.asList(request.getServletPath().split("/"));
+			String requestServletPath = request.getServletPath().substring(1);
+			List<String> servletPath = Arrays.asList(requestServletPath.split("/"));
 			long tenantIdFromRequest = 1L;
-			if (servletPath.contains(PRACTICE) && servletPath.size() > servletPath.indexOf(PRACTICE) + 1) {
+
+			if (servletPath.contains(PRACTICE) && !requestServletPath.matches(PRACTICE)) {
 				tenantIdFromRequest = Long.parseLong(servletPath.get(servletPath.indexOf(PRACTICE) + 1));
 			}
 
@@ -58,7 +60,7 @@ public class TenantBaseFilter extends CGATBaseFilter {
 		catch (Exception e) {
 
 			log.error("Error occurred in TenantFilter. Message: {} ", e.getMessage(), e);
-			response.setStatus(HttpStatus.UNAUTHORIZED.value());
+			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 			return;
 		}
 		filterChain.doFilter(request, response);

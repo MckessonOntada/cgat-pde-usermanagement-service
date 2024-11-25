@@ -38,7 +38,7 @@ public class PracticeUtils {
 
 	public void validatePractice(Practice practice, BindingResult bindingResult, MultipartFile logo)
 			throws InvalidFileFormatException {
-		if (!logo.isEmpty() && !isValidImageFormat(logo.getOriginalFilename()))
+		if (null != logo && !logo.isEmpty() && !isValidImageFormat(logo.getOriginalFilename()))
 			throw new InvalidFileFormatException(
 					"The file you uploaded is not in a supported image format. Please upload an image in one of the following formats: JPEG/JPG, PNG, GIF, BMP, TIFF/TIF.");
 

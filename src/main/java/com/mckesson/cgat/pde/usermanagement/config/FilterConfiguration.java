@@ -34,10 +34,18 @@ public class FilterConfiguration {
 	}
 
 	@Bean
+	public FilterRegistrationBean<CorsFilter> corsFilterFilterRegistrationBean(CorsFilter corsFilter) {
+		FilterRegistrationBean<CorsFilter> registrationBean = new FilterRegistrationBean<>(corsFilter);
+		registrationBean.addUrlPatterns("/*");
+		registrationBean.setOrder(1);
+		return registrationBean;
+	}
+
+	@Bean
 	public FilterRegistrationBean<CGATBaseFilter> cgatBaseFilterFilterRegistrationBean(CGATBaseFilter CGATBaseFilter) {
 		FilterRegistrationBean<CGATBaseFilter> registrationBean = new FilterRegistrationBean<>(CGATBaseFilter);
 		registrationBean.addUrlPatterns("/*");
-		registrationBean.setOrder(1);
+		registrationBean.setOrder(2);
 		return registrationBean;
 	}
 
@@ -47,7 +55,7 @@ public class FilterConfiguration {
 		FilterRegistrationBean<DevUserAuthenticationBaseFilter> registrationBean = new FilterRegistrationBean<>(
 				devUserAuthenticationBaseFilter);
 		registrationBean.addUrlPatterns("/*");
-		registrationBean.setOrder(2);
+		registrationBean.setOrder(3);
 		registrationBean.setEnabled(enableDevLoginFilter);
 		return registrationBean;
 	}
@@ -58,7 +66,7 @@ public class FilterConfiguration {
 		FilterRegistrationBean<UserAuthenticationBaseFilter> registrationBean = new FilterRegistrationBean<>(
 				userAuthenticationFilter);
 		registrationBean.addUrlPatterns("/*");
-		registrationBean.setOrder(3);
+		registrationBean.setOrder(4);
 		registrationBean.setEnabled(!enableDevLoginFilter);
 		return registrationBean;
 	}
@@ -67,7 +75,7 @@ public class FilterConfiguration {
 	public FilterRegistrationBean<TenantBaseFilter> tenantFilterFilterRegistrationBean(TenantBaseFilter tenantFilter) {
 		FilterRegistrationBean<TenantBaseFilter> registrationBean = new FilterRegistrationBean<>(tenantFilter);
 		registrationBean.addUrlPatterns("/*");
-		registrationBean.setOrder(4);
+		registrationBean.setOrder(5);
 		return registrationBean;
 	}
 
