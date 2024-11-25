@@ -22,6 +22,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.mckesson.cgat.pde.usermanagement.model.*;
+import com.mckesson.cgat.pde.usermanagement.utils.OrganizationContext;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,14 +39,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
-import com.mckesson.cgat.pde.usermanagement.model.Account;
-import com.mckesson.cgat.pde.usermanagement.model.Address;
-import com.mckesson.cgat.pde.usermanagement.model.Contact;
-import com.mckesson.cgat.pde.usermanagement.model.Name;
-import com.mckesson.cgat.pde.usermanagement.model.Permission;
-import com.mckesson.cgat.pde.usermanagement.model.Role;
-import com.mckesson.cgat.pde.usermanagement.model.User;
-import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
@@ -76,7 +71,7 @@ class UserServiceImplTest {
 		user = User.builder()
 			.id(1L)
 			.practiceId(200L)
-			.name(new Name("John", "Doe", "doe"))
+			.name(new Name("John", "Doe", "Doe"))
 			.permissions(permissions)
 			.contact(Contact.builder()
 				.email("john.doe@example.com")
@@ -94,6 +89,12 @@ class UserServiceImplTest {
 
 			.isActive(true)
 			.build();
+		TestUtils.setupPrincipal();
+	}
+
+	@AfterEach
+	public void tearDown() {
+		OrganizationContext.clear();
 	}
 
 	@DisplayName("CreateUser ")
@@ -485,6 +486,22 @@ class UserServiceImplTest {
 		Sort sort = "asc".equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 		return new PageImpl<>(users, pageable, users.size());
+
+	}
+
+	@DisplayName("GetLoggedInUserTest")
+	@Test
+	void getLoggedInUserDetailsTest() {
+		LoggedInUserDetails loggedInUserDetails = LoggedInUserDetails.builder()
+			.practiceId(user.getPracticeId())
+			.name(user.getName())
+			.role(user.getRole())
+			.permissions(user.getPermissions())
+			.userName(user.getName().getFirstName() + " " + user.getName().getLastName())
+			.build();
+
+		assertNotNull(userService.getLoggedInUserDetails());
+		assertEquals(loggedInUserDetails.getUserName(), userService.getLoggedInUserDetails().getUserName());
 
 	}
 

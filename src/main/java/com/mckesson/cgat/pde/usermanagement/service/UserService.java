@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.service;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.mckesson.cgat.pde.usermanagement.model.LoggedInUserDetails;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -30,5 +31,7 @@ public interface UserService {
 			throws ResourceNotFoundException;
 
 	User getUserByEmail(String email);
+
+	LoggedInUserDetails getLoggedInUserDetails();
 
 }
