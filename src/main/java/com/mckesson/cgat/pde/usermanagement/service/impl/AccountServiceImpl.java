@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +12,7 @@ import org.springframework.util.CollectionUtils;
 
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
+import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import com.mckesson.cgat.pde.usermanagement.model.Practice;
 import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
@@ -94,6 +94,17 @@ public class AccountServiceImpl implements AccountService {
 		}
 		return accountRepository.findAllByQueryText(query, statusActive, paging, practiceId,
 				partnerFunction.getPartnerFunctionType());
+	}
+
+	@Override
+	public List<Account> findAllForWebClient(Long userId, Long practiceId, AccountPartnerFunction partnerFunction)
+			throws ResourceNotFoundException {
+		Optional<User> user = userRepository.findById(userId);
+		if (!user.isPresent())
+			throw new ResourceNotFoundException("User not found with id: " + userId);
+		return accountRepository.findAccountsByUserForWebClient(userId, practiceId,
+				partnerFunction.getPartnerFunctionType());
+
 	}
 
 	@Transactional

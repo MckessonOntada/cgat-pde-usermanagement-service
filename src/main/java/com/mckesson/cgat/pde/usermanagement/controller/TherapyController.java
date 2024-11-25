@@ -1,23 +1,34 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.mckesson.cgat.pde.usermanagement.dto.CustomDTOs.ShipToAccountsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.CustomDTOs.SoldToAccountsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.CustomDTOs.TherapyCatalogResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
+import com.mckesson.cgat.pde.usermanagement.utils.OrganizationContext;
+import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Flux;
 
 @RestController
 @Tag(name = "Therapy", description = "Controller for Managing Therapy-catalogs operations and data.")
@@ -28,8 +39,14 @@ public class TherapyController {
 
 	private final TherapyService therapyService;
 
-	public TherapyController(TherapyService therapyService) {
+	private final WebClient webClient;
+
+	@Value("${usermanagementservice.base.url}")
+	private String userServiceBaseUrl;
+
+	public TherapyController(TherapyService therapyService, WebClient.Builder webClientBuilder) {
 		this.therapyService = therapyService;
+		this.webClient = webClientBuilder.baseUrl("").build();
 	}
 
 	@GetMapping
@@ -39,7 +56,11 @@ public class TherapyController {
 			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(required = false) String query, @RequestParam(required = false) String salesOrg) {
 		Pageable paging = PageRequest.of(pageNo, pageSize);
-		return therapyService.findAllTherapies(userId, query, salesOrg, paging);
+		ResponseEntity<Flux<Account>> accountsByUserId = getAccountsByUserId(userId);
+		List<Account> allAccounts = accountsByUserId.getBody() != null
+				? accountsByUserId.getBody().collectList().block() : new ArrayList<>();
+		List<String> soldtoAccountIds = allAccounts.stream().map(a -> a.getId().toString()).toList();
+		return therapyService.findAllTherapies(userId, soldtoAccountIds, query, salesOrg, paging);
 	}
 
 	@GetMapping("/{therapyId}")
@@ -49,7 +70,11 @@ public class TherapyController {
 			@PathVariable Long therapyId, @RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(required = false) String query, @RequestParam(defaultValue = "20") Integer pageSize) {
 		Pageable paging = PageRequest.of(pageNo, pageSize);
-		return therapyService.findAllSoldToAccounts(userId, therapyId, query, paging);
+		ResponseEntity<Flux<Account>> accountsByUserId = getAccountsByUserId(userId);
+		List<Account> allAccounts = accountsByUserId.getBody() != null
+				? accountsByUserId.getBody().collectList().block() : new ArrayList<>();
+		List<String> soldtoAccountIds = allAccounts.stream().map(a -> a.getId().toString()).toList();
+		return therapyService.findAllSoldToAccounts(userId, soldtoAccountIds, therapyId, query, paging);
 	}
 
 	@GetMapping("/{therapyId}/{soldToAccountId}")
@@ -60,7 +85,28 @@ public class TherapyController {
 			@RequestParam(defaultValue = "20") Integer pageSize) {
 		Pageable paging = PageRequest.of(pageNo, pageSize);
 		return therapyService.findAllShipToAccounts(soldToAccountId, therapyId, paging);
+	}
 
+	public ResponseEntity<Flux<Account>> getAccountsByUserId(Long userId) {
+		ResponseEntity<Flux<Account>> response = null;
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("Content-Type", "application/json");
+			headers.add("userId", UserSecurityUtils.getLoggedInUser().getId());
+			String apiUri = userServiceBaseUrl + "/practices/" + OrganizationContext.getCurrentOrgId() + "/users/"
+					+ userId + "/accounts-api";
+			response = webClient.get()
+				.uri(apiUri)
+				.headers(h -> h.addAll(headers))
+				.retrieve()
+				.toEntityFlux(Account.class)
+				.block();
+		}
+		catch (Exception e) {
+			log.error("Error connecting with usermanagerment service.", e);
+			throw new RuntimeException("Error connecting with usermanagerment service.", e);
+		}
+		return response;
 	}
 
 }

@@ -155,8 +155,14 @@ public class UserController {
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 		return accountService.findAll(paging, query, status, userId, Long.valueOf(practiceId),
-				AccountPartnerFunction.SHIP_TO);
+				AccountPartnerFunction.SOLD_TO);
 
+	}
+
+	@GetMapping("/{userId}/accounts-api")
+	@Operation(summary = "Fetch all Acccounts for User based on filter provided with pagination capabilities.")
+	List<Account> findAllAccountsForWebClient(String practiceId, Long userId) throws ResourceNotFoundException {
+		return accountService.findAllForWebClient(userId, Long.valueOf(practiceId), AccountPartnerFunction.SOLD_TO);
 	}
 
 }
