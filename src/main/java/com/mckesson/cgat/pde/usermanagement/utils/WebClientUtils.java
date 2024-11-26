@@ -34,15 +34,16 @@ public class WebClientUtils {
 			.map(responseEntity -> {
 				HttpStatusCode statusCode = responseEntity.getStatusCode();
 				if (statusCode.is2xxSuccessful()) {
-                    return ResponseEntity.ok(responseEntity.getBody());
-                }
-                else {
-                    return ResponseEntity.status(statusCode).body("");
-                }
-			}).onErrorMap(e -> {
-                log.error("Error connecting with user management service.", e);
-                return new RuntimeException("Error connecting with user management service.", e);
-            })
+					return ResponseEntity.ok(responseEntity.getBody());
+				}
+				else {
+					return ResponseEntity.status(statusCode).body("");
+				}
+			})
+			.onErrorMap(e -> {
+				log.error("Error connecting with user management service.", e);
+				return new RuntimeException("Error connecting with user management service.", e);
+			})
 			.block();
 
 	}

@@ -34,7 +34,8 @@ import reactor.core.publisher.Flux;
 
 @RestController
 @Tag(name = "Therapy", description = "Controller for Managing Therapy-catalogs operations and data.")
-@RequestMapping(path = "/practices/{practiceId}/users/{userId}/therapies", consumes = "application/json", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/practices/{practiceId}/users/{userId}/therapies", consumes = "application/json",
+		produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class TherapyController {
 
@@ -58,7 +59,8 @@ public class TherapyController {
 	}
 
 	@GetMapping
-	@Operation(summary = "Find all therapies being offered via catalog for all accounts that the logged in user has access")
+	@Operation(
+			summary = "Find all therapies being offered via catalog for all accounts that the logged in user has access")
 	public Page<TherapyCatalogResponseDTO> findAllThreapies(@PathVariable Long userId,
 			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(required = false) String query, @RequestParam(required = false) String salesOrg) {
@@ -77,7 +79,8 @@ public class TherapyController {
 	}
 
 	@GetMapping("/{therapyId}")
-	@Operation(summary = "Find all soldto accounts from which the selected therapy is being offered, and the logged in user has access to")
+	@Operation(
+			summary = "Find all soldto accounts from which the selected therapy is being offered, and the logged in user has access to")
 	public Page<SoldToAccountsResponseDTO> findAllSoldToAccountsByTherapy(@PathVariable Long userId,
 			@PathVariable Long therapyId, @RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(required = false) String query, @RequestParam(defaultValue = "20") Integer pageSize) {
@@ -96,7 +99,8 @@ public class TherapyController {
 	}
 
 	@GetMapping("/{therapyId}/{soldToAccountId}")
-	@Operation(summary = "Find all shipto accounts that is linked to the selected soldto account and the therapy also being offered from that shipto account")
+	@Operation(
+			summary = "Find all shipto accounts that is linked to the selected soldto account and the therapy also being offered from that shipto account")
 	public Page<ShipToAccountsResponseDTO> findAllShipToAccountsForTherapy(@PathVariable String soldToAccountId,
 			@PathVariable Long therapyId, @RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize) {
@@ -112,9 +116,14 @@ public class TherapyController {
 			headers.add("userId", UserSecurityUtils.getLoggedInUser().getId());
 			String apiUri = userServiceBaseUrl + "/practices/" + OrganizationContext.getCurrentOrgId() + "/users/"
 					+ userId + "/accounts-api";
-			response = webClient.get().uri(apiUri).headers(h -> h.addAll(headers)).retrieve()
-					.toEntityFlux(Account.class).block();
-		} catch (Exception e) {
+			response = webClient.get()
+				.uri(apiUri)
+				.headers(h -> h.addAll(headers))
+				.retrieve()
+				.toEntityFlux(Account.class)
+				.block();
+		}
+		catch (Exception e) {
 			log.error("Error connecting with usermanagerment service.", e);
 			throw new RuntimeException("Error connecting with usermanagerment service.", e);
 		}
