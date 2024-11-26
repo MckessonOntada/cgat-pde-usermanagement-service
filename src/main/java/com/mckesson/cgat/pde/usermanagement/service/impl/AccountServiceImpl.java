@@ -96,17 +96,6 @@ public class AccountServiceImpl implements AccountService {
 				partnerFunction.getPartnerFunctionType());
 	}
 
-	@Override
-	public List<Account> findAllForWebClient(Long userId, Long practiceId, AccountPartnerFunction partnerFunction)
-			throws ResourceNotFoundException {
-		Optional<User> user = userRepository.findById(userId);
-		if (!user.isPresent())
-			throw new ResourceNotFoundException("User not found with id: " + userId);
-		return accountRepository.findAccountsByUserForWebClient(userId, practiceId,
-				partnerFunction.getPartnerFunctionType());
-
-	}
-
 	@Transactional
 	@Override
 	public void linkAccountsToPractice(Long practiceId, Set<Long> accountIds)

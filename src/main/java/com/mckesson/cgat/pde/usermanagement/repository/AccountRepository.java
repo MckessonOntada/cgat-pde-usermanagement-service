@@ -1,6 +1,5 @@
 package com.mckesson.cgat.pde.usermanagement.repository;
 
-import java.util.List;
 import java.util.Set;
 
 import org.springframework.data.domain.Page;
@@ -54,20 +53,5 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 			)""")
 	Page<Account> findAccountsByUser(@Param("userId") Long userId, @Param("status") String status, Pageable pageable,
 			@Param("practiceId") Long practiceId, String partnerFunction);
-
-	@Query(nativeQuery = true, value = """
-			select *
-			FROM usermanagement.account ua
-			JOIN usermanagement.user_account_mapping uam ON ua.id = uam.account_id
-			WHERE
-			(
-				tenant_id =:practiceId
-				AND
-				user_id =:userId
-			    AND
-			    partner_function = :partnerFunction
-			)""")
-	List<Account> findAccountsByUserForWebClient(@Param("userId") Long userId, @Param("practiceId") Long practiceId,
-			String partnerFunction);
 
 }

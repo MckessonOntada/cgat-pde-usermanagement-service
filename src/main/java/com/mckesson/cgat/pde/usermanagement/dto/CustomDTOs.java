@@ -4,9 +4,9 @@ public class CustomDTOs {
 
 	public interface TherapyCatalogResponseDTO {
 
-		String getId();
+		String getTherapyId();
 
-		String getMaterialDescription();
+		String getTherapyDescription();
 
 		String getNdc();
 
@@ -16,9 +16,9 @@ public class CustomDTOs {
 
 	public interface AccountsResponseDTO {
 
-		String getSapCustomer();
+		String getAccountNumber();
 
-		String getName1();
+		String getAccountName();
 
 		String getHouseNumber();
 

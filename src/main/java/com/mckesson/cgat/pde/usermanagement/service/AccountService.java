@@ -22,9 +22,6 @@ public interface AccountService {
 	Page<Account> findAll(Pageable paging, String query, List<String> status, Long userId, Long practiceId,
 			AccountPartnerFunction partnerFunction) throws ResourceNotFoundException;
 
-	List<Account> findAllForWebClient(Long userId, Long practiceId, AccountPartnerFunction partnerFunction)
-			throws ResourceNotFoundException;
-
 	Account createAccount(Account account);
 
 	Account updateAccount(Long accountId, Account account) throws ResourceNotFoundException;
