@@ -130,14 +130,14 @@ class AccountServiceImplTest {
 	void findAllWithPageableTest() throws ResourceNotFoundException {
 		Page<Account> accountPage = getAccountList();
 		Pageable paging = PageRequest.of(0, 20, Sort.by("name").ascending());
-		when(accountRepository.findAllByQueryText(null, "ALL", paging, 1,
+		when(accountRepository.findAllByQueryText(null, "ALL", paging, 1L,
 				AccountPartnerFunction.SHIP_TO.getPartnerFunctionType()))
 			.thenReturn(accountPage);
 		Page<Account> result = accountService.findAll(paging, null, List.of("ALL"), null, 1L,
 				AccountPartnerFunction.SHIP_TO);
 		assertNotNull(result);
 		assertEquals(accountPage, result);
-		verify(accountRepository, times(1)).findAllByQueryText(null, "ALL", paging, 1,
+		verify(accountRepository, times(1)).findAllByQueryText(null, "ALL", paging, 1L,
 				AccountPartnerFunction.SHIP_TO.getPartnerFunctionType());
 	}
 

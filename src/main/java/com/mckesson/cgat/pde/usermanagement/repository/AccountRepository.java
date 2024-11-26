@@ -31,7 +31,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 				and partner_function = :partnerFunction
 			)""")
 	Page<Account> findAllByQueryText(@Param("query") String query, @Param("status") String status, Pageable paging,
-			@Param("pacticeId") Long practiceId, String partnerFunction);
+			@Param("practiceId") Long practiceId, String partnerFunction);
 
 	Set<Account> findByPracticeId(Long practiceId);
 
