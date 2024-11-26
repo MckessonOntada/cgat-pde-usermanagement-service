@@ -1,4 +1,7 @@
-CREATE TABLE material (
+CREATE SCHEMA IF NOT EXISTS catalog;
+
+
+CREATE TABLE IF NOT EXISTS catalog.material (
       id BIGINT PRIMARY KEY,
       tenant_id VARCHAR(255),
       material_number VARCHAR(18) NOT NULL,

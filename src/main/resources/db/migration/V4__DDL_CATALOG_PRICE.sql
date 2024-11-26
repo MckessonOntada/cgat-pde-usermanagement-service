@@ -1,4 +1,4 @@
-CREATE TABLE catalog_price (
+CREATE TABLE IF NOT EXISTS catalog.catalog_price (
    id BIGINT PRIMARY KEY,
    tenant_id VARCHAR(255),
    sold_to_customer VARCHAR(10) NOT NULL,
@@ -13,7 +13,7 @@ CREATE TABLE catalog_price (
    sap_material VARCHAR(18) NOT NULL,
    variant VARCHAR(30),
    variant_description VARCHAR(30),
-   material_identifier_for_cgat VARCHAR(1) NOT NULL,
+   material_identifier_for_cgat VARCHAR(10) NOT NULL,
    ndc VARCHAR(18) NOT NULL,
    udi VARCHAR(18),
    material_description_in_language_en VARCHAR(40) NOT NULL,

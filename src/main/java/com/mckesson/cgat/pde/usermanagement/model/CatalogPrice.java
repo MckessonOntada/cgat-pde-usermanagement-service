@@ -167,7 +167,6 @@ public class CatalogPrice {
 	@Column(name = "variant_description")
 	private String variantDescription;
 
-	@Size(max = 1)
 	@NotBlank
 	@Column(name = "material_identifier_for_cgat")
 	private String materialIdentifierForCgat;

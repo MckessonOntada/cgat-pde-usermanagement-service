@@ -14,19 +14,31 @@ public class CustomDTOs {
 
 	}
 
-	public interface SoldToAccountsResponseDTO {
+	public interface AccountsResponseDTO {
 
-		String getSoldToCustomer();
+		String getSapCustomer();
 
-		String getsoldToCustomerName();
+		String getName1();
 
-	}
+		String getHouseNumber();
 
-	public interface ShipToAccountsResponseDTO {
+		String getStreet();
 
-		String getShipToCustomer();
+		String getStreet2();
 
-		String getshipToCustomerName();
+		String getStreet3();
+
+		String getTelephone();
+
+		String getCity();
+
+		String getDistrict();
+
+		String getState();
+
+		String getCountry();
+
+		String getZipCode();
 
 	}
 

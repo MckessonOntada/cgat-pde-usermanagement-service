@@ -1,7 +1,5 @@
 package com.mckesson.cgat.pde.usermanagement.repository;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,8 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.mckesson.cgat.pde.usermanagement.dto.CustomDTOs.ShipToAccountsResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.CustomDTOs.SoldToAccountsResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.CustomDTOs.AccountsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.CustomDTOs.TherapyCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 
@@ -19,8 +16,10 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 
 	@Query(value = """
 			SELECT m.id, m.material_description, cp.ndc, cp.udi
-			FROM usermanagement.material m
-			JOIN usermanagement.catalog_price cp ON cast(m.id as varchar) = cp.sap_material
+			FROM catalog.material m
+			JOIN catalog.catalog_price cp ON m.material_number = cp.material_identifier_for_cgat
+			JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
+			JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
 			WHERE
 			(
 				(
@@ -31,50 +30,56 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					or LOWER(cp.udi) like %:query%
 				)
 				AND
-					cp.sold_to_customer IN :soldToAccountIds
+					uam.user_id = :userId
 				AND
 					(
 					cast(:salesOrg as varchar) is null
 					or
-					:salesOrg = cp.sales_org
+					cp.sales_org = :salesOrg
 					)
 			)
 			""", nativeQuery = true)
-	public Page<TherapyCatalogResponseDTO> findAllTherapiesCatalogs(
-			@Param("soldToAccountIds") List<String> soldToAccountIds, @Param("query") String query,
+	public Page<TherapyCatalogResponseDTO> findAllTherapies(@Param("userId") Long userId, @Param("query") String query,
 			@Param("salesOrg") String salesOrg, Pageable paging);
 
 	@Query(value = """
-			SELECT cp.sold_to_customer, cp.sold_to_customer_name
-			FROM usermanagement.material m
-			JOIN usermanagement.catalog_price cp ON cast(m.id as varchar) = cp.sap_material
+			SELECT ac.sap_customer, ac.name_1, ac.house_number, ac.street, ac.street_2,
+					 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code
+			FROM catalog.material m
+			JOIN catalog.catalog_price cp ON m.material_number = cp.material_identifier_for_cgat
+			JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
+			JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
 			WHERE
 			(
-				(
-					:query is null
-					or LOWER(cp.sold_to_customer) like %:query%
-					or LOWER(cp.sold_to_customer_name) like %:query%
-				)
+					(
+						:query is null
+						or LOWER(ac.sap_customer) like %:query%
+						or LOWER(ac.name_1) like %:query%
+					)
 				AND
-					m.id = :therapyId
+					m.material_number = :therapyId
 				AND
-					cp.sold_to_customer IN :soldToAccountIds
+					ac.partner_function = 'SH'
+				AND
+					uam.user_id = :userId
 			)
 
 			""", nativeQuery = true)
-	public Page<SoldToAccountsResponseDTO> findAllSoldToAccounts(@Param("therapyId") Long therapyId,
-			@Param("soldToAccountIds") List<String> soldToAccountIds, @Param("query") String query, Pageable paging);
+	public Page<AccountsResponseDTO> findAllSoldToAccounts(@Param("userId") Long userId,
+			@Param("therapyId") String therapyId, @Param("query") String query, Pageable paging);
 
 	@Query(value = """
-			SELECT cp.ship_to_customer, cp.ship_to_customer_name
-			FROM usermanagement.material m
-			JOIN usermanagement.catalog_price cp ON cast(m.id as varchar) = cp.sap_material
+			SELECT ac.sap_customer, ac.name_1, ac.house_number, ac.street, ac.street_2, ac.street_3,
+					ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code
+			FROM catalog.material m
+			JOIN catalog.catalog_price cp ON m.material_number = cp.material_identifier_for_cgat
+			JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
 			WHERE
 				cp.sold_to_customer = :soldToAccountId
 				AND
-				m.id = :therapyId
+				m.material_number = :therapyId
 			""", nativeQuery = true)
-	public Page<ShipToAccountsResponseDTO> findAllShipToAccounts(@Param("soldToAccountId") String soldToAccountId,
-			@Param("therapyId") Long therapyId, Pageable paging);
+	public Page<AccountsResponseDTO> findAllShipToAccounts(@Param("soldToAccountId") String soldToAccountId,
+			@Param("therapyId") String therapyId, Pageable paging);
 
 }
