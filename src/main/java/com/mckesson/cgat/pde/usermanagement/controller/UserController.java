@@ -161,7 +161,8 @@ public class UserController {
 
 	@GetMapping("/{userId}/accounts-api")
 	@Operation(summary = "Fetch all Acccounts for User based on filter provided with pagination capabilities.")
-	List<Account> findAllAccountsForWebClient(String practiceId, Long userId) throws ResourceNotFoundException {
+	List<Account> findAllAccountsForWebClient(@PathVariable String practiceId, @PathVariable Long userId)
+			throws ResourceNotFoundException {
 		return accountService.findAllForWebClient(userId, Long.valueOf(practiceId), AccountPartnerFunction.SOLD_TO);
 	}
 
