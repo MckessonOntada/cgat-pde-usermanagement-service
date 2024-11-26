@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import java.io.IOException;
 import java.util.List;
 
+import org.aspectj.apache.bcel.classfile.Module.Require;
 import org.ini4j.InvalidFileFormatException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -78,8 +79,8 @@ public class PracticeController {
 	@PutMapping("/{practiceId}")
 	@Operation(summary = "Update Practice")
 	public ResponseEntity<Object> updatePractice(@RequestPart("practiceStr") @Valid String practiceStr,
-			@RequestPart("logo") MultipartFile logo, @PathVariable String practiceId, BindingResult bindingResult)
-			throws IOException {
+			@RequestPart(value = "logo", required = false) MultipartFile logo, @PathVariable String practiceId,
+			BindingResult bindingResult) throws IOException {
 		Practice practiceObj = parsePractice(practiceStr);
 		practiceUtils.validatePractice(practiceObj, bindingResult, null);
 		if (bindingResult.hasErrors()) {
