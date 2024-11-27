@@ -15,7 +15,7 @@ import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 
 	@Query(value = """
-			SELECT m.id as therapyId, m.material_description as therapyDescription, cp.ndc, cp.udi
+			SELECT m.id as therapyId, m.material_description as therapyDescription, m.ndc_number as ndc, cp.udi
 			FROM catalog.material m
 			JOIN catalog.catalog_price cp ON m.material_number = cp.material_identifier_for_cgat
 			JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
@@ -26,11 +26,13 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					:query is null
 					or LOWER(cp.ndc) like %:query%
 					or LOWER(cp.dist_channel) like %:query%
-					or LOWER(cp.sap_material) like %:query%
+					or LOWER(cp.material_identifier_for_cgat) like %:query%
 					or LOWER(cp.udi) like %:query%
 				)
 				AND
 					uam.user_id = :userId
+				AND
+					ac.partner_function = 'SH'
 				AND
 					(
 					cast(:salesOrg as varchar) is null
@@ -69,15 +71,19 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			@Param("therapyId") String therapyId, @Param("query") String query, Pageable paging);
 
 	@Query(value = """
-			SELECT ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2, ac.street_3,
-					ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code
-			FROM catalog.material m
-			JOIN catalog.catalog_price cp ON m.material_number = cp.material_identifier_for_cgat
-			JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
-			WHERE
-				cp.sold_to_customer = :soldToAccountId
-				AND
-				m.material_number = :therapyId
+			SELECT ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2,
+					 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code 
+			FROM usermanagement.account ac 
+			WHERE ac.sap_customer IN	(
+					SELECT cp.ship_to_customer
+					FROM catalog.material m
+					JOIN catalog.catalog_price cp ON m.material_number = cp.material_identifier_for_cgat		
+					WHERE
+						cp.sold_to_customer = :soldToAccountId
+						AND
+						m.material_number = :therapyId	)
+			AND 
+				ac.partner_function = 'SP'
 			""",
 			nativeQuery = true)
 	public Page<AccountsResponseDTO> findAllShipToAccounts(@Param("soldToAccountId") String soldToAccountId,
