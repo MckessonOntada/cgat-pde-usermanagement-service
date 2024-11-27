@@ -75,6 +75,6 @@ public class Account implements Serializable {
 	private Set<User> user;
 
 	@Convert(converter = NumericBooleanConverter.class)
-	private Boolean isActive = false;
+	private Boolean isActive = true;
 
 }

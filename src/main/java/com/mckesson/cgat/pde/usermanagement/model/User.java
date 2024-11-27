@@ -82,6 +82,6 @@ public class User extends AuditColumns implements Serializable {
 	private Role role;
 
 	@Convert(converter = NumericBooleanConverter.class)
-	private Boolean isActive = false;
+	private Boolean isActive = true;
 
 }
