@@ -18,8 +18,9 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 			FROM usermanagement.account a
 			WHERE
 			(
-				:query IS NULL
-				OR LOWER(a.name_1) LIKE %:query%
+				(:query IS NULL
+				 OR LOWER(a.name_1) LIKE %:query%
+				)
 				AND
 				tenant_id =:practiceId
 				AND
