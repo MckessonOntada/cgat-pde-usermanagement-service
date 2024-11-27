@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS catalog.catalog_price (
    sap_material VARCHAR(18) NOT NULL,
    variant VARCHAR(30),
    variant_description VARCHAR(30),
-   material_identifier_for_cgat VARCHAR(1) NOT NULL,
+   material_identifier_for_cgat VARCHAR(10) NOT NULL,
    ndc VARCHAR(18) NOT NULL,
    udi VARCHAR(18),
    material_description_in_language_en VARCHAR(40) NOT NULL,
@@ -124,3 +124,18 @@ CREATE TABLE IF NOT EXISTS catalog.catalog_price (
 );
 
 CREATE SEQUENCE catalog.catalog_price_id_seq START 1 INCREMENT 1;
+
+CREATE INDEX catalog_ndc_udi_dc_materialidentifier_index  ON catalog.catalog_price 
+USING GIN (ndc gin_trgm_ops, udi gin_trgm_ops, dist_channel gin_trgm_ops, material_identifier_for_cgat gin_trgm_ops);
+
+CREATE INDEX catalog_salesorg_soldtocustomer_index ON catalog.catalog_price 
+USING btree(sales_org, sold_to_customer);
+
+CREATE INDEX account_partnerfunction_index ON usermanagement.account
+USING btree(partner_function);
+
+CREATE INDEX account_sapcustomer_name1_index ON usermanagement.account 
+USING GIN (sap_customer gin_trgm_ops, name_1 gin_trgm_ops);
+
+CREATE INDEX material_materialnumber_index ON catalog.material
+USING btree(material_number);

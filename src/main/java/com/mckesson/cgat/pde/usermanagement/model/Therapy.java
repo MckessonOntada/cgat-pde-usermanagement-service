@@ -110,7 +110,7 @@ import lombok.Data;
  **/
 @Entity
 @Data
-@Table(name = "material")
+@Table(name = "material", schema = "catalog")
 public class Therapy {
 
 	@Id

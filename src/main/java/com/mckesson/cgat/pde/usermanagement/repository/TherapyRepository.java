@@ -1,5 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,7 +17,7 @@ import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 
 	@Query(value = """
-			SELECT m.id as therapyId, m.material_description as therapyDescription, m.ndc_number as ndc, cp.udi
+			SELECT DISTINCT m.id as therapyId, m.material_description as therapyDescription, m.ndc_number as ndc, cp.udi
 			FROM catalog.material m
 			JOIN catalog.catalog_price cp ON m.material_number = cp.material_identifier_for_cgat
 			JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
@@ -45,7 +47,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			@Param("salesOrg") String salesOrg, Pageable paging);
 
 	@Query(value = """
-			SELECT ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2,
+			SELECT DISTINCT ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2,
 					 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code
 			FROM catalog.material m
 			JOIN catalog.catalog_price cp ON m.material_number = cp.material_identifier_for_cgat
@@ -66,23 +68,24 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					uam.user_id = :userId
 			)
 
-			""", nativeQuery = true)
+			""",
+			nativeQuery = true)
 	public Page<AccountsResponseDTO> findAllSoldToAccounts(@Param("userId") Long userId,
 			@Param("therapyId") String therapyId, @Param("query") String query, Pageable paging);
 
 	@Query(value = """
-			SELECT ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2,
-					 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code 
-			FROM usermanagement.account ac 
+			SELECT DISTINCT ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2,
+					 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code
+			FROM usermanagement.account ac
 			WHERE ac.sap_customer IN	(
 					SELECT cp.ship_to_customer
 					FROM catalog.material m
-					JOIN catalog.catalog_price cp ON m.material_number = cp.material_identifier_for_cgat		
+					JOIN catalog.catalog_price cp ON m.material_number = cp.material_identifier_for_cgat
 					WHERE
 						cp.sold_to_customer = :soldToAccountId
 						AND
 						m.material_number = :therapyId	)
-			AND 
+			AND
 				ac.partner_function = 'SP'
 			""",
 			nativeQuery = true)

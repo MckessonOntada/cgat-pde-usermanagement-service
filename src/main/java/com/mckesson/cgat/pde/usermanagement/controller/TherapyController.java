@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.mckesson.cgat.pde.usermanagement.dto.CustomDTOs.AccountsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.CustomDTOs.TherapyCatalogResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
+import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -41,7 +43,7 @@ public class TherapyController {
 		return therapyService.findAllTherapies(userId, query, salesOrg, paging);
 	}
 
-	@GetMapping("/{therapyId}")
+	@GetMapping("/{therapyId}/soldtoaccounts")
 	@Operation(
 			summary = "Find all soldto accounts from which the selected therapy is being offered, and the logged in user has access to")
 	public Page<AccountsResponseDTO> findAllSoldToAccountsByTherapy(@PathVariable Long userId,
@@ -52,7 +54,7 @@ public class TherapyController {
 		return therapyService.findAllSoldToAccounts(userId, therapyId, query, paging);
 	}
 
-	@GetMapping("/{therapyId}/{soldToAccountId}")
+	@GetMapping("{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccounts")
 	@Operation(
 			summary = "Find all shipto accounts that is linked to the selected soldto account and the therapy also being offered from that shipto account")
 	public Page<AccountsResponseDTO> findAllShipToAccountsForTherapy(@PathVariable String soldToAccountId,
@@ -60,6 +62,12 @@ public class TherapyController {
 			@RequestParam(defaultValue = "20") Integer pageSize) {
 		Pageable paging = PageRequest.of(pageNo, pageSize);
 		return therapyService.findAllShipToAccounts(soldToAccountId, therapyId, paging);
+	}
+
+	@GetMapping("/{therapyId}")
+	@Operation(summary = "Find Therapy by id")
+	public Therapy findbyId(@PathVariable Long therapyId) throws ResourceNotFoundException {
+		return therapyService.findById(therapyId);
 	}
 
 }
