@@ -63,6 +63,9 @@ public class Account implements Serializable {
 	@Column(name = "company_code")
 	private String companyCode;
 
+	@Column(name = "search_term_1")
+	private String searchTerm1;
+
 	@Embedded
 	private AccountAddress address;
 
