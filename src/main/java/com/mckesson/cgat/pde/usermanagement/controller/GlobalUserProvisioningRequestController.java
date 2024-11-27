@@ -45,7 +45,7 @@ public class GlobalUserProvisioningRequestController {
 		return new ResponseEntity<>(userProvisioningRequestService.createUserProvisioning(request), HttpStatus.CREATED);
 	}
 
-	@GetMapping("/filterPractices")
+	@GetMapping("/practices")
 	@Operation(summary = "Fetch all the available Practices based on filter provided with pagination capabilities.")
 	Page<CustomDTOs.GlobalPracticeResponseDto> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "name") String sortBy,
