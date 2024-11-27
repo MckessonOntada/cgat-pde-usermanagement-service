@@ -155,7 +155,7 @@ public class UserController {
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 		return accountService.findAll(paging, query, status, userId, Long.valueOf(practiceId),
-				AccountPartnerFunction.SHIP_TO);
+				AccountPartnerFunction.SOLD_TO);
 
 	}
 
