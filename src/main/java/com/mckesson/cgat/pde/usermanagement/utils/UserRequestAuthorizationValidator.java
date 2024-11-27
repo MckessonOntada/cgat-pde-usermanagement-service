@@ -6,7 +6,7 @@ import com.mckesson.cgat.pde.usermanagement.model.UserType;
 
 public class UserRequestAuthorizationValidator {
 
-	public static final String SYSTEM_ADMIN_ROLE = "SYSTEM_ADMIN";
+	public static final String SYSTEM_ADMIN_ROLE = "System Admin";
 
 	private static final Long SYSTEM_LEVEL_ORGANISATION_ID = 1L;
 

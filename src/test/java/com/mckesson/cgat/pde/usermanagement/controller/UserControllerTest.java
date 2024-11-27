@@ -116,7 +116,7 @@ class UserControllerTest {
 		LoggedInUserDetails loggedInUser = LoggedInUserDetails.builder()
 			.id("1")
 			.name(Name.builder().firstName("John").lastName("Doe").build())
-			.role(Role.builder().name("SYSTEM_ADMIN").build())
+			.role(Role.builder().name("System Admin").build())
 			.permissions(new HashSet(Arrays.asList(Permission.values())))
 			.practiceId(1)
 			.userName("John Doe")
