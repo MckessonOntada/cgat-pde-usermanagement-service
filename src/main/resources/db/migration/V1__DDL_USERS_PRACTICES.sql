@@ -86,8 +86,7 @@ CREATE TABLE IF NOT EXISTS "user"
     created_at   				TIMESTAMP,
     created_by 					VARCHAR(255),
     updated_at  				TIMESTAMP,
-    updated_by 					VARCHAR(255),
-    provisioned_in_okta_status  VARCHAR(50)
+    updated_by 					VARCHAR(255)
     
 );
 

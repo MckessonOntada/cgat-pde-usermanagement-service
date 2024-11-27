@@ -78,7 +78,6 @@ public class CGATHttpClient {
 		return httpResponse.body();
 	}
 
-
 	private HttpResponse<String> getHttpResponse(HttpRequest request) {
 		try {
 			HttpResponse<String> httpResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());

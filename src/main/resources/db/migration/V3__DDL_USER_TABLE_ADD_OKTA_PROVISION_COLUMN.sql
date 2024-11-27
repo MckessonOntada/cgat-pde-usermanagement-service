@@ -1,0 +1,1 @@
+ALTER TABLE "user" ADD provisioned_in_okta_status VARCHAR(50);
