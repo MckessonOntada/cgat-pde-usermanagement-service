@@ -109,10 +109,6 @@ public class UserServiceImpl implements UserService {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new ResourceNotFoundException("User not found with this Id :" + userId));
 
-		Role role = roleRepository.findByIdAndIsActiveTrue(rolePermissions.getRoleId())
-			.orElseThrow(
-					() -> new ResourceNotFoundException("Role not found with this Id :" + rolePermissions.getRoleId()));
-
 		if (userType.equals(UserType.ADMIN)) {
 			Role systemAdminRole = roleRepository.findByName(UserRequestAuthorizationValidator.SYSTEM_ADMIN_ROLE);
 			user.getPermissions().clear();
@@ -120,6 +116,10 @@ public class UserServiceImpl implements UserService {
 			user.setPermissions(new HashSet<>(systemAdminRole.getPermissions()));
 		}
 		else {
+			Role role = roleRepository.findByIdAndIsActiveTrue(rolePermissions.getRoleId())
+				.orElseThrow(() -> new ResourceNotFoundException(
+						"Role not found with this Id :" + rolePermissions.getRoleId()));
+
 			user.setRole(role);
 			user.getPermissions().clear();
 			user.setPermissions(rolePermissions.getPermissions());
