@@ -23,7 +23,7 @@ public class CGATBaseFilter extends OncePerRequestFilter {
 
 	public static final String[] URLS_TO_EXCLUDE = { "/actuator/**", "/swagger-ui.html", "/swagger-ui/**",
 			"/v3/api-docs/**", "/ws", "/favicon.ico", "/users-provisioning-requests",
-			"/users-provisioning-requests/filterPractices", "/public/idpConfig" };
+			"/users-provisioning-requests/practices", "/public/idpConfig" };
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
