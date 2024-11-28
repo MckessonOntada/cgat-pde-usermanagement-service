@@ -109,28 +109,7 @@ class UserControllerTest {
 			.permissions(null)
 			.isActive(true)
 			.build();
-		setupPrincipal();
-	}
-
-	private void setupPrincipal() {
-		LoggedInUserDetails loggedInUser = LoggedInUserDetails.builder()
-			.id("1")
-			.name(Name.builder().firstName("John").lastName("Doe").build())
-			.role(Role.builder().name("System Admin").build())
-			.permissions(new HashSet(Arrays.asList(Permission.values())))
-			.practiceId(1)
-			.userName("John Doe")
-			.build();
-		List<String> roleNames = new ArrayList<>();
-		roleNames.add(loggedInUser.getRole().getName());
-		Collection<? extends GrantedAuthority> authorities = roleNames.stream()
-			.map(SimpleGrantedAuthority::new)
-			.toList();
-		UserCurrentRequestContext principal = new UserCurrentRequestContext(loggedInUser.getUserName(), "", authorities,
-				loggedInUser);
-		SecurityContextHolder.getContext()
-			.setAuthentication(new UsernamePasswordAuthenticationToken(principal, null, authorities));
-		OrganizationContext.setCurrentOrgId(1L);
+		TestUtils.setupPrincipal();
 	}
 
 	@AfterEach
