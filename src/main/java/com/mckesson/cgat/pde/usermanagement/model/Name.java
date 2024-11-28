@@ -29,7 +29,7 @@ public class Name implements Serializable {
 	private String firstName;
 
 	@Size(max = 50, message = "Must only contain alphabets.", groups = BasicInfo.class)
-	@Pattern(regexp = "^[A-Za-z]+$", message = "Middle Name must contain alphabetic characters only",
+	@Pattern(regexp = "^[A-Za-z]*$", message = "Middle Name must contain alphabetic characters only",
 			groups = BasicInfo.class)
 	private String middleName;
 

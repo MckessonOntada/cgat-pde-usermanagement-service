@@ -63,6 +63,9 @@ public class Account implements Serializable {
 	@Column(name = "company_code")
 	private String companyCode;
 
+	@Column(name = "search_term_1")
+	private String searchTerm1;
+
 	@Embedded
 	private AccountAddress address;
 
@@ -72,6 +75,6 @@ public class Account implements Serializable {
 	private Set<User> user;
 
 	@Convert(converter = NumericBooleanConverter.class)
-	private Boolean isActive = false;
+	private Boolean isActive = true;
 
 }

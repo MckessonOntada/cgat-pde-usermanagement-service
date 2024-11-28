@@ -18,10 +18,15 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 			FROM usermanagement.account a
 			WHERE
 			(
-				:query IS NULL
-				OR LOWER(a.name_1) LIKE %:query%
+				(
+					:query IS NULL
+				 	OR LOWER(a.name_1) LIKE %:query%
+				)
 				AND
-				tenant_id =:pacticeId
+				(
+					(CAST(:practiceId AS varchar) is NULL and (tenant_id is null))
+					OR (tenant_id =:practiceId )
+				)
 				AND
 				(
 					(:status = 'ALL' and (is_active = 1 or is_active = 0))
@@ -31,7 +36,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 				and partner_function = :partnerFunction
 			)""")
 	Page<Account> findAllByQueryText(@Param("query") String query, @Param("status") String status, Pageable paging,
-			@Param("pacticeId") long pacticeId, String partnerFunction);
+			@Param("practiceId") Long practiceId, String partnerFunction);
 
 	Set<Account> findByPracticeId(Long practiceId);
 
