@@ -147,7 +147,7 @@ public class UserController {
 	@GetMapping("/{userId}/accounts")
 	@Operation(summary = "Fetch all Acccounts for User based on filter provided with pagination capabilities.")
 	Page<Account> findAllAccounts(@RequestParam(defaultValue = "0") Integer pageNo,
-			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "name") String sortBy,
+			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "name_1") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
 			@PathVariable(required = false) String practiceId, @PathVariable(required = false) Long userId,
 			@RequestParam(required = false) List<String> status) throws ResourceNotFoundException {
