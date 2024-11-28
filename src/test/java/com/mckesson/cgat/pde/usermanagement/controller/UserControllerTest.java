@@ -370,17 +370,6 @@ class UserControllerTest {
 		assertNotNull(result);
 	}
 
-	@DisplayName("GetLoggedInUserTest")
-	@Test
-	void getLoggedInUserDetailsTest() throws Exception {
-		mockMvc
-			.perform(get("/practices/{practiceId}/users/getLoggerInUser", user.getPracticeId())
-				.contentType(MediaType.APPLICATION_JSON_VALUE))
-			// .andDo(print())
-			.andExpect(status().isOk());
-
-	}
-
 	private List<User> getUserList() {
 
 		User user1 = User.builder()

@@ -89,7 +89,6 @@ class UserServiceImplTest {
 
 			.isActive(true)
 			.build();
-		TestUtils.setupPrincipal();
 	}
 
 	@AfterEach
@@ -486,22 +485,6 @@ class UserServiceImplTest {
 		Sort sort = "asc".equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 		return new PageImpl<>(users, pageable, users.size());
-
-	}
-
-	@DisplayName("GetLoggedInUserTest")
-	@Test
-	void getLoggedInUserDetailsTest() {
-		LoggedInUserDetails loggedInUserDetails = LoggedInUserDetails.builder()
-			.practiceId(user.getPracticeId())
-			.name(user.getName())
-			.role(user.getRole())
-			.permissions(user.getPermissions())
-			.userName(user.getName().getFirstName() + " " + user.getName().getLastName())
-			.build();
-
-		assertNotNull(userService.getLoggedInUserDetails());
-		assertEquals(loggedInUserDetails.getUserName(), userService.getLoggedInUserDetails().getUserName());
 
 	}
 

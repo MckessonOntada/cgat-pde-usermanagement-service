@@ -156,10 +156,4 @@ public class UserController {
 
 	}
 
-	@GetMapping("/getLoggerInUser")
-	@Operation(summary = "Fetch logged in user by from Security context")
-	public LoggedInUserDetails getLoggedInUserDetails() {
-		return userService.getLoggedInUserDetails();
-	}
-
 }

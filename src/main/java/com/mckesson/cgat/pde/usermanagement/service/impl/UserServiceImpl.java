@@ -128,9 +128,4 @@ public class UserServiceImpl implements UserService {
 		return userRepository.findByContactEmail(email);
 	}
 
-	@Override
-	public LoggedInUserDetails getLoggedInUserDetails() {
-		return UserSecurityUtils.getLoggedInUser();
-	}
-
 }
