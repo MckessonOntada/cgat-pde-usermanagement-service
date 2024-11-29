@@ -59,6 +59,16 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional
+	public void delinkUserFromAccount(Long userId, Long accountId) throws ResourceNotFoundException {
+		userRepository.findById(userId)
+			.orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId.toString()));
+		accountRepository.findById(accountId)
+			.orElseThrow(() -> new ResourceNotFoundException("Account not found with id:" + accountId));
+		userRepository.delinkUserFromAccount(userId, accountId);
+	}
+
+	@Override
 	public void deleteUser(Long userId) throws ResourceNotFoundException {
 		User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(userId.toString()));
 		user.setIsActive(false);
@@ -95,7 +105,6 @@ public class UserServiceImpl implements UserService {
 		if (accounts.size() != accountIds.size())
 			throw new ResourceNotFoundException("Some of the provided account IDs does not exist.");
 
-		user.getAccounts().clear();
 		user.getAccounts().addAll(accounts);
 		return userRepository.save(user);
 
