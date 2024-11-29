@@ -65,11 +65,21 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Cache JDK 17
+        uses: actions/cache@v3
+        with:
+          path: ~/.sdkman/candidates/java
+          key: jdk-17-${{ runner.os }}
+        restore-keys: |
+          jdk-17-
+
       - name: Set up JDK 17
+        if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/setup-java@v3
         with:
-          distribution: 'oracle'
-          java-version: 17
+         distribution: 'oracle'
+         java-version: 17
+
 
       - name: Cache Maven Dependencies
         uses: actions/cache@v3
