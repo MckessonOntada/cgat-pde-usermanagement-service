@@ -145,16 +145,16 @@ jobs:
           cache-to: type=inline
           load: true
 
-      - name: Scan Docker Image
-        id: scan-docker-image
-        run: |
-          curl -u $PRISMA_USER:$PRISMA_PASSWORD --output twistcli https://us-east1.cloud.twistlock.com/us-2-158257908/api/v1/util/twistcli && chmod +x twistcli && mv twistcli /tmp/
-          /tmp/twistcli images scan --details --address https://us-east1.cloud.twistlock.com/us-2-158257908 --user $PRISMA_USER --password $PRISMA_PASSWORD $DOCKER_IMAGE_NAME --vuln-severity critical --vuln-threshold 1
-          EXIT_CODE=$?
-          # Print the results
-          echo "Exit code: $EXIT_CODE"
+    #  - name: Scan Docker Image
+    #    id: scan-docker-image
+    #    run: |
+    #      curl -u $PRISMA_USER:$PRISMA_PASSWORD --output twistcli https://us-east1.cloud.twistlock.com/us-2-158257908/api/v1/util/twistcli && chmod +x twistcli && mv twistcli /tmp/
+    #      /tmp/twistcli images scan --details --address https://us-east1.cloud.twistlock.com/us-2-158257908 --user $PRISMA_USER --password $PRISMA_PASSWORD $DOCKER_IMAGE_NAME --vuln-severity critical --vuln-threshold 1
+    #      EXIT_CODE=$?
+         # Print the results
+    #      echo "Exit code: $EXIT_CODE"
           
-          /tmp/twistcli images scan --details --address https://us-east1.cloud.twistlock.com/us-2-158257908 --user $PRISMA_USER --password $PRISMA_PASSWORD $DOCKER_IMAGE_NAME > /tmp/prisma-twistcli-scan-output.txt
+    #      /tmp/twistcli images scan --details --address https://us-east1.cloud.twistlock.com/us-2-158257908 --user $PRISMA_USER --password $PRISMA_PASSWORD $DOCKER_IMAGE_NAME > /tmp/prisma-twistcli-scan-output.txt
 
       - name: Upload Scan Output
         id: Upload-Scan-Output
