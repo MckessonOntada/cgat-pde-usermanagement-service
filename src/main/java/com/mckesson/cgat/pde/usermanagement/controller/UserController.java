@@ -99,14 +99,14 @@ public class UserController {
 
 	}
 
-	@DeleteMapping("/{userId}/accounts/{accountid}")
-	@Operation(summary = "Delete user details byId")
-	public void deleteUserAccount(@PathVariable Long userId,
+	@DeleteMapping("/{userId}/accounts/{accountId}")
+	@Operation(summary = "Delink user from account")
+	public void delinkUserFromAccount(@PathVariable Long userId,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType,
-			@NotNull(message = "Account can not be empty") @PathVariable Long accountid)
+			@NotNull(message = "Account can not be empty") @PathVariable Long accountId)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
-		userService.deleteUser(userId, accountid);
+		userService.delinkUserFromAccount(userId, accountId);
 
 	}
 
@@ -133,8 +133,7 @@ public class UserController {
 	}
 
 	@PatchMapping("/{userId}/accounts")
-	@Operation(summary = "Link User with accounts.(This API maps the accounts being passed in requst with the user "
-			+ "such as the requested mapping is the current state of user to account association")
+	@Operation(summary = "Link User with multiple accounts.")
 	public User linkUserToAccounts(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
 			@NotEmpty(message = "Accounts can not be empty") @RequestBody List<Long> accountIds,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)

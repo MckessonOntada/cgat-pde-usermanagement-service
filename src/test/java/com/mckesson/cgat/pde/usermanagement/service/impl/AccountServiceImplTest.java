@@ -115,11 +115,11 @@ class AccountServiceImplTest {
 		verify(accountRepository).save(newAccount);
 	}
 
-	@DisplayName("DeleteAccount")
+	@DisplayName("Delink Account")
 	@Test
-	void deleteAccountTest() throws ResourceNotFoundException {
+	void delinkAccountTest() throws ResourceNotFoundException {
 		when(accountRepository.findById(account.getId())).thenReturn(Optional.of(account));
-		accountService.deleteAccount(account.getId());
+		accountService.delinkAccountFromPractice(account.getPracticeId(), account.getId());
 		account.setPracticeId(null);
 		verify(accountRepository, times(1)).save(account);
 

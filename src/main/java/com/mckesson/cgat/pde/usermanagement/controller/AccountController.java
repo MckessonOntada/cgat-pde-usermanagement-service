@@ -73,9 +73,10 @@ public class AccountController {
 	}
 
 	@DeleteMapping("/{accountId}")
-	@Operation(summary = "Delete account details byId")
-	public ResponseEntity<String> deleteAccount(@PathVariable Long accountId) throws ResourceNotFoundException {
-		accountService.deleteAccount(accountId);
+	@Operation(summary = "Delink account from practice")
+	public ResponseEntity<String> delinkAccountFromPractice(@PathVariable Long practiceId, @PathVariable Long accountId)
+			throws ResourceNotFoundException {
+		accountService.delinkAccountFromPractice(practiceId, accountId);
 		return new ResponseEntity<>(HttpStatus.OK);
 
 	}

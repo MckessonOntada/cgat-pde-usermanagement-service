@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import com.mckesson.cgat.pde.usermanagement.exception.custom.ForbiddenActionException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
@@ -60,9 +61,11 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public void deleteAccount(Long accountId) throws ResourceNotFoundException {
+	public void delinkAccountFromPractice(Long practiceId, Long accountId) throws ResourceNotFoundException {
 		Account account = accountRepository.findById(accountId)
-			.orElseThrow(() -> new ResourceNotFoundException(accountId.toString()));
+			.orElseThrow(() -> new ResourceNotFoundException("Account not found with it: " + accountId.toString()));
+		if (account.getPracticeId() != practiceId)
+			throw new ForbiddenActionException(CustomUtils.UNAUTHORIZED_MESSAGE);
 		account.setPracticeId(null);
 		accountRepository.save(account);
 	}
