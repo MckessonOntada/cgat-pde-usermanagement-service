@@ -213,11 +213,11 @@ jobs:
         run: |
           echo "branch: ${{ env.BRANCH_NAME_SLUG }}"
 
-      - name: Download Prisma Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: prisma-scan-results-${{ env.PROJECT_NAME }}-${{ env.BRANCH_NAME_SLUG }}-${{ env.CURRENT_DATE_TIME }}-${{ env.BUILD_NUMBER }}
-          path: ./upload-artifacts
+     # - name: Download Prisma Artifact
+     #   uses: actions/download-artifact@v3
+     #   with:
+     #     name: prisma-scan-results-${{ env.PROJECT_NAME }}-${{ env.BRANCH_NAME_SLUG }}-${{ env.CURRENT_DATE_TIME }}-${{ env.BUILD_NUMBER }}
+     #     path: ./upload-artifacts
 
       - name: Create Prerelease
         uses: ncipollo/release-action@v1
