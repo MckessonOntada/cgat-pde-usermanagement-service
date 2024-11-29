@@ -70,8 +70,8 @@ jobs:
         with:
           path: ~/.sdkman/candidates/java
           key: jdk-17-${{ runner.os }}
-        restore-keys: |
-          jdk-17-
+          restore-keys: |
+              jdk-17-
 
       - name: Set up JDK 17
         if: steps.cache.outputs.cache-hit != 'true'
