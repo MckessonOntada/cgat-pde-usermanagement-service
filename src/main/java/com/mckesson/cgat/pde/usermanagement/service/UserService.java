@@ -17,6 +17,8 @@ public interface UserService {
 
 	void deleteUser(Long userId) throws ResourceNotFoundException;
 
+	void deleteUser(Long userId, Long accountId) throws ResourceNotFoundException;
+
 	Page<User> findAll(Pageable paging, String query, List<String> status, Long practiceId, LocalDate startDate,
 			LocalDate endDate);
 

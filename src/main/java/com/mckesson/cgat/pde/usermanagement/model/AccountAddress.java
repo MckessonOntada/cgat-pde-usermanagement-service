@@ -40,6 +40,10 @@ public class AccountAddress implements Serializable {
 	@Column(name = "country")
 	private String country;
 
+	private String email;
+
+	private String telephone;
+
 	@Column(name = "zip_code")
 	private String zipCode;
 

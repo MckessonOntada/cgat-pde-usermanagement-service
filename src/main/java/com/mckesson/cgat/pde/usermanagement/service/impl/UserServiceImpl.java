@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -59,6 +60,18 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public void deleteUser(Long userId, Long accountId) throws ResourceNotFoundException {
+		User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(userId.toString()));
+		Account account = accountRepository.findById(accountId)
+			.orElseThrow(() -> new ResourceNotFoundException("Account not found with id:" + accountId));
+		Set<Account> accounts = new HashSet<>(user.getAccounts());
+		user.getAccounts().clear();
+		accounts.removeIf(a -> a.getId().equals(account.getId()));
+		user.setAccounts(accounts);
+		userRepository.save(user);
+	}
+
+	@Override
 	public void deleteUser(Long userId) throws ResourceNotFoundException {
 		User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(userId.toString()));
 		user.setIsActive(false);
@@ -95,7 +108,6 @@ public class UserServiceImpl implements UserService {
 		if (accounts.size() != accountIds.size())
 			throw new ResourceNotFoundException("Some of the provided account IDs does not exist.");
 
-		user.getAccounts().clear();
 		user.getAccounts().addAll(accounts);
 		return userRepository.save(user);
 

@@ -60,6 +60,8 @@ public class Account implements Serializable {
 	@Column(name = "division")
 	private String division;
 
+	private String vistexCustomer;
+
 	@Column(name = "company_code")
 	private String companyCode;
 

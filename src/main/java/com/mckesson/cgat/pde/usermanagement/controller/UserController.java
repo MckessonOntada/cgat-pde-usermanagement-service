@@ -40,6 +40,7 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -98,6 +99,17 @@ public class UserController {
 
 	}
 
+	@DeleteMapping("/{userId}/accounts/{accountid}")
+	@Operation(summary = "Delete user details byId")
+	public void deleteUserAccount(@PathVariable Long userId,
+			@NotNull(message = "User Type should not be null") @RequestParam UserType userType,
+			@NotNull(message = "Account can not be empty") @PathVariable Long accountid)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
+		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
+		userService.deleteUser(userId, accountid);
+
+	}
+
 	@GetMapping
 	@Operation(summary = "Fetch all Users based on filter provided with pagination capabilities.")
 	Page<User> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
@@ -121,11 +133,10 @@ public class UserController {
 	}
 
 	@PatchMapping("/{userId}/accounts")
-	@Operation(
-			summary = "Link/Delink User with accounts.(This API maps the accounts being passed in requst with the user "
-					+ "such as the requested mapping is the current state of user to account association")
+	@Operation(summary = "Link User with accounts.(This API maps the accounts being passed in requst with the user "
+			+ "such as the requested mapping is the current state of user to account association")
 	public User linkUserToAccounts(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
-			@RequestBody List<Long> accountIds,
+			@NotEmpty(message = "Accounts can not be empty") @RequestBody List<Long> accountIds,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
