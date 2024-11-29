@@ -156,27 +156,27 @@ jobs:
           
     #      /tmp/twistcli images scan --details --address https://us-east1.cloud.twistlock.com/us-2-158257908 --user $PRISMA_USER --password $PRISMA_PASSWORD $DOCKER_IMAGE_NAME > /tmp/prisma-twistcli-scan-output.txt
 
-      - name: Upload Scan Output
-        id: Upload-Scan-Output
-        uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: prisma-scan-results-${{ env.PROJECT_NAME }}-${{ env.BRANCH_NAME_SLUG }}-${{ env.CURRENT_DATE_TIME }}-${{ env.BUILD_NUMBER }}
-          path: /tmp/prisma-twistcli-scan-output.txt
+    #  - name: Upload Scan Output
+    #    id: Upload-Scan-Output
+    #    uses: actions/upload-artifact@v3
+    #    if: always()
+    #    with:
+    #      name: prisma-scan-results-${{ env.PROJECT_NAME }}-${{ env.BRANCH_NAME_SLUG }}-${{ env.CURRENT_DATE_TIME }}-${{ env.BUILD_NUMBER }}
+    #      path: /tmp/prisma-twistcli-scan-output.txt
         
-      - name: Analyse the Security Scan Report
-        id: analyse-security-scan
-        run: |
-          docker images
-          cat /tmp/prisma-twistcli-scan-output.txt
+    # - name: Analyse the Security Scan Report
+    #    id: analyse-security-scan
+    #    run: |
+    #      docker images
+    #      cat /tmp/prisma-twistcli-scan-output.txt
           # Parse the scan results and check for critical vulnerabilities
-          CRITICAL_VULNERABILITIES=$(grep -ic "critical" /tmp/prisma-twistcli-scan-output.txt || true)
-          echo "Number of critical vulnerabilities: $CRITICAL_VULNERABILITIES"
-          if [ "$CRITICAL_VULNERABILITIES" -gt 5 ]; then
-            echo "Critical vulnerabilities found:"
-            echo "$CRITICAL_VULNERABILITIES"
+    #      CRITICAL_VULNERABILITIES=$(grep -ic "critical" /tmp/prisma-twistcli-scan-output.txt || true)
+    #      echo "Number of critical vulnerabilities: $CRITICAL_VULNERABILITIES"
+    #      if [ "$CRITICAL_VULNERABILITIES" -gt 5 ]; then
+    #        echo "Critical vulnerabilities found:"
+    #        echo "$CRITICAL_VULNERABILITIES"
             # exit 1  # Fail the workflow
-          fi
+     #     fi
 
       - name: Login to Jfrog
         uses: jfrog/setup-jfrog-cli@v3
