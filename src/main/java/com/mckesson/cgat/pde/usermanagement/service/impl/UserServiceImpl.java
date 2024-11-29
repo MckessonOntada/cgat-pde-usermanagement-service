@@ -3,17 +3,14 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
-import com.mckesson.cgat.pde.usermanagement.exception.custom.ForbiddenActionException;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
 import com.mckesson.cgat.pde.usermanagement.model.User;
@@ -22,7 +19,6 @@ import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;
-import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.cgat.pde.usermanagement.utils.UserRequestAuthorizationValidator;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
@@ -65,16 +61,10 @@ public class UserServiceImpl implements UserService {
 	@Override
 	@Transactional
 	public void delinkUserFromAccount(Long userId, Long accountId) throws ResourceNotFoundException {
-		User user = userRepository.findById(userId)
+		userRepository.findById(userId)
 			.orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId.toString()));
-		Account account = accountRepository.findById(accountId)
+		accountRepository.findById(accountId)
 			.orElseThrow(() -> new ResourceNotFoundException("Account not found with id:" + accountId));
-		Optional<Account> matchedAccount = user.getAccounts()
-			.stream()
-			.filter(a -> a.getId().equals(account.getId()))
-			.findAny();
-		if (!matchedAccount.isPresent())
-			throw new ForbiddenActionException(CustomUtils.UNAUTHORIZED_MESSAGE);
 		userRepository.delinkUserFromAccount(userId, accountId);
 	}
 

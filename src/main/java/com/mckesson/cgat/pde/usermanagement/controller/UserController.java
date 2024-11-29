@@ -101,13 +101,14 @@ public class UserController {
 
 	@DeleteMapping("/{userId}/accounts/{accountId}")
 	@Operation(summary = "Delink user from account")
-	public void delinkUserFromAccount(@PathVariable Long userId,
+	public ResponseEntity<Void> delinkUserFromAccount(@PathVariable Long userId,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType,
 			@NotNull(message = "Account can not be empty") @PathVariable Long accountId)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
 		userService.delinkUserFromAccount(userId, accountId);
 
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@GetMapping
