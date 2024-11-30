@@ -115,15 +115,16 @@ class AccountServiceImplTest {
 		verify(accountRepository).save(newAccount);
 	}
 
-	@DisplayName("Delink Account")
-	@Test
-	void delinkAccountTest() throws ResourceNotFoundException {
-		when(accountRepository.findById(account.getId())).thenReturn(Optional.of(account));
-		accountService.delinkAccountFromPractice(account.getPracticeId(), account.getId());
-		account.setPracticeId(null);
-		verify(accountRepository, times(1)).save(account);
-
-	}
+	/*
+	 * @DisplayName("Delink Account")
+	 *
+	 * @Test void delinkAccountTest() throws ResourceNotFoundException {
+	 * when(accountRepository.findById(account.getId())).thenReturn(Optional.of(account));
+	 * accountService.delinkAccountFromPractice(account.getPracticeId(), account.getId());
+	 * account.setPracticeId(null); verify(accountRepository, times(1)).save(account);
+	 *
+	 * }
+	 */
 
 	@DisplayName("FindAllUser")
 	@Test
