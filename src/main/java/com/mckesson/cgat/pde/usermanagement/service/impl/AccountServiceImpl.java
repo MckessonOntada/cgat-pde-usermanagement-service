@@ -64,7 +64,7 @@ public class AccountServiceImpl implements AccountService {
 	public void delinkAccountFromPractice(Long practiceId, Long accountId) throws ResourceNotFoundException {
 		Account account = accountRepository.findById(accountId)
 			.orElseThrow(() -> new ResourceNotFoundException("Account not found with it: " + accountId.toString()));
-		if (account.getPracticeId() != practiceId)
+		if (practiceId.equals(account.getPracticeId()))
 			throw new ForbiddenActionException(CustomUtils.UNAUTHORIZED_MESSAGE);
 		account.setPracticeId(null);
 		accountRepository.save(account);
