@@ -79,6 +79,7 @@ jobs:
         with:
          distribution: 'oracle'
          java-version: 17
+         overwrite-settings: false
 
 
       - name: Cache Maven Dependencies
