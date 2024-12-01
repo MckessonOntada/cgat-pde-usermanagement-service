@@ -1,44 +1,51 @@
 package com.mckesson.cgat.pde.usermanagement.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 public class CustomDTOs {
 
-	public interface TherapyCatalogResponseDTO {
+	@AllArgsConstructor
+	@Data
+	public static class TherapyCatalogResponseDTO {
 
-		String getTherapyId();
+		private String therapyId;
 
-		String getTherapyDescription();
+		private String therapyDescription;
 
-		String getNdc();
+		private String ndc;
 
-		String getUdi();
+		private String udi;
 
 	}
 
-	public interface AccountsResponseDTO {
+	@AllArgsConstructor
+	@Data
+	public static class AccountsResponseDTO {
 
-		String getAccountNumber();
+		private String accountNumber;
 
-		String getAccountName();
+		private String accountName;
 
-		String getHouseNumber();
+		private String houseNumber;
 
-		String getStreet();
+		private String street;
 
-		String getStreet2();
+		private String street2;
 
-		String getStreet3();
+		private String street3;
 
-		String getTelephone();
+		private String telephone;
 
-		String getCity();
+		private String city;
 
-		String getDistrict();
+		private String district;
 
-		String getState();
+		private String state;
 
-		String getCountry();
+		private String country;
 
-		String getZipCode();
+		private String zipCode;
 
 	}
 

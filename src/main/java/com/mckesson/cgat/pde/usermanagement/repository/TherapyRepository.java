@@ -1,7 +1,5 @@
 package com.mckesson.cgat.pde.usermanagement.repository;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,8 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.mckesson.cgat.pde.usermanagement.dto.CustomDTOs.AccountsResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.CustomDTOs.TherapyCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 
 @Repository
@@ -43,7 +39,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					)
 			)
 			""", nativeQuery = true)
-	public Page<TherapyCatalogResponseDTO> findAllTherapies(@Param("userId") Long userId, @Param("query") String query,
+	public Page<Object[]> findAllTherapies(@Param("userId") Long userId, @Param("query") String query,
 			@Param("salesOrg") String salesOrg, Pageable paging);
 
 	@Query(value = """
@@ -70,8 +66,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 
 			""",
 			nativeQuery = true)
-	public Page<AccountsResponseDTO> findAllSoldToAccounts(@Param("userId") Long userId,
-			@Param("therapyId") String therapyId, @Param("query") String query, Pageable paging);
+	public Page<Object[]> findAllSoldToAccounts(@Param("userId") Long userId, @Param("therapyId") String therapyId,
+			@Param("query") String query, Pageable paging);
 
 	@Query(value = """
 			SELECT DISTINCT ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2,
@@ -89,7 +85,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 				ac.partner_function = 'SP'
 			""",
 			nativeQuery = true)
-	public Page<AccountsResponseDTO> findAllShipToAccounts(@Param("soldToAccountId") String soldToAccountId,
+	public Page<Object[]> findAllShipToAccounts(@Param("soldToAccountId") String soldToAccountId,
 			@Param("therapyId") String therapyId, Pageable paging);
 
 }
