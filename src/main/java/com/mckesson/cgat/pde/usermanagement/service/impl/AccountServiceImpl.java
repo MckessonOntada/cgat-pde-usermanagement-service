@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import com.mckesson.cgat.pde.usermanagement.exception.custom.ForbiddenActionException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
@@ -60,10 +61,12 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public void deleteAccount(Long accountId) throws ResourceNotFoundException {
+	public void delinkAccountFromPractice(Long practiceId, Long accountId) throws ResourceNotFoundException {
 		Account account = accountRepository.findById(accountId)
-			.orElseThrow(() -> new ResourceNotFoundException(accountId.toString()));
-		account.setIsActive(false);
+			.orElseThrow(() -> new ResourceNotFoundException("Account not found with it: " + accountId.toString()));
+		if (!practiceId.equals(account.getPracticeId()))
+			throw new ForbiddenActionException(CustomUtils.UNAUTHORIZED_MESSAGE);
+		account.setPracticeId(null);
 		accountRepository.save(account);
 	}
 
@@ -108,18 +111,8 @@ public class AccountServiceImpl implements AccountService {
 		List<Account> allAccounts = accountRepository.findAllById(accountIds);
 		isAnyAccountLinkedToAnyOtherPractice(practiceId, allAccounts);
 
-		Set<Account> existingAccounts = accountRepository.findByPracticeId(practiceId);
-		existingAccounts.addAll(allAccounts);
-
-		existingAccounts.forEach(a -> {
-			if (accountIds.contains(a.getId()))
-				a.setPracticeId(practiceId);
-
-			else
-				a.setPracticeId(null);
-
-		});
-		accountRepository.saveAll(existingAccounts);
+		allAccounts.forEach(a -> a.setPracticeId(practiceId));
+		accountRepository.saveAll(allAccounts);
 	}
 
 	private void isAnyAccountLinkedToAnyOtherPractice(Long practiceId, List<Account> allAccounts)
