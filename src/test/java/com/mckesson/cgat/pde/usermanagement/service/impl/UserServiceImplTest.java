@@ -8,10 +8,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -22,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.mckesson.cgat.pde.usermanagement.service.OktaUserManagementService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -66,6 +64,9 @@ class UserServiceImplTest {
 	@Mock
 	private RoleRepository roleRepository;
 
+	@Mock
+	private OktaUserManagementService oktaUserManagementService;
+
 	private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
 	private User user;
@@ -100,6 +101,7 @@ class UserServiceImplTest {
 	@Test
 	void createUserTest() {
 		when(userRepository.save(user)).thenReturn(user);
+		doNothing().when(oktaUserManagementService).updateOrCreateOktaUser(user);
 		assertEquals(user, userService.createUser(user));
 		verify(userRepository, times(1)).save(user);
 	}
