@@ -194,17 +194,11 @@ CREATE TABLE IF NOT EXISTS user_permission_mapping (
      FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE
 );
 
--- CREATE INDEX role_name_index  ON usermanagement.role
--- USING GIN (name gin_trgm_ops);
-
--- CREATE INDEX user_name_email_index ON usermanagement.user 
--- USING GIN (first_name gin_trgm_ops, middle_name gin_trgm_ops, last_name gin_trgm_ops, email gin_trgm_ops);
-
 CREATE TABLE IF NOT EXISTS user_provisioning_request(
 	
     id        					INTEGER 		NOT NULL,
     practice_id					INTEGER,
-    first_name  				VARCHAR(255) 	NOT NULL,
+    first_name  				VARCHAR(255)  NOT NULL,
     middle_name 				VARCHAR(255),
     last_name	 				VARCHAR(255) 	NOT NULL,
     address1					VARCHAR(255) 	NOT NULL,
@@ -228,7 +222,6 @@ CREATE TABLE IF NOT EXISTS user_provisioning_request(
 
 CREATE SEQUENCE USER_PROVISIONING_SEQUENCE START WITH 1 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE  CACHE 20;
 
-
 --CREATE INDEX user_provisioning_request_name_index  ON usermanagement.user_provisioning_request 
 --USING GIN (first_name gin_trgm_ops, middle_name gin_trgm_ops, last_name gin_trgm_ops, email gin_trgm_ops);
 
@@ -243,9 +236,10 @@ USING btree(status, created_at);
 -- CREATE INDEX user_name_email_index ON usermanagement.user 
 -- USING GIN (first_name gin_trgm_ops, middle_name gin_trgm_ops, last_name gin_trgm_ops, email gin_trgm_ops);
 
-
-CREATE INDEX user_status_createdat_index  ON usermanagement.user
+CREATE INDEX user_status_createdat_index  ON usermanagement.user 
 USING btree(is_active, created_at);
 
 CREATE INDEX role_status_updatedat_index ON usermanagement.role 
 USING btree(is_active, updated_at);
+
+
