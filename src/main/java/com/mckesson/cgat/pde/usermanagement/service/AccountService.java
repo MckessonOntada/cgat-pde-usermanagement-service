@@ -17,7 +17,7 @@ public interface AccountService {
 
 	Account getAccount(Long accountId) throws ResourceNotFoundException;
 
-	void deleteAccount(Long accountId) throws ResourceNotFoundException;
+	void delinkAccountFromPractice(Long practiceId, Long accountId) throws ResourceNotFoundException;
 
 	Page<Account> findAll(Pageable paging, String query, List<String> status, Long userId, Long practiceId,
 			AccountPartnerFunction partnerFunction) throws ResourceNotFoundException;

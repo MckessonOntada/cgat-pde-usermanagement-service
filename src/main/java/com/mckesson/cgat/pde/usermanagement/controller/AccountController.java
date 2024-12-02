@@ -3,8 +3,6 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import java.util.List;
 import java.util.Set;
 
-import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
-import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,12 +23,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
+import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -73,9 +73,10 @@ public class AccountController {
 	}
 
 	@DeleteMapping("/{accountId}")
-	@Operation(summary = "Delete account details byId")
-	public ResponseEntity<String> deleteAccount(@PathVariable Long accountId) throws ResourceNotFoundException {
-		accountService.deleteAccount(accountId);
+	@Operation(summary = "Delink account from practice")
+	public ResponseEntity<String> delinkAccountFromPractice(@PathVariable Long practiceId, @PathVariable Long accountId)
+			throws ResourceNotFoundException {
+		accountService.delinkAccountFromPractice(practiceId, accountId);
 		return new ResponseEntity<>(HttpStatus.OK);
 
 	}
@@ -94,11 +95,11 @@ public class AccountController {
 	}
 
 	@PatchMapping
-	@Operation(
-			summary = "Link multiple accounts to a Practice.(This de-links any existing account not present in the request)")
+	@Operation(summary = "Link multiple accounts to a Practice.")
 	public ResponseEntity<Void> linkAccountsToPractice(
 			@PathVariable @NotNull(message = "Practice Id can not be null") Long practiceId,
-			@RequestBody Set<Long> accountIds) throws ResourceNotFoundException, UnauthorizedAccessException {
+			@RequestBody @NotEmpty(message = "Accounts can not be empty") Set<Long> accountIds)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
 		accountService.linkAccountsToPractice(practiceId, accountIds);
 		return new ResponseEntity<>(HttpStatus.OK);
 

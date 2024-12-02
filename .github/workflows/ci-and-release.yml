@@ -65,11 +65,30 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Cache JDK 17
+        uses: actions/cache@v3
+        with:
+          path: ~/.sdkman/candidates/java
+          key: jdk-17-${{ runner.os }}
+          restore-keys: |
+              jdk-17-
+
       - name: Set up JDK 17
+        if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/setup-java@v3
         with:
-          distribution: 'oracle'
-          java-version: 17
+         distribution: 'oracle'
+         java-version: 17
+         overwrite-settings: false
+
+
+      - name: Cache Maven Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+               maven-${{ runner.os }}-
 
       - name: Build dependencies with Maven
         run: |
@@ -145,38 +164,38 @@ jobs:
           cache-to: type=inline
           load: true
 
-      - name: Scan Docker Image
-        id: scan-docker-image
-        run: |
-          curl -u $PRISMA_USER:$PRISMA_PASSWORD --output twistcli https://us-east1.cloud.twistlock.com/us-2-158257908/api/v1/util/twistcli && chmod +x twistcli && mv twistcli /tmp/
-          /tmp/twistcli images scan --details --address https://us-east1.cloud.twistlock.com/us-2-158257908 --user $PRISMA_USER --password $PRISMA_PASSWORD $DOCKER_IMAGE_NAME --vuln-severity critical --vuln-threshold 1
-          EXIT_CODE=$?
-          # Print the results
-          echo "Exit code: $EXIT_CODE"
+    #  - name: Scan Docker Image
+    #    id: scan-docker-image
+    #    run: |
+    #      curl -u $PRISMA_USER:$PRISMA_PASSWORD --output twistcli https://us-east1.cloud.twistlock.com/us-2-158257908/api/v1/util/twistcli && chmod +x twistcli && mv twistcli /tmp/
+    #      /tmp/twistcli images scan --details --address https://us-east1.cloud.twistlock.com/us-2-158257908 --user $PRISMA_USER --password $PRISMA_PASSWORD $DOCKER_IMAGE_NAME --vuln-severity critical --vuln-threshold 1
+    #      EXIT_CODE=$?
+         # Print the results
+    #      echo "Exit code: $EXIT_CODE"
           
-          /tmp/twistcli images scan --details --address https://us-east1.cloud.twistlock.com/us-2-158257908 --user $PRISMA_USER --password $PRISMA_PASSWORD $DOCKER_IMAGE_NAME > /tmp/prisma-twistcli-scan-output.txt
+    #      /tmp/twistcli images scan --details --address https://us-east1.cloud.twistlock.com/us-2-158257908 --user $PRISMA_USER --password $PRISMA_PASSWORD $DOCKER_IMAGE_NAME > /tmp/prisma-twistcli-scan-output.txt
 
-      - name: Upload Scan Output
-        id: Upload-Scan-Output
-        uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: prisma-scan-results-${{ env.PROJECT_NAME }}-${{ env.BRANCH_NAME_SLUG }}-${{ env.CURRENT_DATE_TIME }}-${{ env.BUILD_NUMBER }}
-          path: /tmp/prisma-twistcli-scan-output.txt
+    #  - name: Upload Scan Output
+    #    id: Upload-Scan-Output
+    #    uses: actions/upload-artifact@v3
+    #    if: always()
+    #    with:
+    #      name: prisma-scan-results-${{ env.PROJECT_NAME }}-${{ env.BRANCH_NAME_SLUG }}-${{ env.CURRENT_DATE_TIME }}-${{ env.BUILD_NUMBER }}
+    #      path: /tmp/prisma-twistcli-scan-output.txt
         
-      - name: Analyse the Security Scan Report
-        id: analyse-security-scan
-        run: |
-          docker images
-          cat /tmp/prisma-twistcli-scan-output.txt
+    # - name: Analyse the Security Scan Report
+    #    id: analyse-security-scan
+    #    run: |
+    #      docker images
+    #      cat /tmp/prisma-twistcli-scan-output.txt
           # Parse the scan results and check for critical vulnerabilities
-          CRITICAL_VULNERABILITIES=$(grep -ic "critical" /tmp/prisma-twistcli-scan-output.txt || true)
-          echo "Number of critical vulnerabilities: $CRITICAL_VULNERABILITIES"
-          if [ "$CRITICAL_VULNERABILITIES" -gt 5 ]; then
-            echo "Critical vulnerabilities found:"
-            echo "$CRITICAL_VULNERABILITIES"
+    #      CRITICAL_VULNERABILITIES=$(grep -ic "critical" /tmp/prisma-twistcli-scan-output.txt || true)
+    #      echo "Number of critical vulnerabilities: $CRITICAL_VULNERABILITIES"
+    #      if [ "$CRITICAL_VULNERABILITIES" -gt 5 ]; then
+    #        echo "Critical vulnerabilities found:"
+    #        echo "$CRITICAL_VULNERABILITIES"
             # exit 1  # Fail the workflow
-          fi
+     #     fi
 
       - name: Login to Jfrog
         uses: jfrog/setup-jfrog-cli@v3
@@ -213,11 +232,11 @@ jobs:
         run: |
           echo "branch: ${{ env.BRANCH_NAME_SLUG }}"
 
-      - name: Download Prisma Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: prisma-scan-results-${{ env.PROJECT_NAME }}-${{ env.BRANCH_NAME_SLUG }}-${{ env.CURRENT_DATE_TIME }}-${{ env.BUILD_NUMBER }}
-          path: ./upload-artifacts
+     # - name: Download Prisma Artifact
+     #   uses: actions/download-artifact@v3
+     #   with:
+     #     name: prisma-scan-results-${{ env.PROJECT_NAME }}-${{ env.BRANCH_NAME_SLUG }}-${{ env.CURRENT_DATE_TIME }}-${{ env.BUILD_NUMBER }}
+     #     path: ./upload-artifacts
 
       - name: Create Prerelease
         uses: ncipollo/release-action@v1

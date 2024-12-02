@@ -1,8 +1,13 @@
 package com.mckesson.cgat.pde.usermanagement.dto;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+
+import com.mckesson.cgat.pde.usermanagement.model.Practice;
+import lombok.*;
+
 
 public class CustomDTOs {
 
@@ -48,6 +53,26 @@ public class CustomDTOs {
 		private String country;
 
 		private String zipCode;
+
+	}
+
+	@AllArgsConstructor
+	@Data
+	@NoArgsConstructor
+	@Getter
+	@Setter
+	public static class GlobalPracticeResponseDto {
+
+		private Long id;
+
+		private String name;
+
+		public static GlobalPracticeResponseDto convert(Practice practice) {
+			GlobalPracticeResponseDto dto = new GlobalPracticeResponseDto();
+			dto.setId(practice.getId());
+			dto.setName(practice.getName());
+			return dto;
+		}
 
 	}
 

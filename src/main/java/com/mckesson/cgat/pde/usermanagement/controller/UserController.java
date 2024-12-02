@@ -40,6 +40,7 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -98,6 +99,18 @@ public class UserController {
 
 	}
 
+	@DeleteMapping("/{userId}/accounts/{accountId}")
+	@Operation(summary = "Delink user from account")
+	public ResponseEntity<Void> delinkUserFromAccount(@PathVariable Long userId,
+			@NotNull(message = "User Type should not be null") @RequestParam UserType userType,
+			@NotNull(message = "Account can not be empty") @PathVariable Long accountId)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
+		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
+		userService.delinkUserFromAccount(userId, accountId);
+
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
 	@GetMapping
 	@Operation(summary = "Fetch all Users based on filter provided with pagination capabilities.")
 	Page<User> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
@@ -121,11 +134,9 @@ public class UserController {
 	}
 
 	@PatchMapping("/{userId}/accounts")
-	@Operation(
-			summary = "Link/Delink User with accounts.(This API maps the accounts being passed in requst with the user "
-					+ "such as the requested mapping is the current state of user to account association")
+	@Operation(summary = "Link User with multiple accounts.")
 	public User linkUserToAccounts(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
-			@RequestBody List<Long> accountIds,
+			@NotEmpty(message = "Accounts can not be empty") @RequestBody List<Long> accountIds,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
@@ -147,7 +158,7 @@ public class UserController {
 	@GetMapping("/{userId}/accounts")
 	@Operation(summary = "Fetch all Acccounts for User based on filter provided with pagination capabilities.")
 	Page<Account> findAllAccounts(@RequestParam(defaultValue = "0") Integer pageNo,
-			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "name") String sortBy,
+			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "name_1") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
 			@PathVariable(required = false) String practiceId, @PathVariable(required = false) Long userId,
 			@RequestParam(required = false) List<String> status) throws ResourceNotFoundException {
