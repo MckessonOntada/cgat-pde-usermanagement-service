@@ -26,6 +26,7 @@ public class CustomDTOs {
 
 	@AllArgsConstructor
 	@Data
+	@Builder
 	public static class AccountsResponseDTO {
 
 		private String accountNumber;

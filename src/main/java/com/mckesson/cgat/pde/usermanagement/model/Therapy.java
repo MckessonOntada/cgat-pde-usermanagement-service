@@ -10,6 +10,7 @@ import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -110,6 +111,7 @@ import lombok.Data;
  **/
 @Entity
 @Data
+@Builder
 @Table(name = "material", schema = "catalog")
 public class Therapy {
 
