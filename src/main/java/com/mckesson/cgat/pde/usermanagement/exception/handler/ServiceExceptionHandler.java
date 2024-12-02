@@ -8,6 +8,9 @@ import com.mckesson.jbat.auth.module.exception.UserAuthenticationException;
 import com.mckesson.jbat.common.util.exception.ApiErrorResponse;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -81,6 +84,20 @@ public class ServiceExceptionHandler {
 	@ExceptionHandler({ AccessDeniedException.class })
 	public final ResponseEntity<?> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
 		return buildResponseEntity(ex, request, HttpStatus.UNAUTHORIZED);
+	}
+
+	@ExceptionHandler(DataIntegrityViolationException.class)
+	public ResponseEntity<?> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+		Throwable rootCause = ex.getCause();
+		if (rootCause instanceof ConstraintViolationException constraintEx) {
+			String constraintName = constraintEx.getConstraintName();
+			String message = String.format("Constraint violation: '%s'", constraintName);
+			ApiErrorResponse apiErrorResponse = new ApiErrorResponse(HttpStatus.CONFLICT, new Date(), message);
+			return new ResponseEntity<>(apiErrorResponse, HttpStatus.CONFLICT);
+		}
+		ApiErrorResponse apiErrorResponse = new ApiErrorResponse(HttpStatus.CONFLICT, new Date(),
+				"Data integrity violation occurred." + ex.getMessage());
+		return new ResponseEntity<>(apiErrorResponse, HttpStatus.CONFLICT);
 	}
 
 	private Map<String, List<String>> getErrorsMap(List<String> errors) {

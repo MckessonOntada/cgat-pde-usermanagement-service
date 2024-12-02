@@ -60,6 +60,8 @@ public class Account implements Serializable {
 	@Column(name = "division")
 	private String division;
 
+	private String vistexCustomer;
+
 	@Column(name = "company_code")
 	private String companyCode;
 
@@ -75,6 +77,6 @@ public class Account implements Serializable {
 	private Set<User> user;
 
 	@Convert(converter = NumericBooleanConverter.class)
-	private Boolean isActive = false;
+	private Boolean isActive = true;
 
 }

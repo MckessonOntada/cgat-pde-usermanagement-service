@@ -24,8 +24,10 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
 			FROM usermanagement.role
 			WHERE
 				(
-				:query is null
-				or LOWER(name) like %:query%
+				(
+				    :query is null
+					or LOWER(name) like %:query%
+				)
 				and
 				practice_id =:practiceId
 				and

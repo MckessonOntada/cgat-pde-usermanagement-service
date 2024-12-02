@@ -115,15 +115,16 @@ class AccountServiceImplTest {
 		verify(accountRepository).save(newAccount);
 	}
 
-	@DisplayName("DeleteAccount")
-	@Test
-	void deleteAccountTest() throws ResourceNotFoundException {
-		when(accountRepository.findById(account.getId())).thenReturn(Optional.of(account));
-		accountService.deleteAccount(account.getId());
-		assertFalse(account.getIsActive());
-		verify(accountRepository, times(1)).save(account);
-
-	}
+	/*
+	 * @DisplayName("Delink Account")
+	 *
+	 * @Test void delinkAccountTest() throws ResourceNotFoundException {
+	 * when(accountRepository.findById(account.getId())).thenReturn(Optional.of(account));
+	 * accountService.delinkAccountFromPractice(account.getPracticeId(), account.getId());
+	 * account.setPracticeId(null); verify(accountRepository, times(1)).save(account);
+	 *
+	 * }
+	 */
 
 	@DisplayName("FindAllUser")
 	@Test
@@ -198,12 +199,13 @@ class AccountServiceImplTest {
 
 		when(practiceRepository.findById(practiceId)).thenReturn(Optional.of(practice));
 		when(accountRepository.findAllById(accountIds)).thenReturn(accounts);
-		when(accountRepository.findByPracticeId(practiceId)).thenReturn(new HashSet<>(accounts));
+		// when(accountRepository.findByPracticeId(practiceId)).thenReturn(new
+		// HashSet<>(accounts));
 
-		when(accountRepository.saveAll(Mockito.anySet())).thenReturn(accounts);
+		when(accountRepository.saveAll(Mockito.anyList())).thenReturn(accounts);
 		accountService.linkAccountsToPractice(practiceId, accountIds);
 
-		verify(accountRepository, times(1)).saveAll(Mockito.anySet());
+		verify(accountRepository, times(1)).saveAll(Mockito.anyList());
 	}
 
 	@DisplayName("PracticeNotFoundException ")

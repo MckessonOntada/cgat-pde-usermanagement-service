@@ -18,10 +18,15 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 			FROM usermanagement.account a
 			WHERE
 			(
-				:query IS NULL
-				OR LOWER(a.name_1) LIKE %:query%
+				(
+					:query IS NULL
+				 	OR LOWER(a.name_1) LIKE %:query%
+				)
 				AND
-				tenant_id =:practiceId
+				(
+					(CAST(:practiceId AS varchar) is NULL and (tenant_id is null))
+					OR (tenant_id =:practiceId )
+				)
 				AND
 				(
 					(:status = 'ALL' and (is_active = 1 or is_active = 0))
