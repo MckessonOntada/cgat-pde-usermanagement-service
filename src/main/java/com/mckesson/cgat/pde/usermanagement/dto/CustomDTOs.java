@@ -1,13 +1,11 @@
 package com.mckesson.cgat.pde.usermanagement.dto;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
 import com.mckesson.cgat.pde.usermanagement.model.Practice;
 import lombok.*;
-
 
 public class CustomDTOs {
 
