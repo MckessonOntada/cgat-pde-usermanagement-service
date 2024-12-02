@@ -7,13 +7,14 @@ import org.springframework.web.bind.annotation.InitBinder;
 @ControllerAdvice
 public class TrimStringControllerAdvice {
 
-    @InitBinder
-    public void initBinder(WebDataBinder binder) {
-        binder.registerCustomEditor(String.class, new java.beans.PropertyEditorSupport() {
-            @Override
-            public void setAsText(String text) {
-                setValue(text == null ? null : text.trim());
-            }
-        });
-    }
+	@InitBinder
+	public void initBinder(WebDataBinder binder) {
+		binder.registerCustomEditor(String.class, new java.beans.PropertyEditorSupport() {
+			@Override
+			public void setAsText(String text) {
+				setValue(text == null ? null : text.trim());
+			}
+		});
+	}
+
 }
