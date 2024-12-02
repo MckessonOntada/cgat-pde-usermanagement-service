@@ -1,8 +1,15 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
@@ -13,85 +20,100 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.mckesson.cgat.pde.usermanagement.model.Address;
-import com.mckesson.cgat.pde.usermanagement.model.Contact;
-import com.mckesson.cgat.pde.usermanagement.model.Name;
-import com.mckesson.cgat.pde.usermanagement.model.Practice;
+import com.mckesson.cgat.pde.usermanagement.dto.CustomDTOs.TherapyCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
 
 @WebMvcTest(TherapyController.class)
 @ContextConfiguration(classes = { TherapyController.class })
 @ImportAutoConfiguration(exclude = SecurityAutoConfiguration.class)
-//public class TherapyControllerTest {
-//
-//	@MockBean
-//	TherapyService therapyService;
-//
-//	@Autowired
-//	MockMvc mockMvc;
-//
-//	
-//	private Page<TherapyCatalogResponseDTO> getTherapies() {
-//		Integer pageNo = 0;
-//		Integer pageSize = 20;
-//		String sortBy = "name";
-//		String sortOrder = "asc";
-//		List<Practice> practices = new ArrayList<>();
-//		TherapyCatalogResponseDTO practice1 = new TherapyCatalogResponseDTO();
-//			.id(1L)
-//			.address(new Address("address1_1", "address2_1", "city1", "state5", "12345"))
-//			.contact(new Contact("email@gmail.com", "+1", "4444444444", "fax"))
-//			.contactPerson(new Name("first", "", "last"))
-//			.isActive(Boolean.TRUE)
-//			.logoUrl("http://localhost:8080/1")
-//			.name("practicename")
-//			.build();
-//		TherapyCatalogResponseDTO practice2 = TherapyCatalogResponseDTO.builder()
-//			.id(3L)
-//			.address(new Address("address1_2", "address2_2", "city2", "state4", "23451"))
-//			.contact(new Contact("email@gmail.com", "+1", "2222222222", "fax"))
-//			.contactPerson(new Name("first", "", "last"))
-//			.isActive(Boolean.TRUE)
-//			.logoUrl("http://localhost:8080/2")
-//			.name("practicename")
-//			.build();
-//		TherapyCatalogResponseDTO practice3 = TherapyCatalogResponseDTO.builder()
-//			.id(5L)
-//			.address(new Address("address1_3", "address2_3", "city3", "state3", "34512"))
-//			.contact(new Contact("email@gmail.com", "+1", "9999999999", "fax"))
-//			.contactPerson(new Name("first", "", "last"))
-//			.isActive(Boolean.TRUE)
-//			.logoUrl("http://localhost:8080/3")
-//			.name("practicename")
-//			.build();
-//		Practice practice4 = Practice.builder()
-//			.id(7L)
-//			.address(new Address("address1_4", "address2_4", "city4", "state2", "45123"))
-//			.contact(new Contact("email@gmail.com", "+1", "7777777777", "fax"))
-//			.contactPerson(new Name("first", "", "last"))
-//			.isActive(Boolean.TRUE)
-//			.logoUrl("http://localhost:8080/4")
-//			.name("practicename")
-//			.build();
-//		Practice practice5 = Practice.builder()
-//			.id(9L)
-//			.address(new Address("address1_5", "address2_5", "city5", "state1", "51234"))
-//			.contact(new Contact("email@gmail.com", "+1", "6666666666", "fax"))
-//			.contactPerson(new Name("first", "", "last"))
-//			.isActive(Boolean.TRUE)
-//			.logoUrl("http://localhost:8080/5")
-//			.name("practicename")
-//			.build();
-//		practices.add(practice1);
-//		practices.add(practice2);
-//		practices.add(practice3);
-//		practices.add(practice4);
-//		practices.add(practice5);
-//		Sort sort = "asc".equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-//		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
-//		return new PageImpl<>(practices, pageable, practices.size());
-//	}
+public class TherapyControllerTest {
+
+	@MockBean
+	TherapyService therapyService;
+
+	@Autowired
+	MockMvc mockMvc;
+
+	@DisplayName("Test : FindAll Therapies")
+	@Test
+	public void findAllTherapiesTest() throws Exception {
+
+		String query = "";
+		String salesOrg = "";
+		Pageable paging = PageRequest.of(0, 20, Sort.by("name").ascending());
+		String practiceId = "2";
+		String userId = "2";
+		Page<TherapyCatalogResponseDTO> therapies = getTherapies();
+
+		when(therapyService.findAllTherapies(2L, query, salesOrg, paging)).thenReturn(therapies);
+
+		mockMvc
+			.perform(get("/practices/{practiceId}/users/{userId}/therapies", practiceId, userId).param("pageNo", "0")
+				.param("pageSize", "20")
+				.param("query", "")
+				.param("salesOrg", "")
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andDo(print())
+			.andReturn();
+	}
+
+	private Page<TherapyCatalogResponseDTO> getTherapies() {
+		Integer pageNo = 0;
+		Integer pageSize = 20;
+		String sortBy = "name";
+		String sortOrder = "asc";
+		List<TherapyCatalogResponseDTO> therapies = new ArrayList<>();
+		TherapyCatalogResponseDTO therapy1 = TherapyCatalogResponseDTO.builder()
+			.ndc("ndc1")
+			.therapyDescription("tdesc")
+			.therapyId("1")
+			.udi("udi1")
+			.build();
+		TherapyCatalogResponseDTO therapy2 = TherapyCatalogResponseDTO.builder()
+			.ndc("ndc2")
+			.therapyDescription("tdesc")
+			.therapyId("2")
+			.udi("udi2")
+			.build();
+		TherapyCatalogResponseDTO therapy3 = TherapyCatalogResponseDTO.builder()
+			.ndc("ndc3")
+			.therapyDescription("tdesc")
+			.therapyId("3")
+			.udi("udi3")
+			.build();
+		TherapyCatalogResponseDTO therapy4 = TherapyCatalogResponseDTO.builder()
+			.ndc("ndc4")
+			.therapyDescription("tdesc")
+			.therapyId("4")
+			.udi("udi4")
+			.build();
+		TherapyCatalogResponseDTO therapy5 = TherapyCatalogResponseDTO.builder()
+			.ndc("ndc5")
+			.therapyDescription("tdesc")
+			.therapyId("5")
+			.udi("udi5")
+			.build();
+		TherapyCatalogResponseDTO therapy6 = TherapyCatalogResponseDTO.builder()
+			.ndc("ndc6")
+			.therapyDescription("tdesc")
+			.therapyId("6")
+			.udi("udi6")
+			.build();
+
+		therapies.add(therapy1);
+		therapies.add(therapy2);
+		therapies.add(therapy3);
+		therapies.add(therapy4);
+		therapies.add(therapy5);
+		therapies.add(therapy6);
+		Sort sort = "asc".equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+		return new PageImpl<>(therapies, pageable, therapies.size());
+	}
+
 }

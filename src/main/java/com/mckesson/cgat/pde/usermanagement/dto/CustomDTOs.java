@@ -1,12 +1,14 @@
 package com.mckesson.cgat.pde.usermanagement.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 public class CustomDTOs {
 
 	@AllArgsConstructor
 	@Data
+	@Builder
 	public static class TherapyCatalogResponseDTO {
 
 		private String therapyId;
