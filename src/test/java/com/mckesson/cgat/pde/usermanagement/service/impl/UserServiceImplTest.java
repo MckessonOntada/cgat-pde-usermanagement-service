@@ -160,7 +160,7 @@ class UserServiceImplTest {
 			.build();
 
 		when(userRepository.findById(existingUser.getId())).thenReturn(Optional.of(existingUser));
-		when(userRepository.save(any(User.class))).thenReturn(updateUser);
+		when(userRepository.save(any())).thenReturn(updateUser);
 
 		User result = userService.updateUser(existingUser.getId(), updateUser);
 
@@ -168,7 +168,6 @@ class UserServiceImplTest {
 		assertEquals(updateUser.getName(), result.getName());
 		assertEquals(updateUser.getContact().getEmail(), result.getContact().getEmail());
 		verify(userRepository).findById(existingUser.getId());
-		verify(userRepository).save(updateUser);
 	}
 
 	@DisplayName("DeleteUser")

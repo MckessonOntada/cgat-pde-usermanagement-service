@@ -72,7 +72,7 @@ public class UserController {
 		return new ResponseEntity<>(userService.createUser(user), HttpStatus.OK);
 	}
 
-	@PutMapping("/{userId}")
+	@PatchMapping("/{userId}")
 	@Operation(summary = "Update existing user details byId")
 	public User updateUser(@PathVariable Long userId, @Validated(BasicInfo.class) @RequestBody User user,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)

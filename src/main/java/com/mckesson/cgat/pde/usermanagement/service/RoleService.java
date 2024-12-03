@@ -2,13 +2,12 @@ package com.mckesson.cgat.pde.usermanagement.service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.mckesson.cgat.pde.usermanagement.model.Permission;
+import com.mckesson.cgat.pde.usermanagement.dto.RolePatchRequestDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
@@ -19,7 +18,7 @@ public interface RoleService {
 
 	Role getRole(String roleId) throws ResourceNotFoundException;
 
-	Role linkPermissionToRole(Long roleId, Set<Permission> permissions) throws ResourceNotFoundException;
+	Role linkPermissionToRole(Long roleId, RolePatchRequestDTO rolePatchRequest) throws ResourceNotFoundException;
 
 	Page<Role> findAll(Pageable paging, String query, String practiceId, List<String> status, LocalDate startDate,
 			LocalDate endDate);

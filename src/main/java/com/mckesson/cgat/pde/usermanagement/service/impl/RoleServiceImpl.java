@@ -3,7 +3,6 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -11,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import com.mckesson.cgat.pde.usermanagement.model.Permission;
+import com.mckesson.cgat.pde.usermanagement.dto.RolePatchRequestDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Practice;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
 import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
@@ -71,11 +70,18 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	@Override
-	public Role linkPermissionToRole(Long roleId, Set<Permission> permissions) throws ResourceNotFoundException {
+	public Role linkPermissionToRole(Long roleId, RolePatchRequestDTO rolePatchRequest)
+			throws ResourceNotFoundException {
 		Role role = roleRepository.findById(roleId)
 			.orElseThrow(() -> new ResourceNotFoundException("Role not found for id :" + roleId));
-		role.getPermissions().clear();
-		role.setPermissions(permissions);
+		if (rolePatchRequest.getPermissions() != null && !rolePatchRequest.getPermissions().isEmpty()) {
+			role.getPermissions().clear();
+			role.setPermissions(rolePatchRequest.getPermissions());
+		}
+		if (rolePatchRequest.getDescription() != null && !rolePatchRequest.getDescription().isEmpty())
+			role.setDescription(rolePatchRequest.getDescription());
+		if (rolePatchRequest.getName() != null && !rolePatchRequest.getName().isEmpty())
+			role.setName(rolePatchRequest.getName());
 		return roleRepository.save(role);
 	}
 
