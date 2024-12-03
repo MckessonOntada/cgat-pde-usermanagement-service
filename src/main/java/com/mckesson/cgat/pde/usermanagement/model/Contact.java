@@ -27,7 +27,7 @@ public class Contact implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@NotEmpty(message = "Email ID is required")
+	@NotEmpty(message = "Email ID is required", groups = BasicInfo.class)
 	@Email(regexp = "^[_a-zA-Z0-9!#$%&'*+/=?``{|}~^.-]+@[a-zA-Z0-9.-]+$", message = "Must be valid email format",
 			groups = BasicInfo.class)
 	@Size(min = 2, max = 100, message = "Enter a valid Email Address", groups = BasicInfo.class)

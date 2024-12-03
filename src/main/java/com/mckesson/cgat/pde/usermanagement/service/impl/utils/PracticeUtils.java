@@ -15,12 +15,14 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.mckesson.cgat.pde.usermanagement.model.Practice;
+import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
 import com.mckesson.jbat.common.util.service.AzureBlobContainerFileUploadService;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import jakarta.validation.groups.Default;
 
 @Component
 public class PracticeUtils {
@@ -44,7 +46,7 @@ public class PracticeUtils {
 
 		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 		Validator validator = factory.getValidator();
-		Set<ConstraintViolation<Practice>> violations = validator.validate(practice);
+		Set<ConstraintViolation<Practice>> violations = validator.validate(practice, BasicInfo.class, Default.class);
 
 		for (ConstraintViolation<Practice> violation : violations) {
 			bindingResult
