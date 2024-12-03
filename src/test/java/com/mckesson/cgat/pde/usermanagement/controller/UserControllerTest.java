@@ -223,7 +223,7 @@ class UserControllerTest {
 
 		when(userService.updateUser(user.getId(), requestdUser)).thenReturn(updatedUser);
 		ResultActions result = mockMvc
-			.perform(put(apiUrl + "/{userId}", user.getPracticeId(), user.getId()).param("userType", "ADMIN")
+			.perform(patch(apiUrl + "/{userId}", user.getPracticeId(), user.getId()).param("userType", "ADMIN")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(requestdUser)))
 			.andExpect(status().isOk());

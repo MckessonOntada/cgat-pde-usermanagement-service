@@ -63,14 +63,16 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User updateUser(Long userId, User model) throws ResourceNotFoundException {
 		User user = getUser(userId);
-		if (user != null)
-			model.setId(userId);
-		return userRepository.save(model);
+		user.setAddress(model.getAddress());
+		user.setContact(model.getContact());
+		user.setName(model.getName());
+		return userRepository.save(user);
 	}
 
 	@Override
 	public User getUser(Long userId) throws ResourceNotFoundException {
-		return userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(userId.toString()));
+		return userRepository.findById(userId)
+			.orElseThrow(() -> new ResourceNotFoundException("User not found with id:" + userId.toString()));
 	}
 
 	@Override
