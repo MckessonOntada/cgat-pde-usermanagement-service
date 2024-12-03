@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.mckesson.cgat.pde.usermanagement.dto.RolePatchRequestDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
@@ -18,7 +17,7 @@ public interface RoleService {
 
 	Role getRole(String roleId) throws ResourceNotFoundException;
 
-	Role linkPermissionToRole(Long roleId, RolePatchRequestDTO rolePatchRequest) throws ResourceNotFoundException;
+	Role updateRole(Long roleId, Role updatedRole) throws ResourceNotFoundException;
 
 	Page<Role> findAll(Pageable paging, String query, String practiceId, List<String> status, LocalDate startDate,
 			LocalDate endDate);

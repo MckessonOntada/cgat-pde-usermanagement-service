@@ -17,13 +17,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mckesson.cgat.pde.usermanagement.dto.RolePatchRequestDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
 import com.mckesson.cgat.pde.usermanagement.service.RoleService;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
@@ -56,10 +54,9 @@ public class RoleController {
 	@PatchMapping("/{roleId}")
 	@Operation(
 			summary = "Update role or Link/Unlink permission to Role. Associated the permission in current request with the role.")
-	public ResponseEntity<Role> linkPermissionToRole(
-			@PathVariable @NotNull(message = "Role Id can not be null") Long roleId,
-			@RequestBody RolePatchRequestDTO rolePatchRequest) throws ResourceNotFoundException {
-		return ResponseEntity.status(HttpStatus.OK).body(roleService.linkPermissionToRole(roleId, rolePatchRequest));
+	public ResponseEntity<Role> updateRole(@PathVariable @NotNull(message = "Role Id can not be null") Long roleId,
+			@RequestBody Role updatedRole) throws ResourceNotFoundException {
+		return ResponseEntity.status(HttpStatus.OK).body(roleService.updateRole(roleId, updatedRole));
 	}
 
 	@GetMapping("/{roleId}")

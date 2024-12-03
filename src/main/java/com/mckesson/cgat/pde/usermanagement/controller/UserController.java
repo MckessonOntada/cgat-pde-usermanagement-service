@@ -74,7 +74,7 @@ public class UserController {
 
 	@PatchMapping("/{userId}")
 	@Operation(summary = "Update existing user details byId")
-	public User updateUser(@PathVariable Long userId, @Validated(BasicInfo.class) @RequestBody User user,
+	public User updateUserDetails(@PathVariable Long userId, @Validated(BasicInfo.class) @RequestBody User user,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);

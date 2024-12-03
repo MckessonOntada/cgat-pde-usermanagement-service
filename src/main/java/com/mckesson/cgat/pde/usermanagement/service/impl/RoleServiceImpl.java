@@ -10,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import com.mckesson.cgat.pde.usermanagement.dto.RolePatchRequestDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Practice;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
 import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
@@ -70,18 +69,17 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	@Override
-	public Role linkPermissionToRole(Long roleId, RolePatchRequestDTO rolePatchRequest)
-			throws ResourceNotFoundException {
+	public Role updateRole(Long roleId, Role updatedRole) throws ResourceNotFoundException {
 		Role role = roleRepository.findById(roleId)
 			.orElseThrow(() -> new ResourceNotFoundException("Role not found for id :" + roleId));
-		if (rolePatchRequest.getPermissions() != null && !rolePatchRequest.getPermissions().isEmpty()) {
+		if (updatedRole.getPermissions() != null && !updatedRole.getPermissions().isEmpty()) {
 			role.getPermissions().clear();
-			role.setPermissions(rolePatchRequest.getPermissions());
+			role.setPermissions(updatedRole.getPermissions());
 		}
-		if (rolePatchRequest.getDescription() != null && !rolePatchRequest.getDescription().isEmpty())
-			role.setDescription(rolePatchRequest.getDescription());
-		if (rolePatchRequest.getName() != null && !rolePatchRequest.getName().isEmpty())
-			role.setName(rolePatchRequest.getName());
+		if (StringUtils.isNotEmpty(updatedRole.getDescription()))
+			role.setDescription(updatedRole.getDescription());
+		if (StringUtils.isNotEmpty(updatedRole.getName()))
+			role.setName(updatedRole.getName());
 		return roleRepository.save(role);
 	}
 
