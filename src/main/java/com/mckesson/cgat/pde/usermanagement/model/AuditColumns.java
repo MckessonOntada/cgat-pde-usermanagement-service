@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.Date;
 
+import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -52,12 +53,9 @@ public abstract class AuditColumns implements Serializable {
 
 	@PrePersist
 	public void onPersist() {
-		/*
-		 * CurrentRequestContext loginInfo = (CurrentRequestContext)
-		 * SecurityContextHolder.getContext().getAuthentication() .getPrincipal();
-		 */
-		this.createdBy = null;// loginInfo.getUserId();
-		this.updatedBy = null;// loginInfo.getUserId();
+		LoggedInUserDetails loggedInUserDetails = UserSecurityUtils.getLoggedInUser();
+		this.createdBy = loggedInUserDetails.getId();
+		this.updatedBy = loggedInUserDetails.getId();
 		this.createdAt = Date.from(Instant.now());
 		this.updatedAt = Date.from(Instant.now());
 	}
@@ -65,10 +63,8 @@ public abstract class AuditColumns implements Serializable {
 	@PreUpdate
 	public void onUpdate() {
 		if (this.updatedBy == null) {
-			// CurrentRequestContext loginInfo = (CurrentRequestContext)
-			// SecurityContextHolder.getContext()
-			// .getAuthentication().getPrincipal();
-			this.updatedBy = null;// loginInfo.getUserId();
+			LoggedInUserDetails loggedInUserDetails = UserSecurityUtils.getLoggedInUser();
+			this.updatedBy = loggedInUserDetails.getId();
 		}
 		this.updatedAt = Date.from(Instant.now());
 	}
