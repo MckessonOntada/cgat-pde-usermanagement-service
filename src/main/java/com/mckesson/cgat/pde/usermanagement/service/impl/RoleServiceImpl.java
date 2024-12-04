@@ -19,6 +19,7 @@ import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -79,14 +80,18 @@ public class RoleServiceImpl implements RoleService {
 	public Role updateRole(Long roleId, Role updatedRole) throws ResourceNotFoundException {
 		Role role = roleRepository.findById(roleId)
 			.orElseThrow(() -> new ResourceNotFoundException("Role not found for id :" + roleId));
-		if (updatedRole.getPermissions() != null && !updatedRole.getPermissions().isEmpty()) {
-			role.getPermissions().clear();
-			role.setPermissions(updatedRole.getPermissions());
-		}
-		if (StringUtils.isNotEmpty(updatedRole.getDescription()))
-			role.setDescription(updatedRole.getDescription());
-		if (StringUtils.isNotEmpty(updatedRole.getName()))
-			role.setName(updatedRole.getName());
+		role.setDescription(updatedRole.getDescription());
+		role.setName(updatedRole.getName());
+		return roleRepository.save(role);
+	}
+
+	@Override
+	public Role updatePermissionForRole(@NotNull(message = "Role Id can not be null") Long roleId, Role updatedRole)
+			throws ResourceNotFoundException {
+		Role role = roleRepository.findById(roleId)
+			.orElseThrow(() -> new ResourceNotFoundException("Role not found for id :" + roleId));
+		role.getPermissions().clear();
+		role.setPermissions(updatedRole.getPermissions());
 		return roleRepository.save(role);
 	}
 

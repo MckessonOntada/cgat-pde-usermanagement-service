@@ -16,6 +16,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import com.mckesson.cgat.pde.usermanagement.model.Role;
+import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
 import com.mckesson.cgat.pde.usermanagement.service.RoleService;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -23,6 +24,7 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
 @RestController
@@ -45,11 +47,19 @@ public class RoleController {
 	}
 
 	@PatchMapping("/{roleId}")
-	@Operation(
-			summary = "Update role or Link/Unlink permission to Role. Associated the permission in current request with the role.")
+	@Operation(summary = "Update basic deatils of role (i.e Role Name and Description)")
 	public ResponseEntity<Role> updateRole(@PathVariable @NotNull(message = "Role Id can not be null") Long roleId,
-			@RequestBody Role updatedRole) throws ResourceNotFoundException {
+			@Validated(BasicInfo.class) @RequestBody Role updatedRole) throws ResourceNotFoundException {
 		return ResponseEntity.status(HttpStatus.OK).body(roleService.updateRole(roleId, updatedRole));
+	}
+
+	@PatchMapping("/{roleId}/permissions")
+	@Operation(
+			summary = "Link/Unlink permission to Role. Permissions in current request becomes the permissions mapped to the role.")
+	public ResponseEntity<Role> updatePermissionsForRole(
+			@PathVariable @NotNull(message = "Role Id can not be null") Long roleId, @Valid @RequestBody Role updatedRole)
+			throws ResourceNotFoundException {
+		return ResponseEntity.status(HttpStatus.OK).body(roleService.updatePermissionForRole(roleId, updatedRole));
 	}
 
 	@GetMapping("/{roleId}")
