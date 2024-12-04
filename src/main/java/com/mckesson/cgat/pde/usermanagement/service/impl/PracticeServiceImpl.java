@@ -82,7 +82,7 @@ public class PracticeServiceImpl implements PracticeService {
 	}
 
 	@Override
-	public Page<Practice> findAll(Pageable paging, String query, List<String> status) {
+	public Page<Practice> findAll(Pageable paging, String query, List<String> status, List<String> location) {
 		log.debug("Searching practices based on filter query:{},  roles:{}", query);
 		query = StringUtils.toRootLowerCase(query);
 		Page<Practice> response;
@@ -96,7 +96,7 @@ public class PracticeServiceImpl implements PracticeService {
 						? CustomUtils.object_status.ALL.name() : CustomUtils.object_status.INACTIVE.name();
 			}
 		}
-		response = practiceRepository.findAllByQueryText(query, statusActive, paging);
+		response = practiceRepository.findAllByQueryText(query, statusActive, paging, location);
 		return response;
 	}
 
