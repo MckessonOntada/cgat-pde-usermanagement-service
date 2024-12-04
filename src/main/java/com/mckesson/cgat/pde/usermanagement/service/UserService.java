@@ -20,7 +20,7 @@ public interface UserService {
 	void delinkUserFromAccount(Long userId, Long accountId) throws ResourceNotFoundException;
 
 	Page<User> findAll(Pageable paging, String query, List<String> status, Long practiceId, LocalDate startDate,
-			LocalDate endDate);
+			LocalDate endDate, List<Long> roleIds);
 
 	User updateUser(Long userId, User model) throws ResourceNotFoundException;
 

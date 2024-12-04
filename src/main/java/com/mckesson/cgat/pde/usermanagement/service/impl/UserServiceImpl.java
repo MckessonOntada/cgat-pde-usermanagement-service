@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Page<User> findAll(Pageable paging, String query, List<String> status, Long praticeId, LocalDate startDate,
-			LocalDate endDate) {
+			LocalDate endDate, List<Long> roleIds) {
 		query = StringUtils.toRootLowerCase(query);
 		String statusActive = "ALL";
 
@@ -108,7 +108,7 @@ public class UserServiceImpl implements UserService {
 			if (hasInactive)
 				statusActive = "ACTIVE".equals(statusActive) ? "ALL" : "INACTIVE";
 		}
-		return userRepository.findAllByQueryText(statusActive, query, paging, praticeId, startDate, endDate);
+		return userRepository.findAllByQueryText(statusActive, query, paging, praticeId, startDate, endDate, roleIds);
 	}
 
 	@Override
