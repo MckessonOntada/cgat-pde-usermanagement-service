@@ -1,7 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -100,12 +99,25 @@ class RoleServiceImplTest {
 		verify(roleRepository, times(1)).save(role);
 	}
 
+	@DisplayName("Test: Delete Role")
+	@Test
+	void deleteRoleTest() throws ResourceNotFoundException {
+		Long roleId = 1L;
+		Role role = new Role();
+		role.setIsActive(true);
+		when(roleRepository.findById(roleId)).thenReturn(Optional.of(role));
+		assertTrue(role.getIsActive());
+		roleService.deleteRole(roleId);
+		assertFalse(role.getIsActive());
+		verify(roleRepository, times(1)).save(role);
+	}
+
 	@DisplayName("Test : Get Role")
 	@Test
 	void getRoleTest() throws ResourceNotFoundException {
 		Long roleId = 1L;
 		when(roleRepository.findById(roleId)).thenReturn(Optional.of(role));
-		assertEquals(role, roleService.getRole(roleId.toString()));
+		assertEquals(role, roleService.getRole(roleId));
 		verify(roleRepository, times(1)).findById(roleId);
 	}
 
@@ -114,7 +126,7 @@ class RoleServiceImplTest {
 	void getRole_ExceptionTest() {
 		Long roleId = 1L;
 		when(roleRepository.findById(roleId)).thenReturn(Optional.empty());
-		assertThrows(ResourceNotFoundException.class, () -> roleService.getRole(roleId.toString()));
+		assertThrows(ResourceNotFoundException.class, () -> roleService.getRole(roleId));
 	}
 
 	@DisplayName("Test : FindAll Roles")
