@@ -15,9 +15,9 @@ public interface RoleService {
 
 	Role createOrUpdateRole(Role role, String practiceId) throws ResourceNotFoundException;
 
-	Role getRole(String roleId) throws ResourceNotFoundException;
+	Role getRole(Long roleId) throws ResourceNotFoundException;
 
-	void deleteRole(String roleId) throws ResourceNotFoundException;
+	void deleteRole(Long roleId) throws ResourceNotFoundException;
 
 	Role updateRole(Long roleId, Role updatedRole) throws ResourceNotFoundException;
 

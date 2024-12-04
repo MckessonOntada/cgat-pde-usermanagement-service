@@ -1,11 +1,10 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -100,13 +99,28 @@ class RoleControllerTest {
 	@Test
 	@DisplayName("Test : Get Role")
 	void getRoleTest() throws Exception {
-		String roleId = "1";
+		Long roleId = 1L;
 		String practiceId = "1";
 
-		when(roleService.getRole(anyString())).thenReturn(role);
+		when(roleService.getRole(anyLong())).thenReturn(role);
 		mockMvc
 			.perform(get("/practices/{practiceId}/roles/{roleId}", practiceId, roleId)
 				.contentType(MediaType.APPLICATION_JSON_VALUE))
+			.andDo(print())
+			.andExpect(status().isOk());
+	}
+
+	@DisplayName("Test: Delete Role API")
+	@Test
+	void deleteRoleTest() throws Exception {
+		String practiceId = "1";
+		Long roleId = 1L;
+
+		doNothing().when(roleService).deleteRole(roleId);
+
+		mockMvc
+			.perform(delete("/practices/{practiceId}/roles/{roleId}", practiceId, roleId)
+				.contentType(MediaType.APPLICATION_JSON))
 			.andDo(print())
 			.andExpect(status().isOk());
 	}
@@ -117,8 +131,7 @@ class RoleControllerTest {
 		String roleId = "1";
 		String practiceId = "1";
 
-		when(roleService.getRole(roleId))
-			.thenThrow(new ResourceNotFoundException("Role not found with id : " + roleId));
+		when(roleService.getRole(1L)).thenThrow(new ResourceNotFoundException("Role not found with id : " + roleId));
 		mockMvc
 			.perform(get("/practices/{practiceId}/roles/{roleId}", practiceId, roleId)
 				.contentType(MediaType.APPLICATION_JSON_VALUE))

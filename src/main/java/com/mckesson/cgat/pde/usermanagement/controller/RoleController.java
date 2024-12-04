@@ -54,13 +54,13 @@ public class RoleController {
 
 	@GetMapping("/{roleId}")
 	@Operation(summary = "Get Role by Id")
-	public ResponseEntity<Role> getRole(@PathVariable String roleId) throws ResourceNotFoundException {
+	public ResponseEntity<Role> getRole(@PathVariable Long roleId) throws ResourceNotFoundException {
 		return new ResponseEntity<>(roleService.getRole(roleId), HttpStatus.OK);
 	}
 
 	@DeleteMapping("/{roleId}")
 	@Operation(summary = "Delete Role by Id")
-	public ResponseEntity<Object> deleteRole(@PathVariable String roleId) throws ResourceNotFoundException {
+	public ResponseEntity<Object> deleteRole(@PathVariable Long roleId) throws ResourceNotFoundException {
 		roleService.deleteRole(roleId);
 		return new ResponseEntity<>(roleId, HttpStatus.OK);
 	}
