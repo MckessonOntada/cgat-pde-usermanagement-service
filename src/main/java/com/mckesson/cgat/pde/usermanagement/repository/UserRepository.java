@@ -46,12 +46,19 @@ public interface UserRepository extends JpaRepository<User, Long> {
 							or
 							('INACTIVE' = :status and is_active = 0 )
 					  )
+					  and
+					  (
+						COALESCE(:roleIds) is null
+						or
+						role_id IN (:roleIds)
+					  )
 				     )
 				  )
 
 			""", nativeQuery = true)
 	Page<User> findAllByQueryText(@Param("status") String status, @Param("query") String query, Pageable paging,
-			@Param("practiceId") long practiceId, @Param("from") LocalDate from, @Param("to") LocalDate to);
+			@Param("practiceId") long practiceId, @Param("from") LocalDate from, @Param("to") LocalDate to,
+			@Param("roleIds") List<Long> roleIds);
 
 	List<User> findByCreatedAt(Date createdAt);
 

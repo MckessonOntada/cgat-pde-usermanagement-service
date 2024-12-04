@@ -40,6 +40,7 @@ import com.mckesson.cgat.pde.usermanagement.utils.UserRequestAuthorizationValida
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -118,10 +119,12 @@ public class UserController {
 			@RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(defaultValue = "first_name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
-			@RequestParam(required = false) List<String> status,
+			@RequestParam(required = false) List<String> status, @RequestParam(required = false) List<Long> roleIds,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType,
-			@RequestParam(required = false) @DateTimeFormat(pattern = CustomUtils.API_DATE_FORMAT) LocalDate startDate,
-			@RequestParam(required = false) @DateTimeFormat(pattern = CustomUtils.API_DATE_FORMAT) LocalDate endDate)
+			@Parameter(description = "Date format : " + CustomUtils.API_DATE_FORMAT) @RequestParam(
+					required = false) @DateTimeFormat(pattern = CustomUtils.API_DATE_FORMAT) LocalDate startDate,
+			@Parameter(description = "Date format : " + CustomUtils.API_DATE_FORMAT) @RequestParam(
+					required = false) @DateTimeFormat(pattern = CustomUtils.API_DATE_FORMAT) LocalDate endDate)
 			throws BadRequestException, UnauthorizedAccessException {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
@@ -130,7 +133,8 @@ public class UserController {
 			throw new BadRequestException("Either enter both dates or none for the filter as its a part of date range");
 
 		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
-		return userService.findAll(paging, query, status, OrganizationContext.getCurrentOrgId(), startDate, endDate);
+		return userService.findAll(paging, query, status, OrganizationContext.getCurrentOrgId(), startDate, endDate,
+				roleIds);
 
 	}
 
