@@ -50,6 +50,14 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	@Override
+	public void deleteRole(String roleId) throws ResourceNotFoundException {
+		Optional<Role> roleOpt = roleRepository.findById(Long.valueOf(roleId));
+		Role role = roleOpt.orElseThrow(() -> new ResourceNotFoundException("Practice not found with id : " + roleId));
+		role.setIsActive(false);
+		roleRepository.save(role);
+	}
+
+	@Override
 	public Page<Role> findAll(Pageable paging, String query, String practiceId, List<String> status,
 			LocalDate startDate, LocalDate endDate) {
 		query = StringUtils.toRootLowerCase(query);

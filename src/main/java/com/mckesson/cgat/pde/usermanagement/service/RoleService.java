@@ -17,6 +17,8 @@ public interface RoleService {
 
 	Role getRole(String roleId) throws ResourceNotFoundException;
 
+	void deleteRole(String roleId) throws ResourceNotFoundException;
+
 	Role updateRole(Long roleId, Role updatedRole) throws ResourceNotFoundException;
 
 	Page<Role> findAll(Pageable paging, String query, String practiceId, List<String> status, LocalDate startDate,
