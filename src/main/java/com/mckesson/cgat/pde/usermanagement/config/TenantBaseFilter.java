@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.config;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -19,12 +20,17 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.AntPathMatcher;
+
+import static com.mckesson.jbat.auth.module.constant.UtilsConstant.SWAGGER_URL_TO_EXCLUDE;
 
 @Component
 @Slf4j
 public class TenantBaseFilter extends CGATBaseFilter {
 
 	private final String PRACTICE = "practices";
+
+	private AntPathMatcher pathMatcher;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -55,15 +61,31 @@ public class TenantBaseFilter extends CGATBaseFilter {
 				OrganizationContext.setCurrentOrgId(tenantIdFromRequest);
 			}
 
+			filterChain.doFilter(request, response);
+
 		}
 		catch (Exception e) {
 
 			log.error("Error occurred in TenantFilter. Message: {} ", e.getMessage(), e);
 			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-			return;
 		}
-		filterChain.doFilter(request, response);
-		// TODO: kapil - clear id from thread local
+		finally {
+			OrganizationContext.clear();
+		}
+
+	}
+
+	@Override
+	public boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+		if (pathMatcher == null) {
+			pathMatcher = new AntPathMatcher();
+		}
+
+		String[] urlsToExclude = { "/public/**" };
+
+		return Stream.of(urlsToExclude, CGATBaseFilter.URLS_TO_EXCLUDE)
+			.flatMap(Stream::of)
+			.anyMatch(f -> pathMatcher.match(f, request.getServletPath()));
 	}
 
 }
