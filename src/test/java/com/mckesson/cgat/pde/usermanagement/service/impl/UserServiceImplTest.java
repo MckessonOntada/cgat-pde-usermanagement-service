@@ -6,20 +6,25 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import com.mckesson.cgat.pde.usermanagement.service.OktaUserManagementService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,6 +50,7 @@ import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
+import com.mckesson.cgat.pde.usermanagement.service.OktaUserManagementService;
 import com.mckesson.cgat.pde.usermanagement.util.TestUtils;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -195,12 +201,14 @@ class UserServiceImplTest {
 		LocalDate endDate = TestUtils.parseLocalDate("18/11/2024", CustomUtils.API_DATE_FORMAT);
 		Pageable paging = PageRequest.of(0, 20, Sort.by("first_name").ascending());
 		when(userRepository.findAllByQueryText(anyString(), anyString(), any(paging.getClass()), anyLong(),
-				any(LocalDate.class), any(LocalDate.class)))
+				any(LocalDate.class), any(LocalDate.class), anyList()))
 			.thenReturn(userPage);
-		Page<User> result = userService.findAll(paging, "", List.of("ALL"), Long.valueOf(1), startDate, endDate);
+		Page<User> result = userService.findAll(paging, "", List.of("ALL"), Long.valueOf(1), startDate, endDate,
+				new ArrayList<>());
 		assertNotNull(result);
 		assertEquals(userPage, result);
-		verify(userRepository, times(1)).findAllByQueryText("ALL", "", paging, 1L, startDate, endDate);
+		verify(userRepository, times(1)).findAllByQueryText("ALL", "", paging, 1L, startDate, endDate,
+				new ArrayList<>());
 	}
 
 	@DisplayName("UserNotFoundException : GetUser")
