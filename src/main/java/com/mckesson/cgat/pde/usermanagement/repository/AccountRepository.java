@@ -2,7 +2,6 @@ package com.mckesson.cgat.pde.usermanagement.repository;
 
 import java.util.Set;
 
-import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,6 +20,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 				(
 					:query IS NULL
 				 	OR LOWER(a.name_1) LIKE %:query%
+				 	OR LOWER(a.sap_customer) LIKE %:query%
 				)
 				AND
 				(

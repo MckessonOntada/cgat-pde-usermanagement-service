@@ -18,7 +18,7 @@ public interface PracticeService {
 
 	void deletePractice(String id) throws ResourceNotFoundException;
 
-	Page<Practice> findAll(Pageable paging, String query, List<String> status);
+	Page<Practice> findAll(Pageable paging, String query, List<String> status, List<String> location);
 
 	Practice createPractice(Practice practice, MultipartFile logo) throws IllegalStateException, IOException;
 

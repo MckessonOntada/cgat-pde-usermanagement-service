@@ -1,5 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,19 +19,25 @@ public interface PracticeRepository extends JpaRepository<Practice, Long> {
 			FROM usermanagement.Practice
 			WHERE
 				(
-				:query is null
-				or LOWER(name) like %:query%
-				or LOWER(city) like %:query%
-				or LOWER(state) like %:query%
+					(
+					:query is null
+					or LOWER(name) like %:query%
+					)
 				and
 					(
 					(:status = 'ALL' and (is_active = 1 or is_active = 0))
 					or ('ACTIVE' = :status and is_active = 1 )
 					or ('INACTIVE' = :status and is_active = 0 )
 					)
+				and
+					(
+						COALESCE(:location) is null
+						or
+						state IN (:location)
+					)
 				)
 			 """, nativeQuery = true)
 	public Page<Practice> findAllByQueryText(@Param("query") String query, @Param("status") String status,
-			Pageable paging);
+			Pageable paging, @Param("location") List<String> location);
 
 }
