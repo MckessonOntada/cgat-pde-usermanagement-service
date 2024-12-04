@@ -57,8 +57,8 @@ public class RoleController {
 	@Operation(
 			summary = "Link/Unlink permission to Role. Permissions in current request becomes the permissions mapped to the role.")
 	public ResponseEntity<Role> updatePermissionsForRole(
-			@PathVariable @NotNull(message = "Role Id can not be null") Long roleId, @Valid @RequestBody Role updatedRole)
-			throws ResourceNotFoundException {
+			@PathVariable @NotNull(message = "Role Id can not be null") Long roleId,
+			@Valid @RequestBody Role updatedRole) throws ResourceNotFoundException {
 		return ResponseEntity.status(HttpStatus.OK).body(roleService.updatePermissionForRole(roleId, updatedRole));
 	}
 
