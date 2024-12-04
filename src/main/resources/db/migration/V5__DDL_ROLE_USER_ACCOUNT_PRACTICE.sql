@@ -13,3 +13,6 @@ USING GIN (name gin_trgm_ops);
 
 CREATE INDEX practice_status_state_index  ON usermanagement.practice
 USING btree(is_active, state);
+
+CREATE INDEX user_roleid_index ON usermanagement.user
+USING btree(role_id);
