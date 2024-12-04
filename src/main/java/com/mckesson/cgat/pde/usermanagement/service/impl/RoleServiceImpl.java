@@ -44,9 +44,16 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	@Override
-	public Role getRole(String roleId) throws ResourceNotFoundException {
-		Optional<Role> roleOpt = roleRepository.findById(Long.valueOf(roleId));
+	public Role getRole(Long roleId) throws ResourceNotFoundException {
+		Optional<Role> roleOpt = roleRepository.findById(roleId);
 		return roleOpt.orElseThrow(() -> new ResourceNotFoundException("Practice not found with id : " + roleId));
+	}
+
+	@Override
+	public void deleteRole(Long roleId) throws ResourceNotFoundException {
+		Role role = getRole(roleId);
+		role.setIsActive(false);
+		roleRepository.save(role);
 	}
 
 	@Override
