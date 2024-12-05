@@ -125,7 +125,7 @@ CREATE TABLE IF NOT EXISTS catalog.catalog_price (
 
 CREATE SEQUENCE catalog.catalog_price_id_seq START 1 INCREMENT 1;
 
-CREATE EXTENSION IF NOT EXISTS PG_TRGM with schema pg_catalog;
+--CREATE EXTENSION IF NOT EXISTS PG_TRGM with schema pg_catalog;
 
 CREATE INDEX catalog_ndc_udi_dc_materialidentifier_index  ON catalog.catalog_price 
 USING GIN (ndc gin_trgm_ops, udi gin_trgm_ops, dist_channel gin_trgm_ops, material_identifier_for_cgat gin_trgm_ops);
