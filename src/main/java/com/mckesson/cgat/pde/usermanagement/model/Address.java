@@ -48,7 +48,8 @@ public class Address implements Serializable {
 
 	@NotEmpty(message = "ZIP code is required")
 	@Size(min = 2, max = 10, message = "Enter a valid Zip Code.", groups = BasicInfo.class)
-	@Pattern(regexp = "^[\\d]+$", message = "Must be numeric", groups = BasicInfo.class)
+	@Pattern(regexp = "^\\d{5}(-\\d{4})?$",
+			message = "Must be 5 digits or 9 digits with last 4 digits seperated by a '-' .", groups = BasicInfo.class)
 	private String zip;
 
 }
