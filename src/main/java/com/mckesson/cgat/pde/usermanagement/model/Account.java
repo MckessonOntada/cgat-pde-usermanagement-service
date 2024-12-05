@@ -1,11 +1,24 @@
 package com.mckesson.cgat.pde.usermanagement.model;
 
-import com.mckesson.cgat.pde.usermanagement.model.converters.AccountPartnerFunctionConverter;
-import jakarta.persistence.*;
-
 import java.io.Serializable;
 import java.util.Set;
 
+import org.hibernate.type.NumericBooleanConverter;
+
+import com.mckesson.cgat.pde.usermanagement.model.converters.AccountPartnerFunctionConverter;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -14,8 +27,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.TenantId;
-import org.hibernate.type.NumericBooleanConverter;
+import lombok.ToString;
 
 @Entity
 @Setter
@@ -24,6 +36,7 @@ import org.hibernate.type.NumericBooleanConverter;
 @NoArgsConstructor
 @EqualsAndHashCode
 @Builder
+@ToString
 public class Account implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -57,10 +70,11 @@ public class Account implements Serializable {
 	@Column(name = "distribution_channel")
 	private String distributionChannel;
 
+	@Column(name = "vistex_customer")
+	private String vistexCustomer;
+
 	@Column(name = "division")
 	private String division;
-
-	private String vistexCustomer;
 
 	@Column(name = "company_code")
 	private String companyCode;
