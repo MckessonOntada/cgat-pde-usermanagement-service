@@ -17,4 +17,6 @@ public class JwtResponseDto {
 
 	private String userId;
 
+	private Long practiceId;
+
 }
