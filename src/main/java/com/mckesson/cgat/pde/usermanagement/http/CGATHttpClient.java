@@ -43,7 +43,7 @@ public class CGATHttpClient {
 			.uri(URI.create(url + '?' + query))
 			.header("Content-Type", "application/json")
 			.header("Authorization", oktaApiToken)
-			.timeout(Duration.ofSeconds(30))
+			.timeout(Duration.ofSeconds(5))
 			.build();
 
 		HttpResponse<String> httpResponse = getHttpResponse(request);
@@ -64,7 +64,7 @@ public class CGATHttpClient {
 			.uri(URI.create(url + '?' + query))
 			.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 			.header(HttpHeaders.AUTHORIZATION, oktaApiToken)
-			.timeout(Duration.ofSeconds(30))
+			.timeout(Duration.ofSeconds(5))
 			.build();
 
 		HttpResponse<String> httpResponse = getHttpResponse(request);
@@ -76,7 +76,7 @@ public class CGATHttpClient {
 			.PUT(HttpRequest.BodyPublishers.ofString("Assigning user to group"))
 			.uri(URI.create(url))
 			.header(HttpHeaders.AUTHORIZATION, oktaApiToken)
-			.timeout(Duration.ofSeconds(30))
+			.timeout(Duration.ofSeconds(5))
 			.build();
 		HttpResponse<String> httpResponse = getHttpResponse(request);
 		return httpResponse.body();
