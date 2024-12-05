@@ -14,6 +14,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
@@ -42,6 +43,7 @@ public class CGATHttpClient {
 			.uri(URI.create(url + '?' + query))
 			.header("Content-Type", "application/json")
 			.header("Authorization", oktaApiToken)
+			.timeout(Duration.ofSeconds(5))
 			.build();
 
 		HttpResponse<String> httpResponse = getHttpResponse(request);
@@ -62,6 +64,7 @@ public class CGATHttpClient {
 			.uri(URI.create(url + '?' + query))
 			.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 			.header(HttpHeaders.AUTHORIZATION, oktaApiToken)
+			.timeout(Duration.ofSeconds(5))
 			.build();
 
 		HttpResponse<String> httpResponse = getHttpResponse(request);
@@ -73,6 +76,7 @@ public class CGATHttpClient {
 			.PUT(HttpRequest.BodyPublishers.ofString("Assigning user to group"))
 			.uri(URI.create(url))
 			.header(HttpHeaders.AUTHORIZATION, oktaApiToken)
+			.timeout(Duration.ofSeconds(5))
 			.build();
 		HttpResponse<String> httpResponse = getHttpResponse(request);
 		return httpResponse.body();
