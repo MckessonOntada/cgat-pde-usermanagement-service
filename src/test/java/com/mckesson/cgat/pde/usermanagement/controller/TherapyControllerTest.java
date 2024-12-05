@@ -24,8 +24,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.mckesson.cgat.pde.usermanagement.dto.CustomDTOs.AccountsResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.CustomDTOs.TherapyCatalogResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
 
