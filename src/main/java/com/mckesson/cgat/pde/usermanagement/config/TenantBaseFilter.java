@@ -37,7 +37,6 @@ public class TenantBaseFilter extends CGATBaseFilter {
 			String requestServletPath = request.getServletPath().substring(1);
 			List<String> servletPath = Arrays.asList(requestServletPath.split("/"));
 			long tenantIdFromRequest = 1L;
-
 			if (servletPath.contains(PRACTICE) && !requestServletPath.matches(PRACTICE)) {
 				tenantIdFromRequest = Long.parseLong(servletPath.get(servletPath.indexOf(PRACTICE) + 1));
 			}
