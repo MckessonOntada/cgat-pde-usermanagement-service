@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.repository;
 
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.data.domain.Page;
@@ -33,10 +34,23 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 					OR ('ACTIVE' = :status and is_active = 1 )
 					OR ('INACTIVE' = :status and is_active = 0 )
 				)
+				AND
+				(
+					COALESCE(:salesOrg) is null
+					or
+					sales_org IN (:salesOrg)
+				)
+				AND
+				(
+					COALESCE(:distChannels) is null
+					or
+					distribution_channel IN (:distChannels)
+				)
 				and partner_function = :partnerFunction
 			)""")
 	Page<Account> findAllByQueryText(@Param("query") String query, @Param("status") String status, Pageable paging,
-			@Param("practiceId") Long practiceId, String partnerFunction);
+			@Param("practiceId") Long practiceId, String partnerFunction, @Param("salesOrg") List<String> salesOrg,
+			@Param("distChannels") List<String> distChannels);
 
 	Set<Account> findByPracticeId(Long practiceId);
 

@@ -72,7 +72,8 @@ public class AccountServiceImpl implements AccountService {
 
 	@Override
 	public Page<Account> findAll(Pageable paging, String query, List<String> status, Long userId, Long practiceId,
-			AccountPartnerFunction partnerFunction) throws ResourceNotFoundException {
+			AccountPartnerFunction partnerFunction, List<String> salesOrg, List<String> distChannels)
+			throws ResourceNotFoundException {
 		query = StringUtils.toRootLowerCase(query);
 		String statusActive = CustomUtils.object_status.ALL.name();
 		if (!CollectionUtils.isEmpty(status)) {
@@ -96,7 +97,7 @@ public class AccountServiceImpl implements AccountService {
 					partnerFunction.getPartnerFunctionType());
 		}
 		return accountRepository.findAllByQueryText(query, statusActive, paging, practiceId,
-				partnerFunction.getPartnerFunctionType());
+				partnerFunction.getPartnerFunctionType(), salesOrg, distChannels);
 	}
 
 	@Transactional

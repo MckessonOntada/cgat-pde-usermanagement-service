@@ -20,7 +20,8 @@ public interface AccountService {
 	void delinkAccountFromPractice(Long practiceId, Long accountId) throws ResourceNotFoundException;
 
 	Page<Account> findAll(Pageable paging, String query, List<String> status, Long userId, Long practiceId,
-			AccountPartnerFunction partnerFunction) throws ResourceNotFoundException;
+			AccountPartnerFunction partnerFunction, List<String> salesOrg, List<String> distChannels)
+			throws ResourceNotFoundException;
 
 	Account createAccount(Account account);
 
