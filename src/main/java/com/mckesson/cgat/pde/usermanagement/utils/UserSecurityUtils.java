@@ -48,20 +48,15 @@ public class UserSecurityUtils {
 	}
 
 	public static LoggedInUserDetails getLoggedInUser() {
-		try {
-			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-			if (authentication == null) {
-				log.info("No logged in user found");
-				return null;
-			}
-
-			UserCurrentRequestContext user = (UserCurrentRequestContext) authentication.getPrincipal();
-			return user.getLoggedInUser();
-		}
-		catch (Exception e) {
-			log.error("Error occurred while getting logged in user : {} ", e.getMessage(), e);
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null) {
+			log.info("No logged in user found");
 			return null;
 		}
+
+		UserCurrentRequestContext user = (UserCurrentRequestContext) authentication.getPrincipal();
+		return user.getLoggedInUser();
+
 	}
 
 }
