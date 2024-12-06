@@ -124,8 +124,8 @@ CREATE TABLE IF NOT EXISTS catalog.catalog_price (
 
 CREATE SEQUENCE catalog.catalog_price_id_seq START 1 INCREMENT 1;
 
-CREATE INDEX IF NOT EXISTS catalog_ndc_udi_dc_materialidentifier_index  ON catalog.catalog_price 
-USING GIN (ndc gin_trgm_ops, udi gin_trgm_ops, dist_channel gin_trgm_ops, material_identifier_for_cgat gin_trgm_ops);
+--CREATE INDEX IF NOT EXISTS catalog_ndc_udi_dc_materialidentifier_index  ON catalog.catalog_price 
+--USING GIN (ndc gin_trgm_ops, udi gin_trgm_ops, dist_channel gin_trgm_ops, material_identifier_for_cgat gin_trgm_ops);
 
 CREATE INDEX IF NOT EXISTS catalog_salesorg_soldtocustomer_index ON catalog.catalog_price 
 USING btree(sales_org, sold_to_customer);
@@ -133,23 +133,23 @@ USING btree(sales_org, sold_to_customer);
 CREATE INDEX IF NOT EXISTS account_partnerfunction_index ON usermanagement.account
 USING btree(partner_function);
 
-CREATE INDEX IF NOT EXISTS account_sapcustomer_name1_index ON usermanagement.account 
-USING GIN (sap_customer gin_trgm_ops, name_1 gin_trgm_ops);
+--CREATE INDEX IF NOT EXISTS account_sapcustomer_name1_index ON usermanagement.account 
+--USING GIN (sap_customer gin_trgm_ops, name_1 gin_trgm_ops);
 
 CREATE INDEX IF NOT EXISTS material_materialnumber_index ON catalog.material
 USING btree(material_number);
 
-CREATE INDEX IF NOT EXISTS role_name_index  ON usermanagement.role 
-USING GIN (name gin_trgm_ops);
+--CREATE INDEX IF NOT EXISTS role_name_index  ON usermanagement.role 
+--USING GIN (name gin_trgm_ops);
 
-CREATE INDEX IF NOT EXISTS user_name_email_index  ON usermanagement.user
-USING GIN (first_name gin_trgm_ops, middle_name gin_trgm_ops, last_name gin_trgm_ops, email gin_trgm_ops);
+--CREATE INDEX IF NOT EXISTS user_name_email_index  ON usermanagement.user
+--USING GIN (first_name gin_trgm_ops, middle_name gin_trgm_ops, last_name gin_trgm_ops, email gin_trgm_ops);
 
-CREATE INDEX IF NOT EXISTS account_name_number_index  ON usermanagement.account
-USING GIN (name_1 gin_trgm_ops, sap_customer gin_trgm_ops);
+--CREATE INDEX IF NOT EXISTS account_name_number_index  ON usermanagement.account
+--USING GIN (name_1 gin_trgm_ops, sap_customer gin_trgm_ops);
 
-CREATE INDEX IF NOT EXISTS practice_name_index ON usermanagement.practice
-USING GIN (name gin_trgm_ops);
+--CREATE INDEX IF NOT EXISTS practice_name_index ON usermanagement.practice
+--USING GIN (name gin_trgm_ops);
 
-CREATE INDEX IF NOT EXISTS user_provisioning_request_name_index  ON usermanagement.user_provisioning_request 
-USING GIN (first_name gin_trgm_ops, middle_name gin_trgm_ops, last_name gin_trgm_ops, email gin_trgm_ops);
+--CREATE INDEX IF NOT EXISTS user_provisioning_request_name_index  ON usermanagement.user_provisioning_request 
+--USING GIN (first_name gin_trgm_ops, middle_name gin_trgm_ops, last_name gin_trgm_ops, email gin_trgm_ops);
