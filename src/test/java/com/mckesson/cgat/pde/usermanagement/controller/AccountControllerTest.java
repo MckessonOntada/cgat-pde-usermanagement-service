@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -13,6 +14,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -212,7 +214,7 @@ class AccountControllerTest {
 		List<Account> accounts = getAccountList();
 		PageImpl<Account> accountPage = new PageImpl<>(accounts, pageable, accounts.size());
 		when(accountService.findAll(any(PageRequest.class), Mockito.anyString(), Mockito.anyList(), Mockito.anyLong(),
-				Mockito.anyLong(), Mockito.any()))
+				Mockito.anyLong(), Mockito.any(), anyList(), anyList()))
 			.thenReturn(accountPage);
 
 		ResultActions result = mockMvc
@@ -220,11 +222,14 @@ class AccountControllerTest {
 				.param("pageSize", "20")
 				.param("sortBy", "name_1")
 				.param("sortOrder", "asc")
-				.param("partnerFunction", "SHIP_TO")
+				.param("salesOrg", "")
+				.param("distChannels", "")
+				.param("partnerFunction", "SOLD_TO")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk());
 		assertNotNull(result);
-		verify(accountService).findAll(pageable, null, null, null, 100L, AccountPartnerFunction.SHIP_TO);
+		verify(accountService).findAll(pageable, null, null, null, 100L, AccountPartnerFunction.SOLD_TO,
+				new ArrayList<>(), new ArrayList<>());
 	}
 
 	@DisplayName("FindAllTestForDesc")
@@ -239,7 +244,7 @@ class AccountControllerTest {
 		List<Account> accounts = getAccountList();
 		PageImpl<Account> accountPage = new PageImpl<>(accounts, pageable, accounts.size());
 		when(accountService.findAll(any(PageRequest.class), Mockito.anyString(), Mockito.anyList(), Mockito.anyLong(),
-				Mockito.anyLong(), Mockito.any()))
+				Mockito.anyLong(), Mockito.any(), anyList(), anyList()))
 			.thenReturn(accountPage);
 
 		ResultActions result = mockMvc
@@ -247,11 +252,14 @@ class AccountControllerTest {
 				.param("pageSize", "20")
 				.param("sortBy", "name_1")
 				.param("sortOrder", "desc")
-				.param("partnerFunction", "SHIP_TO")
+				.param("salesOrg", "")
+				.param("distChannels", "")
+				.param("partnerFunction", "SOLD_TO")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk());
 		assertNotNull(result);
-		verify(accountService).findAll(pageable, null, null, null, 100L, AccountPartnerFunction.SHIP_TO);
+		verify(accountService).findAll(pageable, null, null, null, 100L, AccountPartnerFunction.SOLD_TO,
+				new ArrayList<>(), new ArrayList<>());
 	}
 
 	@DisplayName("LinkAccountToPracticeTest")

@@ -3,7 +3,6 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -166,12 +164,13 @@ public class UserController {
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "name_1") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
 			@PathVariable(required = false) String practiceId, @PathVariable(required = false) Long userId,
-			@RequestParam(required = false) List<String> status) throws ResourceNotFoundException {
+			@RequestParam(required = false) List<String> status, @RequestParam(required = false) List<String> salesOrg,
+			@RequestParam(required = false) List<String> distChannels) throws ResourceNotFoundException {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 		return accountService.findAll(paging, query, status, userId, Long.valueOf(practiceId),
-				AccountPartnerFunction.SOLD_TO);
+				AccountPartnerFunction.SOLD_TO, salesOrg, distChannels);
 
 	}
 

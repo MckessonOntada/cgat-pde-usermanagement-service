@@ -87,11 +87,14 @@ public class AccountController {
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "name_1") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
 			@PathVariable String practiceId, @RequestParam(required = false) List<String> status,
+			@RequestParam(required = false) List<String> salesOrg,
+			@RequestParam(required = false) List<String> distChannels,
 			@RequestParam AccountPartnerFunction partnerFunction) throws ResourceNotFoundException {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-		return accountService.findAll(paging, query, status, null, Long.valueOf(practiceId), partnerFunction);
+		return accountService.findAll(paging, query, status, null, Long.valueOf(practiceId), partnerFunction, salesOrg,
+				distChannels);
 	}
 
 	@PatchMapping
