@@ -54,8 +54,11 @@ public abstract class AuditColumns implements Serializable {
 	@PrePersist
 	public void onPersist() {
 		LoggedInUserDetails loggedInUserDetails = UserSecurityUtils.getLoggedInUser();
-		this.createdBy = loggedInUserDetails.getId();
-		this.updatedBy = loggedInUserDetails.getId();
+		if (loggedInUserDetails != null) {
+			this.createdBy = loggedInUserDetails.getId();
+			this.updatedBy = loggedInUserDetails.getId();
+		}
+
 		this.createdAt = Date.from(Instant.now());
 		this.updatedAt = Date.from(Instant.now());
 	}
@@ -63,7 +66,9 @@ public abstract class AuditColumns implements Serializable {
 	@PreUpdate
 	public void onUpdate() {
 		LoggedInUserDetails loggedInUserDetails = UserSecurityUtils.getLoggedInUser();
-		this.updatedBy = loggedInUserDetails.getId();
+		if (loggedInUserDetails != null) {
+			this.updatedBy = loggedInUserDetails.getId();
+		}
 		this.updatedAt = Date.from(Instant.now());
 	}
 

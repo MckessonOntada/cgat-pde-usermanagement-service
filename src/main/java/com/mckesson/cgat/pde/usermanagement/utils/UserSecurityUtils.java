@@ -47,9 +47,14 @@ public class UserSecurityUtils {
 	}
 
 	public static LoggedInUserDetails getLoggedInUser() {
-		UserCurrentRequestContext user = (UserCurrentRequestContext) SecurityContextHolder.getContext()
-			.getAuthentication()
-			.getPrincipal();
+
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if (principal == null) {
+			log.info("No logged in user found");
+			return null;
+		}
+
+		UserCurrentRequestContext user = (UserCurrentRequestContext) principal;
 		return user.getLoggedInUser();
 	}
 
