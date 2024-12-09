@@ -60,18 +60,45 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 			JOIN usermanagement.user_account_mapping uam ON ua.id = uam.account_id
 			WHERE
 			(
-				tenant_id =:practiceId
+				(
+					:query IS NULL
+				 	OR LOWER(ua.name_1) LIKE %:query%
+				 	OR LOWER(ua.sap_customer) LIKE %:query%
+				)
 				AND
-				user_id =:userId
+				(
+					(CAST(:practiceId AS varchar) is NULL and (tenant_id is null))
+					OR (tenant_id =:practiceId )
+				)
+				AND
+				(
+					cast(:userId as varchar) is null
+					or
+					user_id =:userId
+				)
 				AND
 				(
 					(:status = 'ALL' and (is_active = 1 or is_active = 0))
 					OR ('ACTIVE' = :status and is_active = 1 )
 					OR ('INACTIVE' = :status and is_active = 0 )
 				)
-			    and partner_function = :partnerFunction
+				AND
+				(
+					COALESCE(:salesOrg) is null
+					or
+					sales_org IN (:salesOrg)
+				)
+				AND
+				(
+					COALESCE(:distChannels) is null
+					or
+					distribution_channel IN (:distChannels)
+				)
+			    AND partner_function = :partnerFunction
 			)""")
-	Page<Account> findAccountsByUser(@Param("userId") Long userId, @Param("status") String status, Pageable pageable,
-			@Param("practiceId") Long practiceId, String partnerFunction);
+	Page<Account> findAccountsByUser(@Param("userId") Long userId, @Param("query") String query,
+			@Param("status") String status, Pageable pageable, @Param("practiceId") Long practiceId,
+			String partnerFunction, @Param("salesOrg") List<String> salesOrg,
+			@Param("distChannels") List<String> distChannels);
 
 }
