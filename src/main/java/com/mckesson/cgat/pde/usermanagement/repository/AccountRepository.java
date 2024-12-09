@@ -68,29 +68,29 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 				AND
 				(
 					(CAST(:practiceId AS varchar) is NULL and (tenant_id is null))
-					OR (tenant_id =:practiceId )
+					OR (ua.tenant_id =:practiceId )
 				)
 				AND
-					user_id =:userId
+					uam.user_id =:userId
 				AND
 				(
-					(:status = 'ALL' and (is_active = 1 or is_active = 0))
-					OR ('ACTIVE' = :status and is_active = 1 )
-					OR ('INACTIVE' = :status and is_active = 0 )
+					(:status = 'ALL' and (ua.is_active = 1 or ua.is_active = 0))
+					OR ('ACTIVE' = :status and ua.is_active = 1 )
+					OR ('INACTIVE' = :status and ua.is_active = 0 )
 				)
 				AND
 				(
 					COALESCE(:salesOrg) is null
 					or
-					sales_org IN (:salesOrg)
+					ua.sales_org IN (:salesOrg)
 				)
 				AND
 				(
 					COALESCE(:distChannels) is null
 					or
-					distribution_channel IN (:distChannels)
+					ua.distribution_channel IN (:distChannels)
 				)
-			    AND partner_function = :partnerFunction
+			    AND ua.partner_function = :partnerFunction
 			)""")
 	Page<Account> findAccountsByUser(@Param("userId") Long userId, @Param("query") String query,
 			@Param("status") String status, Pageable pageable, @Param("practiceId") Long practiceId,
