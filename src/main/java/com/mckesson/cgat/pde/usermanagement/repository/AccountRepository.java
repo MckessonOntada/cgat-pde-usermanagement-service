@@ -71,11 +71,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 					OR (tenant_id =:practiceId )
 				)
 				AND
-				(
-					cast(:userId as varchar) is null
-					or
 					user_id =:userId
-				)
 				AND
 				(
 					(:status = 'ALL' and (is_active = 1 or is_active = 0))
