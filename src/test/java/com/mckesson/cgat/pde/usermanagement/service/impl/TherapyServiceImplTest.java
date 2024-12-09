@@ -1,6 +1,9 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import static org.junit.Assert.assertThrows;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -47,11 +50,14 @@ public class TherapyServiceImplTest {
 	public void findAllTherapiesTest() {
 		Long userId = 2L;
 		String query = "";
-		String salesOrg = "";
 
-		Mockito.when(therapyRepository.findAllTherapies(userId, query, salesOrg, paging)).thenReturn(getTherapies());
-		therapyService.findAllTherapies(userId, query, salesOrg, paging);
-		verify(therapyRepository, times(1)).findAllTherapies(userId, query, salesOrg, paging);
+		Mockito
+			.when(therapyRepository.findAllTherapies(anyLong(), anyString(), anyList(), Mockito.any(Pageable.class),
+					anyList(), anyString()))
+			.thenReturn(getTherapies());
+		therapyService.findAllTherapies(userId, query, new ArrayList<>(), paging, new ArrayList<>());
+		verify(therapyRepository, times(1)).findAllTherapies(userId, query, new ArrayList<>(), paging,
+				new ArrayList<>(), "SH");
 	}
 
 	@DisplayName("Test : FindAll SoldToAccounts")
@@ -61,10 +67,12 @@ public class TherapyServiceImplTest {
 		String query = "";
 		String therapyId = "18";
 
-		Mockito.when(therapyRepository.findAllSoldToAccounts(userId, therapyId, query, paging))
+		Mockito
+			.when(therapyRepository.findAllSoldToAccounts(anyLong(), anyString(), anyString(),
+					Mockito.any(Pageable.class), anyString(), anyString()))
 			.thenReturn(getSoldToAccounts());
-		therapyService.findAllSoldToAccounts(userId, Long.valueOf(therapyId), query, paging);
-		verify(therapyRepository, times(1)).findAllSoldToAccounts(userId, therapyId, query, paging);
+		therapyService.findAllSoldToAccounts(userId, Long.valueOf(therapyId), query, paging, "");
+		verify(therapyRepository, times(1)).findAllSoldToAccounts(userId, therapyId, query, paging, "", "SH");
 	}
 
 	@DisplayName("Test : FindAll ShipToAccounts")
@@ -73,10 +81,12 @@ public class TherapyServiceImplTest {
 		String soldToAccount = "4";
 		String therapyId = "18";
 
-		Mockito.when(therapyRepository.findAllShipToAccounts(soldToAccount, therapyId, paging))
+		Mockito
+			.when(therapyRepository.findAllShipToAccounts(anyString(), anyString(), anyString(),
+					Mockito.any(Pageable.class), anyString()))
 			.thenReturn(getShipToAccounts());
-		therapyService.findAllShipToAccounts(soldToAccount, Long.valueOf(therapyId), paging);
-		verify(therapyRepository, times(1)).findAllShipToAccounts(soldToAccount, therapyId, paging);
+		therapyService.findAllShipToAccounts(soldToAccount, Long.valueOf(therapyId), paging, "");
+		verify(therapyRepository, times(1)).findAllShipToAccounts(soldToAccount, therapyId, "", paging, "SP");
 	}
 
 	@DisplayName("Test : FindAll TherapyById")
