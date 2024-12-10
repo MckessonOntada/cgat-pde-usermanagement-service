@@ -31,7 +31,10 @@ public class TherapyServiceImpl implements TherapyService {
 		List<TherapyCatalogResponseDTO> therapies = allTherapies.getContent()
 			.stream()
 			.map(obj -> new TherapyCatalogResponseDTO(String.valueOf(obj[0]), String.valueOf(obj[1]),
-					String.valueOf(obj[2]), String.valueOf(obj[3])))
+					String.valueOf(obj[2]), String.valueOf(obj[3]), String.valueOf(obj[4]), String.valueOf(obj[5]),
+					String.valueOf(obj[6]), String.valueOf(obj[7]), String.valueOf(obj[8]), String.valueOf(obj[9]),
+					String.valueOf(obj[10]), String.valueOf(obj[11]), String.valueOf(obj[12]), String.valueOf(obj[13]),
+					String.valueOf(obj[14]), String.valueOf(obj[15]), String.valueOf(obj[16])))
 			.toList();
 		return new PageImpl<>(therapies, paging, allTherapies.getTotalElements());
 	}

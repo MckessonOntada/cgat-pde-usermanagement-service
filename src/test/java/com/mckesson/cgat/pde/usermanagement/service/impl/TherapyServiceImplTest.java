@@ -117,10 +117,14 @@ public class TherapyServiceImplTest {
 
 	private Page<Object[]> getTherapies() {
 		List<Object[]> therapies = new ArrayList<>();
-		Object[] therapy1 = { "ndc1", "tdesc4", "1", "udi1" };
-		Object[] therapy2 = { "ndc2", "tdesc3", "3", "udi5" };
-		Object[] therapy3 = { "ndc3", "tdesc2", "5", "udi2" };
-		Object[] therapy4 = { "ndc4", "tdesc1", "7", "udi3" };
+		Object[] therapy1 = { "ndc1", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1",
+				"udi1", "ndc1", "tdesc4", "1", "udi1", "" };
+		Object[] therapy2 = { "ndc2", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1",
+				"udi1", "ndc1", "tdesc4", "1", "udi1", "" };
+		Object[] therapy3 = { "ndc3", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1",
+				"udi1", "ndc1", "tdesc4", "1", "udi1", "" };
+		Object[] therapy4 = { "ndc4", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1",
+				"udi1", "ndc1", "tdesc4", "1", "udi1", "" };
 		therapies.add(therapy1);
 		therapies.add(therapy2);
 		therapies.add(therapy3);
