@@ -1,6 +1,5 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
-
 import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
 import com.mckesson.cgat.pde.usermanagement.model.*;
 
