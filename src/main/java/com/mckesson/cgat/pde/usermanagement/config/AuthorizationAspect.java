@@ -1,9 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.config;
 
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
-import com.mckesson.cgat.pde.usermanagement.model.LoggedInUserDetails;
-import com.mckesson.cgat.pde.usermanagement.model.Permission;
-import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
+import com.mckesson.cgat.pde.usermanagement.model.*;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
 import org.aspectj.lang.annotation.Aspect;
@@ -15,7 +13,7 @@ import java.util.Set;
 
 @Aspect
 @Component
-public class PermissionAspect {
+public class AuthorizationAspect {
 
 	@Before("@annotation(requirePermissions)")
 	public void checkPermissions(RequirePermissions requirePermissions) throws UnauthorizedAccessException {
@@ -31,6 +29,20 @@ public class PermissionAspect {
 		if (!hasPermissions) {
 			throw new UnauthorizedAccessException(CustomUtils.UNAUTHORIZED_MESSAGE);
 		}
+	}
+
+	@Before("@annotation(requireRole)")
+	public void checkRoleAuthentication(RequireRole requireRole) throws UnauthorizedAccessException {
+		// Retrieve the role from the annotation
+		LoggedInUserDetails loggedInUserDetails = UserSecurityUtils.getLoggedInUser();
+		Role role = loggedInUserDetails.getRole();
+
+		// Check if user has the required role
+
+		if (!Arrays.asList(requireRole.value()).contains(role.getName())) {
+			throw new UnauthorizedAccessException(CustomUtils.UNAUTHORIZED_MESSAGE);
+		}
+
 	}
 
 }
