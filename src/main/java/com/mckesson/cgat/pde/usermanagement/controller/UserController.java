@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.mckesson.cgat.pde.usermanagement.model.*;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,10 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
-import com.mckesson.cgat.pde.usermanagement.model.Account;
-import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
-import com.mckesson.cgat.pde.usermanagement.model.User;
-import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;

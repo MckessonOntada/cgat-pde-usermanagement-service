@@ -1,10 +1,21 @@
 package com.mckesson.cgat.pde.usermanagement.util;
 
+import com.mckesson.cgat.pde.usermanagement.model.LoggedInUserDetails;
+import com.mckesson.cgat.pde.usermanagement.model.Name;
+import com.mckesson.cgat.pde.usermanagement.model.Permission;
+import com.mckesson.cgat.pde.usermanagement.model.Role;
+import com.mckesson.cgat.pde.usermanagement.utils.OrganizationContext;
+import com.mckesson.cgat.pde.usermanagement.utils.UserCurrentRequestContext;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
+import java.util.*;
 
 public class TestUtils {
 
@@ -33,6 +44,27 @@ public class TestUtils {
 	public static LocalDate parseLocalDate(String dateStr, String format) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
 		return LocalDate.parse(dateStr, formatter);
+	}
+
+	public static void setupPrincipal() {
+		LoggedInUserDetails loggedInUser = LoggedInUserDetails.builder()
+			.id("1")
+			.name(Name.builder().firstName("John").lastName("Doe").build())
+			.role(Role.builder().name("System Admin").build())
+			.permissions(new HashSet(Arrays.asList(Permission.values())))
+			.practiceId(1)
+			.userName("John Doe")
+			.build();
+		List<String> roleNames = new ArrayList<>();
+		roleNames.add(loggedInUser.getRole().getName());
+		Collection<? extends GrantedAuthority> authorities = roleNames.stream()
+			.map(SimpleGrantedAuthority::new)
+			.toList();
+		UserCurrentRequestContext principal = new UserCurrentRequestContext(loggedInUser.getUserName(), "", authorities,
+				loggedInUser);
+		SecurityContextHolder.getContext()
+			.setAuthentication(new UsernamePasswordAuthenticationToken(principal, null, authorities));
+		OrganizationContext.setCurrentOrgId(1L);
 	}
 
 }
