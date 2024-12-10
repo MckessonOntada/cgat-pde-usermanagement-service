@@ -1,5 +1,8 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
+import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
+import com.mckesson.cgat.pde.usermanagement.model.*;
+
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
@@ -20,9 +23,18 @@ import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;
 import com.mckesson.cgat.pde.usermanagement.utils.UserRequestAuthorizationValidator;
+import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
-
 import jakarta.transaction.Transactional;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
 
 @Slf4j
 @Service
