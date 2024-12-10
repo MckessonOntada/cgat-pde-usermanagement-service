@@ -17,4 +17,30 @@ public class TherapyCatalogResponseDTO {
 
 	private String udi;
 
+	private String strength;
+
+	private String dosage;
+
+	private String sellingUnitCode;
+
+	private String vendorName;
+
+	private String upcCode;
+
+	private String dropshipIndicator;
+
+	private String status;
+
+	private String baseUnitOfMeasure;
+
+	private String cgatIdentifier;
+
+	private String salesOrganization;
+
+	private String cgatType;
+
+	private String productLevelPricing;
+
+	private String minimumOrderQuantity;
+
 }

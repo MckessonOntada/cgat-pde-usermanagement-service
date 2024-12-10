@@ -1,5 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -38,9 +40,10 @@ public class TherapyController {
 			summary = "Find all therapies being offered via catalog for all accounts that the logged in user has access")
 	public Page<TherapyCatalogResponseDTO> findAllThreapies(@PathVariable Long userId,
 			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize,
-			@RequestParam(required = false) String query, @RequestParam(required = false) String salesOrg) {
+			@RequestParam(required = false) String query, @RequestParam(required = false) List<String> salesOrg,
+			@RequestParam(required = false) List<String> customerIdentifier) {
 		Pageable paging = PageRequest.of(pageNo, pageSize);
-		return therapyService.findAllTherapies(userId, query, salesOrg, paging);
+		return therapyService.findAllTherapies(userId, query, salesOrg, paging, customerIdentifier);
 	}
 
 	@GetMapping("/{therapyId}/soldtoaccounts")
@@ -48,10 +51,11 @@ public class TherapyController {
 			summary = "Find all soldto accounts from which the selected therapy is being offered, and the logged in user has access to")
 	public Page<AccountsResponseDTO> findAllSoldToAccountsByTherapy(@PathVariable Long userId,
 			@PathVariable Long therapyId, @RequestParam(defaultValue = "0") Integer pageNo,
-			@RequestParam(required = false) String query, @RequestParam(defaultValue = "20") Integer pageSize) {
+			@RequestParam(required = false) String query, @RequestParam(defaultValue = "20") Integer pageSize,
+			@RequestParam(required = false) String distributionChannel) {
 
 		Pageable paging = PageRequest.of(pageNo, pageSize);
-		return therapyService.findAllSoldToAccounts(userId, therapyId, query, paging);
+		return therapyService.findAllSoldToAccounts(userId, therapyId, query, paging, distributionChannel);
 	}
 
 	@GetMapping("{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccounts")
@@ -59,9 +63,9 @@ public class TherapyController {
 			summary = "Find all shipto accounts that is linked to the selected soldto account and the therapy also being offered from that shipto account")
 	public Page<AccountsResponseDTO> findAllShipToAccountsForTherapy(@PathVariable String soldToAccountId,
 			@PathVariable Long therapyId, @RequestParam(defaultValue = "0") Integer pageNo,
-			@RequestParam(defaultValue = "20") Integer pageSize) {
+			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query) {
 		Pageable paging = PageRequest.of(pageNo, pageSize);
-		return therapyService.findAllShipToAccounts(soldToAccountId, therapyId, paging);
+		return therapyService.findAllShipToAccounts(soldToAccountId, therapyId, paging, query);
 	}
 
 	@GetMapping("/{therapyId}")

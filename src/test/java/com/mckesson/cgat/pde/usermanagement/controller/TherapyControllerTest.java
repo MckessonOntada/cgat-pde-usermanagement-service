@@ -1,5 +1,9 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -10,6 +14,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
@@ -69,13 +74,15 @@ public class TherapyControllerTest {
 
 		Page<TherapyCatalogResponseDTO> therapies = getTherapies();
 
-		when(therapyService.findAllTherapies(2L, query, salesOrg, paging)).thenReturn(therapies);
+		when(therapyService.findAllTherapies(anyLong(), anyString(), anyList(), any(Pageable.class), anyList()))
+			.thenReturn(therapies);
 
 		mockMvc
 			.perform(get("/practices/{practiceId}/users/{userId}/therapies", practiceId, userId).param("pageNo", pageNo)
 				.param("pageSize", pageSize)
 				.param("query", "")
 				.param("salesOrg", "")
+				.param("customerIdentifier", "")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andReturn();
@@ -88,7 +95,8 @@ public class TherapyControllerTest {
 		Long therapyId = 12L;
 		Page<AccountsResponseDTO> soldToAccounts = getSoldToAccounts();
 
-		when(therapyService.findAllSoldToAccounts(userId, therapyId, query, paging)).thenReturn(soldToAccounts);
+		when(therapyService.findAllSoldToAccounts(anyLong(), anyLong(), anyString(), any(Pageable.class), anyString()))
+			.thenReturn(soldToAccounts);
 
 		mockMvc
 			.perform(get("/practices/{practiceId}/users/{userId}/therapies/{therapyId}/soldtoaccounts", practiceId,
@@ -110,7 +118,8 @@ public class TherapyControllerTest {
 		String soldToAccount = "4";
 		Page<AccountsResponseDTO> shipToAccounts = getShipToAccounts();
 
-		when(therapyService.findAllShipToAccounts(soldToAccount, therapyId, paging)).thenReturn(shipToAccounts);
+		when(therapyService.findAllShipToAccounts(anyString(), anyLong(), any(PageRequest.class), anyString()))
+			.thenReturn(shipToAccounts);
 
 		mockMvc.perform(get(
 				"/practices/{practiceId}/users/{userId}/therapies/{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccounts",
