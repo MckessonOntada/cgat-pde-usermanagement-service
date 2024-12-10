@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -104,7 +105,7 @@ class PracticeControllerTest {
 		Pageable paging = PageRequest.of(0, 20, Sort.by("name").ascending());
 		Page<Practice> mockResponse = getPractices();
 
-		when(practiceService.findAll(paging, query, List.of(statusActive))).thenReturn(mockResponse);
+		when(practiceService.findAll(paging, query, List.of(statusActive), List.of(""))).thenReturn(mockResponse);
 
 		mockMvc
 			.perform(get("/practices").param("pageNo", pageNo)

@@ -1,5 +1,9 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -10,6 +14,7 @@ import java.util.List;
 import com.mckesson.cgat.pde.usermanagement.model.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
@@ -66,9 +71,11 @@ public class GlobalAccountControllerTest {
 		Pageable pageable = PageRequest.of(0, 20, Sort.by("name").descending());
 		Page<Account> mockResponse = new PageImpl<>(accounts, paging, accounts.size());
 
-		when(accountService.findAll(paging, query, null, null, null, AccountPartnerFunction.SHIP_TO))
+		when(accountService.findAll(any(PageRequest.class), anyString(), anyList(), anyLong(), anyLong(), any(),
+				anyList(), anyList()))
 			.thenReturn(mockResponse);
-		when(accountService.findAll(pageable, query, null, null, null, AccountPartnerFunction.SHIP_TO))
+		when(accountService.findAll(any(PageRequest.class), anyString(), anyList(), anyLong(), anyLong(), any(),
+				anyList(), anyList()))
 			.thenReturn(mockResponse);
 
 		mockMvc
@@ -77,9 +84,11 @@ public class GlobalAccountControllerTest {
 				.param("sortBy", sortBy)
 				.param("sortOrder", sortOrder)
 				.param("query", query)
+				.param("salesOrg", "")
+				.param("distChannels", "")
+				.param("partnerFunction", "SOLD_TO")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
-			.andDo(print())
 			.andReturn();
 	}
 

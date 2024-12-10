@@ -84,4 +84,8 @@ public class User extends AuditColumns implements Serializable {
 	@Convert(converter = NumericBooleanConverter.class)
 	private Boolean isActive = true;
 
+	@Enumerated(EnumType.STRING)
+	@Column(name = "provisioned_in_okta_status")
+	private UserProvisionedInOktaStatus provisionedInOktaStatus = UserProvisionedInOktaStatus.PENDING;
+
 }

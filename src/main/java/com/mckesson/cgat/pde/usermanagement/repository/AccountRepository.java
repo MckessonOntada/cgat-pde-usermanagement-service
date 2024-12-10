@@ -1,8 +1,8 @@
 package com.mckesson.cgat.pde.usermanagement.repository;
 
+import java.util.List;
 import java.util.Set;
 
-import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,6 +21,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 				(
 					:query IS NULL
 				 	OR LOWER(a.name_1) LIKE %:query%
+				 	OR LOWER(a.sap_customer) LIKE %:query%
 				)
 				AND
 				(
@@ -33,10 +34,23 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 					OR ('ACTIVE' = :status and is_active = 1 )
 					OR ('INACTIVE' = :status and is_active = 0 )
 				)
+				AND
+				(
+					COALESCE(:salesOrg) is null
+					or
+					sales_org IN (:salesOrg)
+				)
+				AND
+				(
+					COALESCE(:distChannels) is null
+					or
+					distribution_channel IN (:distChannels)
+				)
 				and partner_function = :partnerFunction
 			)""")
 	Page<Account> findAllByQueryText(@Param("query") String query, @Param("status") String status, Pageable paging,
-			@Param("practiceId") Long practiceId, String partnerFunction);
+			@Param("practiceId") Long practiceId, String partnerFunction, @Param("salesOrg") List<String> salesOrg,
+			@Param("distChannels") List<String> distChannels);
 
 	Set<Account> findByPracticeId(Long practiceId);
 
@@ -46,18 +60,41 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 			JOIN usermanagement.user_account_mapping uam ON ua.id = uam.account_id
 			WHERE
 			(
-				tenant_id =:practiceId
-				AND
-				user_id =:userId
+				(
+					:query IS NULL
+				 	OR LOWER(ua.name_1) LIKE %:query%
+				 	OR LOWER(ua.sap_customer) LIKE %:query%
+				)
 				AND
 				(
-					(:status = 'ALL' and (is_active = 1 or is_active = 0))
-					OR ('ACTIVE' = :status and is_active = 1 )
-					OR ('INACTIVE' = :status and is_active = 0 )
+					(CAST(:practiceId AS varchar) is NULL and (tenant_id is null))
+					OR (ua.tenant_id =:practiceId )
 				)
-			    and partner_function = :partnerFunction
+				AND
+					uam.user_id =:userId
+				AND
+				(
+					(:status = 'ALL' and (ua.is_active = 1 or ua.is_active = 0))
+					OR ('ACTIVE' = :status and ua.is_active = 1 )
+					OR ('INACTIVE' = :status and ua.is_active = 0 )
+				)
+				AND
+				(
+					COALESCE(:salesOrg) is null
+					or
+					ua.sales_org IN (:salesOrg)
+				)
+				AND
+				(
+					COALESCE(:distChannels) is null
+					or
+					ua.distribution_channel IN (:distChannels)
+				)
+			    AND ua.partner_function = :partnerFunction
 			)""")
-	Page<Account> findAccountsByUser(@Param("userId") Long userId, @Param("status") String status, Pageable pageable,
-			@Param("practiceId") Long practiceId, String partnerFunction);
+	Page<Account> findAccountsByUser(@Param("userId") Long userId, @Param("query") String query,
+			@Param("status") String status, Pageable pageable, @Param("practiceId") Long practiceId,
+			String partnerFunction, @Param("salesOrg") List<String> salesOrg,
+			@Param("distChannels") List<String> distChannels);
 
 }

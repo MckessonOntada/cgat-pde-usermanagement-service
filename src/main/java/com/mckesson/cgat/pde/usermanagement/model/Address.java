@@ -39,20 +39,17 @@ public class Address implements Serializable {
 
 	@NotEmpty(message = "City is required.")
 	@Size(min = 2, max = 50, groups = BasicInfo.class)
-	@Pattern(regexp = "^[A-Za-z ]+$", message = "City must only contain alphabets.", groups = BasicInfo.class)
+	@Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ ]+$", message = "City must only contain alphabets.", groups = BasicInfo.class)
 	private String city;
 
 	@Size(min = 2, max = 50, groups = BasicInfo.class)
 	@NotEmpty(message = "State is required.")
-	@Pattern(
-			regexp = "^(A[LKZR]|C[AOT]|D[EC]|FL|GA|HI|I[DLNA]|K[SY]|LA|M[DEHINSOT]|N[CDEHJMVY]|O[HKR]|P[AR]|RI|S[CD]|T[NX]|UT|V[AIT]|W[AIVY]|Alabama|Alaska|Arizona|Arkansas|California|Colorado|Connecticut|Delaware|Florida|Georgia|Hawaii|Idaho|Illinois|Indiana|Iowa|Kansas|Kentucky|Louisiana|Maine|Maryland|Massachusetts|Michigan|Minnesota|Mississippi|Missouri|Montana|Nebraska|Nevada|New Hampshire|New Jersey|New Mexico|New York|North Carolina|North Dakota|Ohio|Oklahoma|Oregon|Pennsylvania|Rhode Island|South Carolina|South Dakota|Tennessee|Texas|Utah|Vermont|Virginia|Washington|West Virginia|Wisconsin|Wyoming)$",
-			message = "State must be a valid state abbreviation (e.g., CA) or full name (e.g., California)",
-			groups = BasicInfo.class)
 	private String state;
 
 	@NotEmpty(message = "ZIP code is required")
 	@Size(min = 2, max = 10, message = "Enter a valid Zip Code.", groups = BasicInfo.class)
-	@Pattern(regexp = "^[\\d]+$", message = "Must be numeric", groups = BasicInfo.class)
+	@Pattern(regexp = "^\\d{5}(-\\d{4})?$",
+			message = "Must be 5 digits or 9 digits with last 4 digits seperated by a '-' .", groups = BasicInfo.class)
 	private String zip;
 
 }

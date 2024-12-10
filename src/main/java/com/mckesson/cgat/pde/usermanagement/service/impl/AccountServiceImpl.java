@@ -4,15 +4,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import com.mckesson.cgat.pde.usermanagement.exception.custom.ForbiddenActionException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
+import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import com.mckesson.cgat.pde.usermanagement.model.Practice;
 import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
@@ -60,16 +61,19 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public void deleteAccount(Long accountId) throws ResourceNotFoundException {
+	public void delinkAccountFromPractice(Long practiceId, Long accountId) throws ResourceNotFoundException {
 		Account account = accountRepository.findById(accountId)
-			.orElseThrow(() -> new ResourceNotFoundException(accountId.toString()));
-		account.setIsActive(false);
+			.orElseThrow(() -> new ResourceNotFoundException("Account not found with it: " + accountId.toString()));
+		if (!practiceId.equals(account.getPracticeId()))
+			throw new ForbiddenActionException(CustomUtils.UNAUTHORIZED_MESSAGE);
+		account.setPracticeId(null);
 		accountRepository.save(account);
 	}
 
 	@Override
 	public Page<Account> findAll(Pageable paging, String query, List<String> status, Long userId, Long practiceId,
-			AccountPartnerFunction partnerFunction) throws ResourceNotFoundException {
+			AccountPartnerFunction partnerFunction, List<String> salesOrg, List<String> distChannels)
+			throws ResourceNotFoundException {
 		query = StringUtils.toRootLowerCase(query);
 		String statusActive = CustomUtils.object_status.ALL.name();
 		if (!CollectionUtils.isEmpty(status)) {
@@ -89,11 +93,11 @@ public class AccountServiceImpl implements AccountService {
 			Optional<User> user = userRepository.findById(userId);
 			if (!user.isPresent())
 				throw new ResourceNotFoundException("User not found with id: " + userId);
-			return accountRepository.findAccountsByUser(userId, statusActive, paging, practiceId,
-					partnerFunction.getPartnerFunctionType());
+			return accountRepository.findAccountsByUser(userId, query, statusActive, paging, practiceId,
+					partnerFunction.getPartnerFunctionType(), salesOrg, distChannels);
 		}
 		return accountRepository.findAllByQueryText(query, statusActive, paging, practiceId,
-				partnerFunction.getPartnerFunctionType());
+				partnerFunction.getPartnerFunctionType(), salesOrg, distChannels);
 	}
 
 	@Transactional
@@ -108,18 +112,8 @@ public class AccountServiceImpl implements AccountService {
 		List<Account> allAccounts = accountRepository.findAllById(accountIds);
 		isAnyAccountLinkedToAnyOtherPractice(practiceId, allAccounts);
 
-		Set<Account> existingAccounts = accountRepository.findByPracticeId(practiceId);
-		existingAccounts.addAll(allAccounts);
-
-		existingAccounts.forEach(a -> {
-			if (accountIds.contains(a.getId()))
-				a.setPracticeId(practiceId);
-
-			else
-				a.setPracticeId(null);
-
-		});
-		accountRepository.saveAll(existingAccounts);
+		allAccounts.forEach(a -> a.setPracticeId(practiceId));
+		accountRepository.saveAll(allAccounts);
 	}
 
 	private void isAnyAccountLinkedToAnyOtherPractice(Long practiceId, List<Account> allAccounts)

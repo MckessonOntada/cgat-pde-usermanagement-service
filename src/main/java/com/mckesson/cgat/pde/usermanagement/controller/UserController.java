@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,7 +35,9 @@ import com.mckesson.cgat.pde.usermanagement.utils.UserRequestAuthorizationValida
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -67,9 +68,9 @@ public class UserController {
 		return new ResponseEntity<>(userService.createUser(user), HttpStatus.OK);
 	}
 
-	@PutMapping("/{userId}")
+	@PatchMapping("/{userId}")
 	@Operation(summary = "Update existing user details byId")
-	public User updateUser(@PathVariable Long userId, @Validated(BasicInfo.class) @RequestBody User user,
+	public User updateUserDetails(@PathVariable Long userId, @Validated(BasicInfo.class) @RequestBody User user,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
@@ -95,16 +96,30 @@ public class UserController {
 
 	}
 
+	@DeleteMapping("/{userId}/accounts/{accountId}")
+	@Operation(summary = "Delink user from account")
+	public ResponseEntity<Void> delinkUserFromAccount(@PathVariable Long userId,
+			@NotNull(message = "User Type should not be null") @RequestParam UserType userType,
+			@NotNull(message = "Account can not be empty") @PathVariable Long accountId)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
+		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
+		userService.delinkUserFromAccount(userId, accountId);
+
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
 	@GetMapping
 	@Operation(summary = "Fetch all Users based on filter provided with pagination capabilities.")
 	Page<User> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(defaultValue = "first_name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
-			@RequestParam(required = false) List<String> status,
+			@RequestParam(required = false) List<String> status, @RequestParam(required = false) List<Long> roleIds,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType,
-			@RequestParam(required = false) @DateTimeFormat(pattern = CustomUtils.API_DATE_FORMAT) LocalDate startDate,
-			@RequestParam(required = false) @DateTimeFormat(pattern = CustomUtils.API_DATE_FORMAT) LocalDate endDate)
+			@Parameter(description = "Date format : " + CustomUtils.API_DATE_FORMAT) @RequestParam(
+					required = false) @DateTimeFormat(pattern = CustomUtils.API_DATE_FORMAT) LocalDate startDate,
+			@Parameter(description = "Date format : " + CustomUtils.API_DATE_FORMAT) @RequestParam(
+					required = false) @DateTimeFormat(pattern = CustomUtils.API_DATE_FORMAT) LocalDate endDate)
 			throws BadRequestException, UnauthorizedAccessException {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
@@ -113,16 +128,15 @@ public class UserController {
 			throw new BadRequestException("Either enter both dates or none for the filter as its a part of date range");
 
 		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
-		return userService.findAll(paging, query, status, OrganizationContext.getCurrentOrgId(), startDate, endDate);
+		return userService.findAll(paging, query, status, OrganizationContext.getCurrentOrgId(), startDate, endDate,
+				roleIds);
 
 	}
 
 	@PatchMapping("/{userId}/accounts")
-	@Operation(
-			summary = "Link/Delink User with accounts.(This API maps the accounts being passed in requst with the user "
-					+ "such as the requested mapping is the current state of user to account association")
+	@Operation(summary = "Link User with multiple accounts.")
 	public User linkUserToAccounts(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
-			@RequestBody List<Long> accountIds,
+			@NotEmpty(message = "Accounts can not be empty") @RequestBody List<Long> accountIds,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
@@ -147,12 +161,13 @@ public class UserController {
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "name_1") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
 			@PathVariable(required = false) String practiceId, @PathVariable(required = false) Long userId,
-			@RequestParam(required = false) List<String> status) throws ResourceNotFoundException {
+			@RequestParam(required = false) List<String> status, @RequestParam(required = false) List<String> salesOrg,
+			@RequestParam(required = false) List<String> distributionChannel) throws ResourceNotFoundException {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-		return accountService.findAll(paging, query, status, userId, Long.valueOf(practiceId),
-				AccountPartnerFunction.SOLD_TO);
+		return accountService.findAll(paging, query, status, userId, OrganizationContext.getCurrentOrgId(),
+				AccountPartnerFunction.SOLD_TO, salesOrg, distributionChannel);
 
 	}
 

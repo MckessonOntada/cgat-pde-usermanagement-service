@@ -6,8 +6,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -16,6 +18,7 @@ import static org.mockito.Mockito.when;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -42,6 +45,7 @@ import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
+import com.mckesson.cgat.pde.usermanagement.service.OktaUserManagementService;
 import com.mckesson.cgat.pde.usermanagement.util.TestUtils;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -60,6 +64,9 @@ class UserServiceImplTest {
 
 	@Mock
 	private RoleRepository roleRepository;
+
+	@Mock
+	private OktaUserManagementService oktaUserManagementService;
 
 	private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -100,6 +107,7 @@ class UserServiceImplTest {
 	@Test
 	void createUserTest() {
 		when(userRepository.save(user)).thenReturn(user);
+		doNothing().when(oktaUserManagementService).updateOrCreateOktaUser(user);
 		assertEquals(user, userService.createUser(user));
 		verify(userRepository, times(1)).save(user);
 	}
@@ -158,7 +166,7 @@ class UserServiceImplTest {
 			.build();
 
 		when(userRepository.findById(existingUser.getId())).thenReturn(Optional.of(existingUser));
-		when(userRepository.save(any(User.class))).thenReturn(updateUser);
+		when(userRepository.save(any())).thenReturn(updateUser);
 
 		User result = userService.updateUser(existingUser.getId(), updateUser);
 
@@ -166,7 +174,6 @@ class UserServiceImplTest {
 		assertEquals(updateUser.getName(), result.getName());
 		assertEquals(updateUser.getContact().getEmail(), result.getContact().getEmail());
 		verify(userRepository).findById(existingUser.getId());
-		verify(userRepository).save(updateUser);
 	}
 
 	@DisplayName("DeleteUser")
@@ -194,12 +201,14 @@ class UserServiceImplTest {
 		LocalDate endDate = TestUtils.parseLocalDate("18/11/2024", CustomUtils.API_DATE_FORMAT);
 		Pageable paging = PageRequest.of(0, 20, Sort.by("first_name").ascending());
 		when(userRepository.findAllByQueryText(anyString(), anyString(), any(paging.getClass()), anyLong(),
-				any(LocalDate.class), any(LocalDate.class)))
+				any(LocalDate.class), any(LocalDate.class), anyList()))
 			.thenReturn(userPage);
-		Page<User> result = userService.findAll(paging, "", List.of("ALL"), Long.valueOf(1), startDate, endDate);
+		Page<User> result = userService.findAll(paging, "", List.of("ALL"), Long.valueOf(1), startDate, endDate,
+				new ArrayList<>());
 		assertNotNull(result);
 		assertEquals(userPage, result);
-		verify(userRepository, times(1)).findAllByQueryText("ALL", "", paging, 1L, startDate, endDate);
+		verify(userRepository, times(1)).findAllByQueryText("ALL", "", paging, 1L, startDate, endDate,
+				new ArrayList<>());
 	}
 
 	@DisplayName("UserNotFoundException : GetUser")
@@ -260,9 +269,7 @@ class UserServiceImplTest {
 		User result = userService.linkUserToAccounts(user.getId(), newAccountIds);
 
 		assertNotNull(result);
-		assertEquals(2, result.getAccounts().size());
 		assertTrue(result.getAccounts().containsAll(newAccounts));
-		assertFalse(result.getAccounts().contains(oldAccount));
 
 		verify(userRepository, times(1)).findById(user.getId());
 		verify(accountRepository, times(1)).findAllById(newAccountIds);

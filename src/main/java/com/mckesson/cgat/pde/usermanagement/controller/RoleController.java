@@ -2,7 +2,6 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
@@ -14,18 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
+import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
 import com.mckesson.cgat.pde.usermanagement.service.RoleService;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -33,7 +24,7 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
 @RestController
@@ -55,31 +46,33 @@ public class RoleController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(roleService.createOrUpdateRole(role, practiceId));
 	}
 
-	@PutMapping("/{roleId}")
-	@Operation(summary = "Update Role (Add/Remove permissions to Role)")
-	public ResponseEntity<Role> updateRole(@Validated @RequestBody Role role, @PathVariable String practiceId,
-			@PathVariable String roleId) throws ResourceNotFoundException {
-		Role roleObj = roleService.getRole(roleId);
-		if (roleObj == null)
-			throw new ResourceNotFoundException(roleId);
-		role.setId(Long.valueOf(roleId));
-		return ResponseEntity.status(HttpStatus.OK).body(roleService.createOrUpdateRole(role, practiceId));
+	@PatchMapping("/{roleId}")
+	@Operation(summary = "Update basic deatils of role (i.e Role Name and Description)")
+	public ResponseEntity<Role> updateRole(@PathVariable @NotNull(message = "Role Id can not be null") Long roleId,
+			@Validated(BasicInfo.class) @RequestBody Role updatedRole) throws ResourceNotFoundException {
+		return ResponseEntity.status(HttpStatus.OK).body(roleService.updateRole(roleId, updatedRole));
 	}
 
 	@PatchMapping("/{roleId}/permissions")
-	@Operation(summary = "Link/Unlink Roles to permission. Associated the permission in current request with the role.")
-	public ResponseEntity<Role> linkPermissionToRole(
+	@Operation(
+			summary = "Link/Unlink permission to Role. Permissions in current request becomes the permissions mapped to the role.")
+	public ResponseEntity<Role> updatePermissionsForRole(
 			@PathVariable @NotNull(message = "Role Id can not be null") Long roleId,
-			@RequestBody @NotNull(message = "Permissions can not be null") @NotEmpty(
-					message = "Permissions can not be Empty") Set<Permission> permissions)
-			throws ResourceNotFoundException {
-		return ResponseEntity.status(HttpStatus.OK).body(roleService.linkPermissionToRole(roleId, permissions));
+			@Valid @RequestBody Role updatedRole) throws ResourceNotFoundException {
+		return ResponseEntity.status(HttpStatus.OK).body(roleService.updatePermissionForRole(roleId, updatedRole));
 	}
 
 	@GetMapping("/{roleId}")
 	@Operation(summary = "Get Role by Id")
-	public ResponseEntity<Role> getRole(@PathVariable String roleId) throws ResourceNotFoundException {
+	public ResponseEntity<Role> getRole(@PathVariable Long roleId) throws ResourceNotFoundException {
 		return new ResponseEntity<>(roleService.getRole(roleId), HttpStatus.OK);
+	}
+
+	@DeleteMapping("/{roleId}")
+	@Operation(summary = "Delete Role by Id")
+	public ResponseEntity<Object> deleteRole(@PathVariable Long roleId) throws ResourceNotFoundException {
+		roleService.deleteRole(roleId);
+		return new ResponseEntity<>(roleId, HttpStatus.OK);
 	}
 
 	@GetMapping

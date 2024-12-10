@@ -3,7 +3,6 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -11,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.Practice;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
 import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
@@ -21,6 +19,7 @@ import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -46,9 +45,16 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	@Override
-	public Role getRole(String roleId) throws ResourceNotFoundException {
-		Optional<Role> roleOpt = roleRepository.findById(Long.valueOf(roleId));
+	public Role getRole(Long roleId) throws ResourceNotFoundException {
+		Optional<Role> roleOpt = roleRepository.findById(roleId);
 		return roleOpt.orElseThrow(() -> new ResourceNotFoundException("Practice not found with id : " + roleId));
+	}
+
+	@Override
+	public void deleteRole(Long roleId) throws ResourceNotFoundException {
+		Role role = getRole(roleId);
+		role.setIsActive(false);
+		roleRepository.save(role);
 	}
 
 	@Override
@@ -71,11 +77,21 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	@Override
-	public Role linkPermissionToRole(Long roleId, Set<Permission> permissions) throws ResourceNotFoundException {
+	public Role updateRole(Long roleId, Role updatedRole) throws ResourceNotFoundException {
+		Role role = roleRepository.findById(roleId)
+			.orElseThrow(() -> new ResourceNotFoundException("Role not found for id :" + roleId));
+		role.setDescription(updatedRole.getDescription());
+		role.setName(updatedRole.getName());
+		return roleRepository.save(role);
+	}
+
+	@Override
+	public Role updatePermissionForRole(@NotNull(message = "Role Id can not be null") Long roleId, Role updatedRole)
+			throws ResourceNotFoundException {
 		Role role = roleRepository.findById(roleId)
 			.orElseThrow(() -> new ResourceNotFoundException("Role not found for id :" + roleId));
 		role.getPermissions().clear();
-		role.setPermissions(permissions);
+		role.setPermissions(updatedRole.getPermissions());
 		return roleRepository.save(role);
 	}
 

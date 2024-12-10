@@ -3,11 +3,10 @@ package com.mckesson.cgat.pde.usermanagement.model;
 import java.io.Serializable;
 import java.util.Set;
 
-import jakarta.persistence.*;
-import org.hibernate.annotations.TenantId;
 import org.hibernate.type.NumericBooleanConverter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
 
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -23,6 +22,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -48,11 +48,12 @@ public class Role extends AuditColumns implements Serializable {
 	@SequenceGenerator(name = "role_sequence", sequenceName = "role_sequence", allocationSize = 1)
 	private Long id;
 
-	@Size(min = 2, max = 50)
-	@Pattern(regexp = "^[a-zA-Z ]+$", message = "Role Name must only contain alphabets.")
+	@Size(min = 2, max = 50, groups = BasicInfo.class)
+	@Pattern(regexp = "^[a-zA-Z ]+$", message = "Role Name must only contain alphabets.", groups = BasicInfo.class)
+	@NotEmpty(message = "Role Name cannot be null or empty", groups = BasicInfo.class)
 	private String name;
 
-	@Size(max = 100)
+	@Size(max = 100, groups = BasicInfo.class)
 	private String description;
 
 	@ManyToOne

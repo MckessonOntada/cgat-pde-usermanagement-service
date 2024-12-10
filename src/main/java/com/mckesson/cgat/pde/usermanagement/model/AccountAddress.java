@@ -28,6 +28,10 @@ public class AccountAddress implements Serializable {
 	@Column(name = "street_3")
 	private String street3;
 
+	private String email;
+
+	private String telephone;
+
 	@Column(name = "city")
 	private String city;
 

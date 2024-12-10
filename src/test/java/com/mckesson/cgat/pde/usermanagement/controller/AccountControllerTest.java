@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -13,12 +14,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,7 +32,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
@@ -41,7 +41,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
-import com.mckesson.cgat.pde.usermanagement.model.User;
+import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
@@ -193,7 +193,7 @@ class AccountControllerTest {
 	@DisplayName("DeleteAccountTest")
 	@Test
 	void deleteaAccountTest() throws Exception {
-		doNothing().when(accountService).deleteAccount(account.getId());
+		doNothing().when(accountService).delinkAccountFromPractice(account.getPracticeId(), account.getId());
 		ResultActions result = mockMvc
 			.perform(delete("/practices/{practiceId}/accounts/{accountId}", account.getPracticeId(), account.getId())
 				.contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -214,7 +214,7 @@ class AccountControllerTest {
 		List<Account> accounts = getAccountList();
 		PageImpl<Account> accountPage = new PageImpl<>(accounts, pageable, accounts.size());
 		when(accountService.findAll(any(PageRequest.class), Mockito.anyString(), Mockito.anyList(), Mockito.anyLong(),
-				Mockito.anyLong(), Mockito.any()))
+				Mockito.anyLong(), Mockito.any(), anyList(), anyList()))
 			.thenReturn(accountPage);
 
 		ResultActions result = mockMvc
@@ -222,11 +222,14 @@ class AccountControllerTest {
 				.param("pageSize", "20")
 				.param("sortBy", "name_1")
 				.param("sortOrder", "asc")
-				.param("partnerFunction", "SHIP_TO")
+				.param("salesOrg", "")
+				.param("distChannels", "")
+				.param("partnerFunction", "SOLD_TO")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk());
 		assertNotNull(result);
-		verify(accountService).findAll(pageable, null, null, null, 100L, AccountPartnerFunction.SHIP_TO);
+		verify(accountService).findAll(pageable, null, null, null, 100L, AccountPartnerFunction.SOLD_TO,
+				new ArrayList<>(), new ArrayList<>());
 	}
 
 	@DisplayName("FindAllTestForDesc")
@@ -241,7 +244,7 @@ class AccountControllerTest {
 		List<Account> accounts = getAccountList();
 		PageImpl<Account> accountPage = new PageImpl<>(accounts, pageable, accounts.size());
 		when(accountService.findAll(any(PageRequest.class), Mockito.anyString(), Mockito.anyList(), Mockito.anyLong(),
-				Mockito.anyLong(), Mockito.any()))
+				Mockito.anyLong(), Mockito.any(), anyList(), anyList()))
 			.thenReturn(accountPage);
 
 		ResultActions result = mockMvc
@@ -249,11 +252,14 @@ class AccountControllerTest {
 				.param("pageSize", "20")
 				.param("sortBy", "name_1")
 				.param("sortOrder", "desc")
-				.param("partnerFunction", "SHIP_TO")
+				.param("salesOrg", "")
+				.param("distChannels", "")
+				.param("partnerFunction", "SOLD_TO")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk());
 		assertNotNull(result);
-		verify(accountService).findAll(pageable, null, null, null, 100L, AccountPartnerFunction.SHIP_TO);
+		verify(accountService).findAll(pageable, null, null, null, 100L, AccountPartnerFunction.SOLD_TO,
+				new ArrayList<>(), new ArrayList<>());
 	}
 
 	@DisplayName("LinkAccountToPracticeTest")

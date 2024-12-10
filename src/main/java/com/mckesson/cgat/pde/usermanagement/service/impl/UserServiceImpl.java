@@ -1,7 +1,24 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
+
 import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
 import com.mckesson.cgat.pde.usermanagement.model.*;
+
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
+
+import com.mckesson.cgat.pde.usermanagement.exception.custom.CGATHttpException;
+import com.mckesson.cgat.pde.usermanagement.model.*;
+import com.mckesson.cgat.pde.usermanagement.service.OktaUserManagementService;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
@@ -20,6 +37,7 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -29,14 +47,28 @@ public class UserServiceImpl implements UserService {
 
 	private final RoleRepository roleRepository;
 
-	public UserServiceImpl(UserRepository userRepository, AccountRepository repository, RoleRepository roleRepository) {
+	private final OktaUserManagementService oktaUserManagementService;
+
+	public UserServiceImpl(UserRepository userRepository, AccountRepository repository, RoleRepository roleRepository,
+			OktaUserManagementService oktaUserManagementService) {
 		this.userRepository = userRepository;
 		this.accountRepository = repository;
 		this.roleRepository = roleRepository;
+		this.oktaUserManagementService = oktaUserManagementService;
 	}
 
 	@Override
 	public User createUser(User model) {
+		UserProvisionedInOktaStatus oktaStatus = UserProvisionedInOktaStatus.PENDING;
+		try {
+			oktaUserManagementService.updateOrCreateOktaUser(model);
+			oktaStatus = UserProvisionedInOktaStatus.PROVISIONED;
+		}
+		catch (CGATHttpException e) {
+			log.error("Error occurred while provisioning user in okta, e: {}", e.getMessage());
+
+		}
+		model.setProvisionedInOktaStatus(oktaStatus);
 		return userRepository.save(model);
 
 	}
@@ -44,14 +76,26 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User updateUser(Long userId, User model) throws ResourceNotFoundException {
 		User user = getUser(userId);
-		if (user != null)
-			model.setId(userId);
-		return userRepository.save(model);
+		user.setAddress(model.getAddress());
+		user.setContact(model.getContact());
+		user.setName(model.getName());
+		return userRepository.save(user);
 	}
 
 	@Override
 	public User getUser(Long userId) throws ResourceNotFoundException {
-		return userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(userId.toString()));
+		return userRepository.findById(userId)
+			.orElseThrow(() -> new ResourceNotFoundException("User not found with id:" + userId.toString()));
+	}
+
+	@Override
+	@Transactional
+	public void delinkUserFromAccount(Long userId, Long accountId) throws ResourceNotFoundException {
+		userRepository.findById(userId)
+			.orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId.toString()));
+		accountRepository.findById(accountId)
+			.orElseThrow(() -> new ResourceNotFoundException("Account not found with id:" + accountId));
+		userRepository.delinkUserFromAccount(userId, accountId);
 	}
 
 	@Override
@@ -63,7 +107,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Page<User> findAll(Pageable paging, String query, List<String> status, Long praticeId, LocalDate startDate,
-			LocalDate endDate) {
+			LocalDate endDate, List<Long> roleIds) {
 		query = StringUtils.toRootLowerCase(query);
 		String statusActive = "ALL";
 
@@ -77,7 +121,7 @@ public class UserServiceImpl implements UserService {
 			if (hasInactive)
 				statusActive = "ACTIVE".equals(statusActive) ? "ALL" : "INACTIVE";
 		}
-		return userRepository.findAllByQueryText(statusActive, query, paging, praticeId, startDate, endDate);
+		return userRepository.findAllByQueryText(statusActive, query, paging, praticeId, startDate, endDate, roleIds);
 	}
 
 	@Override
@@ -91,7 +135,6 @@ public class UserServiceImpl implements UserService {
 		if (accounts.size() != accountIds.size())
 			throw new ResourceNotFoundException("Some of the provided account IDs does not exist.");
 
-		user.getAccounts().clear();
 		user.getAccounts().addAll(accounts);
 		return userRepository.save(user);
 

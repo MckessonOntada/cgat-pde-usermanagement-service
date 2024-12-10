@@ -23,19 +23,21 @@ public class Name implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@NotEmpty(message = "First Name is required.")
+	@NotEmpty(message = "First Name is required.", groups = BasicInfo.class)
 	@Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters", groups = BasicInfo.class)
-	@Pattern(regexp = "^[A-Za-z]+$", message = "First Name must only contain alphabets.", groups = BasicInfo.class)
+	@Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ ]+$", message = "First Name must only contain alphabets.",
+			groups = BasicInfo.class)
 	private String firstName;
 
 	@Size(max = 50, message = "Must only contain alphabets.", groups = BasicInfo.class)
-	@Pattern(regexp = "^[A-Za-z]*$", message = "Middle Name must contain alphabetic characters only",
+	@Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ ]*$", message = "Middle Name must contain alphabetic characters only",
 			groups = BasicInfo.class)
 	private String middleName;
 
-	@NotEmpty(message = "Last Name is required.")
-	@Size(min = 2, max = 50, groups = BasicInfo.class)
-	@Pattern(regexp = "^[A-Za-z]+$", message = "Last Name must only contain alphabets.", groups = BasicInfo.class)
+	@NotEmpty(message = "Last Name is required")
+	@Size(min = 2, max = 50, message = "Last name must be between 2 and 50 characters", groups = BasicInfo.class)
+	@Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ ]+$", message = "Last Name must only contain alphabets.",
+			groups = BasicInfo.class)
 	private String lastName;
 
 }

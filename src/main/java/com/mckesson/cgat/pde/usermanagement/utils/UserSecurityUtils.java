@@ -9,6 +9,7 @@ import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -47,10 +48,15 @@ public class UserSecurityUtils {
 	}
 
 	public static LoggedInUserDetails getLoggedInUser() {
-		UserCurrentRequestContext user = (UserCurrentRequestContext) SecurityContextHolder.getContext()
-			.getAuthentication()
-			.getPrincipal();
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null) {
+			log.info("No logged in user found");
+			return null;
+		}
+
+		UserCurrentRequestContext user = (UserCurrentRequestContext) authentication.getPrincipal();
 		return user.getLoggedInUser();
+
 	}
 
 }

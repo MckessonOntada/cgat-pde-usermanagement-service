@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import org.hibernate.type.NumericBooleanConverter;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Convert;
@@ -43,7 +42,7 @@ public class Practice extends AuditColumns implements Serializable {
 
 	@NotEmpty(message = "Organization Name is required.")
 	@Size(min = 2, max = 100, message = "Organization Name must be between 2 and 100 characters")
-	@Pattern(regexp = "^[A-Za-z0-9_-]+$",
+	@Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ0-9 _-]+$",
 			message = "Organization Name must contain only letters, numbers, hyphens (-), or underscores (_)")
 	private String name;
 
@@ -62,7 +61,6 @@ public class Practice extends AuditColumns implements Serializable {
 	private Contact contact;
 
 	@Convert(converter = NumericBooleanConverter.class)
-	@JsonIgnore
 	@JsonProperty("isActive")
 	private Boolean isActive = true;
 

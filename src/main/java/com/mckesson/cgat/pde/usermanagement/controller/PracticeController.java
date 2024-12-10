@@ -111,12 +111,13 @@ public class PracticeController {
 	Page<Practice> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
-			@RequestParam(required = false) List<String> status) {
+			@RequestParam(required = false) List<String> status,
+			@RequestParam(required = false) List<String> location) {
 		Sort sort = CustomUtils.SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 
-		return practiceService.findAll(paging, query, status);
+		return practiceService.findAll(paging, query, status, location);
 	}
 
 }

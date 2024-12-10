@@ -135,9 +135,10 @@ class PracticeServiceImplTest {
 		String statusActive = "ALL";
 		Page<Practice> mockResponse = getPractices();
 
-		Mockito.when(practiceRepository.findAllByQueryText(query, statusActive, paging)).thenReturn(mockResponse);
-		Page<Practice> result = practiceService.findAll(paging, query, List.of(statusActive));
-		verify(practiceRepository, times(1)).findAllByQueryText(query, statusActive, paging);
+		Mockito.when(practiceRepository.findAllByQueryText(query, statusActive, paging, List.of("")))
+			.thenReturn(mockResponse);
+		Page<Practice> result = practiceService.findAll(paging, query, List.of(statusActive), List.of(""));
+		verify(practiceRepository, times(1)).findAllByQueryText(query, statusActive, paging, List.of(""));
 		assertEquals(result.getSize(), mockResponse.getSize());
 	}
 

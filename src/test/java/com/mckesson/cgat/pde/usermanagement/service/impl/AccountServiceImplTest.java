@@ -1,20 +1,23 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import com.mckesson.cgat.pde.usermanagement.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,6 +32,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import com.mckesson.cgat.pde.usermanagement.model.Account;
+import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
+import com.mckesson.cgat.pde.usermanagement.model.Address;
+import com.mckesson.cgat.pde.usermanagement.model.Contact;
+import com.mckesson.cgat.pde.usermanagement.model.Name;
+import com.mckesson.cgat.pde.usermanagement.model.Practice;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -115,30 +124,31 @@ class AccountServiceImplTest {
 		verify(accountRepository).save(newAccount);
 	}
 
-	@DisplayName("DeleteAccount")
-	@Test
-	void deleteAccountTest() throws ResourceNotFoundException {
-		when(accountRepository.findById(account.getId())).thenReturn(Optional.of(account));
-		accountService.deleteAccount(account.getId());
-		assertFalse(account.getIsActive());
-		verify(accountRepository, times(1)).save(account);
-
-	}
+	/*
+	 * @DisplayName("Delink Account")
+	 *
+	 * @Test void delinkAccountTest() throws ResourceNotFoundException {
+	 * when(accountRepository.findById(account.getId())).thenReturn(Optional.of(account));
+	 * accountService.delinkAccountFromPractice(account.getPracticeId(), account.getId());
+	 * account.setPracticeId(null); verify(accountRepository, times(1)).save(account);
+	 *
+	 * }
+	 */
 
 	@DisplayName("FindAllUser")
 	@Test
 	void findAllWithPageableTest() throws ResourceNotFoundException {
 		Page<Account> accountPage = getAccountList();
 		Pageable paging = PageRequest.of(0, 20, Sort.by("name").ascending());
-		when(accountRepository.findAllByQueryText(null, "ALL", paging, 1L,
-				AccountPartnerFunction.SHIP_TO.getPartnerFunctionType()))
+		when(accountRepository.findAllByQueryText(anyString(), anyString(), any(PageRequest.class), anyLong(),
+				anyString(), anyList(), anyList()))
 			.thenReturn(accountPage);
-		Page<Account> result = accountService.findAll(paging, null, List.of("ALL"), null, 1L,
-				AccountPartnerFunction.SHIP_TO);
+		Page<Account> result = accountService.findAll(paging, "", List.of("ALL"), null, 1L,
+				AccountPartnerFunction.SOLD_TO, new ArrayList<>(), new ArrayList<>());
 		assertNotNull(result);
 		assertEquals(accountPage, result);
-		verify(accountRepository, times(1)).findAllByQueryText(null, "ALL", paging, 1L,
-				AccountPartnerFunction.SHIP_TO.getPartnerFunctionType());
+		verify(accountRepository, times(1)).findAllByQueryText("", "ALL", paging, 1L,
+				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), new ArrayList<>(), new ArrayList<>());
 	}
 
 	@DisplayName("UserNotFoundException : GetUser")
@@ -198,12 +208,13 @@ class AccountServiceImplTest {
 
 		when(practiceRepository.findById(practiceId)).thenReturn(Optional.of(practice));
 		when(accountRepository.findAllById(accountIds)).thenReturn(accounts);
-		when(accountRepository.findByPracticeId(practiceId)).thenReturn(new HashSet<>(accounts));
+		// when(accountRepository.findByPracticeId(practiceId)).thenReturn(new
+		// HashSet<>(accounts));
 
-		when(accountRepository.saveAll(Mockito.anySet())).thenReturn(accounts);
+		when(accountRepository.saveAll(Mockito.anyList())).thenReturn(accounts);
 		accountService.linkAccountsToPractice(practiceId, accountIds);
 
-		verify(accountRepository, times(1)).saveAll(Mockito.anySet());
+		verify(accountRepository, times(1)).saveAll(Mockito.anyList());
 	}
 
 	@DisplayName("PracticeNotFoundException ")

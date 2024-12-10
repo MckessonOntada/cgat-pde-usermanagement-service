@@ -87,6 +87,7 @@ public class PublicAccessController {
 				.permissions(principal.getPermissions().stream().map(Permission::name).toList())
 				.userName(principal.getName().getFirstName() + " " + principal.getName().getLastName())
 				.userId(String.valueOf(principal.getId()))
+				.practiceId(principal.getPracticeId())
 				.build();
 		}
 		return null;

@@ -17,7 +17,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -202,7 +201,7 @@ class UserControllerTest {
 
 		when(userService.updateUser(user.getId(), requestdUser)).thenReturn(updatedUser);
 		ResultActions result = mockMvc
-			.perform(put(apiUrl + "/{userId}", user.getPracticeId(), user.getId()).param("userType", "ADMIN")
+			.perform(patch(apiUrl + "/{userId}", user.getPracticeId(), user.getId()).param("userType", "ADMIN")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(requestdUser)))
 			.andExpect(status().isOk());
@@ -282,7 +281,7 @@ class UserControllerTest {
 		LocalDate endDate = TestUtils.parseLocalDate("18/11/2024", CustomUtils.API_DATE_FORMAT);
 
 		when(userService.findAll(any(PageRequest.class), anyString(), anyList(), anyLong(), any(LocalDate.class),
-				any(LocalDate.class)))
+				any(LocalDate.class), anyList()))
 			.thenReturn(userPage);
 
 		ResultActions result = mockMvc
@@ -296,11 +295,13 @@ class UserControllerTest {
 				.param("status", statusActive)
 				.param("startDate", "2024-11-10")
 				.param("endDate", "2024-11-18")
+				.param("roleIds", "")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk());
 
 		assertNotNull(result);
-		verify(userService, times(1)).findAll(pageable, "", List.of(statusActive), 1L, startDate, endDate);
+		verify(userService, times(1)).findAll(pageable, "", List.of(statusActive), 1L, startDate, endDate,
+				new ArrayList<>());
 	}
 
 	@DisplayName("FindAllTestForDesc")
@@ -317,9 +318,8 @@ class UserControllerTest {
 		PageImpl<User> userPage = new PageImpl<>(users, pageable, users.size());
 		LocalDate startDate = TestUtils.parseLocalDate("10/11/2024", CustomUtils.API_DATE_FORMAT);
 		LocalDate endDate = TestUtils.parseLocalDate("18/11/2024", CustomUtils.API_DATE_FORMAT);
-
 		when(userService.findAll(any(Pageable.class), anyString(), anyList(), anyLong(), any(LocalDate.class),
-				any(LocalDate.class)))
+				any(LocalDate.class), anyList()))
 			.thenReturn(userPage);
 
 		ResultActions result = mockMvc
@@ -332,11 +332,12 @@ class UserControllerTest {
 				.param("status", statusActive)
 				.param("startDate", "2024-11-10")
 				.param("endDate", "2024-11-18")
+				.param("roleIds", "")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk());
 
 		assertNotNull(result);
-		verify(userService).findAll(pageable, "", List.of(statusActive), 1L, startDate, endDate);
+		verify(userService).findAll(pageable, "", List.of(statusActive), 1L, startDate, endDate, new ArrayList<>());
 	}
 
 	@DisplayName("LinkUserToAccountsTest")
