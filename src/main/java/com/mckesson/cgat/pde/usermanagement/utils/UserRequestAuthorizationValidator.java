@@ -28,26 +28,28 @@ public class UserRequestAuthorizationValidator {
 				throw new UnauthorizedAccessException(CustomUtils.UNAUTHORIZED_MESSAGE);
 			}
 		}
-//		else {
-//			/*
-//			 * Request is to view create/edit General user, so any one with the permission
-//			 * to Create/Edit or View a user is allowed to do so. Also General users cant
-//			 * be created under Global Org.
-//			 */
-//			if (OrganizationContext.getCurrentOrgId().equals(SYSTEM_LEVEL_ORGANISATION_ID)) {
-//				throw new UnauthorizedAccessException(CustomUtils.UNAUTHORIZED_MESSAGE);
-//			}
-//
-//		}
+		// else {
+		// /*
+		// * Request is to view create/edit General user, so any one with the permission
+		// * to Create/Edit or View a user is allowed to do so. Also General users cant
+		// * be created under Global Org.
+		// */
+		// if (OrganizationContext.getCurrentOrgId().equals(SYSTEM_LEVEL_ORGANISATION_ID))
+		// {
+		// throw new UnauthorizedAccessException(CustomUtils.UNAUTHORIZED_MESSAGE);
+		// }
+		//
+		// }
 	}
 
-//	private static boolean hasPermission(LoggedInUserDetails loggedInUser, String permission) {
-//		/*
-//		 * Set<String> permissions = loggedInUser.getPermissions() .stream()
-//		 * .map(Permission::getName) .collect(Collectors.toSet());
-//		 */
-//		// To:do return permissions.contains(permission);
-//		return true;
-//	}
+	// private static boolean hasPermission(LoggedInUserDetails loggedInUser, String
+	// permission) {
+	// /*
+	// * Set<String> permissions = loggedInUser.getPermissions() .stream()
+	// * .map(Permission::getName) .collect(Collectors.toSet());
+	// */
+	// // To:do return permissions.contains(permission);
+	// return true;
+	// }
 
 }
