@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.mckesson.cgat.pde.usermanagement.model.*;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,10 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
-import com.mckesson.cgat.pde.usermanagement.model.Account;
-import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
-import com.mckesson.cgat.pde.usermanagement.model.User;
-import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;
@@ -62,6 +59,7 @@ public class UserController {
 		this.accountService = accountService;
 	}
 
+	@RequirePermissions({ Permission.ADD_USERS })
 	@PostMapping
 	@Operation(summary = "Create new user")
 	public ResponseEntity<User> createUser(@Validated(BasicInfo.class) @RequestBody User user,
@@ -71,6 +69,7 @@ public class UserController {
 		return new ResponseEntity<>(userService.createUser(user), HttpStatus.OK);
 	}
 
+	@RequirePermissions({ Permission.ADD_USERS })
 	@PatchMapping("/{userId}")
 	@Operation(summary = "Update existing user details byId")
 	public User updateUserDetails(@PathVariable Long userId, @Validated(BasicInfo.class) @RequestBody User user,
@@ -80,6 +79,7 @@ public class UserController {
 		return userService.updateUser(userId, user);
 	}
 
+	@RequirePermissions({ Permission.VIEW_USERS })
 	@GetMapping("/{userId}")
 	@Operation(summary = "Get user details byId ")
 	public ResponseEntity<User> getUser(@PathVariable Long userId,
@@ -89,6 +89,7 @@ public class UserController {
 		return new ResponseEntity<>(userService.getUser(userId), HttpStatus.OK);
 	}
 
+	@RequirePermissions({ Permission.ADD_USERS })
 	@DeleteMapping("/{userId}")
 	@Operation(summary = "Delete user details byId")
 	public void deleteUser(@PathVariable Long userId,
@@ -99,6 +100,7 @@ public class UserController {
 
 	}
 
+	@RequirePermissions({ Permission.ADD_USERS })
 	@DeleteMapping("/{userId}/accounts/{accountId}")
 	@Operation(summary = "Delink user from account")
 	public ResponseEntity<Void> delinkUserFromAccount(@PathVariable Long userId,
@@ -111,6 +113,7 @@ public class UserController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
+	@RequirePermissions({ Permission.MANAGE_USERS_SCREEN })
 	@GetMapping
 	@Operation(summary = "Fetch all Users based on filter provided with pagination capabilities.")
 	Page<User> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
@@ -136,6 +139,7 @@ public class UserController {
 
 	}
 
+	@RequirePermissions({ Permission.ADD_USERS })
 	@PatchMapping("/{userId}/accounts")
 	@Operation(summary = "Link User with multiple accounts.")
 	public User linkUserToAccounts(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
@@ -147,6 +151,7 @@ public class UserController {
 
 	}
 
+	@RequirePermissions({ Permission.ADD_ROLES })
 	@PatchMapping("/{userId}/roles-permissions")
 	@Operation(summary = "Link User with role and permissions")
 	public ResponseEntity<User> linkUserToRole(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
