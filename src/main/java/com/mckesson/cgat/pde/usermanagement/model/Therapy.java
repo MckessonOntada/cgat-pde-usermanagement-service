@@ -184,7 +184,7 @@ public class Therapy {
 
 	@Size(max = 3)
 	@Column(name = "scan_qty")
-	private String scanQty;
+	private String minOrdrQuantity;
 
 	@Size(max = 1)
 	@Column(name = "drug_form")
