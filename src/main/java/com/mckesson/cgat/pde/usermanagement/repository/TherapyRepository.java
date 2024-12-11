@@ -114,4 +114,19 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			@Param("therapyId") String therapyId, @Param("query") String query, Pageable paging,
 			@Param("partnerFunction") String partnerFunction);
 
+	@Query(value = """
+			SELECT DISTINCT ac1.sap_customer, ac1.name_1, ac1.house_number, ac1.street, ac1.street_2, ac1.street_3, ac1.telephone,
+				ac1.city, ac1.district, ac1.state, ac1.country, ac1.zip_code
+			FROM usermanagement.account ac1
+			JOIN usermanagement.account ac2 ON ac1.sap_partner = ac2.sap_customer
+			JOIN usermanagement.user_account_mapping uam ON ac2.id = uam.account_id
+			WHERE
+				uam.user_id = :userId
+				AND
+				ac1.partner_function = :partnerFunction
+			""",
+			nativeQuery = true)
+	public Page<Object[]> findAllPayToAccounts(@Param("userId") Long userId, Pageable paging,
+			@Param("partnerFunction") String partnerFunction);
+
 }

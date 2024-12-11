@@ -25,4 +25,6 @@ public interface TherapyService {
 
 	Therapy findById(Long id) throws ResourceNotFoundException;
 
+	Page<AccountsResponseDTO> findAllPayToAccounts(Long userId, Pageable paging);
+
 }

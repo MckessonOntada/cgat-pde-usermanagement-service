@@ -72,4 +72,19 @@ public class TherapyServiceImpl implements TherapyService {
 			.orElseThrow(() -> new ResourceNotFoundException("Therapy not found with id: " + id));
 	}
 
+	@Override
+	public Page<AccountsResponseDTO> findAllPayToAccounts(Long userId, Pageable paging) {
+		Page<Object[]> allPayToAccounts = therapyRepository.findAllPayToAccounts(userId, paging,
+				AccountPartnerFunction.PAYER.getPartnerFunctionType());
+
+		List<AccountsResponseDTO> payToAccounts = allPayToAccounts.getContent()
+			.stream()
+			.map(obj -> new AccountsResponseDTO(String.valueOf(obj[0]), String.valueOf(obj[1]), String.valueOf(obj[2]),
+					String.valueOf(obj[3]), String.valueOf(obj[4]), String.valueOf(obj[5]), String.valueOf(obj[6]),
+					String.valueOf(obj[7]), String.valueOf(obj[8]), String.valueOf(obj[9]), String.valueOf(obj[10]),
+					String.valueOf(obj[11])))
+			.toList();
+		return new PageImpl<>(payToAccounts, paging, allPayToAccounts.getTotalElements());
+	}
+
 }
