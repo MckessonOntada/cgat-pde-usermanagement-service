@@ -69,7 +69,7 @@ public class UserController {
 		return new ResponseEntity<>(userService.createUser(user), HttpStatus.OK);
 	}
 
-	@RequirePermissions({ Permission.ADD_USERS })
+	@RequirePermissions({ Permission.ADD_USERS, Permission.EDIT_USERS })
 	@PatchMapping("/{userId}")
 	@Operation(summary = "Update existing user details byId")
 	public User updateUserDetails(@PathVariable Long userId, @Validated(BasicInfo.class) @RequestBody User user,
@@ -89,7 +89,7 @@ public class UserController {
 		return new ResponseEntity<>(userService.getUser(userId), HttpStatus.OK);
 	}
 
-	@RequirePermissions({ Permission.ADD_USERS })
+	@RequirePermissions({ Permission.EDIT_USERS })
 	@DeleteMapping("/{userId}")
 	@Operation(summary = "Delete user details byId")
 	public void deleteUser(@PathVariable Long userId,
@@ -100,7 +100,7 @@ public class UserController {
 
 	}
 
-	@RequirePermissions({ Permission.ADD_USERS })
+	@RequirePermissions({ Permission.EDIT_USERS })
 	@DeleteMapping("/{userId}/accounts/{accountId}")
 	@Operation(summary = "Delink user from account")
 	public ResponseEntity<Void> delinkUserFromAccount(@PathVariable Long userId,
@@ -139,7 +139,7 @@ public class UserController {
 
 	}
 
-	@RequirePermissions({ Permission.ADD_USERS })
+	@RequirePermissions({ Permission.ADD_USERS, Permission.EDIT_USERS })
 	@PatchMapping("/{userId}/accounts")
 	@Operation(summary = "Link User with multiple accounts.")
 	public User linkUserToAccounts(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
@@ -151,7 +151,7 @@ public class UserController {
 
 	}
 
-	@RequirePermissions({ Permission.ADD_ROLES })
+	@RequirePermissions({ Permission.ADD_USERS, Permission.EDIT_USERS })
 	@PatchMapping("/{userId}/roles-permissions")
 	@Operation(summary = "Link User with role and permissions")
 	public ResponseEntity<User> linkUserToRole(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
