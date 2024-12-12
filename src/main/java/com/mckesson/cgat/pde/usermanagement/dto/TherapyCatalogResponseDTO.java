@@ -9,6 +9,8 @@ import lombok.Data;
 @Builder
 public class TherapyCatalogResponseDTO {
 
+	private String id;
+
 	private String therapyId;
 
 	private String therapyDescription;
