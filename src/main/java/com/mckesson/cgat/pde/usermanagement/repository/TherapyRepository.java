@@ -15,7 +15,7 @@ import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 
 	@Query(value = """
-			SELECT DISTINCT m.id as therapyId, m.material_description as therapyDescription, m.ndc_number as ndc, cp.udi, m.strength, m.dosage, m.selling_unit_code,
+			SELECT DISTINCT m.id, m.material_number as therapyId, m.material_description as therapyDescription, m.ndc_number as ndc, cp.udi, m.strength, m.dosage, m.selling_unit_code,
 			m.vendor_name, m.upc_code, m.dropship_indicator, m.item_status as status, m.base_unit_of_measure, m.cgat_identifier, m.sales_organization,
 			m.cgat_type, m.product_level_pricing, cp.minimum_order_quantity
 			FROM catalog.material m
