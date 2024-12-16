@@ -32,6 +32,7 @@ import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
 import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
+import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
@@ -58,11 +59,15 @@ public class UserController {
 
 	private final AccountService accountService;
 
+	private final AccountRepository accountRepository;
+
 	private static final String SORT_ORDER_ASC = "asc";
 
-	public UserController(UserService userModelService, AccountService accountService) {
+	public UserController(UserService userModelService, AccountService accountService,
+			AccountRepository accountRepository) {
 		this.userService = userModelService;
 		this.accountService = accountService;
+		this.accountRepository = accountRepository;
 	}
 
 	@RequirePermissions({ Permission.ADD_USERS })
@@ -186,15 +191,11 @@ public class UserController {
 	}
 
 	@GetMapping("/current/accounts/ids")
-	@Operation(summary = "Fetch all AcccountIds for User based on filter provided")
-	List<Long> findAllAccountIds(@RequestParam(defaultValue = "0") Integer pageNo,
-			@RequestParam(defaultValue = "20") Integer pageSize) throws ResourceNotFoundException {
-		Pageable paging = PageRequest.of(pageNo, Integer.MAX_VALUE);
-		Page<Account> allAccounts = accountService.findAll(paging, null, null,
-				Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), OrganizationContext.getCurrentOrgId(),
-				AccountPartnerFunction.SOLD_TO, null, null);
-		return allAccounts.getContent().stream().map(Account::getId).toList();
-
+	@Operation(summary = "Fetch all AcccountIds for User")
+	ResponseEntity<List<Long>> findAllAccountIds() {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(accountRepository.findAccountIdsByUser(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()),
+					OrganizationContext.getCurrentOrgId(), AccountPartnerFunction.SOLD_TO.getPartnerFunctionType()));
 	}
 
 }
