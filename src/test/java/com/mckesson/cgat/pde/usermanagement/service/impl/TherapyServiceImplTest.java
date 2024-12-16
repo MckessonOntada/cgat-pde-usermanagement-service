@@ -134,12 +134,12 @@ public class TherapyServiceImplTest {
 
 	private Page<Object[]> getSoldToAccounts() {
 		List<Object[]> soldToAccounts = new ArrayList<>();
-		Object[] soldToAccount1 = { "acnumber1", "4", "12", "1", "", "", "8989898900", "delhi", "dist1", "delhi",
+		Object[] soldToAccount1 = { "id", "acnumber1", "4", "12", "1", "", "", "8989898900", "delhi", "dist1", "delhi",
 				"india", "001" };
-		Object[] soldToAccount2 = { "acnumber2", "7", "145", "6", "", "", "8989898901", "delhi", "dist3", "delhi",
+		Object[] soldToAccount2 = { "id", "acnumber2", "7", "145", "6", "", "", "8989898901", "delhi", "dist3", "delhi",
 				"india", "003" };
-		Object[] soldToAccount3 = { "acnumber3", "9", "102", "11", "", "", "8989898902", "delhi", "dist2", "delhi",
-				"india", "009" };
+		Object[] soldToAccount3 = { "id", "acnumber3", "9", "102", "11", "", "", "8989898902", "delhi", "dist2",
+				"delhi", "india", "009" };
 		soldToAccounts.add(soldToAccount1);
 		soldToAccounts.add(soldToAccount2);
 		soldToAccounts.add(soldToAccount3);
@@ -148,10 +148,10 @@ public class TherapyServiceImplTest {
 
 	private Page<Object[]> getShipToAccounts() {
 		List<Object[]> shipToAccounts = new ArrayList<>();
-		Object[] shipToAccount1 = { "acnumber1", "101", "12", "1", "", "", "8989898900", "delhi", "dist1", "delhi",
-				"india", "001" };
-		Object[] shipToAccount2 = { "acnumber2", "102", "145", "6", "", "", "8989898901", "delhi", "dist3", "delhi",
-				"india", "003" };
+		Object[] shipToAccount1 = { "id", "acnumber1", "101", "12", "1", "", "", "8989898900", "delhi", "dist1",
+				"delhi", "india", "001" };
+		Object[] shipToAccount2 = { "id", "acnumber2", "102", "145", "6", "", "", "8989898901", "delhi", "dist3",
+				"delhi", "india", "003" };
 		shipToAccounts.add(shipToAccount1);
 		shipToAccounts.add(shipToAccount2);
 		return new PageImpl<>(shipToAccounts, paging, shipToAccounts.size());

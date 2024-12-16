@@ -9,6 +9,8 @@ import lombok.Data;
 @Builder
 public class AccountsResponseDTO {
 
+	private String id;
+
 	private String accountNumber;
 
 	private String accountName;
