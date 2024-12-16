@@ -1,40 +1,35 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
-import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
-import com.mckesson.cgat.pde.usermanagement.model.*;
-
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 
-import com.mckesson.cgat.pde.usermanagement.exception.custom.CGATHttpException;
-import com.mckesson.cgat.pde.usermanagement.model.*;
-import com.mckesson.cgat.pde.usermanagement.service.OktaUserManagementService;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.bouncycastle.asn1.esf.CommitmentTypeIdentifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
+import com.mckesson.cgat.pde.usermanagement.exception.custom.CGATHttpException;
+import com.mckesson.cgat.pde.usermanagement.model.Account;
+import com.mckesson.cgat.pde.usermanagement.model.Role;
+import com.mckesson.cgat.pde.usermanagement.model.User;
+import com.mckesson.cgat.pde.usermanagement.model.UserPreference;
+import com.mckesson.cgat.pde.usermanagement.model.UserPreferenceType;
+import com.mckesson.cgat.pde.usermanagement.model.UserProvisionedInOktaStatus;
+import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
+import com.mckesson.cgat.pde.usermanagement.service.OktaUserManagementService;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;
 import com.mckesson.cgat.pde.usermanagement.utils.UserRequestAuthorizationValidator;
-import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
-import jakarta.transaction.Transactional;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -168,6 +163,25 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User getUserByEmail(String email) {
 		return userRepository.findByContactEmail(email);
+	}
+
+	@Transactional
+	@Override
+	public User setDefaultPayToAccount(Long userId, Long payToAccountId) throws ResourceNotFoundException {
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new ResourceNotFoundException("User not found with this Id :" + userId));
+
+		if (accountRepository.findByAccountNumber(payToAccountId.toString()) == null)
+			throw new ResourceNotFoundException("Account not found with id:" + payToAccountId);
+
+		UserPreference userPreference = UserPreference.builder()
+			.type(UserPreferenceType.DEFAULT_PAY_TO_ACCOUNT)
+			.userId(userId)
+			.value(payToAccountId.toString())
+			.build();
+		userRepository.resetDefaultPayToAccount(userId, UserPreferenceType.DEFAULT_PAY_TO_ACCOUNT.name());
+		user.getPreferences().add(userPreference);
+		return userRepository.save(user);
 	}
 
 }

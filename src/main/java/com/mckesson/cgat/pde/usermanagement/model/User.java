@@ -1,14 +1,14 @@
 package com.mckesson.cgat.pde.usermanagement.model;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
-import jakarta.persistence.*;
-import org.hibernate.annotations.TenantId;
 import org.hibernate.type.NumericBooleanConverter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -24,6 +24,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.validation.Valid;
@@ -76,6 +77,10 @@ public class User extends AuditColumns implements Serializable {
 			inverseJoinColumns = @JoinColumn(name = "account_id"))
 	@JsonIgnore
 	private Set<Account> accounts;
+
+	@OneToMany(cascade = CascadeType.ALL)
+	@JoinColumn(name = "user_id", referencedColumnName = "id")
+	private Set<UserPreference> preferences = new HashSet<>();
 
 	@OneToOne
 	@JoinColumn(name = "role_id", referencedColumnName = "id")

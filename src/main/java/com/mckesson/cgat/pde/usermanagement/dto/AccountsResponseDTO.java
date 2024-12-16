@@ -33,4 +33,6 @@ public class AccountsResponseDTO {
 
 	private String zipCode;
 
+	private Boolean isDefault;
+
 }

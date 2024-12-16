@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS user_preference (
+    id INTEGER PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    type VARCHAR(50) NOT NULL,
+    value VARCHAR(50),
+    CONSTRAINT fk_user
+    FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE
+);
+
+CREATE SEQUENCE usermanagement.user_preference_sequence START WITH 1 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE  CACHE 20;

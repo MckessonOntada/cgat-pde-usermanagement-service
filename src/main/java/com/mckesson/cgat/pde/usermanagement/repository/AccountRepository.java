@@ -97,4 +97,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 			String partnerFunction, @Param("salesOrg") List<String> salesOrg,
 			@Param("distChannels") List<String> distChannels);
 
+	Account findByAccountNumber(String accountNumber);
+
 }
