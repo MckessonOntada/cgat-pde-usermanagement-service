@@ -21,10 +21,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
+import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -106,6 +108,15 @@ public class AccountController {
 		accountService.linkAccountsToPractice(practiceId, accountIds);
 		return new ResponseEntity<>(HttpStatus.OK);
 
+	}
+
+	@Operation(summary = "Find all payto accounts that are linked to all soldto accounts that the user has access")
+	@GetMapping("/current/paytoaccounts")
+	public Page<AccountsResponseDTO> findAllPayToAccounts(@RequestParam(defaultValue = "0") Integer pageNo,
+			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query) {
+		Pageable paging = PageRequest.of(pageNo, pageSize);
+		return accountService.findAllPayToAccounts(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), query,
+				paging);
 	}
 
 }

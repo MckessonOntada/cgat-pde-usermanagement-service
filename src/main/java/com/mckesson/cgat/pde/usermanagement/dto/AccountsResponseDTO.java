@@ -9,6 +9,8 @@ import lombok.Data;
 @Builder
 public class AccountsResponseDTO {
 
+	private String id;
+
 	private String accountNumber;
 
 	private String accountName;
@@ -34,5 +36,9 @@ public class AccountsResponseDTO {
 	private String zipCode;
 
 	private Boolean isDefault;
+
+	private String salesOrg;
+
+	private String companyCode;
 
 }

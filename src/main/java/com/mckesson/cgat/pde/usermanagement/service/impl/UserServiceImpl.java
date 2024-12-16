@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.bouncycastle.asn1.esf.CommitmentTypeIdentifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -168,8 +167,7 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	@Override
 	public User setDefaultPayToAccount(Long userId, Long payToAccountId) throws ResourceNotFoundException {
-		User user = userRepository.findById(userId)
-			.orElseThrow(() -> new ResourceNotFoundException("User not found with this Id :" + userId));
+		User user = userRepository.findById(userId).get();
 
 		if (accountRepository.findByAccountNumber(payToAccountId.toString()) == null)
 			throw new ResourceNotFoundException("Account not found with id:" + payToAccountId);

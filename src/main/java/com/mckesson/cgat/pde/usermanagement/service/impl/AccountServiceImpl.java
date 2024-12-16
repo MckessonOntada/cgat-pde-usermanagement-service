@@ -1,23 +1,29 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.ForbiddenActionException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import com.mckesson.cgat.pde.usermanagement.model.Practice;
 import com.mckesson.cgat.pde.usermanagement.model.User;
+import com.mckesson.cgat.pde.usermanagement.model.UserPreferenceType;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
+import com.mckesson.cgat.pde.usermanagement.repository.UserPreferenceRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
@@ -32,13 +38,16 @@ public class AccountServiceImpl implements AccountService {
 
 	private final PracticeRepository practiceRepository;
 
+	private final UserPreferenceRepository userPreferenceRepository;
+
 	private final UserRepository userRepository;
 
 	public AccountServiceImpl(AccountRepository accountRepository, PracticeRepository practiceRepository,
-			UserRepository userRepository) {
+			UserRepository userRepository, UserPreferenceRepository userPreferenceRepository) {
 		this.accountRepository = accountRepository;
 		this.practiceRepository = practiceRepository;
 		this.userRepository = userRepository;
+		this.userPreferenceRepository = userPreferenceRepository;
 	}
 
 	@Override
@@ -124,6 +133,33 @@ public class AccountServiceImpl implements AccountService {
 		if (accountLinkedToOtherPractice.isPresent())
 			throw new UnauthorizedAccessException(
 					"Account update not authorized.Some accounts that has to be linked to current practice are linked to other practices");
+	}
+
+	@Override
+	public Page<AccountsResponseDTO> findAllPayToAccounts(Long userId, String query, Pageable paging) {
+
+		List<Object[]> allAccounts = new ArrayList<>();
+		Page<Object[]> allPayToAccounts = accountRepository.findAllPayToAccounts(userId, query, paging,
+				AccountPartnerFunction.PAYER.getPartnerFunctionType());
+		allAccounts.addAll(allPayToAccounts.getContent());
+
+		List<Object[]> userPreference = userPreferenceRepository.findByUserIdAndType(userId,
+				UserPreferenceType.DEFAULT_PAY_TO_ACCOUNT.name());
+		if (!userPreference.isEmpty())
+			allAccounts.add(userPreference.get(0));
+		Set<AccountsResponseDTO> payToAccounts = new HashSet<>();
+		for (Object[] obj : allAccounts) {
+			AccountsResponseDTO account = new AccountsResponseDTO(String.valueOf(obj[0]), String.valueOf(obj[1]),
+					String.valueOf(obj[2]), String.valueOf(obj[3]), String.valueOf(obj[4]), String.valueOf(obj[5]),
+					String.valueOf(obj[6]), String.valueOf(obj[7]), String.valueOf(obj[8]), String.valueOf(obj[9]),
+					String.valueOf(obj[10]), String.valueOf(obj[11]), String.valueOf(obj[12]), false,
+					String.valueOf(obj[13]), String.valueOf(obj[14]));
+			if (!userPreference.isEmpty() && account.getAccountNumber().equals(userPreference.get(0)[1]))
+				account.setIsDefault(true);
+
+			payToAccounts.add(account);
+		}
+		return new PageImpl<>(new ArrayList<AccountsResponseDTO>(payToAccounts), paging, payToAccounts.size());
 	}
 
 }

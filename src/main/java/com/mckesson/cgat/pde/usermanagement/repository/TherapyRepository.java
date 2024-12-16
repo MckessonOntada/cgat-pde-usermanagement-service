@@ -56,7 +56,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			@Param("partnerFunction") String partnerFunction);
 
 	@Query(value = """
-			SELECT DISTINCT ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2,
+			SELECT DISTINCT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2,
 					 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code
 			FROM catalog.material m
 			JOIN catalog.catalog_price cp ON m.material_number = cp.material_identifier_for_cgat
@@ -89,7 +89,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			@Param("partnerFunction") String partnerFunction);
 
 	@Query(value = """
-			SELECT DISTINCT ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2,
+			SELECT DISTINCT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2,
 					 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code
 			FROM catalog.material m
 			JOIN catalog.catalog_price cp ON m.material_number = cp.material_identifier_for_cgat
@@ -112,22 +112,6 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			nativeQuery = true)
 	public Page<Object[]> findAllShipToAccounts(@Param("soldToAccountId") String soldToAccountId,
 			@Param("therapyId") String therapyId, @Param("query") String query, Pageable paging,
-			@Param("partnerFunction") String partnerFunction);
-
-	@Query(value = """
-			SELECT DISTINCT ac1.sap_customer, ac1.name_1, ac1.house_number, ac1.street, ac1.street_2, ac1.street_3,
-			ac1.telephone, ac1.city, ac1.district, ac1.state, ac1.country, ac1.zip_code, up.value
-			FROM usermanagement.account ac1
-			JOIN usermanagement.account ac2 ON ac1.sap_partner = ac2.sap_customer
-			JOIN usermanagement.user_account_mapping uam ON ac2.id = uam.account_id
-			JOIN usermanagement.user u ON u.id = uam.user_id
-			LEFT JOIN usermanagement.user_preference up ON u.id = up.user_id AND up.type = 'DEFAULT_PAY_TO_ACCOUNT'
-			WHERE
-				uam.user_id = :userId
-				AND
-				ac1.partner_function = :partnerFunction
-			""", nativeQuery = true)
-	public Page<Object[]> findAllPayToAccounts(@Param("userId") Long userId, Pageable paging,
 			@Param("partnerFunction") String partnerFunction);
 
 }

@@ -74,12 +74,4 @@ public class TherapyController {
 		return therapyService.findById(therapyId);
 	}
 
-	@Operation(summary = "Find all payto accounts that are linked to all soldto accounts that the user has access")
-	@GetMapping("/paytoaccounts")
-	public Page<AccountsResponseDTO> findAllPayToAccounts(@PathVariable Long userId,
-			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize) {
-		Pageable paging = PageRequest.of(pageNo, pageSize);
-		return therapyService.findAllPayToAccounts(userId, paging);
-	}
-
 }
