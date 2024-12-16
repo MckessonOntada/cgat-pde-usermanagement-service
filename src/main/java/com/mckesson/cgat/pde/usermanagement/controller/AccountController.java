@@ -51,7 +51,7 @@ public class AccountController {
 		this.accountService = accountService;
 	}
 
-	@RequirePermissions({Permission.ADD_ORGANIZATION, Permission.EDIT_ORGANIZATION})
+	@RequirePermissions({Permission.ADD_ORGANIZATION})
 	@PostMapping(consumes = "application/json")
 	@Operation(summary = "Create new account")
 	public ResponseEntity<Account> createAccount(@Valid @RequestBody Account account) {
