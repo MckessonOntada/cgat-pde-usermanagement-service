@@ -50,7 +50,8 @@ public class RoleController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(roleService.createOrUpdateRole(role, practiceId));
 	}
 
-	@RequirePermissions({Permission.EDIT_ROLES, Permission.ADD_ROLES})
+	//	Permission.EDIT_ROLES yet to add
+	@RequirePermissions({Permission.ADD_ROLES})
 	@PatchMapping("/{roleId}")
 	@Operation(summary = "Update basic deatils of role (i.e Role Name and Description)")
 	public ResponseEntity<Role> updateRole(@PathVariable @NotNull(message = "Role Id can not be null") Long roleId,
@@ -58,7 +59,8 @@ public class RoleController {
 		return ResponseEntity.status(HttpStatus.OK).body(roleService.updateRole(roleId, updatedRole));
 	}
 
-	@RequirePermissions({Permission.EDIT_ROLES, Permission.ADD_ROLES})
+//	Permission.EDIT_ROLES yet to add
+	@RequirePermissions({Permission.ADD_ROLES})
 	@PatchMapping("/{roleId}/permissions")
 	@Operation(
 			summary = "Link/Unlink permission to Role. Permissions in current request becomes the permissions mapped to the role.")
@@ -75,7 +77,7 @@ public class RoleController {
 		return new ResponseEntity<>(roleService.getRole(roleId), HttpStatus.OK);
 	}
 
-	@RequirePermissions({Permission.EDIT_ROLES})
+//	@RequirePermissions({Permission.EDIT_ROLES})
 	@DeleteMapping("/{roleId}")
 	@Operation(summary = "Delete Role by Id")
 	public ResponseEntity<Object> deleteRole(@PathVariable Long roleId) throws ResourceNotFoundException {
