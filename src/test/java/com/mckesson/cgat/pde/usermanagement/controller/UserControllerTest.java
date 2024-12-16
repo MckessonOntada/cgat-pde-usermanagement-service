@@ -57,6 +57,7 @@ import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
 import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.model.UserType;
+import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;
 import com.mckesson.cgat.pde.usermanagement.util.TestUtils;
@@ -79,6 +80,9 @@ class UserControllerTest {
 
 	@MockBean
 	private AccountService accountService;
+
+	@MockBean
+	private AccountRepository accountRepository;
 
 	@InjectMocks
 	private UserController userController;
