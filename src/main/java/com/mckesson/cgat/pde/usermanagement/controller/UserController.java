@@ -185,7 +185,7 @@ public class UserController {
 
 	}
 
-	@GetMapping("/current/accountids")
+	@GetMapping("/current/accounts/ids")
 	@Operation(summary = "Fetch all AcccountIds for User based on filter provided")
 	List<Long> findAllAccountIds(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize) throws ResourceNotFoundException {
