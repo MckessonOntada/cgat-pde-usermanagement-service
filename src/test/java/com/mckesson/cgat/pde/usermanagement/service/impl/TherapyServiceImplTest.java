@@ -117,13 +117,13 @@ public class TherapyServiceImplTest {
 
 	private Page<Object[]> getTherapies() {
 		List<Object[]> therapies = new ArrayList<>();
-		Object[] therapy1 = { "ndc1", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1",
+		Object[] therapy1 = { "1", "ndc1", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1",
 				"udi1", "ndc1", "tdesc4", "1", "udi1", "" };
-		Object[] therapy2 = { "ndc2", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1",
+		Object[] therapy2 = { "2", "ndc2", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1",
 				"udi1", "ndc1", "tdesc4", "1", "udi1", "" };
-		Object[] therapy3 = { "ndc3", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1",
+		Object[] therapy3 = { "3", "ndc3", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1",
 				"udi1", "ndc1", "tdesc4", "1", "udi1", "" };
-		Object[] therapy4 = { "ndc4", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1",
+		Object[] therapy4 = { "4", "ndc4", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1",
 				"udi1", "ndc1", "tdesc4", "1", "udi1", "" };
 		therapies.add(therapy1);
 		therapies.add(therapy2);
