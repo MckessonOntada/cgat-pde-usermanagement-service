@@ -97,6 +97,30 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 			String partnerFunction, @Param("salesOrg") List<String> salesOrg,
 			@Param("distChannels") List<String> distChannels);
 
+	Account findByAccountNumber(String accountNumber);
+
+	@Query(value = """
+			SELECT DISTINCT ac1.id, ac1.sap_customer, ac1.name_1, ac1.house_number, ac1.street, ac1.street_2, ac1.street_3,
+			ac1.telephone, ac1.city, ac1.district, ac1.state, ac1.country, ac1.zip_code, ac1.sales_org, ac1.company_code
+			FROM usermanagement.account ac1
+			JOIN usermanagement.account ac2 ON ac1.sap_partner = ac2.sap_customer
+			JOIN usermanagement.user_account_mapping uam ON ac2.id = uam.account_id
+			WHERE(
+					(
+						:query IS NULL
+					 	OR LOWER(ac1.name_1) LIKE %:query%
+					 	OR LOWER(ac1.sap_customer) LIKE %:query%
+					)
+					AND
+					uam.user_id = :userId
+					AND
+					ac1.partner_function = :partnerFunction
+				)
+			""",
+			nativeQuery = true)
+	public Page<Object[]> findAllPayToAccounts(@Param("userId") Long userId, @Param("query") String query,
+			Pageable paging, @Param("partnerFunction") String partnerFunction);
+
 	@Query(nativeQuery = true, value = """
 			select ua.id
 			FROM usermanagement.account ua

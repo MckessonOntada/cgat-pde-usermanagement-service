@@ -69,4 +69,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 			nativeQuery = true)
 	void delinkUserFromAccount(@Param("userId") Long userId, @Param("accountId") Long accountId);
 
+	@Modifying
+	@Query(value = "Delete from usermanagement.user_preference where user_id =:userId and type =:preferenceType",
+			nativeQuery = true)
+	void resetDefaultPayToAccount(@Param("userId") Long userId, @Param("preferenceType") String preferenceType);
+
 }

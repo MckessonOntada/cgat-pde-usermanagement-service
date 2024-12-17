@@ -35,4 +35,10 @@ public class AccountsResponseDTO {
 
 	private String zipCode;
 
+	private Boolean isDefault;
+
+	private String salesOrg;
+
+	private String companyCode;
+
 }
