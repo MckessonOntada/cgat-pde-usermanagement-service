@@ -44,8 +44,8 @@ public class TherapyController {
 			@RequestParam(required = false) List<String> salesOrg,
 			@RequestParam(required = false) List<String> customerIdentifier) {
 		Pageable paging = PageRequest.of(pageNo, pageSize);
-		return therapyService.findAllTherapies(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), query, salesOrg, paging,
-				customerIdentifier);
+		return therapyService.findAllTherapies(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), query,
+				salesOrg, paging, customerIdentifier);
 	}
 
 	@GetMapping("/{therapyId}/soldtoaccounts")
@@ -57,8 +57,8 @@ public class TherapyController {
 			@RequestParam(required = false) String distributionChannel) {
 
 		Pageable paging = PageRequest.of(pageNo, pageSize);
-		return therapyService.findAllSoldToAccounts(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), therapyId, query,
-				paging, distributionChannel);
+		return therapyService.findAllSoldToAccounts(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()),
+				therapyId, query, paging, distributionChannel);
 	}
 
 	@GetMapping("{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccounts")
