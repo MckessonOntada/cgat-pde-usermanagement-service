@@ -3,7 +3,6 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.mckesson.cgat.pde.usermanagement.model.*;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,14 +23,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
+import com.mckesson.cgat.pde.usermanagement.model.Account;
+import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
+import com.mckesson.cgat.pde.usermanagement.model.Permission;
+import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
+import com.mckesson.cgat.pde.usermanagement.model.User;
+import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
+import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.cgat.pde.usermanagement.utils.OrganizationContext;
 import com.mckesson.cgat.pde.usermanagement.utils.UserRequestAuthorizationValidator;
+import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -52,11 +60,15 @@ public class UserController {
 
 	private final AccountService accountService;
 
+	private final AccountRepository accountRepository;
+
 	private static final String SORT_ORDER_ASC = "asc";
 
-	public UserController(UserService userModelService, AccountService accountService) {
+	public UserController(UserService userModelService, AccountService accountService,
+			AccountRepository accountRepository) {
 		this.userService = userModelService;
 		this.accountService = accountService;
+		this.accountRepository = accountRepository;
 	}
 
 	@RequirePermissions({ Permission.ADD_USERS })
@@ -177,6 +189,33 @@ public class UserController {
 		return accountService.findAll(paging, query, status, userId, OrganizationContext.getCurrentOrgId(),
 				AccountPartnerFunction.SOLD_TO, salesOrg, distributionChannel);
 
+	}
+
+	@PatchMapping("/current/preference/defaultpayto/{payToAccountId}")
+	@Operation(summary = "Set default PayTo Account to User")
+	public User setDefaultPayToACcount(
+			@NotNull(message = "Account Id can not be null") @PathVariable Long payToAccountId)
+			throws ResourceNotFoundException {
+		return userService.setDefaultPayToAccount(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()),
+				payToAccountId);
+	}
+
+	@GetMapping("/current/accounts/ids")
+	@Operation(summary = "Fetch all AcccountIds for User")
+	ResponseEntity<List<Long>> findAllAccountIds() {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(accountRepository.findAccountIdsByUser(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()),
+					OrganizationContext.getCurrentOrgId(), AccountPartnerFunction.SOLD_TO.getPartnerFunctionType()));
+
+	}
+
+	@Operation(summary = "Find all payto accounts that are linked to all soldto accounts that the user has access")
+	@GetMapping("/current/paytoaccounts")
+	public Page<AccountsResponseDTO> findAllPayToAccounts(@RequestParam(defaultValue = "0") Integer pageNo,
+			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query) {
+		Pageable paging = PageRequest.of(pageNo, pageSize);
+		return accountService.findAllPayToAccounts(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), query,
+				paging);
 	}
 
 }

@@ -1,48 +1,41 @@
 package com.mckesson.cgat.pde.usermanagement.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+public interface TherapyCatalogResponseDTO {
 
-@AllArgsConstructor
-@Data
-@Builder
-public class TherapyCatalogResponseDTO {
+	String getId();
 
-	private String id;
+	String getTherapyId();
 
-	private String therapyId;
+	String getTherapyDescription();
 
-	private String therapyDescription;
+	String getNdc();
 
-	private String ndc;
+	String getUdi();
 
-	private String udi;
+	String getStrength();
 
-	private String strength;
+	String getDosage();
 
-	private String dosage;
+	String getSellingUnitCode();
 
-	private String sellingUnitCode;
+	String getVendorName();
 
-	private String vendorName;
+	String getUpcCode();
 
-	private String upcCode;
+	String getDropshipIndicator();
 
-	private String dropshipIndicator;
+	String getStatus();
 
-	private String status;
+	String getBaseUnitOfMeasure();
 
-	private String baseUnitOfMeasure;
+	String getCgatIdentifier();
 
-	private String cgatIdentifier;
+	String getSalesOrganization();
 
-	private String salesOrganization;
+	String getCgatType();
 
-	private String cgatType;
+	String getProductLevelPricing();
 
-	private String productLevelPricing;
-
-	private String minimumOrderQuantity;
+	String getMinimumOrderQuantity();
 
 }

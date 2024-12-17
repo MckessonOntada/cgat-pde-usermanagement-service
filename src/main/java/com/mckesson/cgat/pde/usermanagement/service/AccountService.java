@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
@@ -29,5 +30,7 @@ public interface AccountService {
 
 	void linkAccountsToPractice(Long practiceId, Set<Long> accountIds)
 			throws ResourceNotFoundException, UnauthorizedAccessException;
+
+	Page<AccountsResponseDTO> findAllPayToAccounts(Long userId, String query, Pageable paging);
 
 }
