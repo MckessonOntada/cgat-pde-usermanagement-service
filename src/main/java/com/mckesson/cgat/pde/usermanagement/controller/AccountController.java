@@ -51,7 +51,7 @@ public class AccountController {
 		this.accountService = accountService;
 	}
 
-	@RequirePermissions({Permission.ADD_ORGANIZATION})
+	@RequirePermissions({ Permission.ADD_ORGANIZATION })
 	@PostMapping(consumes = "application/json")
 	@Operation(summary = "Create new account")
 	public ResponseEntity<Account> createAccount(@Valid @RequestBody Account account) {
@@ -59,7 +59,7 @@ public class AccountController {
 
 	}
 
-	@RequirePermissions({Permission.EDIT_ORGANIZATION, Permission.ADD_ORGANIZATION})
+	@RequirePermissions({ Permission.EDIT_ORGANIZATION, Permission.ADD_ORGANIZATION })
 	@PutMapping("/{accountId}")
 	@Operation(summary = "Update existing account")
 	public Account updateAccount(@PathVariable Long accountId, @RequestBody Account account)
@@ -68,7 +68,7 @@ public class AccountController {
 
 	}
 
-	@RequirePermissions({Permission.VIEW_ORGANIZATION})
+	@RequirePermissions({ Permission.VIEW_ORGANIZATION })
 	@GetMapping("/{accountId}")
 	@Operation(summary = "Get account details by accountId ")
 	public ResponseEntity<Account> getAccount(@PathVariable Long accountId) throws ResourceNotFoundException {
@@ -77,7 +77,7 @@ public class AccountController {
 
 	}
 
-	@RequirePermissions({Permission.EDIT_ORGANIZATION})
+	@RequirePermissions({ Permission.EDIT_ORGANIZATION })
 	@DeleteMapping("/{accountId}")
 	@Operation(summary = "Delink account from practice")
 	public ResponseEntity<String> delinkAccountFromPractice(@PathVariable Long practiceId, @PathVariable Long accountId)
@@ -87,7 +87,7 @@ public class AccountController {
 
 	}
 
-	@RequirePermissions({Permission.MANAGE_ORGANIZATION_SCREEN})
+	@RequirePermissions({ Permission.MANAGE_ORGANIZATION_SCREEN })
 	@GetMapping
 	@Operation(summary = "Fetch all Accounts based on filter provided with pagination capabilities.")
 	Page<Account> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
@@ -104,7 +104,7 @@ public class AccountController {
 				distChannels);
 	}
 
-	@RequirePermissions({Permission.EDIT_ORGANIZATION, Permission.ADD_ORGANIZATION})
+	@RequirePermissions({ Permission.EDIT_ORGANIZATION, Permission.ADD_ORGANIZATION })
 	@PatchMapping
 	@Operation(summary = "Link multiple accounts to a Practice.")
 	public ResponseEntity<Void> linkAccountsToPractice(

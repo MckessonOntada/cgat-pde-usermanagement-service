@@ -57,7 +57,7 @@ public class PracticeController {
 		this.practiceUtils = practiceUtils;
 	}
 
-	@RequirePermissions({Permission.ADD_ORGANIZATION})
+	@RequirePermissions({ Permission.ADD_ORGANIZATION })
 	@PostMapping(consumes = { "multipart/form-data" })
 	@Operation(summary = "Create Practice")
 	public ResponseEntity<Object> createPractice(@RequestPart("practiceStr") String practiceStr,
@@ -79,7 +79,7 @@ public class PracticeController {
 		return objectMapper.readValue(practiceJson, Practice.class);
 	}
 
-	@RequirePermissions({Permission.EDIT_ORGANIZATION, Permission.ADD_ORGANIZATION})
+	@RequirePermissions({ Permission.EDIT_ORGANIZATION, Permission.ADD_ORGANIZATION })
 	@PutMapping("/{practiceId}")
 	@Operation(summary = "Update Practice")
 	public ResponseEntity<Object> updatePractice(@RequestPart("practiceStr") @Valid String practiceStr,
@@ -96,7 +96,7 @@ public class PracticeController {
 		return ResponseEntity.status(HttpStatus.OK).body(practice);
 	}
 
-	@RequirePermissions({Permission.VIEW_ORGANIZATION})
+	@RequirePermissions({ Permission.VIEW_ORGANIZATION })
 	@GetMapping("/{practiceId}")
 	@Operation(summary = "Get Practice by Id")
 	public ResponseEntity<Practice> getPractice(@PathVariable String practiceId)
@@ -104,7 +104,7 @@ public class PracticeController {
 		return new ResponseEntity<>(practiceService.getPractice(practiceId), HttpStatus.OK);
 	}
 
-	@RequirePermissions({Permission.EDIT_ORGANIZATION})
+	@RequirePermissions({ Permission.EDIT_ORGANIZATION })
 	@DeleteMapping("/{practiceId}")
 	@Operation(summary = "Delete Practice by Id")
 	public ResponseEntity<Object> deletePractice(@PathVariable String practiceId) throws ResourceNotFoundException {
@@ -112,7 +112,7 @@ public class PracticeController {
 		return new ResponseEntity<>(practiceId, HttpStatus.OK);
 	}
 
-	@RequirePermissions({Permission.MANAGE_ORGANIZATION_SCREEN})
+	@RequirePermissions({ Permission.MANAGE_ORGANIZATION_SCREEN })
 	@GetMapping
 	@Operation(summary = "Fetch all Practices based on filter provided with pagination capabilities.")
 	Page<Practice> findAll(@RequestParam(defaultValue = "0") Integer pageNo,

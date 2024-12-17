@@ -41,8 +41,7 @@ public class RoleController {
 		this.roleService = roleService;
 	}
 
-
-	@RequirePermissions({Permission.ADD_ROLES})
+	@RequirePermissions({ Permission.ADD_ROLES })
 	@PostMapping
 	@Operation(summary = "Create Role")
 	public ResponseEntity<Role> createRole(@Validated @RequestBody Role role, @PathVariable String practiceId)
@@ -50,8 +49,8 @@ public class RoleController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(roleService.createOrUpdateRole(role, practiceId));
 	}
 
-
-	@RequirePermissions({Permission.ADD_ROLES, Permission.EDIT_ROLES})
+	// Permission.EDIT_ROLES yet to add
+	@RequirePermissions({ Permission.ADD_ROLES})
 	@PatchMapping("/{roleId}")
 	@Operation(summary = "Update basic deatils of role (i.e Role Name and Description)")
 	public ResponseEntity<Role> updateRole(@PathVariable @NotNull(message = "Role Id can not be null") Long roleId,
@@ -59,8 +58,8 @@ public class RoleController {
 		return ResponseEntity.status(HttpStatus.OK).body(roleService.updateRole(roleId, updatedRole));
 	}
 
-
-	@RequirePermissions({Permission.ADD_ROLES, Permission.EDIT_ROLES})
+	// Permission.EDIT_ROLES yet to add
+	@RequirePermissions({ Permission.ADD_ROLES})
 	@PatchMapping("/{roleId}/permissions")
 	@Operation(
 			summary = "Link/Unlink permission to Role. Permissions in current request becomes the permissions mapped to the role.")
@@ -70,14 +69,14 @@ public class RoleController {
 		return ResponseEntity.status(HttpStatus.OK).body(roleService.updatePermissionForRole(roleId, updatedRole));
 	}
 
-	@RequirePermissions({Permission.VIEW_ROLES})
+	@RequirePermissions({ Permission.VIEW_ROLES })
 	@GetMapping("/{roleId}")
 	@Operation(summary = "Get Role by Id")
 	public ResponseEntity<Role> getRole(@PathVariable Long roleId) throws ResourceNotFoundException {
 		return new ResponseEntity<>(roleService.getRole(roleId), HttpStatus.OK);
 	}
 
-	@RequirePermissions({Permission.EDIT_ROLES})
+//	@RequirePermissions({ Permission.EDIT_ROLES })
 	@DeleteMapping("/{roleId}")
 	@Operation(summary = "Delete Role by Id")
 	public ResponseEntity<Object> deleteRole(@PathVariable Long roleId) throws ResourceNotFoundException {
@@ -85,7 +84,7 @@ public class RoleController {
 		return new ResponseEntity<>(roleId, HttpStatus.OK);
 	}
 
-	@RequirePermissions({Permission.MANAGE_ROLES_SCREEN})
+	@RequirePermissions({ Permission.MANAGE_ROLES_SCREEN })
 	@GetMapping
 	@Operation(summary = "Fetch all Roles based on filter provided with pagination capabilities.")
 	Page<Role> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
