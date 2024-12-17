@@ -1,44 +1,37 @@
 package com.mckesson.cgat.pde.usermanagement.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+public interface AccountsResponseDTO {
 
-@AllArgsConstructor
-@Data
-@Builder
-public class AccountsResponseDTO {
+	String getId();
 
-	private String id;
+	String getAccountNumber();
 
-	private String accountNumber;
+	String getAccountName();
 
-	private String accountName;
+	String getHouseNumber();
 
-	private String houseNumber;
+	String getStreet();
 
-	private String street;
+	String getStreet2();
 
-	private String street2;
+	String getStreet3();
 
-	private String street3;
+	String getTelephone();
 
-	private String telephone;
+	String getCity();
 
-	private String city;
+	String getDistrict();
 
-	private String district;
+	String getState();
 
-	private String state;
+	String getCountry();
 
-	private String country;
+	String getZipCode();
 
-	private String zipCode;
+	Boolean getIsDefault();
 
-	private Boolean isDefault;
+	String getSalesOrg();
 
-	private String salesOrg;
-
-	private String companyCode;
+	String getCompanyCode();
 
 }

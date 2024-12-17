@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 
 public interface AccountRepository extends JpaRepository<Account, Long> {
@@ -100,8 +101,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	Account findByAccountNumber(String accountNumber);
 
 	@Query(value = """
-			SELECT DISTINCT ac1.id, ac1.sap_customer, ac1.name_1, ac1.house_number, ac1.street, ac1.street_2, ac1.street_3,
-			ac1.telephone, ac1.city, ac1.district, ac1.state, ac1.country, ac1.zip_code, ac1.sales_org, ac1.company_code
+			SELECT DISTINCT ac1.id, ac1.sap_customer as AccountNumber, ac1.name_1 as AccountName, ac1.house_number, ac1.street, ac1.street_2, ac1.street_3,
+			ac1.telephone, ac1.city, ac1.district, ac1.state, ac1.country, ac1.zip_code, false as isDefault, ac1.sales_org, ac1.company_code
 			FROM usermanagement.account ac1
 			JOIN usermanagement.account ac2 ON ac1.sap_partner = ac2.sap_customer
 			JOIN usermanagement.user_account_mapping uam ON ac2.id = uam.account_id
@@ -118,7 +119,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 				)
 			""",
 			nativeQuery = true)
-	public Page<Object[]> findAllPayToAccounts(@Param("userId") Long userId, @Param("query") String query,
+	public Page<AccountsResponseDTO> findAllPayToAccounts(@Param("userId") Long userId, @Param("query") String query,
 			Pageable paging, @Param("partnerFunction") String partnerFunction);
 
 	@Query(nativeQuery = true, value = """
