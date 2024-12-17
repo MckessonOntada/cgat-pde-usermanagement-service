@@ -3,6 +3,9 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import java.io.IOException;
 import java.util.List;
 
+import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
+import com.mckesson.cgat.pde.usermanagement.model.Permission;
+import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
 import org.aspectj.apache.bcel.classfile.Module.Require;
 import org.ini4j.InvalidFileFormatException;
 import org.springframework.data.domain.Page;
@@ -55,11 +58,12 @@ public class PracticeController {
 		this.practiceUtils = practiceUtils;
 	}
 
+	@RequirePermissions({ Permission.ADD_ORGANIZATION })
 	@PostMapping(consumes = { "multipart/form-data" })
 	@Operation(summary = "Create Practice")
 	public ResponseEntity<Object> createPractice(@RequestPart("practiceStr") String practiceStr,
 			@RequestPart(value = "logo", required = false) MultipartFile logo, BindingResult bindingResult)
-			throws IOException, MethodArgumentNotValidException {
+			throws IOException, MethodArgumentNotValidException, UnauthorizedAccessException {
 
 		Practice practiceObj = parsePractice(practiceStr);
 		practiceUtils.validatePractice(practiceObj, bindingResult, logo);
@@ -76,11 +80,12 @@ public class PracticeController {
 		return objectMapper.readValue(practiceJson, Practice.class);
 	}
 
+	@RequirePermissions({ Permission.EDIT_ORGANIZATION, Permission.ADD_ORGANIZATION })
 	@PutMapping("/{practiceId}")
 	@Operation(summary = "Update Practice")
 	public ResponseEntity<Object> updatePractice(@RequestPart("practiceStr") @Valid String practiceStr,
 			@RequestPart(value = "logo", required = false) MultipartFile logo, @PathVariable String practiceId,
-			BindingResult bindingResult) throws IOException {
+			BindingResult bindingResult) throws IOException, UnauthorizedAccessException {
 		Practice practiceObj = parsePractice(practiceStr);
 		practiceUtils.validatePractice(practiceObj, bindingResult, null);
 		if (bindingResult.hasErrors()) {
@@ -92,27 +97,31 @@ public class PracticeController {
 		return ResponseEntity.status(HttpStatus.OK).body(practice);
 	}
 
+	@RequirePermissions({ Permission.VIEW_ORGANIZATION })
 	@GetMapping("/{practiceId}")
 	@Operation(summary = "Get Practice by Id")
 	public ResponseEntity<Practice> getPractice(@PathVariable String practiceId)
-			throws NumberFormatException, ResourceNotFoundException {
+			throws NumberFormatException, ResourceNotFoundException, UnauthorizedAccessException {
 		return new ResponseEntity<>(practiceService.getPractice(practiceId), HttpStatus.OK);
 	}
 
+	@RequirePermissions({ Permission.EDIT_ORGANIZATION })
 	@DeleteMapping("/{practiceId}")
 	@Operation(summary = "Delete Practice by Id")
-	public ResponseEntity<Object> deletePractice(@PathVariable String practiceId) throws ResourceNotFoundException {
+	public ResponseEntity<Object> deletePractice(@PathVariable String practiceId)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
 		practiceService.deletePractice(practiceId);
 		return new ResponseEntity<>(practiceId, HttpStatus.OK);
 	}
 
+	@RequirePermissions({ Permission.MANAGE_ORGANIZATION_SCREEN })
 	@GetMapping
 	@Operation(summary = "Fetch all Practices based on filter provided with pagination capabilities.")
 	Page<Practice> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
-			@RequestParam(required = false) List<String> status,
-			@RequestParam(required = false) List<String> location) {
+			@RequestParam(required = false) List<String> status, @RequestParam(required = false) List<String> location)
+			throws UnauthorizedAccessException {
 		Sort sort = CustomUtils.SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
