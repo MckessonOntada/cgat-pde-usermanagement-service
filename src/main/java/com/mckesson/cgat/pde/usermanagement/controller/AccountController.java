@@ -110,13 +110,4 @@ public class AccountController {
 
 	}
 
-	@Operation(summary = "Find all payto accounts that are linked to all soldto accounts that the user has access")
-	@GetMapping("/current/paytoaccounts")
-	public Page<AccountsResponseDTO> findAllPayToAccounts(@RequestParam(defaultValue = "0") Integer pageNo,
-			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query) {
-		Pageable paging = PageRequest.of(pageNo, pageSize);
-		return accountService.findAllPayToAccounts(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), query,
-				paging);
-	}
-
 }
