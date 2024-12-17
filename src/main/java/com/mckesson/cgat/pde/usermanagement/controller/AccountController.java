@@ -69,7 +69,7 @@ public class AccountController {
 
 	}
 
-	@RequirePermissions({ Permission.VIEW_ORGANIZATION })
+	@RequirePermissions({ Permission.VIEW_ORGANIZATION, Permission.VIEW_USERS })
 	@GetMapping("/{accountId}")
 	@Operation(summary = "Get account details by accountId ")
 	public ResponseEntity<Account> getAccount(@PathVariable Long accountId)
@@ -89,7 +89,7 @@ public class AccountController {
 
 	}
 
-	@RequirePermissions({ Permission.MANAGE_ORGANIZATION_SCREEN })
+	@RequirePermissions({ Permission.MANAGE_ORGANIZATION_SCREEN , Permission.MANAGE_USERS_SCREEN })
 	@GetMapping
 	@Operation(summary = "Fetch all Accounts based on filter provided with pagination capabilities.")
 	Page<Account> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
