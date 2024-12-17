@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
 import org.apache.coyote.BadRequestException;
@@ -45,7 +46,7 @@ public class RoleController {
 	@PostMapping
 	@Operation(summary = "Create Role")
 	public ResponseEntity<Role> createRole(@Validated @RequestBody Role role, @PathVariable String practiceId)
-			throws ResourceNotFoundException {
+			throws ResourceNotFoundException, UnauthorizedAccessException {
 		return ResponseEntity.status(HttpStatus.CREATED).body(roleService.createOrUpdateRole(role, practiceId));
 	}
 
@@ -53,7 +54,8 @@ public class RoleController {
 	@PatchMapping("/{roleId}")
 	@Operation(summary = "Update basic deatils of role (i.e Role Name and Description)")
 	public ResponseEntity<Role> updateRole(@PathVariable @NotNull(message = "Role Id can not be null") Long roleId,
-			@Validated(BasicInfo.class) @RequestBody Role updatedRole) throws ResourceNotFoundException {
+			@Validated(BasicInfo.class) @RequestBody Role updatedRole)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
 		return ResponseEntity.status(HttpStatus.OK).body(roleService.updateRole(roleId, updatedRole));
 	}
 
@@ -63,21 +65,23 @@ public class RoleController {
 			summary = "Link/Unlink permission to Role. Permissions in current request becomes the permissions mapped to the role.")
 	public ResponseEntity<Role> updatePermissionsForRole(
 			@PathVariable @NotNull(message = "Role Id can not be null") Long roleId,
-			@Valid @RequestBody Role updatedRole) throws ResourceNotFoundException {
+			@Valid @RequestBody Role updatedRole) throws ResourceNotFoundException, UnauthorizedAccessException {
 		return ResponseEntity.status(HttpStatus.OK).body(roleService.updatePermissionForRole(roleId, updatedRole));
 	}
 
 	@RequirePermissions({ Permission.VIEW_ROLES })
 	@GetMapping("/{roleId}")
 	@Operation(summary = "Get Role by Id")
-	public ResponseEntity<Role> getRole(@PathVariable Long roleId) throws ResourceNotFoundException {
+	public ResponseEntity<Role> getRole(@PathVariable Long roleId)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
 		return new ResponseEntity<>(roleService.getRole(roleId), HttpStatus.OK);
 	}
 
 	@RequirePermissions({ Permission.EDIT_ROLES })
 	@DeleteMapping("/{roleId}")
 	@Operation(summary = "Delete Role by Id")
-	public ResponseEntity<Object> deleteRole(@PathVariable Long roleId) throws ResourceNotFoundException {
+	public ResponseEntity<Object> deleteRole(@PathVariable Long roleId)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
 		roleService.deleteRole(roleId);
 		return new ResponseEntity<>(roleId, HttpStatus.OK);
 	}
@@ -93,7 +97,7 @@ public class RoleController {
 					required = false) @DateTimeFormat(pattern = CustomUtils.API_DATE_FORMAT) LocalDate startDate,
 			@Parameter(description = "Date format : " + CustomUtils.API_DATE_FORMAT) @RequestParam(
 					required = false) @DateTimeFormat(pattern = CustomUtils.API_DATE_FORMAT) LocalDate endDate)
-			throws BadRequestException {
+			throws BadRequestException, UnauthorizedAccessException {
 		Sort sort = CustomUtils.SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);

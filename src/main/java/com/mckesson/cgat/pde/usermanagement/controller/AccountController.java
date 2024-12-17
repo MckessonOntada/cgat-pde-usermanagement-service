@@ -54,7 +54,8 @@ public class AccountController {
 	@RequirePermissions({ Permission.ADD_ORGANIZATION })
 	@PostMapping(consumes = "application/json")
 	@Operation(summary = "Create new account")
-	public ResponseEntity<Account> createAccount(@Valid @RequestBody Account account) {
+	public ResponseEntity<Account> createAccount(@Valid @RequestBody Account account)
+			throws UnauthorizedAccessException {
 		return new ResponseEntity<>(accountService.createAccount(account), HttpStatus.OK);
 
 	}
@@ -63,7 +64,7 @@ public class AccountController {
 	@PutMapping("/{accountId}")
 	@Operation(summary = "Update existing account")
 	public Account updateAccount(@PathVariable Long accountId, @RequestBody Account account)
-			throws ResourceNotFoundException {
+			throws ResourceNotFoundException, UnauthorizedAccessException {
 		return accountService.updateAccount(accountId, account);
 
 	}
@@ -71,7 +72,8 @@ public class AccountController {
 	@RequirePermissions({ Permission.VIEW_ORGANIZATION })
 	@GetMapping("/{accountId}")
 	@Operation(summary = "Get account details by accountId ")
-	public ResponseEntity<Account> getAccount(@PathVariable Long accountId) throws ResourceNotFoundException {
+	public ResponseEntity<Account> getAccount(@PathVariable Long accountId)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
 		Account account = accountService.getAccount(accountId);
 		return new ResponseEntity<>(account, HttpStatus.OK);
 
@@ -81,7 +83,7 @@ public class AccountController {
 	@DeleteMapping("/{accountId}")
 	@Operation(summary = "Delink account from practice")
 	public ResponseEntity<String> delinkAccountFromPractice(@PathVariable Long practiceId, @PathVariable Long accountId)
-			throws ResourceNotFoundException {
+			throws ResourceNotFoundException, UnauthorizedAccessException {
 		accountService.delinkAccountFromPractice(practiceId, accountId);
 		return new ResponseEntity<>(HttpStatus.OK);
 
@@ -96,7 +98,8 @@ public class AccountController {
 			@PathVariable String practiceId, @RequestParam(required = false) List<String> status,
 			@RequestParam(required = false) List<String> salesOrg,
 			@RequestParam(required = false) List<String> distChannels,
-			@RequestParam AccountPartnerFunction partnerFunction) throws ResourceNotFoundException {
+			@RequestParam AccountPartnerFunction partnerFunction)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
