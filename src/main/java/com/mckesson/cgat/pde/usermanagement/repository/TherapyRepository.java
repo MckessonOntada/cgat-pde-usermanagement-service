@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelProjectionDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 
@@ -121,5 +122,23 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 	public Page<AccountsResponseDTO> findAllShipToAccounts(@Param("soldToAccountId") String soldToAccountId,
 			@Param("therapyId") String therapyId, @Param("query") String query, Pageable paging,
 			@Param("partnerFunction") String partnerFunction);
+
+	@Query(value = """
+			SELECT DISTINCT ac.cgat_identifier as program, ac.distribution_channel as channel
+			FROM catalog.material m
+			JOIN catalog.catalog_price cp ON m.material_number = cp.material_identifier_for_cgat
+			JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
+			JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
+			WHERE
+			(
+					uam.user_id = :userId
+				AND
+					cp.material_identifier_for_cgat = :therapyId
+				AND
+					ac.partner_function = :partnerFunction
+			)
+			""", nativeQuery = true)
+	public List<ProgramChannelProjectionDTO> findAllProgramAndChannels(@Param("userId") Long userId,
+			@Param("therapyId") String therapyId, @Param("partnerFunction") String partnerFunction);
 
 }

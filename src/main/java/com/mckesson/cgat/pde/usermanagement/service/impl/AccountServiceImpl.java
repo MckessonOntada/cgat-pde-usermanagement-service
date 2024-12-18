@@ -151,12 +151,4 @@ public class AccountServiceImpl implements AccountService {
 		return new PageImpl<>(allAccounts, paging, allAccounts.size());
 	}
 
-	public List<String> findAllCgatIdentifiers() {
-		return accountRepository.findAllCgatIdentifiers();
-	}
-
-	public List<String> findAllDistChannels() {
-		return accountRepository.findAllDistChannels();
-	}
-
 }

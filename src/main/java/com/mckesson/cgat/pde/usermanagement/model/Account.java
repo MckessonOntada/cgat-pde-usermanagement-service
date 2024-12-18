@@ -85,6 +85,9 @@ public class Account implements Serializable {
 	@Embedded
 	private AccountAddress address;
 
+	@Column(name = "cgat_identifier")
+	private String cgatIdentifier;
+
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "user_account_mapping", joinColumns = @JoinColumn(name = "user_id"),
 			inverseJoinColumns = @JoinColumn(name = "account_id"))

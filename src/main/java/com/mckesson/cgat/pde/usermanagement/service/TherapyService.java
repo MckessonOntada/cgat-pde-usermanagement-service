@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelProjectionDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -24,5 +25,7 @@ public interface TherapyService {
 			String query);
 
 	Therapy findById(Long id) throws ResourceNotFoundException;
+
+	List<ProgramChannelProjectionDTO> findAllProgramAndChannels(Long userId, Long therapyId);
 
 }

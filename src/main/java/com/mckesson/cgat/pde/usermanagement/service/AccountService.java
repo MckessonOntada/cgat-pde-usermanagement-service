@@ -33,8 +33,4 @@ public interface AccountService {
 
 	Page<AccountsResponseDTO> findAllPayToAccounts(Long userId, String query, Pageable paging);
 
-	List<String> findAllCgatIdentifiers();
-
-	List<String> findAllDistChannels();
-
 }

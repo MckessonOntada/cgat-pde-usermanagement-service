@@ -119,16 +119,4 @@ public class AccountController {
 
 	}
 
-	@GetMapping("/programs")
-	@Operation(summary = "Find all programs/cgat Identifiers from accounts")
-	public ResponseEntity<List<String>> findAllPrograms() {
-		return new ResponseEntity<>(accountService.findAllCgatIdentifiers(), HttpStatus.OK);
-	}
-
-	@GetMapping("/channels")
-	@Operation(summary = "Find all channels/distribution channels from accounts")
-	public ResponseEntity<List<String>> findAllChannels() {
-		return new ResponseEntity<>(accountService.findAllDistChannels(), HttpStatus.OK);
-	}
-
 }

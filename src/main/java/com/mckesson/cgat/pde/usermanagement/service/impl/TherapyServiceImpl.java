@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelProjectionDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
@@ -44,6 +45,11 @@ public class TherapyServiceImpl implements TherapyService {
 	public Therapy findById(Long id) throws ResourceNotFoundException {
 		return therapyRepository.findById(id)
 			.orElseThrow(() -> new ResourceNotFoundException("Therapy not found with id: " + id));
+	}
+
+	public List<ProgramChannelProjectionDTO> findAllProgramAndChannels(Long userId, Long therapyId) {
+		return therapyRepository.findAllProgramAndChannels(userId, therapyId.toString(),
+				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 	}
 
 }
