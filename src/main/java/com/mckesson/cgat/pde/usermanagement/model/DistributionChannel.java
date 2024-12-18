@@ -1,32 +1,36 @@
 package com.mckesson.cgat.pde.usermanagement.model;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public enum DistributionChannel {
 
 	PL("20"), SD("40"), ALL("80");
 
-	private String distributionChannelValue;
+	private final String code;
 
-	private static Map<String, DistributionChannel> valueToEnumMap = new HashMap<>();
-
-	private DistributionChannel(String distributionChannel) {
-		this.distributionChannelValue = distributionChannel;
+	DistributionChannel(String code) {
+		this.code = code;
 	}
 
-	static {
-		for (DistributionChannel e : values()) {
-			valueToEnumMap.put(e.distributionChannelValue, e);
+	public String getCode() {
+		return code;
+	}
+
+	/**
+	 * Get enum constant by code.
+	 * @param code The code to search for.
+	 * @return The matching DistributionChannelEnum, or null if no match is found.
+	 */
+	public static DistributionChannel fromCode(String code) {
+		for (DistributionChannel channel : values()) {
+			if (channel.code.equals(code)) {
+				return channel;
+			}
 		}
+		throw new IllegalArgumentException("No enum constant for code: " + code);
 	}
 
-	public static DistributionChannel valueFor(String label) {
-		return valueToEnumMap.get(label);
-	}
-
-	public String getDistributionChannelValue() {
-		return distributionChannelValue;
+	@Override
+	public String toString() {
+		return this.name() + "(" + code + ")";
 	}
 
 }

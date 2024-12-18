@@ -124,13 +124,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			@Param("partnerFunction") String partnerFunction);
 
 	@Query(value = """
-			SELECT DISTINCT ac.cgat_identifier as program,
-			CASE
-			       WHEN ac.distribution_channel = '20' THEN 'PL'
-			       WHEN ac.distribution_channel = '40' THEN 'SD'
-			       WHEN ac.distribution_channel = '80' THEN 'ALL'
-			       ELSE ac.distribution_channel
-			   END AS channel
+			SELECT ac.cgat_identifier as program,ac.distribution_channel
 			FROM catalog.material m
 			JOIN catalog.catalog_price cp ON m.material_number = cp.material_identifier_for_cgat
 			JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer

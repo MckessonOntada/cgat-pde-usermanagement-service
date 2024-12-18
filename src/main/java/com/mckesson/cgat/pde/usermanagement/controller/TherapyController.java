@@ -87,14 +87,8 @@ public class TherapyController {
 	@Operation(
 			summary = "Find all programs and channels from which the selected therapy is being offered, and the logged in user has access to")
 	public ResponseEntity<ProgramChannelResponseDTO> findAllProgramAndChannels(@PathVariable Long therapyId) {
-		ProgramChannelResponseDTO result = new ProgramChannelResponseDTO();
-		List<ProgramChannelProjectionDTO> allProgramAndChannels = therapyService
-			.findAllProgramAndChannels(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), therapyId);
-		for (ProgramChannelProjectionDTO account : allProgramAndChannels) {
-			result.getChannels().add(account.getChannel());
-			result.getPrograms().add(account.getProgram());
-		}
-		return new ResponseEntity<>(result, HttpStatus.OK);
+		return new ResponseEntity<>(therapyService.findAllProgramAndChannels(
+				Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), therapyId), HttpStatus.OK);
 	}
 
 }

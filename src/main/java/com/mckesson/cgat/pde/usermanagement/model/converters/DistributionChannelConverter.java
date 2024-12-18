@@ -8,12 +8,12 @@ public class DistributionChannelConverter implements AttributeConverter<Distribu
 
 	@Override
 	public String convertToDatabaseColumn(DistributionChannel attribute) {
-		return attribute.getDistributionChannelValue();
+		return attribute.getCode();
 	}
 
 	@Override
 	public DistributionChannel convertToEntityAttribute(String dbData) {
-		return DistributionChannel.valueFor(dbData);
+		return DistributionChannel.fromCode(dbData);
 	}
 
 }
