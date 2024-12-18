@@ -114,7 +114,7 @@ public class UserController {
 
 	@RequirePermissions({ Permission.EDIT_USERS })
 	@PatchMapping("/{userId}/activate")
-	@Operation(summary = "Delete user details byId")
+	@Operation(summary = "Activate user details byId")
 	public void activateUser(@PathVariable Long userId,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
