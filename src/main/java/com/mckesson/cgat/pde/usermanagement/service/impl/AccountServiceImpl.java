@@ -1,23 +1,28 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.ForbiddenActionException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import com.mckesson.cgat.pde.usermanagement.model.Practice;
 import com.mckesson.cgat.pde.usermanagement.model.User;
+import com.mckesson.cgat.pde.usermanagement.model.UserPreferenceType;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
+import com.mckesson.cgat.pde.usermanagement.repository.UserPreferenceRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
@@ -32,13 +37,16 @@ public class AccountServiceImpl implements AccountService {
 
 	private final PracticeRepository practiceRepository;
 
+	private final UserPreferenceRepository userPreferenceRepository;
+
 	private final UserRepository userRepository;
 
 	public AccountServiceImpl(AccountRepository accountRepository, PracticeRepository practiceRepository,
-			UserRepository userRepository) {
+			UserRepository userRepository, UserPreferenceRepository userPreferenceRepository) {
 		this.accountRepository = accountRepository;
 		this.practiceRepository = practiceRepository;
 		this.userRepository = userRepository;
+		this.userPreferenceRepository = userPreferenceRepository;
 	}
 
 	@Override
@@ -124,6 +132,23 @@ public class AccountServiceImpl implements AccountService {
 		if (accountLinkedToOtherPractice.isPresent())
 			throw new UnauthorizedAccessException(
 					"Account update not authorized.Some accounts that has to be linked to current practice are linked to other practices");
+	}
+
+	@Override
+	public Page<AccountsResponseDTO> findAllPayToAccounts(Long userId, String query, Pageable paging) {
+
+		List<AccountsResponseDTO> allAccounts = new ArrayList<>();
+		Page<AccountsResponseDTO> allPayToAccounts = accountRepository.findAllPayToAccounts(userId, query, paging,
+				AccountPartnerFunction.PAYER.getPartnerFunctionType());
+		allAccounts.addAll(allPayToAccounts.getContent());
+
+		AccountsResponseDTO preferencedPaytoAccount = userPreferenceRepository.findByUserIdAndType(userId,
+				UserPreferenceType.DEFAULT_PAY_TO_ACCOUNT.name());
+		if (preferencedPaytoAccount != null) {
+			allAccounts.removeIf(a -> a.getAccountNumber().equals(preferencedPaytoAccount.getAccountNumber()));
+			allAccounts.add(preferencedPaytoAccount);
+		}
+		return new PageImpl<>(allAccounts, paging, allAccounts.size());
 	}
 
 }

@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 
 public interface AccountRepository extends JpaRepository<Account, Long> {
@@ -96,6 +97,30 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 			@Param("status") String status, Pageable pageable, @Param("practiceId") Long practiceId,
 			String partnerFunction, @Param("salesOrg") List<String> salesOrg,
 			@Param("distChannels") List<String> distChannels);
+
+	Account findByAccountNumber(String accountNumber);
+
+	@Query(value = """
+			SELECT DISTINCT ac1.id, ac1.sap_customer as AccountNumber, ac1.name_1 as AccountName, ac1.house_number, ac1.street, ac1.street_2, ac1.street_3,
+			ac1.telephone, ac1.city, ac1.district, ac1.state, ac1.country, ac1.zip_code, false as isDefault, ac1.sales_org, ac1.company_code
+			FROM usermanagement.account ac1
+			JOIN usermanagement.account ac2 ON ac1.sap_partner = ac2.sap_customer
+			JOIN usermanagement.user_account_mapping uam ON ac2.id = uam.account_id
+			WHERE(
+					(
+						:query IS NULL
+					 	OR LOWER(ac1.name_1) LIKE %:query%
+					 	OR LOWER(ac1.sap_customer) LIKE %:query%
+					)
+					AND
+					uam.user_id = :userId
+					AND
+					ac1.partner_function = :partnerFunction
+				)
+			""",
+			nativeQuery = true)
+	public Page<AccountsResponseDTO> findAllPayToAccounts(@Param("userId") Long userId, @Param("query") String query,
+			Pageable paging, @Param("partnerFunction") String partnerFunction);
 
 	@Query(nativeQuery = true, value = """
 			select ua.id

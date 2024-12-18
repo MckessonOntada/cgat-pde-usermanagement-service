@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 
 @Repository
@@ -50,14 +52,14 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			)
 			""",
 			nativeQuery = true)
-	public Page<Object[]> findAllTherapies(@Param("userId") Long userId, @Param("query") String query,
+	public Page<TherapyCatalogResponseDTO> findAllTherapies(@Param("userId") Long userId, @Param("query") String query,
 			@Param("salesOrg") List<String> salesOrg, Pageable paging,
 			@Param("customerIdentifier") List<String> customerIdentifier,
 			@Param("partnerFunction") String partnerFunction);
 
 	@Query(value = """
-			SELECT DISTINCT ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2,
-					 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code
+			SELECT DISTINCT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2,
+					 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code, false as isDefault, ac.sales_org, ac.company_code
 			FROM catalog.material m
 			JOIN catalog.catalog_price cp ON m.material_number = cp.material_identifier_for_cgat
 			JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
@@ -84,13 +86,13 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 
 			""",
 			nativeQuery = true)
-	public Page<Object[]> findAllSoldToAccounts(@Param("userId") Long userId, @Param("therapyId") String therapyId,
-			@Param("query") String query, Pageable paging, @Param("distributionChannel") String distributionChannel,
-			@Param("partnerFunction") String partnerFunction);
+	public Page<AccountsResponseDTO> findAllSoldToAccounts(@Param("userId") Long userId,
+			@Param("therapyId") String therapyId, @Param("query") String query, Pageable paging,
+			@Param("distributionChannel") String distributionChannel, @Param("partnerFunction") String partnerFunction);
 
 	@Query(value = """
-			SELECT DISTINCT ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2,
-					 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code
+			SELECT DISTINCT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2,
+					 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code, false as isDefault, ac.sales_org, ac.company_code
 			FROM catalog.material m
 			JOIN catalog.catalog_price cp ON m.material_number = cp.material_identifier_for_cgat
 			JOIN usermanagement.account ac ON ac.sap_customer = cp.ship_to_customer
@@ -110,7 +112,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			)
 			""",
 			nativeQuery = true)
-	public Page<Object[]> findAllShipToAccounts(@Param("soldToAccountId") String soldToAccountId,
+	public Page<AccountsResponseDTO> findAllShipToAccounts(@Param("soldToAccountId") String soldToAccountId,
 			@Param("therapyId") String therapyId, @Param("query") String query, Pageable paging,
 			@Param("partnerFunction") String partnerFunction);
 

@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import java.util.List;
 
+import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Tag(name = "Therapy", description = "Controller for Managing Therapy-catalogs operations and data.")
-@RequestMapping(path = "/practices/{practiceId}/users/{userId}/therapies", consumes = "application/json",
+@RequestMapping(path = "/practices/{practiceId}/users/current/therapies", consumes = "application/json",
 		produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class TherapyController {
@@ -38,24 +39,26 @@ public class TherapyController {
 	@GetMapping
 	@Operation(
 			summary = "Find all therapies being offered via catalog for all accounts that the logged in user has access")
-	public Page<TherapyCatalogResponseDTO> findAllThreapies(@PathVariable Long userId,
-			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize,
-			@RequestParam(required = false) String query, @RequestParam(required = false) List<String> salesOrg,
+	public Page<TherapyCatalogResponseDTO> findAllThreapies(@RequestParam(defaultValue = "0") Integer pageNo,
+			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
+			@RequestParam(required = false) List<String> salesOrg,
 			@RequestParam(required = false) List<String> customerIdentifier) {
 		Pageable paging = PageRequest.of(pageNo, pageSize);
-		return therapyService.findAllTherapies(userId, query, salesOrg, paging, customerIdentifier);
+		return therapyService.findAllTherapies(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), query,
+				salesOrg, paging, customerIdentifier);
 	}
 
 	@GetMapping("/{therapyId}/soldtoaccounts")
 	@Operation(
 			summary = "Find all soldto accounts from which the selected therapy is being offered, and the logged in user has access to")
-	public Page<AccountsResponseDTO> findAllSoldToAccountsByTherapy(@PathVariable Long userId,
-			@PathVariable Long therapyId, @RequestParam(defaultValue = "0") Integer pageNo,
-			@RequestParam(required = false) String query, @RequestParam(defaultValue = "20") Integer pageSize,
+	public Page<AccountsResponseDTO> findAllSoldToAccountsByTherapy(@PathVariable Long therapyId,
+			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(required = false) String query,
+			@RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(required = false) String distributionChannel) {
 
 		Pageable paging = PageRequest.of(pageNo, pageSize);
-		return therapyService.findAllSoldToAccounts(userId, therapyId, query, paging, distributionChannel);
+		return therapyService.findAllSoldToAccounts(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()),
+				therapyId, query, paging, distributionChannel);
 	}
 
 	@GetMapping("{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccounts")

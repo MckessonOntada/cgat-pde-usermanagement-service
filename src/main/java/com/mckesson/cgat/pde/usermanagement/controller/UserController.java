@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
@@ -190,12 +191,31 @@ public class UserController {
 
 	}
 
+	@PatchMapping("/current/preference/defaultpayto/{payToAccountId}")
+	@Operation(summary = "Set default PayTo Account to User")
+	public User setDefaultPayToACcount(
+			@NotNull(message = "Account Id can not be null") @PathVariable Long payToAccountId)
+			throws ResourceNotFoundException {
+		return userService.setDefaultPayToAccount(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()),
+				payToAccountId);
+	}
+
 	@GetMapping("/current/accounts/ids")
 	@Operation(summary = "Fetch all AcccountIds for User")
 	ResponseEntity<List<Long>> findAllAccountIds() {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(accountRepository.findAccountIdsByUser(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()),
 					OrganizationContext.getCurrentOrgId(), AccountPartnerFunction.SOLD_TO.getPartnerFunctionType()));
+
+	}
+
+	@Operation(summary = "Find all payto accounts that are linked to all soldto accounts that the user has access")
+	@GetMapping("/current/paytoaccounts")
+	public Page<AccountsResponseDTO> findAllPayToAccounts(@RequestParam(defaultValue = "0") Integer pageNo,
+			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query) {
+		Pageable paging = PageRequest.of(pageNo, pageSize);
+		return accountService.findAllPayToAccounts(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), query,
+				paging);
 	}
 
 }

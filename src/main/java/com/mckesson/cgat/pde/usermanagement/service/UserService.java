@@ -34,4 +34,6 @@ public interface UserService {
 
 	User getUserByEmail(String email);
 
+	User setDefaultPayToAccount(Long userId, Long payToAccountId) throws ResourceNotFoundException;
+
 }
