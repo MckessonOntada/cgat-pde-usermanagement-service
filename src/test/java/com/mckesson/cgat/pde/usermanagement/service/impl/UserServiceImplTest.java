@@ -201,6 +201,23 @@ class UserServiceImplTest {
 		verify(userRepository, never()).save(any(User.class));
 	}
 
+	@DisplayName("ActivateUser")
+	@Test
+	void activateUserTest() throws ResourceNotFoundException {
+		when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+		userService.activateUser(user.getId());
+		assertTrue(user.getIsActive());
+		verify(userRepository, times(1)).save(user);
+	}
+
+	@DisplayName("UserNotFoundException : ActivateUser")
+	@Test
+	void activateUser_userNotFoundTest() {
+		when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
+		assertThrows(ResourceNotFoundException.class, () -> userService.activateUser(user.getId()));
+		verify(userRepository, never()).save(any(User.class));
+	}
+
 	@DisplayName("FindAllUser")
 	@Test
 	void findAllWithPageableTest() throws ParseException {
