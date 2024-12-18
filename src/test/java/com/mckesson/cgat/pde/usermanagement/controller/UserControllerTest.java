@@ -275,11 +275,7 @@ class UserControllerTest {
 	void activateUserTest() throws Exception {
 		doNothing().when(userService).activateUser(user.getId());
 		mockMvc
-			.perform(patch(apiUrl + "/{userId}/activate", user.getPracticeId(), user.getId()).param("userType", "ADMIN") // Add
-																															// the
-																															// required
-																															// `userType`
-																															// param
+			.perform(patch(apiUrl + "/{userId}/activate", user.getPracticeId(), user.getId()).param("userType", "ADMIN")
 				.contentType(MediaType.APPLICATION_JSON_VALUE))
 			.andExpect(status().isOk());
 	}
