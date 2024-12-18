@@ -10,6 +10,7 @@ import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelProjectionDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
+import com.mckesson.cgat.pde.usermanagement.model.DistributionChannel;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.cgat.pde.usermanagement.repository.TherapyRepository;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
@@ -31,8 +32,9 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	public Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, Long therapyId, String query, Pageable paging,
-			String channel, String program) {
-		return therapyRepository.findAllSoldToAccounts(userId, therapyId.toString(), query, paging, channel, program,
+			DistributionChannel channel, String program) {
+		return therapyRepository.findAllSoldToAccounts(userId, therapyId.toString(), query, paging,
+				channel.getDistributionChannelValue(), program,
 				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 	}
 

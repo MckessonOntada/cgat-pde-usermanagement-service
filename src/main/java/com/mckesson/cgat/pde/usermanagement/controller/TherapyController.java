@@ -18,6 +18,7 @@ import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelProjectionDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.model.DistributionChannel;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
 import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
@@ -57,7 +58,8 @@ public class TherapyController {
 			summary = "Find all soldto accounts from which the selected therapy is being offered, and the logged in user has access to")
 	public Page<AccountsResponseDTO> findAllSoldToAccountsByTherapy(@PathVariable Long therapyId,
 			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(required = false) String query,
-			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String channel,
+			@RequestParam(defaultValue = "20") Integer pageSize,
+			@RequestParam(required = false) DistributionChannel channel,
 			@RequestParam(required = false) String program) {
 
 		Pageable paging = PageRequest.of(pageNo, pageSize);
