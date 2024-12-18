@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -267,6 +268,26 @@ class UserControllerTest {
 	void deleteUser_userNotFoundTest() throws Exception {
 		doThrow(new ResourceNotFoundException("User not found")).when(userService).deleteUser(user.getId());
 		mockMvc.perform(delete("/{userId}", user.getId())).andExpect(status().isNotFound());
+	}
+
+	@DisplayName("ActivateUserTest")
+	@Test
+	void activateUserTest() throws Exception {
+		doNothing().when(userService).activateUser(user.getId());
+		mockMvc
+			.perform(patch(apiUrl + "/{userId}/activate", user.getPracticeId(), user.getId()).param("userType", "ADMIN")
+				.contentType(MediaType.APPLICATION_JSON_VALUE))
+			.andExpect(status().isOk());
+	}
+
+	@DisplayName("UserNotFoundException : ActivateUser")
+	@Test
+	void activateUser_userNotFoundTest() throws Exception {
+		doThrow(new ResourceNotFoundException("User not found")).when(userService).activateUser(user.getId());
+		mockMvc
+			.perform(patch(apiUrl + "/{userId}/activate", user.getPracticeId(), user.getId()).param("userType", "ADMIN")
+				.contentType(MediaType.APPLICATION_JSON_VALUE))
+			.andExpect(status().isNotFound());
 	}
 
 	@DisplayName("FindAllTest")
