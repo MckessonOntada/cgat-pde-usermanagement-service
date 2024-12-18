@@ -53,12 +53,12 @@ public class TherapyController {
 			summary = "Find all soldto accounts from which the selected therapy is being offered, and the logged in user has access to")
 	public Page<AccountsResponseDTO> findAllSoldToAccountsByTherapy(@PathVariable Long therapyId,
 			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(required = false) String query,
-			@RequestParam(defaultValue = "20") Integer pageSize,
-			@RequestParam(required = false) String distributionChannel) {
+			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String channel,
+			@RequestParam(required = false) String program) {
 
 		Pageable paging = PageRequest.of(pageNo, pageSize);
 		return therapyService.findAllSoldToAccounts(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()),
-				therapyId, query, paging, distributionChannel);
+				therapyId, query, paging, channel, program);
 	}
 
 	@GetMapping("{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccounts")

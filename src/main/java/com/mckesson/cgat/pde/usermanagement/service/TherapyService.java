@@ -18,7 +18,7 @@ public interface TherapyService {
 			List<String> customerIdentifier);
 
 	Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, Long therapyId, String query, Pageable paging,
-			String distributionChannel);
+			String channel, String program);
 
 	Page<AccountsResponseDTO> findAllShipToAccounts(String soldToAccountId, Long therapyId, Pageable paging,
 			String query);

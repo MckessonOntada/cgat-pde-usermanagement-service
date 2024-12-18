@@ -30,8 +30,8 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	public Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, Long therapyId, String query, Pageable paging,
-			String distributionChannel) {
-		return therapyRepository.findAllSoldToAccounts(userId, therapyId.toString(), query, paging, distributionChannel,
+			String channel, String program) {
+		return therapyRepository.findAllSoldToAccounts(userId, therapyId.toString(), query, paging, channel, program,
 				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 	}
 

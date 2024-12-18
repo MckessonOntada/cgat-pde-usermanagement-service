@@ -73,8 +73,13 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					)
 				AND
 					(
-					cast(:distributionChannel as varchar) is null
-					or cp.dist_channel = :distributionChannel
+					cast(:channel as varchar) is null
+					or ac.distribution_channel = :channel
+					)
+				AND
+					(
+					cast(:program as varchar) is null
+					or ac.cgat_identifier = :program
 					)
 				AND
 					m.material_number = :therapyId
@@ -88,7 +93,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			nativeQuery = true)
 	public Page<AccountsResponseDTO> findAllSoldToAccounts(@Param("userId") Long userId,
 			@Param("therapyId") String therapyId, @Param("query") String query, Pageable paging,
-			@Param("distributionChannel") String distributionChannel, @Param("partnerFunction") String partnerFunction);
+			@Param("channel") String channel, @Param("program") String program,
+			@Param("partnerFunction") String partnerFunction);
 
 	@Query(value = """
 			SELECT DISTINCT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2,

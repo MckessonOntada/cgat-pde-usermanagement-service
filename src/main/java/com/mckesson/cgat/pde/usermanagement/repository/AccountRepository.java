@@ -137,4 +137,10 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	List<Long> findAccountIdsByUser(@Param("userId") Long userId, @Param("practiceId") Long practiceId,
 			String partnerFunction);
 
+	@Query(nativeQuery = true, value = "select Distinct ua.cgat_identifier FROM usermanagement.account ua")
+	List<String> findAllCgatIdentifiers();
+
+	@Query(nativeQuery = true, value = "select Distinct ua.distribution_channel FROM usermanagement.account ua")
+	List<String> findAllDistChannels();
+
 }
