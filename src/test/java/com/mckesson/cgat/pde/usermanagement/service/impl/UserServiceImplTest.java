@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import com.mckesson.cgat.pde.usermanagement.model.*;
-import com.mckesson.cgat.pde.usermanagement.utils.OrganizationContext;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,12 +40,22 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
+import com.mckesson.cgat.pde.usermanagement.model.Account;
+import com.mckesson.cgat.pde.usermanagement.model.Address;
+import com.mckesson.cgat.pde.usermanagement.model.Contact;
+import com.mckesson.cgat.pde.usermanagement.model.DistributionChannel;
+import com.mckesson.cgat.pde.usermanagement.model.Name;
+import com.mckesson.cgat.pde.usermanagement.model.Permission;
+import com.mckesson.cgat.pde.usermanagement.model.Role;
+import com.mckesson.cgat.pde.usermanagement.model.User;
+import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
 import com.mckesson.cgat.pde.usermanagement.service.OktaUserManagementService;
 import com.mckesson.cgat.pde.usermanagement.util.TestUtils;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
+import com.mckesson.cgat.pde.usermanagement.utils.OrganizationContext;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
@@ -247,7 +255,7 @@ class UserServiceImplTest {
 			.practiceId(100L)
 			.accountName("acc_name")
 			.salesOrg("100")
-			.distributionChannel("dn")
+			.distributionChannel(DistributionChannel.PL)
 			.division("dv")
 			.isActive(true)
 			.user(null)
@@ -260,7 +268,7 @@ class UserServiceImplTest {
 			.practiceId(200L)
 			.accountName("acc1_name")
 			.salesOrg("200")
-			.distributionChannel("dn")
+			.distributionChannel(DistributionChannel.PL)
 			.division("dv")
 			.isActive(true)
 			.user(null)
@@ -271,7 +279,7 @@ class UserServiceImplTest {
 			.practiceId(201L)
 			.accountName("acc2_name")
 			.salesOrg("201")
-			.distributionChannel("dn")
+			.distributionChannel(DistributionChannel.PL)
 			.division("dv")
 			.isActive(true)
 			.user(null)
@@ -316,7 +324,7 @@ class UserServiceImplTest {
 			.practiceId(200L)
 			.accountName("acc1_name")
 			.salesOrg("200")
-			.distributionChannel("dn")
+			.distributionChannel(DistributionChannel.PL)
 			.division("dv")
 			.isActive(true)
 			.user(null)
@@ -327,7 +335,7 @@ class UserServiceImplTest {
 			.practiceId(201L)
 			.accountName("acc2_name")
 			.salesOrg("201")
-			.distributionChannel("dn")
+			.distributionChannel(DistributionChannel.PL)
 			.division("dv")
 			.isActive(true)
 			.user(null)

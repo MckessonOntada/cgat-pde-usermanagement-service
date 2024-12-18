@@ -1,14 +1,20 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelProjectionDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
+import com.mckesson.cgat.pde.usermanagement.model.DistributionChannel;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.cgat.pde.usermanagement.repository.TherapyRepository;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
@@ -30,9 +36,9 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	public Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, Long therapyId, String query, Pageable paging,
-			String distributionChannel) {
-		return therapyRepository.findAllSoldToAccounts(userId, therapyId.toString(), query, paging, distributionChannel,
-				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
+			DistributionChannel channel, String program) {
+		return therapyRepository.findAllSoldToAccounts(userId, therapyId.toString(), query, paging, channel.getCode(),
+				program, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 	}
 
 	public Page<AccountsResponseDTO> findAllShipToAccounts(String soldToAccountId, Long therapyId, Pageable paging,
@@ -44,6 +50,23 @@ public class TherapyServiceImpl implements TherapyService {
 	public Therapy findById(Long id) throws ResourceNotFoundException {
 		return therapyRepository.findById(id)
 			.orElseThrow(() -> new ResourceNotFoundException("Therapy not found with id: " + id));
+	}
+
+	public ProgramChannelResponseDTO findAllProgramAndChannels(Long userId, Long therapyId) {
+
+		List<ProgramChannelProjectionDTO> programAndChannels = therapyRepository.findAllProgramAndChannels(userId,
+				therapyId.toString(), AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
+
+		Set<String> uniquePrograms = null != programAndChannels
+				? (programAndChannels.stream().map(ProgramChannelProjectionDTO::getProgram).collect(Collectors.toSet()))
+				: Collections.emptySet();
+
+		Set<DistributionChannel> uniqueChannels = null != programAndChannels ? (programAndChannels.stream()
+			.map(ProgramChannelProjectionDTO::getChannel)
+			.map(DistributionChannel::fromCode)
+			.collect(Collectors.toSet())) : Collections.emptySet();
+
+		return ProgramChannelResponseDTO.builder().channels(uniqueChannels).programs(uniquePrograms).build();
 	}
 
 }

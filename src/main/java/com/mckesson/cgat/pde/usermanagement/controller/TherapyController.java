@@ -2,11 +2,12 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import java.util.List;
 
-import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,9 +15,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelProjectionDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.model.DistributionChannel;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
+import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -54,11 +59,12 @@ public class TherapyController {
 	public Page<AccountsResponseDTO> findAllSoldToAccountsByTherapy(@PathVariable Long therapyId,
 			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(required = false) String query,
 			@RequestParam(defaultValue = "20") Integer pageSize,
-			@RequestParam(required = false) String distributionChannel) {
+			@RequestParam(required = false) DistributionChannel channel,
+			@RequestParam(required = false) String program) {
 
 		Pageable paging = PageRequest.of(pageNo, pageSize);
 		return therapyService.findAllSoldToAccounts(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()),
-				therapyId, query, paging, distributionChannel);
+				therapyId, query, paging, channel, program);
 	}
 
 	@GetMapping("{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccounts")
@@ -75,6 +81,14 @@ public class TherapyController {
 	@Operation(summary = "Find Therapy by id")
 	public Therapy findbyId(@PathVariable Long therapyId) throws ResourceNotFoundException {
 		return therapyService.findById(therapyId);
+	}
+
+	@GetMapping("/{therapyId}/programs-channels")
+	@Operation(
+			summary = "Find all programs and channels from which the selected therapy is being offered, and the logged in user has access to")
+	public ResponseEntity<ProgramChannelResponseDTO> findAllProgramAndChannels(@PathVariable Long therapyId) {
+		return new ResponseEntity<>(therapyService.findAllProgramAndChannels(
+				Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), therapyId), HttpStatus.OK);
 	}
 
 }
