@@ -1,5 +1,4 @@
 Delete from usermanagement.role_permissions_mapping where role_id = '1';
-
 INSERT into usermanagement.role_permissions_mapping(role_id, permission) VALUES
 (1, 'MANAGE_USERS_SCREEN'),
 (1, 'ADD_USERS'),
@@ -22,13 +21,16 @@ INSERT into usermanagement.role_permissions_mapping(role_id, permission) VALUES
 (1, 'EDIT_ORGANIZATION'),
 (1, 'MANAGE_ORDERS'),
 (1, 'VIEW_ORDERS'),
-(1, 'CREATE_ORDERS'),
+(1, 'VIEW_PENDING_ORDERS'),
+(1, 'ADD_ORDERS'),
 (1, 'EDIT_ORDERS'),
 (1, 'APPROVE_ORDERS'),
 (1, 'CANCEL_ORDER'),
 (1, 'REJECT_ORDER'),
 (1, 'ADD_APPROVER_GROUP'),
 (1, 'VIEW_APPROVER_GROUP'),
+(1, 'MANAGE_APPROVER_GROUP'),
+(1, 'EDIT_APPROVER_GROUP'),
 (1, 'VIEW_QUESTIONIARE'),
 (1, 'CONFIGURE_QUESTIONNIARE'),
 (1, 'DEACTIVATE_QUESTIONNIARE'),
@@ -58,7 +60,6 @@ INSERT into usermanagement.role_permissions_mapping(role_id, permission) VALUES
 (1, 'CREATE_INVOICES');
 
 Delete from usermanagement.user_permission_mapping where user_id = '1';
-
 INSERT into usermanagement.user_permission_mapping(user_id, permission) VALUES
 (1, 'MANAGE_USERS_SCREEN'),
 (1, 'ADD_USERS'),
@@ -81,13 +82,16 @@ INSERT into usermanagement.user_permission_mapping(user_id, permission) VALUES
 (1, 'EDIT_ORGANIZATION'),
 (1, 'MANAGE_ORDERS'),
 (1, 'VIEW_ORDERS'),
-(1, 'CREATE_ORDERS'),
+(1, 'VIEW_PENDING_ORDERS'),
+(1, 'ADD_ORDERS'),
 (1, 'EDIT_ORDERS'),
 (1, 'APPROVE_ORDERS'),
 (1, 'CANCEL_ORDER'),
 (1, 'REJECT_ORDER'),
 (1, 'ADD_APPROVER_GROUP'),
 (1, 'VIEW_APPROVER_GROUP'),
+(1, 'MANAGE_APPROVER_GROUP'),
+(1, 'EDIT_APPROVER_GROUP'),
 (1, 'VIEW_QUESTIONIARE'),
 (1, 'CONFIGURE_QUESTIONNIARE'),
 (1, 'DEACTIVATE_QUESTIONNIARE'),
@@ -115,3 +119,27 @@ INSERT into usermanagement.user_permission_mapping(user_id, permission) VALUES
 (1, 'MANAGE_SYSTEM_CONFIGURATIONS'),
 (1, 'VIEW_ACCOUNTS'),
 (1, 'CREATE_INVOICES');
+
+UPDATE usermanagement.role_permissions_mapping
+SET permission = 'ADD_ORDERS'
+WHERE permission = 'CREATE_ORDERS';
+
+UPDATE usermanagement.user_permission_mapping
+SET permission = 'ADD_ORDERS'
+WHERE permission = 'CREATE_ORDERS';
+
+UPDATE usermanagement.role_permissions_mapping
+SET permission = 'MANAGE_CATALOG'
+WHERE permission = 'MANAGE_CATALOG_CONFIGURATIONS';
+
+UPDATE usermanagement.user_permission_mapping
+SET permission = 'MANAGE_CATALOG'
+WHERE permission = 'MANAGE_CATALOG_CONFIGURATIONS';
+
+UPDATE usermanagement.role_permissions_mapping
+SET permission = 'ADD_QUESTIONNIARE'
+WHERE permission = 'CREATE_QUESTIONNIARE';
+
+UPDATE usermanagement.user_permission_mapping
+SET permission = 'ADD_QUESTIONNIARE'
+WHERE permission = 'CREATE_QUESTIONNIARE';
