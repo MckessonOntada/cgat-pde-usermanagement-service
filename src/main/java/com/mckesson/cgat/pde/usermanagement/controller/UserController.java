@@ -113,6 +113,17 @@ public class UserController {
 	}
 
 	@RequirePermissions({ Permission.EDIT_USERS })
+	@PatchMapping("/{userId}/activate")
+	@Operation(summary = "Delete user details byId")
+	public void activateUser(@PathVariable Long userId,
+			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
+		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
+		userService.activateUser(userId);
+
+	}
+
+	@RequirePermissions({ Permission.EDIT_USERS })
 	@DeleteMapping("/{userId}/accounts/{accountId}")
 	@Operation(summary = "Delink user from account")
 	public ResponseEntity<Void> delinkUserFromAccount(@PathVariable Long userId,
