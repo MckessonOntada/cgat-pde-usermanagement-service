@@ -164,9 +164,9 @@ public class TherapyServiceImplTest {
 		String therapyId = "18";
 		String variantType = "";
 		Mockito
-				.when(catalogPriceRepository.findPriceOfVariantLinkedToShipToAccountsForTherapy(anyString(), anyString(),
-						anyString(), anyString()))
-				.thenReturn(getCatalogPriceWithEmptyVariant());
+			.when(catalogPriceRepository.findPriceOfVariantLinkedToShipToAccountsForTherapy(anyString(), anyString(),
+					anyString(), anyString()))
+			.thenReturn(getCatalogPriceWithEmptyVariant());
 		therapyService.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccount, shipToAccount, variantType,
 				Long.valueOf(therapyId));
 		verify(catalogPriceRepository, times(1)).findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccount,
