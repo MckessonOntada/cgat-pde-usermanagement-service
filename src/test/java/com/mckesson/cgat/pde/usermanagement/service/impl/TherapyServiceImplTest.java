@@ -8,10 +8,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponseDto;
 import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
 import com.mckesson.cgat.pde.usermanagement.repository.CatalogPriceRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -121,19 +123,72 @@ public class TherapyServiceImplTest {
 		assertThrows(ResourceNotFoundException.class, () -> therapyService.findById(therapyId));
 	}
 
-	@DisplayName("Test : FindAll Variants linked to soldToAccount, ShipToAccounts")
+	@DisplayName("Test : FindAll Variants linked to soldToAccount, ShipToAccounts and TherapyId")
 	@Test
 	public void findAllVariantsLinkedToShipToAccountsForTherapyTest() {
 		String soldToAccount = "4";
 		String shipToAccount = "103";
 		String therapyId = "18";
-
 		Mockito
-				.when(catalogPriceRepository.findAllCatalogPricesLinkedToShipToAccountsForTherapy(anyString(), anyString(), anyString(),
-						Mockito.any(Pageable.class)))
-				.thenReturn(getAllVariantsLinkedToShipToAccounts());
-		therapyService.findAllVariantsLinkedToShipToAccountsForTherapy(soldToAccount, shipToAccount,Long.valueOf(therapyId), paging);
-		verify(catalogPriceRepository, times(1)).findAllCatalogPricesLinkedToShipToAccountsForTherapy(soldToAccount, therapyId, "", paging);
+			.when(catalogPriceRepository.findAllCatalogPricesLinkedToShipToAccountsForTherapy(anyString(), anyString(),
+					anyString(), Mockito.any(Pageable.class)))
+			.thenReturn(getAllVariantsLinkedToShipToAccounts());
+		therapyService.findAllVariantsLinkedToShipToAccountsForTherapy(soldToAccount, shipToAccount,
+				Long.valueOf(therapyId), paging);
+		verify(catalogPriceRepository, times(1)).findAllCatalogPricesLinkedToShipToAccountsForTherapy(soldToAccount,
+				shipToAccount, therapyId, paging);
+	}
+
+	@DisplayName("Test : Find Price of Variant linked to soldToAccount, ShipToAccounts and TherapyId")
+	@Test
+	public void findPriceOfVariantLinkedToShipToAccountsForTherapyTest() {
+		String soldToAccount = "4";
+		String shipToAccount = "103";
+		String therapyId = "18";
+		String variantType = "Type B";
+		Mockito
+			.when(catalogPriceRepository.findPriceOfVariantLinkedToShipToAccountsForTherapy(anyString(), anyString(),
+					anyString(), anyString()))
+			.thenReturn(getCatalogPrice());
+		therapyService.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccount, shipToAccount, variantType,
+				Long.valueOf(therapyId));
+		verify(catalogPriceRepository, times(1)).findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccount,
+				shipToAccount, therapyId, variantType);
+	}
+
+	@DisplayName("Test : Find Price of therapy with no variant linked to soldToAccount, ShipToAccounts and TherapyId")
+	@Test
+	public void findPriceOfVariantNotLinkedToShipToAccountsForTherapyTest() {
+		String soldToAccount = "4";
+		String shipToAccount = "103";
+		String therapyId = "18";
+		String variantType = "";
+		Mockito
+				.when(catalogPriceRepository.findPriceOfVariantLinkedToShipToAccountsForTherapy(anyString(), anyString(),
+						anyString(), anyString()))
+				.thenReturn(getCatalogPriceWithEmptyVariant());
+		therapyService.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccount, shipToAccount, variantType,
+				Long.valueOf(therapyId));
+		verify(catalogPriceRepository, times(1)).findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccount,
+				shipToAccount, therapyId, variantType);
+	}
+
+	private CatalogPrice getCatalogPriceWithEmptyVariant() {
+		CatalogPrice catalogPrice = new CatalogPrice();
+		catalogPrice.setNdc("ndc1");
+		catalogPrice.setVariant(null);
+		catalogPrice.setVariantDescription(null);
+		catalogPrice.setNetPrice(BigDecimal.valueOf(100.20));
+		catalogPrice.setContractPrice(BigDecimal.valueOf(100.20));
+		catalogPrice.setPricingDate(LocalDate.EPOCH);
+		catalogPrice.setNetPrice(BigDecimal.TEN);
+		catalogPrice.setWacPrice(BigDecimal.TEN);
+		catalogPrice.setPrice340b(BigDecimal.TEN);
+		catalogPrice.setFixedPrice("10");
+		catalogPrice.setContractPrice(BigDecimal.TEN);
+		catalogPrice.setRegularPrice(BigDecimal.valueOf(120.50));
+		catalogPrice.setUdi("udi1");
+		return catalogPrice;
 	}
 
 	private Page<CatalogPrice> getAllVariantsLinkedToShipToAccounts() {
@@ -150,6 +205,24 @@ public class TherapyServiceImplTest {
 		catalogPrices.add(catalogPrice2);
 		return new PageImpl<>(catalogPrices, paging, catalogPrices.size());
 
+	}
+
+	private CatalogPrice getCatalogPrice() {
+		CatalogPrice catalogPrice = new CatalogPrice();
+		catalogPrice.setNdc("ndc1");
+		catalogPrice.setVariant("Type B");
+		catalogPrice.setVariantDescription("One to One");
+		catalogPrice.setNetPrice(BigDecimal.valueOf(100.20));
+		catalogPrice.setContractPrice(BigDecimal.valueOf(100.20));
+		catalogPrice.setPricingDate(LocalDate.EPOCH);
+		catalogPrice.setNetPrice(BigDecimal.TEN);
+		catalogPrice.setWacPrice(BigDecimal.TEN);
+		catalogPrice.setPrice340b(BigDecimal.TEN);
+		catalogPrice.setFixedPrice("10");
+		catalogPrice.setContractPrice(BigDecimal.TEN);
+		catalogPrice.setRegularPrice(BigDecimal.valueOf(120.50));
+		catalogPrice.setUdi("udi1");
+		return catalogPrice;
 	}
 
 	private Page<Object[]> getTherapies() {
