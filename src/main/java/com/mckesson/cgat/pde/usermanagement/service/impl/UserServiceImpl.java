@@ -99,6 +99,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public void activateUser(Long userId) throws ResourceNotFoundException {
+		User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(userId.toString()));
+		user.setIsActive(true);
+		userRepository.save(user);
+	}
+
+	@Override
 	public Page<User> findAll(Pageable paging, String query, List<String> status, Long praticeId, LocalDate startDate,
 			LocalDate endDate, List<Long> roleIds) {
 		query = StringUtils.toRootLowerCase(query);

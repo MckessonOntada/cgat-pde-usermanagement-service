@@ -80,6 +80,7 @@ public class User extends AuditColumns implements Serializable {
 
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinColumn(name = "user_id", referencedColumnName = "id")
+	@JsonIgnore
 	private Set<UserPreference> preferences = new HashSet<>();
 
 	@OneToOne

@@ -55,7 +55,7 @@ public class GlobalAccountControllerTest {
 			.practiceId(null)
 			.accountName("Account1")
 			.salesOrg("DC1")
-			.distributionChannel("DC1")
+			.distributionChannel(DistributionChannel.PL)
 			.division("dv")
 			.isActive(true)
 			.build();

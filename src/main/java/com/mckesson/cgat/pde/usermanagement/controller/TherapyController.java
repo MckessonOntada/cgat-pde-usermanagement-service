@@ -6,7 +6,9 @@ import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,9 +16,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelProjectionDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.model.DistributionChannel;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
+import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Tag(name = "Therapy", description = "Controller for Managing Therapy-catalogs operations and data.")
-@RequestMapping(path = "/practices/{practiceId}/users/{userId}/therapies", consumes = "application/json",
+@RequestMapping(path = "/practices/{practiceId}/users/current/therapies", consumes = "application/json",
 		produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class TherapyController {
@@ -39,24 +45,27 @@ public class TherapyController {
 	@GetMapping
 	@Operation(
 			summary = "Find all therapies being offered via catalog for all accounts that the logged in user has access")
-	public Page<TherapyCatalogResponseDTO> findAllThreapies(@PathVariable Long userId,
-			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize,
-			@RequestParam(required = false) String query, @RequestParam(required = false) List<String> salesOrg,
+	public Page<TherapyCatalogResponseDTO> findAllThreapies(@RequestParam(defaultValue = "0") Integer pageNo,
+			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
+			@RequestParam(required = false) List<String> salesOrg,
 			@RequestParam(required = false) List<String> customerIdentifier) {
 		Pageable paging = PageRequest.of(pageNo, pageSize);
-		return therapyService.findAllTherapies(userId, query, salesOrg, paging, customerIdentifier);
+		return therapyService.findAllTherapies(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), query,
+				salesOrg, paging, customerIdentifier);
 	}
 
 	@GetMapping("/{therapyId}/soldtoaccounts")
 	@Operation(
 			summary = "Find all soldto accounts from which the selected therapy is being offered, and the logged in user has access to")
-	public Page<AccountsResponseDTO> findAllSoldToAccountsByTherapy(@PathVariable Long userId,
-			@PathVariable Long therapyId, @RequestParam(defaultValue = "0") Integer pageNo,
-			@RequestParam(required = false) String query, @RequestParam(defaultValue = "20") Integer pageSize,
-			@RequestParam(required = false) String distributionChannel) {
+	public Page<AccountsResponseDTO> findAllSoldToAccountsByTherapy(@PathVariable Long therapyId,
+			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(required = false) String query,
+			@RequestParam(defaultValue = "20") Integer pageSize,
+			@RequestParam(required = false) DistributionChannel channel,
+			@RequestParam(required = false) String program) {
 
 		Pageable paging = PageRequest.of(pageNo, pageSize);
-		return therapyService.findAllSoldToAccounts(userId, therapyId, query, paging, distributionChannel);
+		return therapyService.findAllSoldToAccounts(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()),
+				therapyId, query, paging, channel, program);
 	}
 
 	@GetMapping("{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccounts")
@@ -94,6 +103,14 @@ public class TherapyController {
 			@RequestParam(required = false) String variantType, @PathVariable Long therapyId) {
 		return therapyService.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccountId, shipToAccountId,
 				variantType, therapyId);
+	}
+
+	@GetMapping("/{therapyId}/programs-channels")
+	@Operation(
+			summary = "Find all programs and channels from which the selected therapy is being offered, and the logged in user has access to")
+	public ResponseEntity<ProgramChannelResponseDTO> findAllProgramAndChannels(@PathVariable Long therapyId) {
+		return new ResponseEntity<>(therapyService.findAllProgramAndChannels(
+				Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), therapyId), HttpStatus.OK);
 	}
 
 }

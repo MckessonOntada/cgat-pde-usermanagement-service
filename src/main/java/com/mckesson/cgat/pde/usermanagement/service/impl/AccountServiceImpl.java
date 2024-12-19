@@ -1,7 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -138,28 +137,18 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public Page<AccountsResponseDTO> findAllPayToAccounts(Long userId, String query, Pageable paging) {
 
-		List<Object[]> allAccounts = new ArrayList<>();
-		Page<Object[]> allPayToAccounts = accountRepository.findAllPayToAccounts(userId, query, paging,
+		List<AccountsResponseDTO> allAccounts = new ArrayList<>();
+		Page<AccountsResponseDTO> allPayToAccounts = accountRepository.findAllPayToAccounts(userId, query, paging,
 				AccountPartnerFunction.PAYER.getPartnerFunctionType());
 		allAccounts.addAll(allPayToAccounts.getContent());
 
-		List<Object[]> userPreference = userPreferenceRepository.findByUserIdAndType(userId,
+		AccountsResponseDTO preferencedPaytoAccount = userPreferenceRepository.findByUserIdAndType(userId,
 				UserPreferenceType.DEFAULT_PAY_TO_ACCOUNT.name());
-		if (!userPreference.isEmpty())
-			allAccounts.add(userPreference.get(0));
-		Set<AccountsResponseDTO> payToAccounts = new HashSet<>();
-		for (Object[] obj : allAccounts) {
-			AccountsResponseDTO account = new AccountsResponseDTO(String.valueOf(obj[0]), String.valueOf(obj[1]),
-					String.valueOf(obj[2]), String.valueOf(obj[3]), String.valueOf(obj[4]), String.valueOf(obj[5]),
-					String.valueOf(obj[6]), String.valueOf(obj[7]), String.valueOf(obj[8]), String.valueOf(obj[9]),
-					String.valueOf(obj[10]), String.valueOf(obj[11]), String.valueOf(obj[12]), false,
-					String.valueOf(obj[13]), String.valueOf(obj[14]));
-			if (!userPreference.isEmpty() && account.getAccountNumber().equals(userPreference.get(0)[1]))
-				account.setIsDefault(true);
-
-			payToAccounts.add(account);
+		if (preferencedPaytoAccount != null) {
+			allAccounts.removeIf(a -> a.getAccountNumber().equals(preferencedPaytoAccount.getAccountNumber()));
+			allAccounts.add(preferencedPaytoAccount);
 		}
-		return new PageImpl<>(new ArrayList<AccountsResponseDTO>(payToAccounts), paging, payToAccounts.size());
+		return new PageImpl<>(allAccounts, paging, allAccounts.size());
 	}
 
 }

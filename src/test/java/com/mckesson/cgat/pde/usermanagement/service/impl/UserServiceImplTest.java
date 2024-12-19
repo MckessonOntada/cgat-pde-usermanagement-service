@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import com.mckesson.cgat.pde.usermanagement.model.*;
-import com.mckesson.cgat.pde.usermanagement.utils.OrganizationContext;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,12 +40,22 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
+import com.mckesson.cgat.pde.usermanagement.model.Account;
+import com.mckesson.cgat.pde.usermanagement.model.Address;
+import com.mckesson.cgat.pde.usermanagement.model.Contact;
+import com.mckesson.cgat.pde.usermanagement.model.DistributionChannel;
+import com.mckesson.cgat.pde.usermanagement.model.Name;
+import com.mckesson.cgat.pde.usermanagement.model.Permission;
+import com.mckesson.cgat.pde.usermanagement.model.Role;
+import com.mckesson.cgat.pde.usermanagement.model.User;
+import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
 import com.mckesson.cgat.pde.usermanagement.service.OktaUserManagementService;
 import com.mckesson.cgat.pde.usermanagement.util.TestUtils;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
+import com.mckesson.cgat.pde.usermanagement.utils.OrganizationContext;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
@@ -193,6 +201,23 @@ class UserServiceImplTest {
 		verify(userRepository, never()).save(any(User.class));
 	}
 
+	@DisplayName("ActivateUser")
+	@Test
+	void activateUserTest() throws ResourceNotFoundException {
+		when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+		userService.activateUser(user.getId());
+		assertTrue(user.getIsActive());
+		verify(userRepository, times(1)).save(user);
+	}
+
+	@DisplayName("UserNotFoundException : ActivateUser")
+	@Test
+	void activateUser_userNotFoundTest() {
+		when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
+		assertThrows(ResourceNotFoundException.class, () -> userService.activateUser(user.getId()));
+		verify(userRepository, never()).save(any(User.class));
+	}
+
 	@DisplayName("FindAllUser")
 	@Test
 	void findAllWithPageableTest() throws ParseException {
@@ -230,7 +255,7 @@ class UserServiceImplTest {
 			.practiceId(100L)
 			.accountName("acc_name")
 			.salesOrg("100")
-			.distributionChannel("dn")
+			.distributionChannel(DistributionChannel.PL)
 			.division("dv")
 			.isActive(true)
 			.user(null)
@@ -243,7 +268,7 @@ class UserServiceImplTest {
 			.practiceId(200L)
 			.accountName("acc1_name")
 			.salesOrg("200")
-			.distributionChannel("dn")
+			.distributionChannel(DistributionChannel.PL)
 			.division("dv")
 			.isActive(true)
 			.user(null)
@@ -254,7 +279,7 @@ class UserServiceImplTest {
 			.practiceId(201L)
 			.accountName("acc2_name")
 			.salesOrg("201")
-			.distributionChannel("dn")
+			.distributionChannel(DistributionChannel.PL)
 			.division("dv")
 			.isActive(true)
 			.user(null)
@@ -299,7 +324,7 @@ class UserServiceImplTest {
 			.practiceId(200L)
 			.accountName("acc1_name")
 			.salesOrg("200")
-			.distributionChannel("dn")
+			.distributionChannel(DistributionChannel.PL)
 			.division("dv")
 			.isActive(true)
 			.user(null)
@@ -310,7 +335,7 @@ class UserServiceImplTest {
 			.practiceId(201L)
 			.accountName("acc2_name")
 			.salesOrg("201")
-			.distributionChannel("dn")
+			.distributionChannel(DistributionChannel.PL)
 			.division("dv")
 			.isActive(true)
 			.user(null)

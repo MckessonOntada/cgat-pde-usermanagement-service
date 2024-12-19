@@ -6,6 +6,7 @@ import java.util.Set;
 import org.hibernate.type.NumericBooleanConverter;
 
 import com.mckesson.cgat.pde.usermanagement.model.converters.AccountPartnerFunctionConverter;
+import com.mckesson.cgat.pde.usermanagement.model.converters.DistributionChannelConverter;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -68,7 +69,8 @@ public class Account implements Serializable {
 	private String salesOrg;
 
 	@Column(name = "distribution_channel")
-	private String distributionChannel;
+	@Convert(converter = DistributionChannelConverter.class)
+	private DistributionChannel distributionChannel;
 
 	@Column(name = "vistex_customer")
 	private String vistexCustomer;
@@ -84,6 +86,9 @@ public class Account implements Serializable {
 
 	@Embedded
 	private AccountAddress address;
+
+	@Column(name = "cgat_identifier")
+	private String cgatIdentifier;
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "user_account_mapping", joinColumns = @JoinColumn(name = "user_id"),

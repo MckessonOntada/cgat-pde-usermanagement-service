@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
@@ -108,6 +109,17 @@ public class UserController {
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
 		userService.deleteUser(userId);
+
+	}
+
+	@RequirePermissions({ Permission.EDIT_USERS })
+	@PatchMapping("/{userId}/activate")
+	@Operation(summary = "Activate user by Id")
+	public void activateUser(@PathVariable Long userId,
+			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
+		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
+		userService.activateUser(userId);
 
 	}
 
@@ -206,6 +218,15 @@ public class UserController {
 			.body(accountRepository.findAccountIdsByUser(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()),
 					OrganizationContext.getCurrentOrgId(), AccountPartnerFunction.SOLD_TO.getPartnerFunctionType()));
 
+	}
+
+	@Operation(summary = "Find all payto accounts that are linked to all soldto accounts that the user has access")
+	@GetMapping("/current/paytoaccounts")
+	public Page<AccountsResponseDTO> findAllPayToAccounts(@RequestParam(defaultValue = "0") Integer pageNo,
+			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query) {
+		Pageable paging = PageRequest.of(pageNo, pageSize);
+		return accountService.findAllPayToAccounts(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), query,
+				paging);
 	}
 
 }
