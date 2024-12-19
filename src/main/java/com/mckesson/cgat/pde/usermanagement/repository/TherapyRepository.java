@@ -141,4 +141,25 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 	public List<ProgramChannelProjectionDTO> findAllProgramAndChannels(@Param("userId") Long userId,
 			@Param("therapyId") String therapyId, @Param("partnerFunction") String partnerFunction);
 
+	@Query(value = """
+			SELECT DISTINCT ac.sap_customer as accountNumber, ac.name_1 as accountName
+			FROM usermanagement.account ac
+			JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
+			JOIN catalog.catalog_price cp ON ac.sap_customer = cp.sold_to_customer
+			WHERE
+			(
+				(
+					:query is null
+					or LOWER(ac.sap_customer) like %:query%
+					or LOWER(ac.name_1) like %:query%
+				)
+				AND
+					uam.user_id = :userId
+				AND
+					ac.partner_function = :partnerFunction
+			)
+			""", nativeQuery = true)
+	public Page<AccountsResponseDTO> findAllCustomerIdentifiers(@Param("userId") Long userId,
+			@Param("query") String query, Pageable paging, @Param("partnerFunction") String partnerFunction);
+
 }

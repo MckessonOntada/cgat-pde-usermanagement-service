@@ -30,4 +30,6 @@ public interface TherapyService {
 
 	ProgramChannelResponseDTO findAllProgramAndChannels(Long userId, Long therapyId);
 
+	Page<AccountsResponseDTO> findAllCustomerIdentifiers(Long userId, String query, Pageable paging);
+
 }
