@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS PG_TRGM;
+
 CREATE INDEX IF NOT EXISTS catalog_ndc_distchannel_materialidentifier_index  ON catalog.catalog_price 
 USING GIN (ndc gin_trgm_ops, dist_channel gin_trgm_ops, material_identifier_for_cgat gin_trgm_ops);
 
