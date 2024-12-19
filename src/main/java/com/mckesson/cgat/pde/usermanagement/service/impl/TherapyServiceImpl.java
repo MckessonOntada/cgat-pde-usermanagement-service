@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,8 +38,9 @@ public class TherapyServiceImpl implements TherapyService {
 
 	public Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, Long therapyId, String query, Pageable paging,
 			DistributionChannel channel, String program) {
-		return therapyRepository.findAllSoldToAccounts(userId, therapyId.toString(), query, paging, channel.getCode(),
-				program, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
+		return therapyRepository.findAllSoldToAccounts(userId, therapyId.toString(), query, paging,
+				null != channel ? channel.getCode() : null, program,
+				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 	}
 
 	public Page<AccountsResponseDTO> findAllShipToAccounts(String soldToAccountId, Long therapyId, Pageable paging,
@@ -57,9 +59,10 @@ public class TherapyServiceImpl implements TherapyService {
 		List<ProgramChannelProjectionDTO> programAndChannels = therapyRepository.findAllProgramAndChannels(userId,
 				therapyId.toString(), AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 
-		Set<String> uniquePrograms = null != programAndChannels
-				? (programAndChannels.stream().map(ProgramChannelProjectionDTO::getProgram).collect(Collectors.toSet()))
-				: Collections.emptySet();
+		Set<String> uniquePrograms = null != programAndChannels ? (programAndChannels.stream()
+			.map(ProgramChannelProjectionDTO::getProgram)
+			.filter(Objects::nonNull)
+			.collect(Collectors.toSet())) : Collections.emptySet();
 
 		Set<DistributionChannel> uniqueChannels = null != programAndChannels ? (programAndChannels.stream()
 			.map(ProgramChannelProjectionDTO::getChannel)
