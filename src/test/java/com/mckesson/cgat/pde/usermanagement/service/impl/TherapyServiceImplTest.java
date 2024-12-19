@@ -7,10 +7,13 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
+import com.mckesson.cgat.pde.usermanagement.repository.CatalogPriceRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,6 +40,9 @@ public class TherapyServiceImplTest {
 
 	@Mock
 	private TherapyRepository therapyRepository;
+
+	@Mock
+	private CatalogPriceRepository catalogPriceRepository;
 
 	private Pageable paging;
 
@@ -113,6 +119,37 @@ public class TherapyServiceImplTest {
 		Long therapyId = 2L;
 		Mockito.when(therapyRepository.findById(therapyId)).thenReturn(Optional.empty());
 		assertThrows(ResourceNotFoundException.class, () -> therapyService.findById(therapyId));
+	}
+
+	@DisplayName("Test : FindAll Variants linked to soldToAccount, ShipToAccounts")
+	@Test
+	public void findAllVariantsLinkedToShipToAccountsForTherapyTest() {
+		String soldToAccount = "4";
+		String shipToAccount = "103";
+		String therapyId = "18";
+
+		Mockito
+				.when(catalogPriceRepository.findAllCatalogPricesLinkedToShipToAccountsForTherapy(anyString(), anyString(), anyString(),
+						Mockito.any(Pageable.class)))
+				.thenReturn(getAllVariantsLinkedToShipToAccounts());
+		therapyService.findAllVariantsLinkedToShipToAccountsForTherapy(soldToAccount, shipToAccount,Long.valueOf(therapyId), paging);
+		verify(catalogPriceRepository, times(1)).findAllCatalogPricesLinkedToShipToAccountsForTherapy(soldToAccount, therapyId, "", paging);
+	}
+
+	private Page<CatalogPrice> getAllVariantsLinkedToShipToAccounts() {
+		List<CatalogPrice> catalogPrices = new ArrayList<>();
+		CatalogPrice catalogPrice1 = new CatalogPrice();
+		catalogPrice1.setContractPrice(BigDecimal.TEN);
+		catalogPrice1.setVariant("Type B");
+		catalogPrice1.setVariantDescription("One to One");
+		CatalogPrice catalogPrice2 = new CatalogPrice();
+		catalogPrice2.setContractPrice(BigDecimal.TEN);
+		catalogPrice2.setVariant("Type B");
+		catalogPrice2.setVariantDescription("One to One");
+		catalogPrices.add(catalogPrice1);
+		catalogPrices.add(catalogPrice2);
+		return new PageImpl<>(catalogPrices, paging, catalogPrices.size());
+
 	}
 
 	private Page<Object[]> getTherapies() {

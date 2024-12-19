@@ -8,13 +8,15 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponseDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
@@ -151,6 +153,129 @@ public class TherapyControllerTest {
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andReturn();
+	}
+
+	@DisplayName("Test : Find ALl Variants linked to SoldTo, ShipTO and TherapyId")
+	@Test
+	public void findAllVariantsLinkedToShipToAccountsForTherapyTest() throws Exception {
+		Long therapyId = 12L;
+		String soldToAccount = "4";
+		String shipToAccount = "103";
+		Page<CatalogPriceResponseDto> catalogPriceResponseDtos = getCatalogPriceList();
+
+		when(therapyService.findAllVariantsLinkedToShipToAccountsForTherapy(anyString(), anyString(), anyLong(),
+				any(PageRequest.class)))
+			.thenReturn(catalogPriceResponseDtos);
+
+		mockMvc.perform(get(
+				"/practices/{practiceId}/users/{userId}/therapies/{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/variants",
+				practiceId, userId, therapyId, soldToAccount, shipToAccount)
+			.param("pageNo", pageNo)
+			.param("pageSize", pageSize)
+			.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+	}
+
+	@DisplayName("Test : Find Price of Variant if variant is present linked to SoldTo, ShipTO and TherapyId")
+	@Test
+	public void findPriceOfVariantLinkedToShipToAccountsForTherapyTestIfVariantisPresent() throws Exception {
+		Long therapyId = 12L;
+		String soldToAccount = "4";
+		String shipToAccount = "103";
+		String variantType = "Type B";
+		CatalogPriceResponseDto catalogPriceResponseDtos = getCatalogPrice();
+
+		when(therapyService.findPriceOfVariantLinkedToShipToAccountsForTherapy(anyString(), anyString(), anyString(),
+				anyLong()))
+			.thenReturn(catalogPriceResponseDtos);
+
+		mockMvc.perform(get(
+				"/practices/{practiceId}/users/{userId}/therapies/{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/variant",
+				practiceId, userId, therapyId, soldToAccount, shipToAccount)
+			.param("variantType", variantType)
+			.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+	}
+
+	@DisplayName("Test : Find Price of Variant if variant is not present linked to SoldTo, ShipTO and TherapyId")
+	@Test
+	public void findPriceOfVariantLinkedToShipToAccountsForTherapyTestIfVariantisNotPresent() throws Exception {
+		Long therapyId = 12L;
+		String soldToAccount = "4";
+		String shipToAccount = "103";
+		String variantType = null;
+		CatalogPriceResponseDto catalogPriceResponseDtos = getCatalogPrice();
+		catalogPriceResponseDtos.setVariant(null);
+		catalogPriceResponseDtos.setVariantDescription(null);
+
+		when(therapyService.findPriceOfVariantLinkedToShipToAccountsForTherapy(anyString(), anyString(), anyString(),
+				anyLong()))
+			.thenReturn(catalogPriceResponseDtos);
+
+		mockMvc.perform(get(
+				"/practices/{practiceId}/users/{userId}/therapies/{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/variant",
+				practiceId, userId, therapyId, soldToAccount, shipToAccount)
+			.param("variantType", "")
+			.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+	}
+
+	private CatalogPriceResponseDto getCatalogPrice() {
+		return CatalogPriceResponseDto.builder()
+			.ndc("ndc1")
+			.variant("Type B")
+			.variantDescription("One to One")
+			.netPrice(BigDecimal.valueOf(100.20))
+			.contractPrice(BigDecimal.valueOf(100.20))
+			.pricingDate(LocalDate.EPOCH)
+			.netPrice(BigDecimal.TEN)
+			.wacPrice(BigDecimal.TEN)
+			.price340b(BigDecimal.TEN)
+			.fixedPrice("10")
+			.contractPrice(BigDecimal.TEN)
+			.regularPrice(BigDecimal.valueOf(120.50))
+			.udi("udi1")
+			.build();
+	}
+
+	private Page<CatalogPriceResponseDto> getCatalogPriceList() {
+		List<CatalogPriceResponseDto> catalogs = new ArrayList<>();
+		CatalogPriceResponseDto catalogPrice1 = CatalogPriceResponseDto.builder()
+			.ndc("ndc1")
+			.variant("Type B")
+			.variantDescription("One to One")
+			.netPrice(BigDecimal.valueOf(100.20))
+			.contractPrice(BigDecimal.valueOf(100.20))
+			.pricingDate(LocalDate.EPOCH)
+			.netPrice(BigDecimal.TEN)
+			.wacPrice(BigDecimal.TEN)
+			.price340b(BigDecimal.TEN)
+			.fixedPrice("10")
+			.contractPrice(BigDecimal.TEN)
+			.regularPrice(BigDecimal.valueOf(120.50))
+			.udi("udi1")
+			.build();
+		CatalogPriceResponseDto catalogPrice2 = CatalogPriceResponseDto.builder()
+			.ndc("ndc2")
+			.variant("Type C")
+			.variantDescription("One to Many")
+			.udi("udi2")
+			.build();
+		CatalogPriceResponseDto catalogPrice3 = CatalogPriceResponseDto.builder()
+			.ndc("ndc3")
+			.variant("Type D")
+			.variantDescription("Many to Many")
+			.udi("udi3")
+			.build();
+		CatalogPriceResponseDto catalogPrice4 = CatalogPriceResponseDto.builder()
+			.ndc("ndc4")
+			.variant("Type E")
+			.variantDescription("Many to One")
+			.udi("udi4")
+			.build();
+
+		catalogs.add(catalogPrice1);
+		catalogs.add(catalogPrice2);
+		catalogs.add(catalogPrice3);
+		catalogs.add(catalogPrice4);
+		return new PageImpl<>(catalogs, paging, catalogs.size());
 	}
 
 	private Page<TherapyCatalogResponseDTO> getTherapies() {

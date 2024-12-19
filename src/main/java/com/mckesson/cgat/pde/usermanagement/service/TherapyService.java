@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.service;
 
 import java.util.List;
 
+import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,5 +25,11 @@ public interface TherapyService {
 			String query);
 
 	Therapy findById(Long id) throws ResourceNotFoundException;
+
+	Page<CatalogPriceResponseDto> findAllVariantsLinkedToShipToAccountsForTherapy(String soldToAccountId,
+			String shipToAccountId, Long therapyId, Pageable paging);
+
+	CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForTherapy(String soldToAccountId,
+			String shipToAccountId, String variantType, Long therapyId);
 
 }

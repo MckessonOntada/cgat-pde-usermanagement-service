@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import java.util.List;
 
+import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -72,6 +73,27 @@ public class TherapyController {
 	@Operation(summary = "Find Therapy by id")
 	public Therapy findbyId(@PathVariable Long therapyId) throws ResourceNotFoundException {
 		return therapyService.findById(therapyId);
+	}
+
+	@GetMapping("{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/variants")
+	@Operation(
+			summary = "Find all variants of therapy that is linked to the selected soldto account,shipto account and the therapy being offered from that shipto account")
+	public Page<CatalogPriceResponseDto> findAllVariantsLinkedToShipToAccountsForTherapy(
+			@PathVariable String soldToAccountId, @PathVariable String shipToAccountId, @PathVariable Long therapyId,
+			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize) {
+		Pageable paging = PageRequest.of(pageNo, pageSize);
+		return therapyService.findAllVariantsLinkedToShipToAccountsForTherapy(soldToAccountId, shipToAccountId,
+				therapyId, paging);
+	}
+
+	@GetMapping("{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/variant")
+	@Operation(
+			summary = "Find price of the variant of therapy that is linked to the selected soldto account,shipto account and the therapy being offered from that shipto account")
+	public CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForTherapy(
+			@PathVariable String soldToAccountId, @PathVariable String shipToAccountId,
+			@RequestParam(required = false) String variantType, @PathVariable Long therapyId) {
+		return therapyService.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccountId, shipToAccountId,
+				variantType, therapyId);
 	}
 
 }

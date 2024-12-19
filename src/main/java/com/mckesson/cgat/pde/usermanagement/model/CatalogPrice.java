@@ -97,7 +97,7 @@ import lombok.ToString;
 @Data
 @ToString
 @Entity
-@Table(name = "catalog_price")
+@Table(name = "catalog_price", schema = "catalog")
 public class CatalogPrice {
 
 	public static final DateTimeFormatter DATE_FORMAT_1 = DateTimeFormatter
