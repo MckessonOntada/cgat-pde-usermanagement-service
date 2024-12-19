@@ -178,7 +178,7 @@ public class TherapyControllerTest {
 			.thenReturn(catalogPriceResponseDtos);
 
 		mockMvc.perform(get(
-				"/practices/{practiceId}/users/{userId}/therapies/{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/variant",
+				"/practices/{practiceId}/users/current/therapies/{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/variant",
 				practiceId, userId, therapyId, soldToAccount, shipToAccount)
 			.param("variantType", "")
 			.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
