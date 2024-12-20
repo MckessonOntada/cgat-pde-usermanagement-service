@@ -202,13 +202,13 @@ public class UserController {
 
 	}
 
-	@PatchMapping("/current/preference/defaultpayto/{payToAccountId}")
+	@PatchMapping("/current/preference/defaultpayto/{payToAccount}")
 	@Operation(summary = "Set default PayTo Account to User")
 	public User setDefaultPayToACcount(
-			@NotNull(message = "Account Id can not be null") @PathVariable Long payToAccountId)
+			@NotNull(message = "Account Id can not be null") @PathVariable String payToAccount)
 			throws ResourceNotFoundException {
 		return userService.setDefaultPayToAccount(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()),
-				payToAccountId);
+				payToAccount);
 	}
 
 	@GetMapping("/current/accounts/ids")

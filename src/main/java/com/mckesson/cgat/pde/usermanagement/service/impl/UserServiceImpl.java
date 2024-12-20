@@ -173,16 +173,16 @@ public class UserServiceImpl implements UserService {
 
 	@Transactional
 	@Override
-	public User setDefaultPayToAccount(Long userId, Long payToAccountId) throws ResourceNotFoundException {
+	public User setDefaultPayToAccount(Long userId, String payToAccount) throws ResourceNotFoundException {
 		User user = userRepository.findById(userId).get();
 
-		if (accountRepository.findByAccountNumber(payToAccountId.toString()) == null)
-			throw new ResourceNotFoundException("Account not found with id:" + payToAccountId);
+		if (accountRepository.findByAccountNumber(payToAccount) == null)
+			throw new ResourceNotFoundException("Account not found with Number: " + payToAccount);
 
 		UserPreference userPreference = UserPreference.builder()
 			.type(UserPreferenceType.DEFAULT_PAY_TO_ACCOUNT)
 			.userId(userId)
-			.value(payToAccountId.toString())
+			.value(payToAccount)
 			.build();
 		userRepository.resetDefaultPayToAccount(userId, UserPreferenceType.DEFAULT_PAY_TO_ACCOUNT.name());
 		user.getPreferences().add(userPreference);

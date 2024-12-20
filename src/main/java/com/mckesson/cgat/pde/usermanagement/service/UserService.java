@@ -3,7 +3,6 @@ package com.mckesson.cgat.pde.usermanagement.service;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.mckesson.cgat.pde.usermanagement.model.LoggedInUserDetails;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -36,6 +35,6 @@ public interface UserService {
 
 	User getUserByEmail(String email);
 
-	User setDefaultPayToAccount(Long userId, Long payToAccountId) throws ResourceNotFoundException;
+	User setDefaultPayToAccount(Long userId, String payToAccount) throws ResourceNotFoundException;
 
 }
