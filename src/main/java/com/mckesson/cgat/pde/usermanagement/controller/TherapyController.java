@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelProjectionDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.DistributionChannel;
@@ -89,6 +88,17 @@ public class TherapyController {
 	public ResponseEntity<ProgramChannelResponseDTO> findAllProgramAndChannels(@PathVariable Long therapyId) {
 		return new ResponseEntity<>(therapyService.findAllProgramAndChannels(
 				Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), therapyId), HttpStatus.OK);
+	}
+
+	@GetMapping("/customeridentifiers")
+	@Operation(
+			summary = "Find all Customer Identifiers or soldto accounts from which therapies are being offered, and the logged in user has access to")
+	public ResponseEntity<Page<AccountsResponseDTO>> findAllCustomerIdentifiers(
+			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize,
+			@RequestParam(required = false) String query) {
+		Pageable paging = PageRequest.of(pageNo, pageSize);
+		return new ResponseEntity<>(therapyService.findAllCustomerIdentifiers(
+				Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), query, paging), HttpStatus.OK);
 	}
 
 }

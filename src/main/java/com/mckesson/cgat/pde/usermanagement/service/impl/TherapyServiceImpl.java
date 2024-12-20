@@ -72,4 +72,9 @@ public class TherapyServiceImpl implements TherapyService {
 		return ProgramChannelResponseDTO.builder().channels(uniqueChannels).programs(uniquePrograms).build();
 	}
 
+	public Page<AccountsResponseDTO> findAllCustomerIdentifiers(Long userId, String query, Pageable paging) {
+		return therapyRepository.findAllCustomerIdentifiers(userId, query, paging,
+				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
+	}
+
 }
