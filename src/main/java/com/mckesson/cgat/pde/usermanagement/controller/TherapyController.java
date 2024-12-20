@@ -120,4 +120,15 @@ public class TherapyController {
 				Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), therapyId), HttpStatus.OK);
 	}
 
+	@GetMapping("/customeridentifiers")
+	@Operation(
+			summary = "Find all Customer Identifiers or soldto accounts from which therapies are being offered, and the logged in user has access to")
+	public ResponseEntity<Page<AccountsResponseDTO>> findAllCustomerIdentifiers(
+			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize,
+			@RequestParam(required = false) String query) {
+		Pageable paging = PageRequest.of(pageNo, pageSize);
+		return new ResponseEntity<>(therapyService.findAllCustomerIdentifiers(
+				Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), query, paging), HttpStatus.OK);
+	}
+
 }

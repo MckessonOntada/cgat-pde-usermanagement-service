@@ -31,6 +31,8 @@ public interface TherapyService {
 
 	ProgramChannelResponseDTO findAllProgramAndChannels(Long userId, Long therapyId);
 
+	Page<AccountsResponseDTO> findAllCustomerIdentifiers(Long userId, String query, Pageable paging);
+
 	Page<CatalogPriceResponseDto> findAllVariantsLinkedToShipToAccountsForTherapy(String soldToAccountId,
 			String shipToAccountId, Long therapyId, Pageable paging);
 
