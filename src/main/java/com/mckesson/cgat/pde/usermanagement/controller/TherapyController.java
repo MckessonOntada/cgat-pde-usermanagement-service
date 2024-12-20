@@ -91,9 +91,11 @@ public class TherapyController {
 	@Operation(
 			summary = "Find all variants of therapy that is linked to the selected soldto account,shipto account and the therapy being offered from that shipto account")
 	public Page<CatalogPriceResponseDto> findAllVariantsLinkedToShipToAccountsForTherapy(
-			@PathVariable @NotNull(message = "'soldToAccountId' cannot be null")
-			@NotEmpty(message = "'soldToAccountId' cannot be empty") String soldToAccountId, @PathVariable @NotNull(message = "'shipToAccountId' cannot be null")
-			@NotEmpty(message = "'shipToAccountId' cannot be empty") String shipToAccountId, @PathVariable @NotNull(message = "'therapyId' cannot be null") Long therapyId,
+			@PathVariable @NotNull(message = "'soldToAccountId' cannot be null") @NotEmpty(
+					message = "'soldToAccountId' cannot be empty") String soldToAccountId,
+			@PathVariable @NotNull(message = "'shipToAccountId' cannot be null") @NotEmpty(
+					message = "'shipToAccountId' cannot be empty") String shipToAccountId,
+			@PathVariable @NotNull(message = "'therapyId' cannot be null") Long therapyId,
 			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize) {
 		Pageable paging = PageRequest.of(pageNo, pageSize);
 		return therapyService.findAllVariantsLinkedToShipToAccountsForTherapy(soldToAccountId, shipToAccountId,
@@ -104,10 +106,12 @@ public class TherapyController {
 	@Operation(
 			summary = "Find price of the variant of therapy that is linked to the selected soldto account,shipto account and the therapy being offered from that shipto account")
 	public CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForTherapy(
-			@PathVariable @NotNull(message = "'soldToAccountId' cannot be null")
-			@NotEmpty(message = "'soldToAccountId' cannot be empty") String soldToAccountId, @PathVariable @NotNull(message = "'shipToAccountId' cannot be null")
-			@NotEmpty(message = "'shipToAccountId' cannot be empty") String shipToAccountId,
-			@RequestParam(required = false) String variantType, @PathVariable @NotNull(message = "'therapyId' cannot be null") Long therapyId) {
+			@PathVariable @NotNull(message = "'soldToAccountId' cannot be null") @NotEmpty(
+					message = "'soldToAccountId' cannot be empty") String soldToAccountId,
+			@PathVariable @NotNull(message = "'shipToAccountId' cannot be null") @NotEmpty(
+					message = "'shipToAccountId' cannot be empty") String shipToAccountId,
+			@RequestParam(required = false) String variantType,
+			@PathVariable @NotNull(message = "'therapyId' cannot be null") Long therapyId) {
 		return therapyService.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccountId, shipToAccountId,
 				variantType, therapyId);
 	}

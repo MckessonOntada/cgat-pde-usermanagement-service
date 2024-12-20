@@ -84,7 +84,8 @@ public class TherapyServiceImpl implements TherapyService {
 		}
 		catch (Exception ex) {
 			log.error(
-					"Exception occurred in fetching variants linked to soldToAccountId, shipToAccountId and therapyId and exception - {}", ex.getMessage());
+					"Exception occurred in fetching variants linked to soldToAccountId, shipToAccountId and therapyId and exception - {}",
+					ex.getMessage());
 			throw ex;
 		}
 	}
@@ -102,7 +103,8 @@ public class TherapyServiceImpl implements TherapyService {
 		}
 		catch (Exception e) {
 			log.error(
-					"Exception occurred in fetching Price of variant linked to soldToAccountId, shipToAccountId and therapyId and exception details - {}", e.getMessage());
+					"Exception occurred in fetching Price of variant linked to soldToAccountId, shipToAccountId and therapyId and exception details - {}",
+					e.getMessage());
 			throw e;
 		}
 	}
