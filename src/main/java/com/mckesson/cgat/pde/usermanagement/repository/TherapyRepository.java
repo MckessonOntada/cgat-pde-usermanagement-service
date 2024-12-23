@@ -22,7 +22,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			m.vendor_name, m.upc_code, m.dropship_indicator, m.item_status as status, m.base_unit_of_measure, m.cgat_identifier, m.sales_organization,
 			m.cgat_type, m.product_level_pricing, cp.minimum_order_quantity
 			FROM catalog.material m
-			JOIN catalog.catalog_price cp ON m.material_number = cp.material_identifier_for_cgat
+			JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
 			JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
 			JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
 			WHERE
@@ -31,7 +31,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					:query is null
 					or LOWER(cp.ndc) like %:query%
 					or LOWER(cp.dist_channel) like %:query%
-					or LOWER(cp.material_identifier_for_cgat) like %:query%
+					or LOWER(cp.sap_material) like %:query%
 					or LOWER(m.generic_name) like %:query%
 				)
 				AND
@@ -62,7 +62,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			SELECT DISTINCT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2,
 					 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code, false as isDefault, ac.sales_org, ac.company_code
 			FROM catalog.material m
-			JOIN catalog.catalog_price cp ON m.material_number = cp.material_identifier_for_cgat
+			JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
 			JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
 			JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
 			WHERE
@@ -101,7 +101,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			SELECT DISTINCT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2,
 					 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code, false as isDefault, ac.sales_org, ac.company_code
 			FROM catalog.material m
-			JOIN catalog.catalog_price cp ON m.material_number = cp.material_identifier_for_cgat
+			JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
 			JOIN usermanagement.account ac ON ac.sap_customer = cp.ship_to_customer
 			WHERE
 			(
@@ -113,7 +113,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 				AND
 					cp.sold_to_customer = :soldToAccountId
 				AND
-					cp.material_identifier_for_cgat = :therapyId
+					cp.sap_material = :therapyId
 				AND
 					ac.partner_function = :partnerFunction
 			)
@@ -126,14 +126,14 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 	@Query(value = """
 			SELECT ac.cgat_identifier as program, ac.distribution_channel as channel
 			FROM catalog.material m
-			JOIN catalog.catalog_price cp ON m.material_number = cp.material_identifier_for_cgat
+			JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
 			JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
 			JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
 			WHERE
 			(
 					uam.user_id = :userId
 				AND
-					cp.material_identifier_for_cgat = :therapyId
+					cp.sap_material = :therapyId
 				AND
 					ac.partner_function = :partnerFunction
 			)
