@@ -2,12 +2,16 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import java.util.List;
 
+import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponseDto;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping(path = "/practices/{practiceId}/users/current/therapies", consumes = "application/json",
 		produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
+@Validated
 public class TherapyController {
 
 	private final TherapyService therapyService;
@@ -80,6 +85,35 @@ public class TherapyController {
 	@Operation(summary = "Find Therapy by id")
 	public Therapy findbyId(@PathVariable Long therapyId) throws ResourceNotFoundException {
 		return therapyService.findById(therapyId);
+	}
+
+	@GetMapping("{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/variants")
+	@Operation(
+			summary = "Find all variants of therapy that is linked to the selected soldto account,shipto account and the therapy being offered from that shipto account")
+	public Page<CatalogPriceResponseDto> findAllVariantsLinkedToShipToAccountsForTherapy(
+			@PathVariable @NotNull(message = "'soldToAccountId' cannot be null") @NotEmpty(
+					message = "'soldToAccountId' cannot be empty") String soldToAccountId,
+			@PathVariable @NotNull(message = "'shipToAccountId' cannot be null") @NotEmpty(
+					message = "'shipToAccountId' cannot be empty") String shipToAccountId,
+			@PathVariable @NotNull(message = "'therapyId' cannot be null") Long therapyId,
+			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize) {
+		Pageable paging = PageRequest.of(pageNo, pageSize);
+		return therapyService.findAllVariantsLinkedToShipToAccountsForTherapy(soldToAccountId, shipToAccountId,
+				therapyId, paging);
+	}
+
+	@GetMapping("{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/catalog")
+	@Operation(
+			summary = "Find price of the variant of therapy that is linked to the selected soldto account,shipto account and the therapy being offered from that shipto account")
+	public CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForTherapy(
+			@PathVariable @NotNull(message = "'soldToAccountId' cannot be null") @NotEmpty(
+					message = "'soldToAccountId' cannot be empty") String soldToAccountId,
+			@PathVariable @NotNull(message = "'shipToAccountId' cannot be null") @NotEmpty(
+					message = "'shipToAccountId' cannot be empty") String shipToAccountId,
+			@RequestParam(required = false) String variantType,
+			@PathVariable @NotNull(message = "'therapyId' cannot be null") Long therapyId) {
+		return therapyService.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccountId, shipToAccountId,
+				variantType, therapyId);
 	}
 
 	@GetMapping("/{therapyId}/programs-channels")
