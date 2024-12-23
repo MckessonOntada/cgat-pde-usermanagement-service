@@ -102,7 +102,7 @@ public class TherapyController {
 				therapyId, paging);
 	}
 
-	@GetMapping("{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/variant")
+	@GetMapping("{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/catalog")
 	@Operation(
 			summary = "Find price of the variant of therapy that is linked to the selected soldto account,shipto account and the therapy being offered from that shipto account")
 	public CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForTherapy(

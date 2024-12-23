@@ -13,13 +13,13 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 	@Query(value = """
 			 SELECT DISTINCT  cp.*
 			 FROM catalog.catalog_price cp
-			 JOIN catalog.material m ON m.material_number = cp.material_identifier_for_cgat
+			 JOIN catalog.material m ON m.material_number = cp.sap_material
 			 WHERE
 			 	cp.sold_to_customer = :soldToAccountId
 			 AND
 			     cp.ship_to_customer = :shipToAccountId
 			AND
-			    cp.material_identifier_for_cgat = :therapyId
+			    cp.sap_material = :therapyId
 			""", nativeQuery = true)
 	Page<CatalogPrice> findAllCatalogPricesLinkedToShipToAccountsForTherapy(
 			@Param("soldToAccountId") String soldToAccountId, @Param("shipToAccountId") String shipToAccountId,
@@ -28,13 +28,13 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 	@Query(value = """
 			 SELECT DISTINCT  cp.*
 			 FROM catalog.catalog_price cp
-			 JOIN catalog.material m ON m.material_number = cp.material_identifier_for_cgat
+			 JOIN catalog.material m ON m.material_number = cp.sap_material
 			 WHERE
 			 	cp.sold_to_customer = :soldToAccountId
 			 AND
 			     cp.ship_to_customer = :shipToAccountId
 			AND
-			    cp.material_identifier_for_cgat = :therapyId
+			    cp.sap_material = :therapyId
 			AND
 				cp.variant = :variantType
 			""", nativeQuery = true)
