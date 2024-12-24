@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.service;
 import java.io.IOException;
 import java.util.List;
 
+import com.mckesson.cgat.pde.usermanagement.dto.PracticeLogoResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,6 @@ public interface PracticeService {
 
 	Practice createPractice(Practice practice, MultipartFile logo) throws IllegalStateException, IOException;
 
-	byte[] getPracticeLogo(String id) throws ResourceNotFoundException;
+	PracticeLogoResponseDto getPracticeLogo(String id) throws ResourceNotFoundException;
 
 }

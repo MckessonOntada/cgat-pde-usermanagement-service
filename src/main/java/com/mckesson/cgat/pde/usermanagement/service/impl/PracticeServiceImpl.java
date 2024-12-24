@@ -5,9 +5,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.mckesson.cgat.pde.usermanagement.dto.PracticeLogoResponseDto;
+import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -73,10 +76,17 @@ public class PracticeServiceImpl implements PracticeService {
 	}
 
 	@Override
-	public byte[] getPracticeLogo(String id) throws ResourceNotFoundException {
+	public PracticeLogoResponseDto getPracticeLogo(String id) throws ResourceNotFoundException {
 		Practice practice = practiceRepository.findById(Long.valueOf(id))
 			.orElseThrow(() -> new ResourceNotFoundException("Practice not found with id : " + id));
-		return practiceUtils.fetchLogo(practice.getLogoUrl());
+		String fileName = practice.getLogoUrl();
+		String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+		MediaType mediaType = practiceUtils.getContentType(fileExtension);
+		if (mediaType == null) {
+			throw new FileNotValidException("Unsupported file type: " + fileExtension);
+		}
+		byte[] logo = practiceUtils.fetchLogo(fileName);
+		return PracticeLogoResponseDto.builder().logo(logo).logoExtension(mediaType).build();
 	}
 
 	@Override

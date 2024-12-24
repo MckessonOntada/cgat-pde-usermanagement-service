@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import java.io.IOException;
 import java.util.List;
 
+import com.mckesson.cgat.pde.usermanagement.dto.PracticeLogoResponseDto;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
@@ -105,13 +106,15 @@ public class PracticeController {
 		return new ResponseEntity<>(practiceService.getPractice(practiceId), HttpStatus.OK);
 	}
 
-	@RequirePermissions({ Permission.VIEW_ORGANIZATION })
 	@GetMapping("/{practiceId}/logo")
 	@Operation(summary = "Get Practice Logo by Practice Id")
 	public ResponseEntity<byte[]> getPracticeLogo(@PathVariable String practiceId)
 			throws NumberFormatException, ResourceNotFoundException {
+		PracticeLogoResponseDto practiceLogoResponseDto = practiceService.getPracticeLogo(practiceId);
 
-		return new ResponseEntity<>(practiceService.getPracticeLogo(practiceId), HttpStatus.OK);
+		return ResponseEntity.status(HttpStatus.OK)
+			.contentType(practiceLogoResponseDto.getLogoExtension())
+			.body(practiceLogoResponseDto.getLogo());
 	}
 
 	@RequirePermissions({ Permission.EDIT_ORGANIZATION })

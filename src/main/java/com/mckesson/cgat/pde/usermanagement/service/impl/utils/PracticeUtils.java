@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Set;
 
 import org.ini4j.InvalidFileFormatException;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -65,6 +66,25 @@ public class PracticeUtils {
 		String[] validExtensions = { "jpeg", "jpg", "png", "tiff", "tif", "bmp", "gif" };
 		String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
 		return Arrays.asList(validExtensions).contains(fileExtension);
+	}
+
+	public MediaType getContentType(String fileExtension) {
+		switch (fileExtension.toLowerCase()) {
+			case "jpeg":
+			case "jpg":
+				return MediaType.IMAGE_JPEG;
+			case "png":
+				return MediaType.IMAGE_PNG;
+			case "gif":
+				return MediaType.IMAGE_GIF;
+			case "bmp":
+				return MediaType.parseMediaType("image/bmp");
+			case "tiff":
+			case "tif":
+				return MediaType.parseMediaType("image/tiff");
+			default:
+				return null; // Unsupported file type
+		}
 	}
 
 }
