@@ -111,7 +111,7 @@ public class PracticeController {
 	public ResponseEntity<byte[]> getPracticeLogo(@PathVariable String practiceId)
 			throws NumberFormatException, ResourceNotFoundException {
 
-		return new ResponseEntity<>(practiceService.getPracticeLogo(practiceId),HttpStatus.OK);
+		return new ResponseEntity<>(practiceService.getPracticeLogo(practiceId), HttpStatus.OK);
 	}
 
 	@RequirePermissions({ Permission.EDIT_ORGANIZATION })

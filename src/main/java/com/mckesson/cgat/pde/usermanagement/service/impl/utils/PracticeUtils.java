@@ -38,7 +38,7 @@ public class PracticeUtils {
 				Path.of("logos/" + practiceId + "." + FilenameUtils.getExtension(file.getOriginalFilename())), true);
 	}
 
-	public byte[] fetchLogo(String logoURL){
+	public byte[] fetchLogo(String logoURL) {
 		String blobPath = logoURL.substring(logoURL.indexOf("logos"));
 
 		Path azureBlobPath = Path.of(blobPath);
