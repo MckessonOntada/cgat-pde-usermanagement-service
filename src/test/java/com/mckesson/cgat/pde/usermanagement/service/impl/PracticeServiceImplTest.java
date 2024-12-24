@@ -29,6 +29,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 
 import com.mckesson.cgat.pde.usermanagement.model.Address;
@@ -68,7 +69,7 @@ class PracticeServiceImplTest {
 			.contact(new Contact("email@gmail.com", "+1", "1212121212", "fax"))
 			.contactPerson(new Name("first", "", "last"))
 			.isActive(Boolean.TRUE)
-			.logoUrl("logo")
+			.logoUrl("logos/1.jpg")
 			.name("DefaultName")
 			.build();
 	}
@@ -107,6 +108,16 @@ class PracticeServiceImplTest {
 		assertTrue(practice.getIsActive());
 		practiceService.deletePractice(practiceId.toString());
 		assertFalse(practice.getIsActive());
+	}
+
+	@DisplayName("Test : Get Practice Logo")
+	@Test
+	void getPracticeLogoTest() throws ResourceNotFoundException {
+		Long practiceID = 1L;
+		when(practiceRepository.findById(practiceID)).thenReturn(Optional.of(practice));
+		when(practiceUtils.getContentType("jpg")).thenReturn(MediaType.IMAGE_JPEG);
+		assertNotNull(practiceService.getPracticeLogo(practiceID.toString()));
+		assertEquals(MediaType.IMAGE_JPEG, practiceService.getPracticeLogo(practiceID.toString()).getLogoExtension());
 	}
 
 	@DisplayName("Test ResourceNotFoundException : Delete Practice")
