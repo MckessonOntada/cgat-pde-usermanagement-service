@@ -73,6 +73,12 @@ public class PracticeServiceImpl implements PracticeService {
 	}
 
 	@Override
+	public byte[] getPracticeLogo(String id) throws ResourceNotFoundException {
+		Practice practice = practiceRepository.findById(Long.valueOf(id)).orElseThrow(() -> new ResourceNotFoundException("Practice not found with id : " + id));
+		return practiceUtils.fetchLogo(practice.getLogoUrl());
+	}
+
+	@Override
 	public void deletePractice(String id) throws ResourceNotFoundException {
 		Optional<Practice> practiceOpt = practiceRepository.findById(Long.valueOf(id));
 		Practice practice = practiceOpt

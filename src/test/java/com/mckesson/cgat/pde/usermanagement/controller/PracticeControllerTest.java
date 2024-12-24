@@ -236,4 +236,12 @@ class PracticeControllerTest {
 		mockMvc.perform(builder.file(file).part(somePart)).andExpect(status().isOk()).andDo(print()).andReturn();
 	}
 
+	@DisplayName("Test : Get Practice Logo")
+	@Test
+	void getPracticeLogoTest() throws Exception {
+		String practiceId = "1";
+		when(practiceService.getPractice(practiceId)).thenReturn(practice);
+		mockMvc.perform(get("/practices/{practiceId}/logo", practiceId)).andDo(print()).andExpect(status().isOk());
+	}
+
 }

@@ -22,4 +22,6 @@ public interface PracticeService {
 
 	Practice createPractice(Practice practice, MultipartFile logo) throws IllegalStateException, IOException;
 
+	byte[] getPracticeLogo(String id) throws ResourceNotFoundException;
+
 }

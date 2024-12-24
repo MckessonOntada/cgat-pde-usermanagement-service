@@ -38,6 +38,13 @@ public class PracticeUtils {
 				Path.of("logos/" + practiceId + "." + FilenameUtils.getExtension(file.getOriginalFilename())), true);
 	}
 
+	public byte[] fetchLogo(String logoURL){
+		String blobPath = logoURL.substring(logoURL.indexOf("logos"));
+
+		Path azureBlobPath = Path.of(blobPath);
+		return azureBlobContainerFileUploadService.downloadBlob(azureBlobPath);
+	}
+
 	public void validatePractice(Practice practice, BindingResult bindingResult, MultipartFile logo)
 			throws InvalidFileFormatException {
 		if (null != logo && !logo.isEmpty() && !isValidImageFormat(logo.getOriginalFilename()))

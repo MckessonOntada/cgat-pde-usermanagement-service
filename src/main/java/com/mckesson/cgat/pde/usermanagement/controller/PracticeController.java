@@ -105,6 +105,15 @@ public class PracticeController {
 		return new ResponseEntity<>(practiceService.getPractice(practiceId), HttpStatus.OK);
 	}
 
+	@RequirePermissions({ Permission.VIEW_ORGANIZATION })
+	@GetMapping("/{practiceId}/logo")
+	@Operation(summary = "Get Practice Logo by Practice Id")
+	public ResponseEntity<byte[]> getPracticeLogo(@PathVariable String practiceId)
+			throws NumberFormatException, ResourceNotFoundException {
+
+		return new ResponseEntity<>(practiceService.getPracticeLogo(practiceId),HttpStatus.OK);
+	}
+
 	@RequirePermissions({ Permission.EDIT_ORGANIZATION })
 	@DeleteMapping("/{practiceId}")
 	@Operation(summary = "Delete Practice by Id")
