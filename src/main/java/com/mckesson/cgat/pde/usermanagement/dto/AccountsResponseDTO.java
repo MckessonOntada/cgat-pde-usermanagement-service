@@ -1,5 +1,8 @@
 package com.mckesson.cgat.pde.usermanagement.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.mckesson.cgat.pde.usermanagement.model.DistributionChannel;
+
 public interface AccountsResponseDTO {
 
 	String getId();
@@ -33,5 +36,17 @@ public interface AccountsResponseDTO {
 	String getSalesOrg();
 
 	String getCompanyCode();
+
+	String getDivision();
+
+	@JsonIgnore
+	String getDistChannel();
+
+	String getCgatIdentifier();
+
+	default DistributionChannel getDistributionChannel() {
+		String channel = getDistChannel();
+		return channel != null ? DistributionChannel.fromCode(channel) : null;
+	}
 
 }
