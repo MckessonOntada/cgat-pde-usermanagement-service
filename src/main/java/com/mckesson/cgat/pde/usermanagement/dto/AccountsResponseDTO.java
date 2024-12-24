@@ -40,10 +40,12 @@ public interface AccountsResponseDTO {
 	String getDivision();
 
 	@JsonIgnore
-	String getDc();
+	String getDistChannel();
+
+	String getCgatIdentifier();
 
 	default DistributionChannel getDistributionChannel() {
-		String channel = getDc();
+		String channel = getDistChannel();
 		return channel != null ? DistributionChannel.fromCode(channel) : null;
 	}
 
