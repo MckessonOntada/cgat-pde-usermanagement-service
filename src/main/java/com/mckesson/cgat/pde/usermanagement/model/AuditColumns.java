@@ -41,6 +41,11 @@ public abstract class AuditColumns implements Serializable {
 	@JsonIgnore
 	private String createdBy;
 
+	@Column(name = "CREATED_BY_IMPERSONATE")
+	@CreatedBy
+	@JsonIgnore
+	private String createdByImpersonate;
+
 	@Column(name = "UPDATED_AT")
 	@LastModifiedDate
 	@Temporal(TemporalType.TIMESTAMP)
@@ -51,12 +56,24 @@ public abstract class AuditColumns implements Serializable {
 	@JsonIgnore
 	private String updatedBy;
 
+	@Column(name = "UPDATED_BY_IMPERSONATE")
+	@CreatedBy
+	@JsonIgnore
+	private String updatedByImpersonate;
+
 	@PrePersist
 	public void onPersist() {
 		LoggedInUserDetails loggedInUserDetails = UserSecurityUtils.getLoggedInUser();
 		if (loggedInUserDetails != null) {
 			this.createdBy = loggedInUserDetails.getId();
 			this.updatedBy = loggedInUserDetails.getId();
+
+			LoggedInUserDetails impersonatedUser = loggedInUserDetails.getImpersonatedUser();
+			if (impersonatedUser != null) {
+				this.createdByImpersonate = impersonatedUser.getId();
+				this.updatedByImpersonate = impersonatedUser.getId();
+			}
+
 		}
 
 		this.createdAt = Date.from(Instant.now());

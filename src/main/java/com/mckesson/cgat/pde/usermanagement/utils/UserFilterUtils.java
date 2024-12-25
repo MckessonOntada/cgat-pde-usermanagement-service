@@ -3,12 +3,14 @@ package com.mckesson.cgat.pde.usermanagement.utils;
 import com.auth0.jwt.interfaces.Claim;
 import com.mckesson.cgat.pde.usermanagement.model.LoggedInUserDetails;
 import com.mckesson.cgat.pde.usermanagement.model.Name;
+import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;
 import com.mckesson.jbat.auth.module.exception.BadRequestException;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.util.Map;
@@ -22,20 +24,14 @@ public class UserFilterUtils {
 	@Autowired
 	private UserService userService;
 
+	private final String IMPERSONATE_HEADER = "x-impersonated-user-id";
+
 	public LoggedInUserDetails buildUserContextDetail(String loggedInUserId, String loggedInUserName,
-			Map<String, Claim> payload) throws Exception {
+			Map<String, Claim> payload, HttpServletRequest request) throws Exception {
 		log.info("Building User Context Detail for userId {}.", loggedInUserId);
 		LoggedInUserDetails loggedInUser = LoggedInUserDetails.builder().id(loggedInUserId).build();
 		if (loggedInUserId != null) {
-			User user = userService.getUser(Long.parseLong(loggedInUserId));
-			if (user != null) {
-				Name userName = user.getName();
-				loggedInUser.setName(userName);
-				loggedInUser.setRole(user.getRole());
-				loggedInUser.setPermissions(user.getPermissions());
-				loggedInUser.setPracticeId(user.getPracticeId());
-				loggedInUser.setUserName(userName.getFirstName() + " " + userName.getLastName());
-			}
+			loggedInUser = getLoggedInUserDetails(request, loggedInUserId);
 		}
 
 		// if (!CollectionUtils.isEmpty(payload)) {
@@ -66,13 +62,6 @@ public class UserFilterUtils {
 		return loggedInUser;
 	}
 
-	public LoggedInUserDetails buildUserContextDetail(HttpServletRequest request, Map<String, Claim> payload)
-			throws Exception {
-		String loggedInUserId = getUserId(request, payload);
-		String loggedInUserName = getUserName(request, payload);
-		return buildUserContextDetail(loggedInUserId, loggedInUserName, payload);
-	}
-
 	public String getUserId(HttpServletRequest request, Map<String, Claim> payload) throws Exception {
 		log.info("Fetching user id from request payload");
 		String userId = null;
@@ -97,6 +86,38 @@ public class UserFilterUtils {
 			throw new ResourceNotFoundException("User name not found.");
 		}
 		return userName;
+	}
+
+	private LoggedInUserDetails getLoggedInUserDetails(HttpServletRequest request, String loggedInUserId)
+			throws ResourceNotFoundException {
+		User user = userService.getUser(Long.parseLong(loggedInUserId));
+		LoggedInUserDetails currentLoggedInUser = buildLoggedInUser(user);
+		String impersonatedUserId = request.getHeader(IMPERSONATE_HEADER);
+		if (StringUtils.isNotEmpty(impersonatedUserId)) {
+			boolean hasOnBehalfPermission = user.getPermissions().contains(Permission.ON_BEHALF_OF_USER);
+
+			if (hasOnBehalfPermission) {
+				user = userService.getUser(Long.parseLong(impersonatedUserId));
+				LoggedInUserDetails loggedInUserDetails = buildLoggedInUser(user);
+				loggedInUserDetails.setImpersonatedUser(currentLoggedInUser);
+				return loggedInUserDetails;
+			}
+
+		}
+		return currentLoggedInUser;
+	}
+
+	private LoggedInUserDetails buildLoggedInUser(User user) {
+		Name userName = user.getName();
+		LoggedInUserDetails loggedInUser = LoggedInUserDetails.builder()
+			.id(String.valueOf(user.getId()))
+			.name(userName)
+			.role(user.getRole())
+			.permissions(user.getPermissions())
+			.practiceId(user.getPracticeId())
+			.userName(userName.getFirstName() + " " + userName.getLastName())
+			.build();
+		return loggedInUser;
 	}
 
 }
