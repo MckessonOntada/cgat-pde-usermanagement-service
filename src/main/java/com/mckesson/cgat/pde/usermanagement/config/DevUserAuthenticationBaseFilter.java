@@ -35,7 +35,7 @@ public class DevUserAuthenticationBaseFilter extends CGATBaseFilter {
 
 		if (StringUtils.isNotEmpty(userId)) {
 			try {
-				userRequest = userFilterUtils.buildUserContextDetail(userId, "devUserName", new HashMap<>(), request);
+				userRequest = userFilterUtils.buildUserContextDetail(userId, request);
 				userSecurityUtils.createContext(userRequest, request, response);
 			}
 			catch (Exception e) {

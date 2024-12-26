@@ -85,6 +85,11 @@ public abstract class AuditColumns implements Serializable {
 		LoggedInUserDetails loggedInUserDetails = UserSecurityUtils.getLoggedInUser();
 		if (loggedInUserDetails != null) {
 			this.updatedBy = loggedInUserDetails.getId();
+
+			LoggedInUserDetails impersonatedUser = loggedInUserDetails.getImpersonatedUser();
+			if (impersonatedUser != null) {
+				this.updatedByImpersonate = impersonatedUser.getId();
+			}
 		}
 		this.updatedAt = Date.from(Instant.now());
 	}

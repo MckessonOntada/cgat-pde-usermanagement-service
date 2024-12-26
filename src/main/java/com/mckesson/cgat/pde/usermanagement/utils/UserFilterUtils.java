@@ -24,14 +24,15 @@ public class UserFilterUtils {
 	@Autowired
 	private UserService userService;
 
-	private final String IMPERSONATE_HEADER = "x-impersonated-user-id";
+	private final String IMPERSONATE_HEADER = "x-imp-user-id";
 
-	public LoggedInUserDetails buildUserContextDetail(String loggedInUserId, String loggedInUserName,
-			Map<String, Claim> payload, HttpServletRequest request) throws Exception {
+	public LoggedInUserDetails buildUserContextDetail(String loggedInUserId, HttpServletRequest request)
+			throws Exception {
 		log.info("Building User Context Detail for userId {}.", loggedInUserId);
 		LoggedInUserDetails loggedInUser = LoggedInUserDetails.builder().id(loggedInUserId).build();
 		if (loggedInUserId != null) {
-			loggedInUser = getLoggedInUserDetails(request, loggedInUserId);
+			User user = userService.getUser(Long.parseLong(loggedInUserId));
+			loggedInUser = getLoggedInUserDetails(request, user);
 		}
 
 		// if (!CollectionUtils.isEmpty(payload)) {
@@ -48,17 +49,12 @@ public class UserFilterUtils {
 		return loggedInUser;
 	}
 
-	public LoggedInUserDetails buildUserContextDetailFromOkta(String loggedInUserIdentifier) throws Exception {
+	public LoggedInUserDetails buildUserContextDetailFromOkta(String loggedInUserIdentifier, HttpServletRequest request)
+			throws Exception {
 		log.info("Building User Context Detail for user identifier {}.", loggedInUserIdentifier);
 		User user = userService.getUserByEmail(loggedInUserIdentifier);
-		LoggedInUserDetails loggedInUser = LoggedInUserDetails.builder()
-			.id(String.valueOf(user.getId()))
-			.name(user.getName())
-			.role(user.getRole())
-			.permissions(user.getPermissions())
-			.practiceId(user.getPracticeId())
-			.userName(loggedInUserIdentifier)
-			.build();
+
+		LoggedInUserDetails loggedInUser = getLoggedInUserDetails(request, user);
 		return loggedInUser;
 	}
 
@@ -88,9 +84,9 @@ public class UserFilterUtils {
 		return userName;
 	}
 
-	private LoggedInUserDetails getLoggedInUserDetails(HttpServletRequest request, String loggedInUserId)
+	private LoggedInUserDetails getLoggedInUserDetails(HttpServletRequest request, User user)
 			throws ResourceNotFoundException {
-		User user = userService.getUser(Long.parseLong(loggedInUserId));
+
 		LoggedInUserDetails currentLoggedInUser = buildLoggedInUser(user);
 		String impersonatedUserId = request.getHeader(IMPERSONATE_HEADER);
 		if (StringUtils.isNotEmpty(impersonatedUserId)) {
