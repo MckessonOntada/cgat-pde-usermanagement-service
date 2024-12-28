@@ -64,11 +64,10 @@ public class UserAuthenticationBaseFilter extends CGATBaseFilter {
 			Map<String, Claim> payload = securityUtils.getPayloadByToken(request, response);
 			Map<String, Object> profileMap = payload.get("Profile").asMap();
 			String userIdentifier = String.valueOf(profileMap.get("login"));
-			return userFilterUtils.buildUserContextDetailFromOkta(userIdentifier);
+			return userFilterUtils.buildUserContextDetailFromOkta(userIdentifier, request);
 		}
 		catch (Exception e) {
-			log.error("Error in createUserRequestWithOKTAToken method while Setting Current User Id {}",
-					e.getMessage());
+			log.error("Error in createUserRequestWithOKTAToken method while Setting Current User Id", e);
 			throw new UserAuthenticationException("Error in createUserRequestWithOKTAToken", e);
 		}
 	}
