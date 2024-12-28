@@ -41,17 +41,17 @@ public abstract class AuditColumns implements Serializable {
 	@JsonIgnore
 	private String createdBy;
 
-	@Column(name = "CREATED_BY_IMPERSONATE")
+	@Column(name = "CREATED_BY_IMPERSONATOR")
 	@CreatedBy
 	@JsonIgnore
-	private String createdByImpersonate;
+	private String createdByImpersonator;
 
 	@Column(name = "UPDATED_AT")
 	@LastModifiedDate
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedAt;
 
-	@Column(name = "UPDATED_BY")
+	@Column(name = "UPDATED_BY_IMPERSONATOR")
 	@LastModifiedBy
 	@JsonIgnore
 	private String updatedBy;
@@ -59,7 +59,7 @@ public abstract class AuditColumns implements Serializable {
 	@Column(name = "UPDATED_BY_IMPERSONATE")
 	@CreatedBy
 	@JsonIgnore
-	private String updatedByImpersonate;
+	private String updatedByImpersonator;
 
 	@PrePersist
 	public void onPersist() {
@@ -68,10 +68,10 @@ public abstract class AuditColumns implements Serializable {
 			this.createdBy = loggedInUserDetails.getId();
 			this.updatedBy = loggedInUserDetails.getId();
 
-			LoggedInUserDetails impersonatedUser = loggedInUserDetails.getImpersonatedUser();
-			if (impersonatedUser != null) {
-				this.createdByImpersonate = impersonatedUser.getId();
-				this.updatedByImpersonate = impersonatedUser.getId();
+			LoggedInUserDetails impersonatedByUser = loggedInUserDetails.getImpersonatedByUser();
+			if (impersonatedByUser != null) {
+				this.createdByImpersonator = impersonatedByUser.getId();
+				this.updatedByImpersonator = impersonatedByUser.getId();
 			}
 
 		}
@@ -86,9 +86,9 @@ public abstract class AuditColumns implements Serializable {
 		if (loggedInUserDetails != null) {
 			this.updatedBy = loggedInUserDetails.getId();
 
-			LoggedInUserDetails impersonatedUser = loggedInUserDetails.getImpersonatedUser();
-			if (impersonatedUser != null) {
-				this.updatedByImpersonate = impersonatedUser.getId();
+			LoggedInUserDetails impersonatedByUser = loggedInUserDetails.getImpersonatedByUser();
+			if (impersonatedByUser != null) {
+				this.updatedByImpersonator = impersonatedByUser.getId();
 			}
 		}
 		this.updatedAt = Date.from(Instant.now());

@@ -67,8 +67,7 @@ public class UserAuthenticationBaseFilter extends CGATBaseFilter {
 			return userFilterUtils.buildUserContextDetailFromOkta(userIdentifier, request);
 		}
 		catch (Exception e) {
-			log.error("Error in createUserRequestWithOKTAToken method while Setting Current User Id {}",
-					e.getMessage());
+			log.error("Error in createUserRequestWithOKTAToken method while Setting Current User Id", e);
 			throw new UserAuthenticationException("Error in createUserRequestWithOKTAToken", e);
 		}
 	}

@@ -84,18 +84,19 @@ public class UserFilterUtils {
 		return userName;
 	}
 
-	private LoggedInUserDetails getLoggedInUserDetails(HttpServletRequest request, User user)
+	private LoggedInUserDetails getLoggedInUserDetails(HttpServletRequest request, User principal)
 			throws ResourceNotFoundException {
 
-		LoggedInUserDetails currentLoggedInUser = buildLoggedInUser(user);
+		LoggedInUserDetails currentLoggedInUser = buildLoggedInUser(principal);
 		String impersonatedUserId = request.getHeader(IMPERSONATE_HEADER);
 		if (StringUtils.isNotEmpty(impersonatedUserId)) {
-			boolean hasOnBehalfPermission = user.getPermissions().contains(Permission.ON_BEHALF_OF_USER);
+			boolean hasOnBehalfPermission = principal.getPermissions().contains(Permission.ON_BEHALF_OF_USER);
 
 			if (hasOnBehalfPermission) {
-				user = userService.getUser(Long.parseLong(impersonatedUserId));
-				LoggedInUserDetails loggedInUserDetails = buildLoggedInUser(user);
-				loggedInUserDetails.setImpersonatedUser(currentLoggedInUser);
+				// Make the impersonated user as the principal
+				principal = userService.getUser(Long.parseLong(impersonatedUserId));
+				LoggedInUserDetails loggedInUserDetails = buildLoggedInUser(principal);
+				loggedInUserDetails.setImpersonatedByUser(currentLoggedInUser);
 				return loggedInUserDetails;
 			}
 
