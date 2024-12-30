@@ -51,12 +51,12 @@ public abstract class AuditColumns implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedAt;
 
-	@Column(name = "UPDATED_BY_IMPERSONATOR")
+	@Column(name = "UPDATED_BY")
 	@LastModifiedBy
 	@JsonIgnore
 	private String updatedBy;
 
-	@Column(name = "UPDATED_BY_IMPERSONATE")
+	@Column(name = "UPDATED_BY_IMPERSONATOR")
 	@CreatedBy
 	@JsonIgnore
 	private String updatedByImpersonator;
