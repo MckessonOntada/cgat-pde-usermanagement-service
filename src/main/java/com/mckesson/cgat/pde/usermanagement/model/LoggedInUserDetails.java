@@ -26,4 +26,6 @@ public class LoggedInUserDetails {
 
 	private long practiceId;
 
+	private LoggedInUserDetails impersonatedByUser;
+
 }

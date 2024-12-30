@@ -41,15 +41,25 @@ public abstract class AuditColumns implements Serializable {
 	@JsonIgnore
 	private String createdBy;
 
+	@Column(name = "CREATED_BY_IMPERSONATOR")
+	@CreatedBy
+	@JsonIgnore
+	private String createdByImpersonator;
+
 	@Column(name = "UPDATED_AT")
 	@LastModifiedDate
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedAt;
 
-	@Column(name = "UPDATED_BY")
+	@Column(name = "UPDATED_BY_IMPERSONATOR")
 	@LastModifiedBy
 	@JsonIgnore
 	private String updatedBy;
+
+	@Column(name = "UPDATED_BY_IMPERSONATE")
+	@CreatedBy
+	@JsonIgnore
+	private String updatedByImpersonator;
 
 	@PrePersist
 	public void onPersist() {
@@ -57,6 +67,13 @@ public abstract class AuditColumns implements Serializable {
 		if (loggedInUserDetails != null) {
 			this.createdBy = loggedInUserDetails.getId();
 			this.updatedBy = loggedInUserDetails.getId();
+
+			LoggedInUserDetails impersonatedByUser = loggedInUserDetails.getImpersonatedByUser();
+			if (impersonatedByUser != null) {
+				this.createdByImpersonator = impersonatedByUser.getId();
+				this.updatedByImpersonator = impersonatedByUser.getId();
+			}
+
 		}
 
 		this.createdAt = Date.from(Instant.now());
@@ -68,6 +85,11 @@ public abstract class AuditColumns implements Serializable {
 		LoggedInUserDetails loggedInUserDetails = UserSecurityUtils.getLoggedInUser();
 		if (loggedInUserDetails != null) {
 			this.updatedBy = loggedInUserDetails.getId();
+
+			LoggedInUserDetails impersonatedByUser = loggedInUserDetails.getImpersonatedByUser();
+			if (impersonatedByUser != null) {
+				this.updatedByImpersonator = impersonatedByUser.getId();
+			}
 		}
 		this.updatedAt = Date.from(Instant.now());
 	}
