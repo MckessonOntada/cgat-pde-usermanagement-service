@@ -18,39 +18,42 @@ import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 
 	@Query(value = """
-			SELECT DISTINCT m.id, m.material_number as therapyId, m.material_description as therapyDescription, m.ndc_number as ndc, cp.udi, m.strength, m.dosage, m.selling_unit_code,
-			m.vendor_name, m.upc_code, m.dropship_indicator, m.item_status as status, m.base_unit_of_measure, m.cgat_identifier, m.sales_organization,
-			m.cgat_type, m.product_level_pricing, cp.minimum_order_quantity
-			FROM catalog.material m
-			JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
-			JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
-			JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
-			WHERE
-			(
+			SELECT *
+			FROM (
+				SELECT DISTINCT m.id, m.material_number as therapyId, m.material_description as therapyDescription, m.ndc_number as ndc, cp.udi, m.strength, m.dosage, m.selling_unit_code,
+				m.vendor_name, m.upc_code, m.dropship_indicator, m.item_status as status, m.base_unit_of_measure, m.cgat_identifier, m.sales_organization,
+				m.cgat_type, m.product_level_pricing, cp.minimum_order_quantity
+				FROM catalog.material m
+				JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
+				JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
+				JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
+				WHERE
 				(
-					:query is null
-					or LOWER(cp.ndc) like %:query%
-					or LOWER(cp.dist_channel) like %:query%
-					or LOWER(cp.sap_material) like %:query%
-					or LOWER(m.generic_name) like %:query%
+					(
+						:query is null
+						or LOWER(cp.ndc) like %:query%
+						or LOWER(cp.dist_channel) like %:query%
+						or LOWER(cp.sap_material) like %:query%
+						or LOWER(m.generic_name) like %:query%
+					)
+					AND
+						uam.user_id = :userId
+					AND
+						ac.partner_function = :partnerFunction
+					AND
+						(
+						COALESCE(:salesOrg) is null
+						or
+						cp.sales_org IN (:salesOrg)
+						)
+					AND
+						(
+						COALESCE(:customerIdentifier) is null
+						or
+						cp.sold_to_customer IN (:customerIdentifier)
+						)
 				)
-				AND
-					uam.user_id = :userId
-				AND
-					ac.partner_function = :partnerFunction
-				AND
-					(
-					COALESCE(:salesOrg) is null
-					or
-					cp.sales_org IN (:salesOrg)
-					)
-				AND
-					(
-					COALESCE(:customerIdentifier) is null
-					or
-					cp.sold_to_customer IN (:customerIdentifier)
-					)
-			)
+			) subquery
 			""",
 			nativeQuery = true)
 	public Page<TherapyCatalogResponseDTO> findAllTherapies(@Param("userId") Long userId, @Param("query") String query,
@@ -59,37 +62,40 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			@Param("partnerFunction") String partnerFunction);
 
 	@Query(value = """
-			SELECT DISTINCT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2,
-					 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code, false as isDefault,
-					 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier
-			FROM catalog.material m
-			JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
-			JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
-			JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
-			WHERE
-			(
-					(
-						:query is null
-						or LOWER(ac.sap_customer) like %:query%
-						or LOWER(ac.name_1) like %:query%
+			SELECT *
+			FROM (
+				SELECT DISTINCT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2,
+						 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code, false as isDefault,
+						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier
+				FROM catalog.material m
+				JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
+				JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
+				JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
+				WHERE
+				(
+						(
+							:query is null
+							or LOWER(ac.sap_customer) like %:query%
+							or LOWER(ac.name_1) like %:query%
+						)
+					AND
+						(
+						cast(:channel as varchar) is null
+						or ac.distribution_channel = :channel
+						)
+					AND
+						(
+						cast(:program as varchar) is null
+						or ac.cgat_identifier = :program
+						)
+					AND
+						m.material_number = :therapyId
+					AND
+						ac.partner_function = :partnerFunction
+					AND
+						uam.user_id = :userId
 					)
-				AND
-					(
-					cast(:channel as varchar) is null
-					or ac.distribution_channel = :channel
-					)
-				AND
-					(
-					cast(:program as varchar) is null
-					or ac.cgat_identifier = :program
-					)
-				AND
-					m.material_number = :therapyId
-				AND
-					ac.partner_function = :partnerFunction
-				AND
-					uam.user_id = :userId
-			)
+				) subquery
 
 			""",
 			nativeQuery = true)
@@ -99,26 +105,29 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			@Param("partnerFunction") String partnerFunction);
 
 	@Query(value = """
-			SELECT DISTINCT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2,
-					 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code, false as isDefault,
-					 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier
-			FROM catalog.material m
-			JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
-			JOIN usermanagement.account ac ON ac.sap_customer = cp.ship_to_customer
-			WHERE
-			(
+			SELECT *
+			FROM (
+				SELECT DISTINCT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2,
+						 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code, false as isDefault,
+						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier
+				FROM catalog.material m
+				JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
+				JOIN usermanagement.account ac ON ac.sap_customer = cp.ship_to_customer
+				WHERE
 				(
-					:query is null
-					or LOWER(ac.sap_customer) like %:query%
-					or LOWER(ac.name_1) like %:query%
-				)
-				AND
-					cp.sold_to_customer = :soldToAccountId
-				AND
-					cp.sap_material = :therapyId
-				AND
-					ac.partner_function = :partnerFunction
-			)
+					(
+						:query is null
+						or LOWER(ac.sap_customer) like %:query%
+						or LOWER(ac.name_1) like %:query%
+					)
+					AND
+						cp.sold_to_customer = :soldToAccountId
+					AND
+						cp.sap_material = :therapyId
+					AND
+						ac.partner_function = :partnerFunction
+					)
+				) subquery
 			""",
 			nativeQuery = true)
 	public Page<AccountsResponseDTO> findAllShipToAccounts(@Param("soldToAccountId") String soldToAccountId,
