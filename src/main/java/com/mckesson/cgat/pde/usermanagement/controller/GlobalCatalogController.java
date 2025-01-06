@@ -38,7 +38,7 @@ public class GlobalCatalogController {
 			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(required = false) String query, @RequestParam List<String> accountNumbers) {
 		Pageable paging = PageRequest.of(pageNo, pageSize);
-		return new ResponseEntity<>(therapyService.findAllCatalogs(accountNumbers, query, paging), HttpStatus.OK);
+		return new ResponseEntity<>(therapyService.findAllGlobalCatalogs(accountNumbers, query, paging), HttpStatus.OK);
 	}
 
 }

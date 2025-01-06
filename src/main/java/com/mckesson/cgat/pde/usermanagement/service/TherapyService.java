@@ -39,8 +39,8 @@ public interface TherapyService {
 	CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForTherapy(String soldToAccountId,
 			String shipToAccountId, String variantType, Long therapyId);
 
-	Page<TherapyResponseDto> findAllTherapies(String query, Pageable paging);
+	Page<TherapyResponseDto> findAllGlobalTherapies(String query, Pageable paging);
 
-	Page<CatalogPriceResponseDto> findAllCatalogs(List<String> accountIds, String query, Pageable paging);
+	Page<CatalogPriceResponseDto> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging);
 
 }

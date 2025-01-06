@@ -60,7 +60,7 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 					AND ac.partner_function = :partnerFunction
 				)
 			""", nativeQuery = true)
-	Page<CatalogPrice> findAllCatalogs(@Param("accountIds") List<String> accountIds,
+	Page<CatalogPrice> findAllGlobalCatalogs(@Param("accountIds") List<String> accountIds,
 			@Param("partnerFunction") String partnerFunction, @Param("query") String query, Pageable paging);
 
 }

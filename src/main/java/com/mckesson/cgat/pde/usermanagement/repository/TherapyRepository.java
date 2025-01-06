@@ -176,6 +176,6 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					or LOWER(m.generic_name) like %:query%
 			)
 			""", nativeQuery = true)
-	public Page<Therapy> findAllTherapies(@Param("query") String query, Pageable paging);
+	public Page<Therapy> findAllGlobalTherapies(@Param("query") String query, Pageable paging);
 
 }

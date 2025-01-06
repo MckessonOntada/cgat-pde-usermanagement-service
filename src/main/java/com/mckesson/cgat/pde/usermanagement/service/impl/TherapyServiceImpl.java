@@ -138,14 +138,14 @@ public class TherapyServiceImpl implements TherapyService {
 				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 	}
 
-	public Page<TherapyResponseDto> findAllTherapies(String query, Pageable paging) {
-		Page<Therapy> allTherapies = therapyRepository.findAllTherapies(query, paging);
+	public Page<TherapyResponseDto> findAllGlobalTherapies(String query, Pageable paging) {
+		Page<Therapy> allTherapies = therapyRepository.findAllGlobalTherapies(query, paging);
 		List<TherapyResponseDto> therapies = therapyMapper.toTherapiesResponseDtoList(allTherapies.getContent());
 		return new PageImpl<>(therapies, paging, allTherapies.getTotalElements());
 	}
 
-	public Page<CatalogPriceResponseDto> findAllCatalogs(List<String> accountIds, String query, Pageable paging) {
-		Page<CatalogPrice> allCatalogs = catalogPriceRepository.findAllCatalogs(accountIds,
+	public Page<CatalogPriceResponseDto> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging) {
+		Page<CatalogPrice> allCatalogs = catalogPriceRepository.findAllGlobalCatalogs(accountIds,
 				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), query, paging);
 		List<CatalogPriceResponseDto> catalogs = catalogPriceMapper.toCatalogResponseDtoList(allCatalogs.getContent());
 		return new PageImpl<>(catalogs, paging, allCatalogs.getTotalElements());
