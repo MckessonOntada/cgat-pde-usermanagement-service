@@ -1,11 +1,15 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
-import com.mckesson.cgat.pde.usermanagement.mapper.CatalogPriceMapper;
-import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
-import com.mckesson.cgat.pde.usermanagement.model.Therapy;
-import com.mckesson.cgat.pde.usermanagement.repository.CatalogPriceRepository;
-import com.mckesson.cgat.pde.usermanagement.repository.TherapyRepository;
-import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,18 +18,20 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.Assert.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import com.mckesson.cgat.pde.usermanagement.mapper.CatalogPriceMapper;
+import com.mckesson.cgat.pde.usermanagement.mapper.TherapyMapper;
+import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
+import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
+import com.mckesson.cgat.pde.usermanagement.model.DistributionChannel;
+import com.mckesson.cgat.pde.usermanagement.model.Therapy;
+import com.mckesson.cgat.pde.usermanagement.repository.CatalogPriceRepository;
+import com.mckesson.cgat.pde.usermanagement.repository.TherapyRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class TherapyServiceImplTest {
@@ -41,6 +47,9 @@ public class TherapyServiceImplTest {
 
 	@Mock
 	private CatalogPriceMapper catalogPriceMapper;
+
+	@Mock
+	private TherapyMapper therapyMapper;
 
 	private Pageable paging;
 
@@ -89,18 +98,41 @@ public class TherapyServiceImplTest {
 	 * Therapy.builder() .materialNumber("123") .ndcNumber("r34")
 	 * .materialDescription("paracetamol") .sellingUnitCode("p12")
 	 * .baseUnitOfMeasure("gm") .manufacturerName("sunpharma") .salesOrg("SUN") .build();
-	 * Mockito.when(therapyRepository.findById(therapyId)).thenReturn(Optional.of(therapy)
-	 * ); therapyRepository.findById(therapyId); verify(therapyRepository,
+	 * Mockito.when(therapyRepository.findById(therapyId)).thenReturn(Optional.of(
+	 * therapy) ); therapyRepository.findById(therapyId); verify(therapyRepository,
 	 * times(1)).findById(therapyId); }
 	 *
 	 * @DisplayName("Test Exception : FindAll TherapyById")
 	 *
 	 * @Test public void findTherapyByIdResourceNotFoundExceptionTest() { Long therapyId =
-	 * 2L;
-	 * Mockito.when(therapyRepository.findById(therapyId)).thenReturn(Optional.empty());
-	 * assertThrows(ResourceNotFoundException.class, () ->
+	 * 2L; Mockito.when(therapyRepository.findById(therapyId)).thenReturn(Optional.empty
+	 * ()); assertThrows(ResourceNotFoundException.class, () ->
 	 * therapyService.findById(therapyId)); }
 	 */
+
+	@DisplayName("Test : FindAll Global Therapies")
+	@Test
+	public void findAllGlobalTherapiesTest() {
+		String query = "";
+		Mockito.when(therapyRepository.findAllGlobalTherapies(anyString(), Mockito.any(Pageable.class)))
+			.thenReturn(getAllGlobalTherapies());
+		therapyService.findAllGlobalTherapies(query, paging);
+		verify(therapyRepository).findAllGlobalTherapies(query, paging);
+	}
+
+	@DisplayName("Test : FindAll Global Therapies")
+	@Test
+	public void findAllGlobalCatalogsTest() {
+		String query = "";
+		List<String> accounts = new ArrayList<>();
+		Mockito
+			.when(catalogPriceRepository.findAllGlobalCatalogs(anyList(), anyString(), anyString(),
+					Mockito.any(Pageable.class)))
+			.thenReturn(getAllGlobalCatalogs());
+		therapyService.findAllGlobalCatalogs(accounts, query, paging);
+		verify(catalogPriceRepository).findAllGlobalCatalogs(accounts,
+				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), query, paging);
+	}
 
 	@DisplayName("Test : FindAll Variants linked to soldToAccount, ShipToAccounts and TherapyId")
 	@Test
@@ -244,6 +276,64 @@ public class TherapyServiceImplTest {
 		shipToAccounts.add(shipToAccount1);
 		shipToAccounts.add(shipToAccount2);
 		return new PageImpl<>(shipToAccounts, paging, shipToAccounts.size());
+	}
+
+	private Page<Therapy> getAllGlobalTherapies() {
+		Integer pageNo = 0;
+		Integer pageSize = 20;
+		String sortBy = "name";
+		String sortOrder = "asc";
+		List<Therapy> therapies = new ArrayList<>();
+		Therapy therapy1 = Therapy.builder()
+			.materialNumber("12")
+			.materialDescription("PCM")
+			.ndcNumber("89")
+			.strength("650mg")
+			.dosage("SOS")
+			.build();
+		Therapy therapy2 = Therapy.builder()
+			.materialNumber("18")
+			.materialDescription("PANTOP")
+			.ndcNumber("76")
+			.strength("40mg")
+			.dosage("BB")
+			.build();
+
+		therapies.add(therapy1);
+		therapies.add(therapy2);
+		Sort sort = "asc".equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+		return new PageImpl<>(therapies, pageable, therapies.size());
+	}
+
+	private Page<CatalogPrice> getAllGlobalCatalogs() {
+		Integer pageNo = 0;
+		Integer pageSize = 20;
+		String sortBy = "name";
+		String sortOrder = "asc";
+		List<CatalogPrice> catalogs = new ArrayList<>();
+		CatalogPrice catalog1 = CatalogPrice.builder()
+			.salesOrg("1100")
+			.distChannel(DistributionChannel.PL)
+			.sapMaterial("12")
+			.variant("v1")
+			.variantDescription("version 1")
+			.ndc("c1")
+			.build();
+		CatalogPrice catalog2 = CatalogPrice.builder()
+			.salesOrg("1000")
+			.distChannel(DistributionChannel.SD)
+			.sapMaterial("18")
+			.variant("v2")
+			.variantDescription("version 2")
+			.ndc("c2")
+			.build();
+
+		catalogs.add(catalog1);
+		catalogs.add(catalog2);
+		Sort sort = "asc".equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+		return new PageImpl<>(catalogs, pageable, catalogs.size());
 	}
 
 }
