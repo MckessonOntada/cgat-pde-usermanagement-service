@@ -42,18 +42,18 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						ac.partner_function = :partnerFunction
 					AND
 						(
-						COALESCE(:salesOrg) is null
+						COALESCE(:salesOrg, '') is null
 						or
 						cp.sales_org IN (:salesOrg)
 						)
 					AND
 						(
-						COALESCE(:customerIdentifier) is null
+						COALESCE(:customerIdentifier, '') is null
 						or
 						cp.sold_to_customer IN (:customerIdentifier)
 						)
 				)
-			) AS subquery
+			) subquery
 			""",
 			nativeQuery = true)
 	public Page<TherapyCatalogResponseDTO> findAllTherapies(@Param("userId") Long userId, @Param("query") String query,
