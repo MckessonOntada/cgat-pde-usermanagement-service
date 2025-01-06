@@ -53,7 +53,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						cp.sold_to_customer IN (:customerIdentifier)
 						)
 				)
-			) subquery
+			) AS subquery
 			""",
 			nativeQuery = true)
 	public Page<TherapyCatalogResponseDTO> findAllTherapies(@Param("userId") Long userId, @Param("query") String query,
