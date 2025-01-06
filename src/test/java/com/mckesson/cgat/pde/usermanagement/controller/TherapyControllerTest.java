@@ -156,7 +156,7 @@ public class TherapyControllerTest {
 			.thenReturn(catalogPriceResponseDtos);
 
 		mockMvc.perform(get(
-				"/practices/{practiceId}/users/current/therapies/{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/variant",
+				"/practices/{practiceId}/users/current/therapies/{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/catalog",
 				practiceId, therapyId, soldToAccount, shipToAccount)
 			.param("variantType", variantType)
 			.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
@@ -178,7 +178,7 @@ public class TherapyControllerTest {
 			.thenReturn(catalogPriceResponseDtos);
 
 		mockMvc.perform(get(
-				"/practices/{practiceId}/users/current/therapies/{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/variant",
+				"/practices/{practiceId}/users/current/therapies/{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/catalog",
 				practiceId, userId, therapyId, soldToAccount, shipToAccount)
 			.param("variantType", "")
 			.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();

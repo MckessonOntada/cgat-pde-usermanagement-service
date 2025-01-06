@@ -36,7 +36,10 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 			AND
 			    cp.sap_material = :therapyId
 			AND
-				cp.variant = :variantType
+				(
+				 (:variantType IS NULL AND cp.variant IS NULL)
+			     OR (:variantType IS NOT NULL AND cp.variant = :variantType)
+				)
 			""", nativeQuery = true)
 	CatalogPrice findPriceOfVariantLinkedToShipToAccountsForTherapy(@Param("soldToAccountId") String soldToAccountId,
 			@Param("shipToAccountId") String shipToAccountId, @Param("therapyId") String therapyId,
