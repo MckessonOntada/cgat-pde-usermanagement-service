@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
+import com.mckesson.cgat.pde.usermanagement.mapper.CatalogPriceMapper;
 import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.cgat.pde.usermanagement.repository.CatalogPriceRepository;
@@ -37,6 +38,9 @@ public class TherapyServiceImplTest {
 
 	@Mock
 	private CatalogPriceRepository catalogPriceRepository;
+
+	@Mock
+	private CatalogPriceMapper catalogPriceMapper;
 
 	private Pageable paging;
 
