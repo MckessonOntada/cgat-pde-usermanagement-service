@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mckesson.cgat.pde.usermanagement.dto.PracticeLogoResponseDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -240,7 +241,11 @@ class PracticeControllerTest {
 	@Test
 	void getPracticeLogoTest() throws Exception {
 		String practiceId = "1";
-		when(practiceService.getPractice(practiceId)).thenReturn(practice);
+		PracticeLogoResponseDto practiceLogoResponseDto = PracticeLogoResponseDto.builder()
+			.logo(new byte[120])
+			.logoExtension(MediaType.IMAGE_JPEG)
+			.build();
+		when(practiceService.getPracticeLogo(practiceId)).thenReturn(practiceLogoResponseDto);
 		mockMvc.perform(get("/practices/{practiceId}/logo", practiceId)).andDo(print()).andExpect(status().isOk());
 	}
 
