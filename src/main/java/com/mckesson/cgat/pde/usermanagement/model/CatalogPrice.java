@@ -4,7 +4,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+import com.mckesson.cgat.pde.usermanagement.model.converters.DistributionChannelConverter;
+
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -146,8 +149,9 @@ public class CatalogPrice {
 
 	@Size(max = 2)
 	@NotBlank
+	@Convert(converter = DistributionChannelConverter.class)
 	@Column(name = "dist_channel")
-	private String distChannel;
+	private DistributionChannel distChannel;
 
 	@Size(max = 2)
 	@NotBlank

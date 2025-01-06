@@ -2,15 +2,15 @@ package com.mckesson.cgat.pde.usermanagement.service;
 
 import java.util.List;
 
-import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelProjectionDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponseDto;
 import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.TherapyResponseDto;
 import com.mckesson.cgat.pde.usermanagement.model.DistributionChannel;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -38,5 +38,9 @@ public interface TherapyService {
 
 	CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForTherapy(String soldToAccountId,
 			String shipToAccountId, String variantType, Long therapyId);
+
+	Page<TherapyResponseDto> findAllTherapies(String query, Pageable paging);
+
+	Page<CatalogPriceResponseDto> findAllCatalogs(List<String> accountIds, String query, Pageable paging);
 
 }

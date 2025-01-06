@@ -6,26 +6,29 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponseDto;
-import com.mckesson.cgat.pde.usermanagement.mapper.CatalogPriceMapper;
-import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
-import com.mckesson.cgat.pde.usermanagement.repository.CatalogPriceRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponseDto;
 import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelProjectionDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.TherapyResponseDto;
+import com.mckesson.cgat.pde.usermanagement.mapper.CatalogPriceMapper;
+import com.mckesson.cgat.pde.usermanagement.mapper.TherapyMapper;
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
+import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
 import com.mckesson.cgat.pde.usermanagement.model.DistributionChannel;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
+import com.mckesson.cgat.pde.usermanagement.repository.CatalogPriceRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.TherapyRepository;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -37,11 +40,14 @@ public class TherapyServiceImpl implements TherapyService {
 
 	private final CatalogPriceMapper catalogPriceMapper;
 
+	private final TherapyMapper therapyMapper;
+
 	public TherapyServiceImpl(TherapyRepository therapyRepository, CatalogPriceRepository catalogPriceRepository,
-			CatalogPriceMapper catalogPriceMapper) {
+			CatalogPriceMapper catalogPriceMapper, TherapyMapper therapyMapper) {
 		this.therapyRepository = therapyRepository;
 		this.catalogPriceRepository = catalogPriceRepository;
 		this.catalogPriceMapper = catalogPriceMapper;
+		this.therapyMapper = therapyMapper;
 	}
 
 	public Page<TherapyCatalogResponseDTO> findAllTherapies(Long userId, String query, List<String> salesOrg,
@@ -130,6 +136,19 @@ public class TherapyServiceImpl implements TherapyService {
 	public Page<AccountsResponseDTO> findAllCustomerIdentifiers(Long userId, String query, Pageable paging) {
 		return therapyRepository.findAllCustomerIdentifiers(userId, query, paging,
 				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
+	}
+
+	public Page<TherapyResponseDto> findAllTherapies(String query, Pageable paging) {
+		Page<Therapy> allTherapies = therapyRepository.findAllTherapies(query, paging);
+		List<TherapyResponseDto> therapies = therapyMapper.toTherapiesResponseDtoList(allTherapies.getContent());
+		return new PageImpl<>(therapies, paging, allTherapies.getTotalElements());
+	}
+
+	public Page<CatalogPriceResponseDto> findAllCatalogs(List<String> accountIds, String query, Pageable paging) {
+		Page<CatalogPrice> allCatalogs = catalogPriceRepository.findAllCatalogs(accountIds,
+				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), query, paging);
+		List<CatalogPriceResponseDto> catalogs = catalogPriceMapper.toCatalogResponseDtoList(allCatalogs.getContent());
+		return new PageImpl<>(catalogs, paging, allCatalogs.getTotalElements());
 	}
 
 }
