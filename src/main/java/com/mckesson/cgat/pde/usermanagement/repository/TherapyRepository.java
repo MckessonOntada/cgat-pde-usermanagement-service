@@ -53,7 +53,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						cp.sold_to_customer IN (:customerIdentifier)
 						)
 				)
-			) subquery
+			) AS subquery
 			""",
 			nativeQuery = true)
 	public Page<TherapyCatalogResponseDTO> findAllTherapies(@Param("userId") Long userId, @Param("query") String query,
@@ -95,7 +95,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					AND
 						uam.user_id = :userId
 					)
-				) subquery
+				) AS subquery
 
 			""",
 			nativeQuery = true)
@@ -127,7 +127,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					AND
 						ac.partner_function = :partnerFunction
 					)
-				) subquery
+				) AS subquery
 			""",
 			nativeQuery = true)
 	public Page<AccountsResponseDTO> findAllShipToAccounts(@Param("soldToAccountId") String soldToAccountId,
