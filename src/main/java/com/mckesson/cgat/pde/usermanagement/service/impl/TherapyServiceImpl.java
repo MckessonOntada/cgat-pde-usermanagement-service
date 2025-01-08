@@ -11,6 +11,8 @@ import com.mckesson.cgat.pde.usermanagement.mapper.CatalogPriceMapper;
 import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
 import com.mckesson.cgat.pde.usermanagement.repository.CatalogPriceRepository;
 import lombok.extern.slf4j.Slf4j;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -46,21 +48,21 @@ public class TherapyServiceImpl implements TherapyService {
 
 	public Page<TherapyCatalogResponseDTO> findAllTherapies(Long userId, String query, List<String> salesOrg,
 			Pageable paging, List<String> customerIdentifier) {
-		return therapyRepository.findAllTherapies(userId, query, salesOrg, paging, customerIdentifier,
-				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
+		return therapyRepository.findAllTherapies(userId, StringUtils.toRootLowerCase(query), salesOrg, paging,
+				customerIdentifier, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 	}
 
 	public Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, Long therapyId, String query, Pageable paging,
 			DistributionChannel channel, String program) {
-		return therapyRepository.findAllSoldToAccounts(userId, therapyId.toString(), query, paging,
-				null != channel ? channel.getCode() : null, program,
+		return therapyRepository.findAllSoldToAccounts(userId, therapyId.toString(), StringUtils.toRootLowerCase(query),
+				paging, null != channel ? channel.getCode() : null, program,
 				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 	}
 
 	public Page<AccountsResponseDTO> findAllShipToAccounts(String soldToAccountId, Long therapyId, Pageable paging,
 			String query) {
-		return therapyRepository.findAllShipToAccounts(soldToAccountId, therapyId.toString(), query, paging,
-				AccountPartnerFunction.SHIP_TO.getPartnerFunctionType());
+		return therapyRepository.findAllShipToAccounts(soldToAccountId, therapyId.toString(),
+				StringUtils.toRootLowerCase(query), paging, AccountPartnerFunction.SHIP_TO.getPartnerFunctionType());
 	}
 
 	public Therapy findById(Long id) throws ResourceNotFoundException {
