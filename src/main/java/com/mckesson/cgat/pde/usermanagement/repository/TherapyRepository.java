@@ -18,7 +18,7 @@ import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 
 	@Query(value = """
-				SELECT DISTINCT m.id, m.material_number as therapyId, m.material_description as therapyDescription, m.ndc_number as ndc, cp.udi, m.strength, m.dosage, m.selling_unit_code,
+				SELECT m.id, m.material_number as therapyId, m.material_description as therapyDescription, m.ndc_number as ndc, cp.udi, m.strength, m.dosage, m.selling_unit_code,
 				m.vendor_name, m.upc_code, m.dropship_indicator, m.item_status as status, m.base_unit_of_measure, m.cgat_identifier, m.sales_organization,
 				m.cgat_type, m.product_level_pricing, cp.minimum_order_quantity
 				FROM catalog.material m
@@ -51,6 +51,9 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						cp.sold_to_customer IN (:customerIdentifier)
 						)
 				)
+				GROUP BY m.id, m.material_number, m.material_description, m.ndc_number, cp.udi, m.strength, m.dosage, m.selling_unit_code,
+				m.vendor_name, m.upc_code, m.dropship_indicator, m.base_unit_of_measure, m.cgat_identifier, m.sales_organization,
+				m.cgat_type, m.product_level_pricing, cp.minimum_order_quantity
 			""",
 			nativeQuery = true)
 	public Page<TherapyCatalogResponseDTO> findAllTherapies(@Param("userId") Long userId, @Param("query") String query,
@@ -59,7 +62,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			@Param("partnerFunction") String partnerFunction);
 
 	@Query(value = """
-				SELECT DISTINCT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2,
+				SELECT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2,
 						 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code, false as isDefault,
 						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier
 				FROM catalog.material m
@@ -90,6 +93,9 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					AND
 						uam.user_id = :userId
 					)
+					GROUP BY ac.id, ac.sap_customer, ac.name_1, ac.house_number, ac.street, ac.street_2,
+						 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code,
+						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel, ac.cgat_identifier
 			""",
 			nativeQuery = true)
 	public Page<AccountsResponseDTO> findAllSoldToAccounts(@Param("userId") Long userId,
@@ -98,7 +104,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			@Param("partnerFunction") String partnerFunction);
 
 	@Query(value = """
-				SELECT DISTINCT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2,
+				SELECT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2,
 						 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code, false as isDefault,
 						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier
 				FROM catalog.material m
@@ -118,6 +124,9 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					AND
 						ac.partner_function = :partnerFunction
 					)
+					GROUP BY ac.id, ac.sap_customer, ac.name_1, ac.house_number, ac.street, ac.street_2,
+						 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code,
+						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel, ac.cgat_identifier
 			""",
 			nativeQuery = true)
 	public Page<AccountsResponseDTO> findAllShipToAccounts(@Param("soldToAccountId") String soldToAccountId,
