@@ -29,10 +29,10 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 				(
 					(
 						:query is null
-						or LOWER(cp.ndc) like %:query%
+						or LOWER(m.ndc_number) like %:query%
 						or LOWER(cp.dist_channel) like %:query%
 						or LOWER(cp.sap_material) like %:query%
-						or LOWER(m.generic_name) like %:query%
+						or LOWER(m.material_description) like %:query%
 					)
 					AND
 						uam.user_id = :userId
