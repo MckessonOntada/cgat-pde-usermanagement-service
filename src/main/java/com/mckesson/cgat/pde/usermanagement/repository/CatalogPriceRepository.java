@@ -26,7 +26,7 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 			@Param("therapyId") String therapyId, Pageable paging);
 
 	@Query(value = """
-			 SELECT DISTINCT  cp.*
+			 SELECT cp.*
 			 FROM catalog.catalog_price cp
 			 JOIN catalog.material m ON m.material_number = cp.sap_material
 			 WHERE
@@ -37,9 +37,10 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 			    cp.sap_material = :therapyId
 			AND
 				(
-				 (:variantType IS NULL AND cp.variant IS NULL)
-			     OR (:variantType IS NOT NULL AND cp.variant = :variantType)
+				 :variantType IS NULL
+			     OR cp.variant = :variantType
 				)
+			Limit 1
 			""", nativeQuery = true)
 	CatalogPrice findPriceOfVariantLinkedToShipToAccountsForTherapy(@Param("soldToAccountId") String soldToAccountId,
 			@Param("shipToAccountId") String shipToAccountId, @Param("therapyId") String therapyId,
