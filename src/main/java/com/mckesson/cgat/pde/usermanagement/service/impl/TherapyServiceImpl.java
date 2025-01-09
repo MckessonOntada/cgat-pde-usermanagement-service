@@ -139,16 +139,35 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	public Page<TherapyResponseDto> findAllGlobalTherapies(String query, Pageable paging) {
-		Page<Therapy> allTherapies = therapyRepository.findAllGlobalTherapies(query, paging);
-		List<TherapyResponseDto> therapies = therapyMapper.toTherapiesResponseDtoList(allTherapies.getContent());
-		return new PageImpl<>(therapies, paging, allTherapies.getTotalElements());
+		try {
+			log.info(" Inside method - findAllGlobalTherapies");
+			log.info("query: {}", query);
+			Page<Therapy> allTherapies = therapyRepository.findAllGlobalTherapies(query, paging);
+			List<TherapyResponseDto> therapies = therapyMapper.toTherapiesResponseDtoList(allTherapies.getContent());
+			return new PageImpl<>(therapies, paging, allTherapies.getTotalElements());
+		}
+		catch (Exception e) {
+			log.error("Exception occurred in findAllGlobalTherapies and exception details", e);
+			throw e;
+		}
+
 	}
 
 	public Page<CatalogPriceResponseDto> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging) {
-		Page<CatalogPrice> allCatalogs = catalogPriceRepository.findAllGlobalCatalogs(accountIds,
-				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), query, paging);
-		List<CatalogPriceResponseDto> catalogs = catalogPriceMapper.toCatalogResponseDtoList(allCatalogs.getContent());
-		return new PageImpl<>(catalogs, paging, allCatalogs.getTotalElements());
+		try {
+			log.info(" Inside method - findAllGlobalCatalogs");
+			log.info("accountIds : {}, query: {}", accountIds, query);
+			Page<CatalogPrice> allCatalogs = catalogPriceRepository.findAllGlobalCatalogs(accountIds,
+					AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), query, paging);
+			List<CatalogPriceResponseDto> catalogs = catalogPriceMapper
+				.toCatalogResponseDtoList(allCatalogs.getContent());
+			return new PageImpl<>(catalogs, paging, allCatalogs.getTotalElements());
+		}
+		catch (Exception e) {
+			log.error("Exception occurred in findAllGlobalCatalogs and exception details", e);
+			throw e;
+		}
+
 	}
 
 }

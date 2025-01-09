@@ -18,6 +18,7 @@ import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -36,7 +37,8 @@ public class GlobalCatalogController {
 	@Operation(summary = "Fetch all catalogs for provided soldto accounts lists.")
 	public ResponseEntity<Page<CatalogPriceResponseDto>> findAllCatalogs(
 			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize,
-			@RequestParam(required = false) String query, @RequestParam List<String> accountNumbers) {
+			@RequestParam(required = false) String query,
+			@NotEmpty(message = "Account Numbers can not be empty") @RequestParam List<String> accountNumbers) {
 		Pageable paging = PageRequest.of(pageNo, pageSize);
 		return new ResponseEntity<>(therapyService.findAllGlobalCatalogs(accountNumbers, query, paging), HttpStatus.OK);
 	}
