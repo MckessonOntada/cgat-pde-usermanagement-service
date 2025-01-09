@@ -138,8 +138,8 @@ public class AccountServiceImpl implements AccountService {
 	public Page<AccountsResponseDTO> findAllPayToAccounts(Long userId, String query, Pageable paging) {
 
 		List<AccountsResponseDTO> allAccounts = new ArrayList<>();
-		Page<AccountsResponseDTO> allPayToAccounts = accountRepository.findAllPayToAccounts(userId, query, paging,
-				AccountPartnerFunction.PAYER.getPartnerFunctionType());
+		Page<AccountsResponseDTO> allPayToAccounts = accountRepository.findAllPayToAccounts(userId,
+				StringUtils.toRootLowerCase(query), paging, AccountPartnerFunction.PAYER.getPartnerFunctionType());
 		allAccounts.addAll(allPayToAccounts.getContent());
 
 		AccountsResponseDTO preferencedPaytoAccount = userPreferenceRepository.findByUserIdAndType(userId,
