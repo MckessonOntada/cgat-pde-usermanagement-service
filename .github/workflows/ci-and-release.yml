@@ -181,30 +181,30 @@ jobs:
           WIZ_IMAGE_POLICY="McKesson Vulnerability Scanner Policy"
           ./wizcli docker scan --image ${{ env.DOCKER_IMAGE_NAME }} --policy "$WIZ_IMAGE_POLICY"
 
-      - name: Generate wiz-cli Docker Image Scan report
-        id: scan
-        run: |
-          ./wizcli docker scan --image ${{ env.DOCKER_IMAGE_NAME }} --policy "$WIZ_IMAGE_POLICY" >> scan_output.txt
-          echo "printing the report"
-          cat scan_output.txt
+     # - name: Generate wiz-cli Docker Image Scan report
+     #   id: scan
+     #   run: |
+     #     ./wizcli docker scan --image ${{ env.DOCKER_IMAGE_NAME }} --policy "$WIZ_IMAGE_POLICY" >> scan_output.txt
+     #     echo "printing the report"
+     #     cat scan_output.txt
 
-      - name: Analyze Scan Output
-        id: analyze
-        run: |
-          CRITICAL_COUNT=$(grep -o 'CRITICAL' scan_output.txt | wc -l)
-          echo "CRITICAL vulnerabilities found: $CRITICAL_COUNT"
-          if [ $CRITICAL_COUNT -gt 5 ]; then
-            echo "More than 5 CRITICAL vulnerabilities found. Failing the workflow."
-            # exit 1
-          fi
+     # - name: Analyze Scan Output
+     #   id: analyze
+     #   run: |
+     #     CRITICAL_COUNT=$(grep -o 'CRITICAL' scan_output.txt | wc -l)
+     #     echo "CRITICAL vulnerabilities found: $CRITICAL_COUNT"
+     #     if [ $CRITICAL_COUNT -gt 5 ]; then
+     #       echo "More than 5 CRITICAL vulnerabilities found. Failing the workflow."
+     #       # exit 1
+     #     fi
 
-      - name: Upload wiz-cli Scan Output
-        id: Upload-wiz-cli-scan-Output
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: wiz-cli-scan-results-${{ env.PROJECT_NAME }}-${{ env.BRANCH_NAME_SLUG }}-${{ env.CURRENT_DATE_TIME }}-${{ env.BUILD_NUMBER }}
-          path: scan_output.txt
+     # - name: Upload wiz-cli Scan Output
+     #   id: Upload-wiz-cli-scan-Output
+     #   uses: actions/upload-artifact@v4
+     #   if: always()
+     #   with:
+     #     name: wiz-cli-scan-results-${{ env.PROJECT_NAME }}-${{ env.BRANCH_NAME_SLUG }}-${{ env.CURRENT_DATE_TIME }}-${{ env.BUILD_NUMBER }}
+     #     path: scan_output.txt
 
       - name: Login to Jfrog
         uses: jfrog/setup-jfrog-cli@v3
@@ -241,11 +241,11 @@ jobs:
         run: |
           echo "branch: ${{ env.BRANCH_NAME_SLUG }}"
 
-      - name: Download Prisma Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: wiz-cli-scan-results-${{ env.PROJECT_NAME }}-${{ env.BRANCH_NAME_SLUG }}-${{ env.CURRENT_DATE_TIME }}-${{ env.BUILD_NUMBER }}
-          path: ./upload-artifacts
+     # - name: Download Prisma Artifact
+     #   uses: actions/download-artifact@v4
+     #   with:
+     #     name: wiz-cli-scan-results-${{ env.PROJECT_NAME }}-${{ env.BRANCH_NAME_SLUG }}-${{ env.CURRENT_DATE_TIME }}-${{ env.BUILD_NUMBER }}
+     #     path: ./upload-artifacts
 
       - name: Create Prerelease
         uses: ncipollo/release-action@v1
