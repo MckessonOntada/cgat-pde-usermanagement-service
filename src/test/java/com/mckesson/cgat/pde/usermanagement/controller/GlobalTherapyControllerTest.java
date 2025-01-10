@@ -4,10 +4,7 @@ import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -25,7 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @WebMvcTest(GlobalTherapyController.class)
 @ContextConfiguration(classes = { GlobalTherapyController.class })
 @ImportAutoConfiguration(exclude = SecurityAutoConfiguration.class)
-public class GlobalTherapyControllerTest {
+class GlobalTherapyControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -39,7 +36,7 @@ public class GlobalTherapyControllerTest {
 	}
 
 	@Test
-	public void testFindByMaterialNumber_Success() throws Exception {
+	void testFindByMaterialNumber_Success() throws Exception {
 		String materialNumber = "12345";
 		Therapy mockTherapy = new Therapy();
 		mockTherapy.setMaterialNumber(materialNumber);
@@ -51,7 +48,7 @@ public class GlobalTherapyControllerTest {
 	}
 
 	@Test
-	public void testFindByMaterialNumber_NotFound() throws Exception {
+	void testFindByMaterialNumber_NotFound() throws Exception {
 		String materialNumber = "12345";
 		when(therapyService.findByMaterialNumber(materialNumber)).thenThrow(ResourceNotFoundException.class);
 		mockMvc.perform(get("/therapy/{materialNumber}", materialNumber).contentType(MediaType.APPLICATION_JSON))
