@@ -110,7 +110,7 @@ public class TherapyServiceImplTest {
 		String shipToAccount = "103";
 		String therapyId = "18";
 		when(catalogPriceRepository.findAllCatalogPricesLinkedToShipToAccountsForTherapy(anyString(), anyString(),
-					anyString(), Mockito.any(Pageable.class)))
+				anyString(), Mockito.any(Pageable.class)))
 			.thenReturn(getAllVariantsLinkedToShipToAccounts());
 		therapyService.findAllVariantsLinkedToShipToAccountsForTherapy(soldToAccount, shipToAccount,
 				Long.valueOf(therapyId), paging);
@@ -126,7 +126,7 @@ public class TherapyServiceImplTest {
 		String therapyId = "18";
 		String variantType = "Type B";
 		when(catalogPriceRepository.findPriceOfVariantLinkedToShipToAccountsForTherapy(anyString(), anyString(),
-					anyString(), anyString()))
+				anyString(), anyString()))
 			.thenReturn(getCatalogPrice());
 		therapyService.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccount, shipToAccount, variantType,
 				Long.valueOf(therapyId));
@@ -142,7 +142,7 @@ public class TherapyServiceImplTest {
 		String therapyId = "18";
 		String variantType = "";
 		when(catalogPriceRepository.findPriceOfVariantLinkedToShipToAccountsForTherapy(anyString(), anyString(),
-					anyString(), anyString()))
+				anyString(), anyString()))
 			.thenReturn(getCatalogPriceWithEmptyVariant());
 		therapyService.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccount, shipToAccount, variantType,
 				Long.valueOf(therapyId));
@@ -167,7 +167,8 @@ public class TherapyServiceImplTest {
 	public void testFindByMaterialNumber_NotFound() {
 		String materialNumber = "12345";
 		when(therapyRepository.findByMaterialNumber(materialNumber)).thenReturn(Optional.empty());
-		ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> therapyService.findByMaterialNumber(materialNumber));
+		ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
+				() -> therapyService.findByMaterialNumber(materialNumber));
 		Assertions.assertEquals("Therapy not found with materialNumber: " + materialNumber, exception.getMessage());
 		verify(therapyRepository, times(1)).findByMaterialNumber(materialNumber);
 	}

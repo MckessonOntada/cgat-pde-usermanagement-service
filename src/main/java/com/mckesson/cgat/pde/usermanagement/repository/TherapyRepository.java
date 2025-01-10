@@ -173,5 +173,6 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 	public Page<AccountsResponseDTO> findAllCustomerIdentifiers(@Param("userId") Long userId,
 			@Param("query") String query, Pageable paging, @Param("partnerFunction") String partnerFunction);
 
-    Optional<Therapy> findByMaterialNumber(String materialNumber);
+	Optional<Therapy> findByMaterialNumber(String materialNumber);
+
 }

@@ -38,4 +38,5 @@ public interface TherapyService {
 			String shipToAccountId, String variantType, Long therapyId);
 
 	Therapy findByMaterialNumber(String materialNumber) throws ResourceNotFoundException;
+
 }

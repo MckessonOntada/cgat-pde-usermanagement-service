@@ -1,4 +1,5 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
+
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -26,37 +27,36 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @ImportAutoConfiguration(exclude = SecurityAutoConfiguration.class)
 public class GlobalTherapyControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+	@Autowired
+	private MockMvc mockMvc;
 
-    @MockBean
-    private TherapyService therapyService;
+	@MockBean
+	private TherapyService therapyService;
 
-    @BeforeEach
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
-    }
+	@BeforeEach
+	public void setup() {
+		MockitoAnnotations.openMocks(this);
+	}
 
-    @Test
-    public void testFindByMaterialNumber_Success() throws Exception {
-        String materialNumber = "12345";
-        Therapy mockTherapy = new Therapy();
-        mockTherapy.setMaterialNumber(materialNumber);
-        when(therapyService.findByMaterialNumber(materialNumber)).thenReturn(mockTherapy);
-        mockMvc.perform(get("/therapy/{materialNumber}", materialNumber)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.materialNumber").value(materialNumber));
-        verify(therapyService, times(1)).findByMaterialNumber(materialNumber);
-    }
+	@Test
+	public void testFindByMaterialNumber_Success() throws Exception {
+		String materialNumber = "12345";
+		Therapy mockTherapy = new Therapy();
+		mockTherapy.setMaterialNumber(materialNumber);
+		when(therapyService.findByMaterialNumber(materialNumber)).thenReturn(mockTherapy);
+		mockMvc.perform(get("/therapy/{materialNumber}", materialNumber).contentType(MediaType.APPLICATION_JSON))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.jsonPath("$.materialNumber").value(materialNumber));
+		verify(therapyService, times(1)).findByMaterialNumber(materialNumber);
+	}
 
-    @Test
-    public void testFindByMaterialNumber_NotFound() throws Exception {
-        String materialNumber = "12345";
-        when(therapyService.findByMaterialNumber(materialNumber)).thenThrow(ResourceNotFoundException.class);
-        mockMvc.perform(get("/therapy/{materialNumber}", materialNumber)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
-        verify(therapyService, times(1)).findByMaterialNumber(materialNumber);
-    }
+	@Test
+	public void testFindByMaterialNumber_NotFound() throws Exception {
+		String materialNumber = "12345";
+		when(therapyService.findByMaterialNumber(materialNumber)).thenThrow(ResourceNotFoundException.class);
+		mockMvc.perform(get("/therapy/{materialNumber}", materialNumber).contentType(MediaType.APPLICATION_JSON))
+			.andExpect(MockMvcResultMatchers.status().isNotFound());
+		verify(therapyService, times(1)).findByMaterialNumber(materialNumber);
+	}
+
 }

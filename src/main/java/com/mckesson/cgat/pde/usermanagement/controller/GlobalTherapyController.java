@@ -15,21 +15,22 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Tag(name = "Therapy", description = "Controller for Managing Therapy-catalogs operations and data.")
-@RequestMapping(path = "/therapy", consumes = "application/json",
-        produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/therapy", consumes = "application/json", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 @Validated
 public class GlobalTherapyController {
-    private final TherapyService therapyService;
 
-    public GlobalTherapyController(TherapyService therapyService) {
-        this.therapyService = therapyService;
-    }
+	private final TherapyService therapyService;
 
-    @GetMapping("/{materialNumber}")
-    @Operation(summary = "Find Therapy by Material Number")
-    public Therapy findByMaterialNumber(@PathVariable String materialNumber) throws ResourceNotFoundException {
-        log.debug("Fetching therapy with materialNumber: {}", materialNumber);
-        return therapyService.findByMaterialNumber(materialNumber);
-    }
+	public GlobalTherapyController(TherapyService therapyService) {
+		this.therapyService = therapyService;
+	}
+
+	@GetMapping("/{materialNumber}")
+	@Operation(summary = "Find Therapy by Material Number")
+	public Therapy findByMaterialNumber(@PathVariable String materialNumber) throws ResourceNotFoundException {
+		log.debug("Fetching therapy with materialNumber: {}", materialNumber);
+		return therapyService.findByMaterialNumber(materialNumber);
+	}
+
 }
