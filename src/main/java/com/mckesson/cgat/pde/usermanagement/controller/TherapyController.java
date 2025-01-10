@@ -87,6 +87,12 @@ public class TherapyController {
 		return therapyService.findAllShipToAccounts(soldToAccountId, therapyId, paging, query);
 	}
 
+	@GetMapping("/{therapyId}")
+	@Operation(summary = "Find Therapy by id")
+	public Therapy findbyId(@PathVariable Long therapyId) throws ResourceNotFoundException {
+		return therapyService.findById(therapyId);
+	}
+
 	@GetMapping("{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/variants")
 	@Operation(
 			summary = "Find all variants of therapy that is linked to the selected soldto account,shipto account and the therapy being offered from that shipto account")

@@ -65,6 +65,11 @@ public class TherapyServiceImpl implements TherapyService {
 				StringUtils.toRootLowerCase(query), paging, AccountPartnerFunction.SHIP_TO.getPartnerFunctionType());
 	}
 
+	public Therapy findById(Long id) throws ResourceNotFoundException {
+		return therapyRepository.findById(id)
+			.orElseThrow(() -> new ResourceNotFoundException("Therapy not found with id: " + id));
+	}
+
 	@Override
 	public Page<CatalogPriceResponseDto> findAllVariantsLinkedToShipToAccountsForTherapy(String soldToAccountId,
 			String shipToAccountId, Long therapyId, Pageable paging) {
