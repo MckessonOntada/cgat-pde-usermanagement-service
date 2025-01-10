@@ -27,8 +27,6 @@ public interface TherapyService {
 	Page<AccountsResponseDTO> findAllShipToAccounts(String soldToAccountId, Long therapyId, Pageable paging,
 			String query);
 
-	Therapy findById(Long id) throws ResourceNotFoundException;
-
 	ProgramChannelResponseDTO findAllProgramAndChannels(Long userId, Long therapyId);
 
 	Page<AccountsResponseDTO> findAllCustomerIdentifiers(Long userId, String query, Pageable paging);
@@ -39,4 +37,5 @@ public interface TherapyService {
 	CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForTherapy(String soldToAccountId,
 			String shipToAccountId, String variantType, Long therapyId);
 
+	Therapy findByMaterialNumber(String materialNumber) throws ResourceNotFoundException;
 }

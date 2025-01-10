@@ -6,6 +6,7 @@ import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.cgat.pde.usermanagement.repository.CatalogPriceRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.TherapyRepository;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,10 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class TherapyServiceImplTest {
@@ -108,8 +109,7 @@ public class TherapyServiceImplTest {
 		String soldToAccount = "4";
 		String shipToAccount = "103";
 		String therapyId = "18";
-		Mockito
-			.when(catalogPriceRepository.findAllCatalogPricesLinkedToShipToAccountsForTherapy(anyString(), anyString(),
+		when(catalogPriceRepository.findAllCatalogPricesLinkedToShipToAccountsForTherapy(anyString(), anyString(),
 					anyString(), Mockito.any(Pageable.class)))
 			.thenReturn(getAllVariantsLinkedToShipToAccounts());
 		therapyService.findAllVariantsLinkedToShipToAccountsForTherapy(soldToAccount, shipToAccount,
@@ -125,8 +125,7 @@ public class TherapyServiceImplTest {
 		String shipToAccount = "103";
 		String therapyId = "18";
 		String variantType = "Type B";
-		Mockito
-			.when(catalogPriceRepository.findPriceOfVariantLinkedToShipToAccountsForTherapy(anyString(), anyString(),
+		when(catalogPriceRepository.findPriceOfVariantLinkedToShipToAccountsForTherapy(anyString(), anyString(),
 					anyString(), anyString()))
 			.thenReturn(getCatalogPrice());
 		therapyService.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccount, shipToAccount, variantType,
@@ -142,14 +141,35 @@ public class TherapyServiceImplTest {
 		String shipToAccount = "103";
 		String therapyId = "18";
 		String variantType = "";
-		Mockito
-			.when(catalogPriceRepository.findPriceOfVariantLinkedToShipToAccountsForTherapy(anyString(), anyString(),
+		when(catalogPriceRepository.findPriceOfVariantLinkedToShipToAccountsForTherapy(anyString(), anyString(),
 					anyString(), anyString()))
 			.thenReturn(getCatalogPriceWithEmptyVariant());
 		therapyService.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccount, shipToAccount, variantType,
 				Long.valueOf(therapyId));
 		verify(catalogPriceRepository, times(1)).findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccount,
 				shipToAccount, therapyId, variantType);
+	}
+
+	@Test
+	@DisplayName("Test : Find Material from catalogue using unique material number (Happy Path)")
+	public void testFindByMaterialNumber_Success() throws ResourceNotFoundException {
+		String materialNumber = "12345";
+		Therapy mockTherapy = new Therapy();
+		mockTherapy.setMaterialNumber(materialNumber);
+		when(therapyRepository.findByMaterialNumber(materialNumber)).thenReturn(Optional.of(mockTherapy));
+		Therapy result = therapyService.findByMaterialNumber(materialNumber);
+		Assertions.assertEquals(materialNumber, result.getMaterialNumber());
+		verify(therapyRepository, times(1)).findByMaterialNumber(materialNumber);
+	}
+
+	@Test
+	@DisplayName("Test : Find Material from catalogue using unique material number (negative Path)")
+	public void testFindByMaterialNumber_NotFound() {
+		String materialNumber = "12345";
+		when(therapyRepository.findByMaterialNumber(materialNumber)).thenReturn(Optional.empty());
+		ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> therapyService.findByMaterialNumber(materialNumber));
+		Assertions.assertEquals("Therapy not found with materialNumber: " + materialNumber, exception.getMessage());
+		verify(therapyRepository, times(1)).findByMaterialNumber(materialNumber);
 	}
 
 	private CatalogPrice getCatalogPriceWithEmptyVariant() {
