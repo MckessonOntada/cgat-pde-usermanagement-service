@@ -39,4 +39,6 @@ public interface TherapyService {
 	CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForTherapy(String soldToAccountId,
 			String shipToAccountId, String variantType, Long therapyId);
 
+	Therapy findByMaterialNumber(String materialNumber) throws ResourceNotFoundException;
+
 }
