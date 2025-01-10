@@ -35,7 +35,8 @@ public class GlobalTherapyController {
 		try {
 			Therapy therapy = therapyService.findByMaterialNumber(materialNumber);
 			return ResponseEntity.ok(therapy);
-		} catch (ResourceNotFoundException ex) {
+		}
+		catch (ResourceNotFoundException ex) {
 			log.info("No therapy found with materialNumber: {}", materialNumber);
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
