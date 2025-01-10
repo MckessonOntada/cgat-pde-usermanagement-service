@@ -41,7 +41,7 @@ class GlobalTherapyControllerTest {
 		Therapy mockTherapy = new Therapy();
 		mockTherapy.setMaterialNumber(materialNumber);
 		when(therapyService.findByMaterialNumber(materialNumber)).thenReturn(mockTherapy);
-		mockMvc.perform(get("/therapy/{materialNumber}", materialNumber).contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(get("/therapies/{materialNumber}", materialNumber).contentType(MediaType.APPLICATION_JSON))
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(MockMvcResultMatchers.jsonPath("$.materialNumber").value(materialNumber));
 		verify(therapyService, times(1)).findByMaterialNumber(materialNumber);
@@ -51,7 +51,7 @@ class GlobalTherapyControllerTest {
 	void testFindByMaterialNumber_NotFound() throws Exception {
 		String materialNumber = "12345";
 		when(therapyService.findByMaterialNumber(materialNumber)).thenThrow(ResourceNotFoundException.class);
-		mockMvc.perform(get("/therapy/{materialNumber}", materialNumber).contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(get("/therapies/{materialNumber}", materialNumber).contentType(MediaType.APPLICATION_JSON))
 			.andExpect(MockMvcResultMatchers.status().isNotFound());
 		verify(therapyService, times(1)).findByMaterialNumber(materialNumber);
 	}

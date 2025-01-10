@@ -30,10 +30,15 @@ public class GlobalTherapyController {
 
 	@GetMapping("/{materialNumber}")
 	@Operation(summary = "Find Therapy by Material Number")
-	public ResponseEntity<Therapy> findByMaterialNumber(@PathVariable String materialNumber)
-			throws ResourceNotFoundException {
+	public ResponseEntity<Therapy> findByMaterialNumber(@PathVariable String materialNumber) {
 		log.debug("Fetching therapy with materialNumber: {}", materialNumber);
-		return new ResponseEntity<>(therapyService.findByMaterialNumber(materialNumber), HttpStatus.OK);
+		try {
+			Therapy therapy = therapyService.findByMaterialNumber(materialNumber);
+			return ResponseEntity.ok(therapy);
+		} catch (ResourceNotFoundException ex) {
+			log.info("No therapy found with materialNumber: {}", materialNumber);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
 	}
 
 }
