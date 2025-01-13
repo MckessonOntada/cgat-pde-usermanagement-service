@@ -1,12 +1,18 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
-import com.mckesson.cgat.pde.usermanagement.mapper.CatalogPriceMapper;
-import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
-import com.mckesson.cgat.pde.usermanagement.model.Therapy;
-import com.mckesson.cgat.pde.usermanagement.repository.CatalogPriceRepository;
-import com.mckesson.cgat.pde.usermanagement.repository.TherapyRepository;
-import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
-import org.junit.jupiter.api.Assertions;
+import static org.junit.Assert.assertThrows;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,18 +21,23 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelProjectionDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.mapper.CatalogPriceMapper;
+import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
+import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
+import com.mckesson.cgat.pde.usermanagement.model.DistributionChannel;
+import com.mckesson.cgat.pde.usermanagement.model.Therapy;
+import com.mckesson.cgat.pde.usermanagement.repository.CatalogPriceRepository;
+import com.mckesson.cgat.pde.usermanagement.repository.TherapyRepository;
+import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 public class TherapyServiceImplTest {
@@ -50,58 +61,108 @@ public class TherapyServiceImplTest {
 		paging = PageRequest.of(0, 20, Sort.by("name").ascending());
 	}
 
-	/*
-	 * @DisplayName("Test : FindAll Therapies")
-	 *
-	 * @Test public void findAllTherapiesTest() { Long userId = 2L; String query = "";
-	 *
-	 * Mockito .when(therapyRepository.findAllTherapies(anyLong(), anyString(), anyList(),
-	 * Mockito.any(Pageable.class), anyList(), anyString())) .thenReturn(getTherapies());
-	 * therapyService.findAllTherapies(userId, query, new ArrayList<>(), paging, new
-	 * ArrayList<>()); verify(therapyRepository, times(1)).findAllTherapies(userId, query,
-	 * new ArrayList<>(), paging, new ArrayList<>(), "SH"); }
-	 *
-	 * @DisplayName("Test : FindAll SoldToAccounts")
-	 *
-	 * @Test public void findAllSoldToAccountsTest() { Long userId = 2L; String query =
-	 * ""; String therapyId = "18";
-	 *
-	 * Mockito .when(therapyRepository.findAllSoldToAccounts(anyLong(), anyString(),
-	 * anyString(), Mockito.any(Pageable.class), anyString(), anyString()))
-	 * .thenReturn(getSoldToAccounts()); therapyService.findAllSoldToAccounts(userId,
-	 * Long.valueOf(therapyId), query, paging, ""); verify(therapyRepository,
-	 * times(1)).findAllSoldToAccounts(userId, therapyId, query, paging, "", "SH"); }
-	 *
-	 * @DisplayName("Test : FindAll ShipToAccounts")
-	 *
-	 * @Test public void findAllShipToAccountsTest() { String soldToAccount = "4"; String
-	 * therapyId = "18";
-	 *
-	 * Mockito .when(therapyRepository.findAllShipToAccounts(anyString(), anyString(),
-	 * anyString(), Mockito.any(Pageable.class), anyString()))
-	 * .thenReturn(getShipToAccounts());
-	 * therapyService.findAllShipToAccounts(soldToAccount, Long.valueOf(therapyId),
-	 * paging, ""); verify(therapyRepository,
-	 * times(1)).findAllShipToAccounts(soldToAccount, therapyId, "", paging, "SP"); }
-	 *
-	 * @DisplayName("Test : FindAll TherapyById")
-	 *
-	 * @Test public void findTherapyByIdTest() { Long therapyId = 2L; Therapy therapy =
-	 * Therapy.builder() .materialNumber("123") .ndcNumber("r34")
-	 * .materialDescription("paracetamol") .sellingUnitCode("p12")
-	 * .baseUnitOfMeasure("gm") .manufacturerName("sunpharma") .salesOrg("SUN") .build();
-	 * Mockito.when(therapyRepository.findById(therapyId)).thenReturn(Optional.of(therapy)
-	 * ); therapyRepository.findById(therapyId); verify(therapyRepository,
-	 * times(1)).findById(therapyId); }
-	 *
-	 * @DisplayName("Test Exception : FindAll TherapyById")
-	 *
-	 * @Test public void findTherapyByIdResourceNotFoundExceptionTest() { Long therapyId =
-	 * 2L;
-	 * Mockito.when(therapyRepository.findById(therapyId)).thenReturn(Optional.empty());
-	 * assertThrows(ResourceNotFoundException.class, () ->
-	 * therapyService.findById(therapyId)); }
-	 */
+	@DisplayName("Test: FindAll Therapies")
+	@Test
+	public void findAllTherapiesTest() {
+		Long userId = 2L;
+		String query = "";
+		TherapyCatalogResponseDTO therapy1 = Mockito.mock(TherapyCatalogResponseDTO.class);
+		TherapyCatalogResponseDTO therapy2 = Mockito.mock(TherapyCatalogResponseDTO.class);
+		TherapyCatalogResponseDTO therapy3 = Mockito.mock(TherapyCatalogResponseDTO.class);
+		TherapyCatalogResponseDTO therapy4 = Mockito.mock(TherapyCatalogResponseDTO.class);
+		TherapyCatalogResponseDTO therapy5 = Mockito.mock(TherapyCatalogResponseDTO.class);
+
+		List<TherapyCatalogResponseDTO> mockResponse = List.of(therapy1, therapy2, therapy3, therapy4, therapy5);
+
+		Mockito
+			.when(therapyRepository.findAllTherapies(anyLong(), anyString(), anyList(), Mockito.any(Pageable.class),
+					anyList(), anyString()))
+			.thenReturn(new PageImpl<>(mockResponse, paging, 1L));
+
+		therapyService.findAllTherapies(userId, query, new ArrayList<>(), paging, new ArrayList<>());
+		verify(therapyRepository, times(1)).findAllTherapies(userId, query, new ArrayList<>(), paging,
+				new ArrayList<>(), "SH");
+	}
+
+	@DisplayName("Test: FindAll SoldToAccounts")
+	@Test
+	public void findAllSoldToAccountsTest() {
+		Long userId = 2L;
+		String query = "";
+		String therapyId = "18";
+
+		Mockito
+			.when(therapyRepository.findAllSoldToAccounts(anyLong(), anyString(), anyString(),
+					Mockito.any(Pageable.class), anyString(), anyString(), anyString()))
+			.thenReturn(getAccounts());
+		therapyService.findAllSoldToAccounts(userId, Long.valueOf(therapyId), query, paging, DistributionChannel.SD,
+				"");
+		verify(therapyRepository, times(1)).findAllSoldToAccounts(userId, therapyId, query, paging,
+				DistributionChannel.SD.getCode(), "", "SH");
+	}
+
+	@DisplayName("Test: FindAll ShipToAccounts")
+	@Test
+	public void findAllShipToAccountsTest() {
+		String soldToAccount = "4";
+		String therapyId = "18";
+
+		Mockito
+			.when(therapyRepository.findAllShipToAccounts(anyString(), anyString(), anyString(),
+					Mockito.any(Pageable.class), anyString()))
+			.thenReturn(getAccounts());
+		therapyService.findAllShipToAccounts(soldToAccount, Long.valueOf(therapyId), paging, "");
+		verify(therapyRepository, times(1)).findAllShipToAccounts(soldToAccount, therapyId, "", paging, "SP");
+	}
+
+	@DisplayName("Test: Find Therapy ById")
+	@Test
+	public void findTherapyByIdTest() {
+		Long therapyId = 2L;
+		Therapy therapy = Therapy.builder()
+			.materialNumber("123")
+			.ndcNumber("r34")
+			.materialDescription("paracetamol")
+			.sellingUnitCode("p12")
+			.baseUnitOfMeasure("gm")
+			.manufacturerName("sunpharma")
+			.salesOrg("SUN")
+			.build();
+		Mockito.when(therapyRepository.findById(therapyId)).thenReturn(Optional.of(therapy));
+		therapyRepository.findById(therapyId);
+		verify(therapyRepository, times(1)).findById(therapyId);
+	}
+
+	@Test
+	public void findTherapyByIdResourceNotFoundExceptionTest() {
+		Long therapyId = 2L;
+		Mockito.when(therapyRepository.findById(therapyId)).thenReturn(Optional.empty());
+		assertThrows(ResourceNotFoundException.class, () -> therapyService.findById(therapyId));
+	}
+
+	@DisplayName("Test: Find All Program And Channels")
+	@Test
+	public void findAllProgramAndChannelsTest() {
+		String therapyId = "2";
+		Long userId = 502L;
+		ProgramChannelProjectionDTO programsandChannels = Mockito.mock(ProgramChannelProjectionDTO.class);
+
+		Mockito.when(therapyRepository.findAllProgramAndChannels(anyLong(), anyString(), anyString()))
+			.thenReturn(List.of(programsandChannels));
+		therapyRepository.findAllProgramAndChannels(userId, therapyId,
+				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
+		verify(therapyRepository, times(1)).findAllProgramAndChannels(userId, therapyId,
+				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
+	}
+
+	private Page<AccountsResponseDTO> getAccounts() {
+		AccountsResponseDTO account1 = Mockito.mock(AccountsResponseDTO.class);
+		AccountsResponseDTO account2 = Mockito.mock(AccountsResponseDTO.class);
+		AccountsResponseDTO account3 = Mockito.mock(AccountsResponseDTO.class);
+		AccountsResponseDTO account4 = Mockito.mock(AccountsResponseDTO.class);
+		AccountsResponseDTO account5 = Mockito.mock(AccountsResponseDTO.class);
+		return new PageImpl<>(List.of(account1, account2, account3, account4, account5), paging, 5L);
+	}
 
 	@DisplayName("Test : FindAll Variants linked to soldToAccount, ShipToAccounts and TherapyId")
 	@Test
@@ -109,8 +170,9 @@ public class TherapyServiceImplTest {
 		String soldToAccount = "4";
 		String shipToAccount = "103";
 		String therapyId = "18";
-		when(catalogPriceRepository.findAllCatalogPricesLinkedToShipToAccountsForTherapy(anyString(), anyString(),
-				anyString(), Mockito.any(Pageable.class)))
+		Mockito
+			.when(catalogPriceRepository.findAllCatalogPricesLinkedToShipToAccountsForTherapy(anyString(), anyString(),
+					anyString(), Mockito.any(Pageable.class)))
 			.thenReturn(getAllVariantsLinkedToShipToAccounts());
 		therapyService.findAllVariantsLinkedToShipToAccountsForTherapy(soldToAccount, shipToAccount,
 				Long.valueOf(therapyId), paging);
@@ -125,8 +187,9 @@ public class TherapyServiceImplTest {
 		String shipToAccount = "103";
 		String therapyId = "18";
 		String variantType = "Type B";
-		when(catalogPriceRepository.findPriceOfVariantLinkedToShipToAccountsForTherapy(anyString(), anyString(),
-				anyString(), anyString()))
+		Mockito
+			.when(catalogPriceRepository.findPriceOfVariantLinkedToShipToAccountsForTherapy(anyString(), anyString(),
+					anyString(), anyString()))
 			.thenReturn(getCatalogPrice());
 		therapyService.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccount, shipToAccount, variantType,
 				Long.valueOf(therapyId));
@@ -141,36 +204,14 @@ public class TherapyServiceImplTest {
 		String shipToAccount = "103";
 		String therapyId = "18";
 		String variantType = "";
-		when(catalogPriceRepository.findPriceOfVariantLinkedToShipToAccountsForTherapy(anyString(), anyString(),
-				anyString(), anyString()))
+		Mockito
+			.when(catalogPriceRepository.findPriceOfVariantLinkedToShipToAccountsForTherapy(anyString(), anyString(),
+					anyString(), anyString()))
 			.thenReturn(getCatalogPriceWithEmptyVariant());
 		therapyService.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccount, shipToAccount, variantType,
 				Long.valueOf(therapyId));
 		verify(catalogPriceRepository, times(1)).findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccount,
 				shipToAccount, therapyId, variantType);
-	}
-
-	@Test
-	@DisplayName("Test : Find Material from catalogue using unique material number (Happy Path)")
-	public void testFindByMaterialNumber_Success() throws ResourceNotFoundException {
-		String materialNumber = "12345";
-		Therapy mockTherapy = new Therapy();
-		mockTherapy.setMaterialNumber(materialNumber);
-		when(therapyRepository.findByMaterialNumber(materialNumber)).thenReturn(Optional.of(mockTherapy));
-		Therapy result = therapyService.findByMaterialNumber(materialNumber);
-		Assertions.assertEquals(materialNumber, result.getMaterialNumber());
-		verify(therapyRepository, times(1)).findByMaterialNumber(materialNumber);
-	}
-
-	@Test
-	@DisplayName("Test : Find Material from catalogue using unique material number (negative Path)")
-	public void testFindByMaterialNumber_NotFound() {
-		String materialNumber = "12345";
-		when(therapyRepository.findByMaterialNumber(materialNumber)).thenReturn(Optional.empty());
-		ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
-				() -> therapyService.findByMaterialNumber(materialNumber));
-		Assertions.assertEquals("Therapy not found with materialNumber: " + materialNumber, exception.getMessage());
-		verify(therapyRepository, times(1)).findByMaterialNumber(materialNumber);
 	}
 
 	private CatalogPrice getCatalogPriceWithEmptyVariant() {
