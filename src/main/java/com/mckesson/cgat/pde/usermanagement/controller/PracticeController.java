@@ -98,7 +98,7 @@ public class PracticeController {
 		return ResponseEntity.status(HttpStatus.OK).body(practice);
 	}
 
-	//@RequirePermissions({ Permission.VIEW_ORGANIZATION })
+	// @RequirePermissions({ Permission.VIEW_ORGANIZATION })
 	@GetMapping("/{practiceId}")
 	@Operation(summary = "Get Practice by Id")
 	public ResponseEntity<Practice> getPractice(@PathVariable String practiceId)
