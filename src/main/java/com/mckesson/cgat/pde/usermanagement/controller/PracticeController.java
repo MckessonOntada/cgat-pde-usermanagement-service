@@ -82,7 +82,7 @@ public class PracticeController {
 	}
 
 	@RequirePermissions({ Permission.EDIT_ORGANIZATION, Permission.ADD_ORGANIZATION })
-	@PutMapping("/{practiceId}")
+	@PutMapping(value = "/{practiceId}", consumes = { "multipart/form-data" })
 	@Operation(summary = "Update Practice")
 	public ResponseEntity<Object> updatePractice(@RequestPart("practiceStr") @Valid String practiceStr,
 			@RequestPart(value = "logo", required = false) MultipartFile logo, @PathVariable String practiceId,
