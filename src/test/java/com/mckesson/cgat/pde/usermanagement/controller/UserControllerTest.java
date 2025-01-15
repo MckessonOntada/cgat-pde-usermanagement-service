@@ -142,7 +142,7 @@ class UserControllerTest {
 		when(userService.retryOktaProvisioning(1L)).thenReturn(ResponseEntity.ok(user));
 
 		mockMvc
-			.perform(post(apiUrl + "/{id}/retry-okta-provisioning", user.getPracticeId(), 1L)
+			.perform(post(apiUrl + "/{userId}/retry-okta-provisioning", user.getPracticeId(), 1L)
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andReturn();

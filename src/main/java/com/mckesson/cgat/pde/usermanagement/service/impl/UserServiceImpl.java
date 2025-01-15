@@ -92,7 +92,7 @@ public class UserServiceImpl implements UserService {
 			return ResponseEntity.ok(userRepository.save(user));
 		}
 
-		return new ResponseEntity<>(user, HttpStatus.EXPECTATION_FAILED);
+		return new ResponseEntity<>(user, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@Override
