@@ -46,6 +46,7 @@ import com.mckesson.cgat.pde.usermanagement.util.TestUtils;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.cgat.pde.usermanagement.utils.OrganizationContext;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
+import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
@@ -120,10 +121,10 @@ class UserServiceImplTest {
 
 		doNothing().when(oktaUserManagementService).updateOrCreateOktaUser(user);
 
-		User result = userService.retryOktaProvisioning(userId);
+		ResponseEntity<User> result = userService.retryOktaProvisioning(userId);
 
 		verify(userRepository, times(1)).save(user);
-		Assertions.assertEquals(UserProvisionedInOktaStatus.PROVISIONED, result.getProvisionedInOktaStatus());
+		Assertions.assertEquals(UserProvisionedInOktaStatus.PROVISIONED, result.getBody().getProvisionedInOktaStatus());
 	}
 
 	@DisplayName("GetUser")

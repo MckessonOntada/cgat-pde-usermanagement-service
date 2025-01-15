@@ -10,6 +10,7 @@ import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
 import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
+import org.springframework.http.ResponseEntity;
 
 public interface UserService {
 
@@ -37,6 +38,6 @@ public interface UserService {
 
 	User setDefaultPayToAccount(Long userId, String payToAccount) throws ResourceNotFoundException;
 
-	User retryOktaProvisioning(Long id) throws ResourceNotFoundException;
+	ResponseEntity<User> retryOktaProvisioning(Long id) throws ResourceNotFoundException;
 
 }

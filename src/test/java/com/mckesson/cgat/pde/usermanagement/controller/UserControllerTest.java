@@ -40,6 +40,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -138,7 +139,7 @@ class UserControllerTest {
 
 	@Test
 	void testRetryOktaProvisioning_Success() throws Exception {
-		when(userService.retryOktaProvisioning(1L)).thenReturn(user);
+		when(userService.retryOktaProvisioning(1L)).thenReturn(ResponseEntity.ok(user));
 
 		mockMvc
 			.perform(post(apiUrl + "/{id}/retry-okta-provisioning", user.getPracticeId(), 1L)

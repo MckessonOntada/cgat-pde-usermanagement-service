@@ -7,6 +7,8 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -67,12 +69,12 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User retryOktaProvisioning(Long userId) throws ResourceNotFoundException {
+	public ResponseEntity<User> retryOktaProvisioning(Long userId) throws ResourceNotFoundException {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new ResourceNotFoundException("User not found for ID: " + userId));
 
 		if (UserProvisionedInOktaStatus.PROVISIONED.equals(user.getProvisionedInOktaStatus()))
-			return user;
+			return ResponseEntity.ok(user);
 
 		UserProvisionedInOktaStatus oktaStatus = UserProvisionedInOktaStatus.PENDING;
 
@@ -87,10 +89,10 @@ public class UserServiceImpl implements UserService {
 
 		if (oktaStatus.equals(UserProvisionedInOktaStatus.PROVISIONED)) {
 			user.setProvisionedInOktaStatus(oktaStatus);
-			return userRepository.save(user);
+			return ResponseEntity.ok(userRepository.save(user));
 		}
 
-		return user;
+		return new ResponseEntity<>(user, HttpStatus.EXPECTATION_FAILED);
 	}
 
 	@Override
