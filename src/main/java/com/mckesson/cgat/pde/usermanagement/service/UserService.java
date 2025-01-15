@@ -37,4 +37,6 @@ public interface UserService {
 
 	User setDefaultPayToAccount(Long userId, String payToAccount) throws ResourceNotFoundException;
 
+	User retryOktaProvisioning(Long id) throws ResourceNotFoundException;
+
 }

@@ -136,6 +136,19 @@ class UserControllerTest {
 
 	}
 
+	@Test
+	void testRetryOktaProvisioning_Success() throws Exception {
+		when(userService.retryOktaProvisioning(1L)).thenReturn(user);
+
+		mockMvc
+			.perform(post(apiUrl + "/{id}/retry-okta-provisioning", user.getPracticeId(), 1L)
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andReturn();
+
+		verify(userService, times(1)).retryOktaProvisioning(1L);
+	}
+
 	@DisplayName("ValidationError :CreateUserTest")
 	@Test
 	void createUser_validationErrorTest() throws Exception {

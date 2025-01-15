@@ -25,10 +25,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import com.mckesson.cgat.pde.usermanagement.model.*;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -40,15 +38,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
-import com.mckesson.cgat.pde.usermanagement.model.Account;
-import com.mckesson.cgat.pde.usermanagement.model.Address;
-import com.mckesson.cgat.pde.usermanagement.model.Contact;
-import com.mckesson.cgat.pde.usermanagement.model.DistributionChannel;
-import com.mckesson.cgat.pde.usermanagement.model.Name;
-import com.mckesson.cgat.pde.usermanagement.model.Permission;
-import com.mckesson.cgat.pde.usermanagement.model.Role;
-import com.mckesson.cgat.pde.usermanagement.model.User;
-import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
@@ -103,6 +92,7 @@ class UserServiceImplTest {
 				.build())
 
 			.isActive(true)
+			.provisionedInOktaStatus(UserProvisionedInOktaStatus.PENDING)
 			.build();
 	}
 
@@ -118,6 +108,22 @@ class UserServiceImplTest {
 		doNothing().when(oktaUserManagementService).updateOrCreateOktaUser(user);
 		assertEquals(user, userService.createUser(user));
 		verify(userRepository, times(1)).save(user);
+	}
+
+	@DisplayName("Retry user okta provisioning ")
+	@Test
+	void testRetryOktaProvisioning_Success() throws ResourceNotFoundException {
+		Long userId = 1L;
+
+		when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+		when(userRepository.save(user)).thenReturn(user);
+
+		doNothing().when(oktaUserManagementService).updateOrCreateOktaUser(user);
+
+		User result = userService.retryOktaProvisioning(userId);
+
+		verify(userRepository, times(1)).save(user);
+		Assertions.assertEquals(UserProvisionedInOktaStatus.PROVISIONED, result.getProvisionedInOktaStatus());
 	}
 
 	@DisplayName("GetUser")

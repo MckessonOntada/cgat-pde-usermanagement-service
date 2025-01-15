@@ -81,6 +81,14 @@ public class UserController {
 		return new ResponseEntity<>(userService.createUser(user), HttpStatus.OK);
 	}
 
+	@RequirePermissions({ Permission.ADD_USERS })
+	@PostMapping("/{id}/retry-okta-provisioning")
+	@Operation(summary = "Retry Okta provisioning for an existing user")
+	public ResponseEntity<User> retryOktaProvisioning(@PathVariable Long id) throws ResourceNotFoundException {
+		User user = userService.retryOktaProvisioning(id);
+		return new ResponseEntity<>(user, HttpStatus.OK);
+	}
+
 	@RequirePermissions({ Permission.ADD_USERS, Permission.EDIT_USERS })
 	@PatchMapping("/{userId}")
 	@Operation(summary = "Update existing user details byId")
