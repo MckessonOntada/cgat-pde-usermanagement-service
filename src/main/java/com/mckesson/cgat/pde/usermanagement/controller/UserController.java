@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.mckesson.cgat.pde.usermanagement.exception.custom.CGATHttpException;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -84,8 +85,10 @@ public class UserController {
 	@RequirePermissions({ Permission.ADD_USERS, Permission.EDIT_USERS })
 	@PostMapping("/{userId}/retry-okta-provisioning")
 	@Operation(summary = "Retry Okta provisioning for an existing user")
-	public ResponseEntity<User> retryOktaProvisioning(@PathVariable Long userId) throws ResourceNotFoundException {
-		return userService.retryOktaProvisioning(userId);
+	public ResponseEntity<User> retryOktaProvisioning(@PathVariable Long userId)
+			throws ResourceNotFoundException, CGATHttpException {
+		User user = userService.retryOktaProvisioning(userId);
+		return ResponseEntity.ok(user);
 	}
 
 	@RequirePermissions({ Permission.ADD_USERS, Permission.EDIT_USERS })

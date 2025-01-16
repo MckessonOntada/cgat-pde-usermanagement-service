@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.service;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.mckesson.cgat.pde.usermanagement.exception.custom.CGATHttpException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -38,6 +39,6 @@ public interface UserService {
 
 	User setDefaultPayToAccount(Long userId, String payToAccount) throws ResourceNotFoundException;
 
-	ResponseEntity<User> retryOktaProvisioning(Long id) throws ResourceNotFoundException;
+	User retryOktaProvisioning(Long userId) throws ResourceNotFoundException, CGATHttpException;
 
 }

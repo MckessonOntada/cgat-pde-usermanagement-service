@@ -69,30 +69,25 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public ResponseEntity<User> retryOktaProvisioning(Long userId) throws ResourceNotFoundException {
+	public User retryOktaProvisioning(Long userId) throws ResourceNotFoundException, CGATHttpException {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new ResourceNotFoundException("User not found for ID: " + userId));
 
-		if (UserProvisionedInOktaStatus.PROVISIONED.equals(user.getProvisionedInOktaStatus()))
-			return ResponseEntity.ok(user);
-
-		UserProvisionedInOktaStatus oktaStatus = UserProvisionedInOktaStatus.PENDING;
+		if (UserProvisionedInOktaStatus.PROVISIONED.equals(user.getProvisionedInOktaStatus())) {
+			return user;
+		}
 
 		try {
 			oktaUserManagementService.updateOrCreateOktaUser(user);
-			oktaStatus = UserProvisionedInOktaStatus.PROVISIONED;
-			log.info("Successfully provisioned user in Okta, userId: {}", userId);
+			user.setProvisionedInOktaStatus(UserProvisionedInOktaStatus.PROVISIONED);
+			userRepository.save(user);
 		}
-		catch (CGATHttpException e) {
-			log.error("Failed to provision user in Okta after retries, userId: {}", userId, e);
-		}
-
-		if (oktaStatus.equals(UserProvisionedInOktaStatus.PROVISIONED)) {
-			user.setProvisionedInOktaStatus(oktaStatus);
-			return ResponseEntity.ok(userRepository.save(user));
+		catch (Exception e) {
+			log.error("Failed to provision user in Okta, userId: {}", userId, e);
+			throw new CGATHttpException(e);
 		}
 
-		return new ResponseEntity<>(user, HttpStatus.INTERNAL_SERVER_ERROR);
+		return user;
 	}
 
 	@Override

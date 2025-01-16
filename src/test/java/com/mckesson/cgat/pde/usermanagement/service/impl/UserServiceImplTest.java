@@ -121,10 +121,10 @@ class UserServiceImplTest {
 
 		doNothing().when(oktaUserManagementService).updateOrCreateOktaUser(user);
 
-		ResponseEntity<User> result = userService.retryOktaProvisioning(userId);
+		User result = userService.retryOktaProvisioning(userId);
 
 		verify(userRepository, times(1)).save(user);
-		Assertions.assertEquals(UserProvisionedInOktaStatus.PROVISIONED, result.getBody().getProvisionedInOktaStatus());
+		Assertions.assertEquals(UserProvisionedInOktaStatus.PROVISIONED, result.getProvisionedInOktaStatus());
 	}
 
 	@DisplayName("GetUser")

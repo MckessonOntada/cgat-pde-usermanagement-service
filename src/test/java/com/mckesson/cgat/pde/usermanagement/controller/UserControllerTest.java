@@ -139,7 +139,7 @@ class UserControllerTest {
 
 	@Test
 	void testRetryOktaProvisioning_Success() throws Exception {
-		when(userService.retryOktaProvisioning(1L)).thenReturn(ResponseEntity.ok(user));
+		when(userService.retryOktaProvisioning(1L)).thenReturn(user);
 
 		mockMvc
 			.perform(post(apiUrl + "/{userId}/retry-okta-provisioning", user.getPracticeId(), 1L)
