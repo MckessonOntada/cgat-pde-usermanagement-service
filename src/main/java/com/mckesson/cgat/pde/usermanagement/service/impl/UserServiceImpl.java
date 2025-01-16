@@ -69,7 +69,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User retryOktaProvisioning(Long userId) throws ResourceNotFoundException, CGATHttpException {
+	public User retryOktaProvisioning(Long userId) throws ResourceNotFoundException {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new ResourceNotFoundException("User not found for ID: " + userId));
 
