@@ -3,7 +3,6 @@ package com.mckesson.cgat.pde.usermanagement.service;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.mckesson.cgat.pde.usermanagement.exception.custom.CGATHttpException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -11,7 +10,6 @@ import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
 import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
-import org.springframework.http.ResponseEntity;
 
 public interface UserService {
 
