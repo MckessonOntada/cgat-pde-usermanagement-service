@@ -82,6 +82,7 @@ public class UserServiceImpl implements UserService {
 		}
 		catch (Exception e) {
 			log.error("Failed to provision user in Okta, userId: {}", userId, e);
+			throw e;
 		}
 
 		return user;
