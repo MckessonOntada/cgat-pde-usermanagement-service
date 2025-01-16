@@ -23,12 +23,14 @@ public interface CatalogPriceMapper {
 	@BeanMapping(ignoreByDefault = true)
 	CatalogPriceResponseDto toResponseDtoVariant(CatalogPrice catalogPrice);
 
-	@Mapping(source = "salesOrg", target = "salesOrg")
 	@Mapping(source = "distChannel", target = "distChannel")
 	@Mapping(source = "sapMaterial", target = "sapMaterial")
+	@Mapping(source = "materialDescriptionInLanguageEn", target = "materialDescriptionInLanguageEn")
 	@Mapping(source = "variant", target = "variant")
 	@Mapping(source = "variantDescription", target = "variantDescription")
 	@Mapping(source = "ndc", target = "ndc")
+	@Mapping(source = "soldToCustomer", target = "soldToCustomer")
+	@Mapping(source = "shipToCustomer", target = "shipToCustomer")
 	@BeanMapping(ignoreByDefault = true)
 	CatalogPriceResponseDto toCatalogResponseDto(CatalogPrice catalogPrice);
 
