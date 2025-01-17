@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import com.mckesson.cgat.pde.usermanagement.repository.CatalogPriceRepository;
-import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -19,9 +17,7 @@ import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponseDto;
 import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelProjectionDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.TherapyResponseDto;
 import com.mckesson.cgat.pde.usermanagement.mapper.CatalogPriceMapper;
-import com.mckesson.cgat.pde.usermanagement.mapper.TherapyMapper;
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
 import com.mckesson.cgat.pde.usermanagement.model.DistributionChannel;
@@ -43,14 +39,11 @@ public class TherapyServiceImpl implements TherapyService {
 
 	private final CatalogPriceMapper catalogPriceMapper;
 
-	private final TherapyMapper therapyMapper;
-
 	public TherapyServiceImpl(TherapyRepository therapyRepository, CatalogPriceRepository catalogPriceRepository,
-			CatalogPriceMapper catalogPriceMapper, TherapyMapper therapyMapper) {
+			CatalogPriceMapper catalogPriceMapper) {
 		this.therapyRepository = therapyRepository;
 		this.catalogPriceRepository = catalogPriceRepository;
 		this.catalogPriceMapper = catalogPriceMapper;
-		this.therapyMapper = therapyMapper;
 	}
 
 	public Page<TherapyCatalogResponseDTO> findAllTherapies(Long userId, String query, List<String> salesOrg,
@@ -148,14 +141,11 @@ public class TherapyServiceImpl implements TherapyService {
 				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 	}
 
-	public Page<TherapyResponseDto> findAllGlobalTherapies(String query, Pageable paging) {
+	public Page<Therapy> findAllGlobalTherapies(String query, Pageable paging) {
 		try {
 			log.info(" Inside method - findAllGlobalTherapies");
 			log.info("query: {}", StringUtils.toRootLowerCase(query));
-			Page<Therapy> allTherapies = therapyRepository.findAllGlobalTherapies(StringUtils.toRootLowerCase(query),
-					paging);
-			List<TherapyResponseDto> therapies = therapyMapper.toTherapiesResponseDtoList(allTherapies.getContent());
-			return new PageImpl<>(therapies, paging, allTherapies.getTotalElements());
+			return therapyRepository.findAllGlobalTherapies(StringUtils.toRootLowerCase(query), paging);
 		}
 		catch (Exception e) {
 			log.error("Exception occurred in findAllGlobalTherapies and exception details", e);
@@ -164,16 +154,13 @@ public class TherapyServiceImpl implements TherapyService {
 
 	}
 
-	public Page<CatalogPriceResponseDto> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging) {
+	public Page<CatalogPrice> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging) {
 		try {
 			log.info(" Inside method - findAllGlobalCatalogs");
 			log.info("accountIds : {}, query: {}", accountIds, StringUtils.toRootLowerCase(query));
-			Page<CatalogPrice> allCatalogs = catalogPriceRepository.findAllGlobalCatalogs(accountIds,
+			return catalogPriceRepository.findAllGlobalCatalogs(accountIds,
 					AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), StringUtils.toRootLowerCase(query),
 					paging);
-			List<CatalogPriceResponseDto> catalogs = catalogPriceMapper
-				.toCatalogResponseDtoList(allCatalogs.getContent());
-			return new PageImpl<>(catalogs, paging, allCatalogs.getTotalElements());
 		}
 		catch (Exception e) {
 			log.error("Exception occurred in findAllGlobalCatalogs and exception details", e);

@@ -10,7 +10,7 @@ import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponseDto;
 import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.TherapyResponseDto;
+import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
 import com.mckesson.cgat.pde.usermanagement.model.DistributionChannel;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -39,9 +39,9 @@ public interface TherapyService {
 	CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForTherapy(String soldToAccountId,
 			String shipToAccountId, String variantType, Long therapyId);
 
-	Page<TherapyResponseDto> findAllGlobalTherapies(String query, Pageable paging);
+	Page<Therapy> findAllGlobalTherapies(String query, Pageable paging);
 
-	Page<CatalogPriceResponseDto> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging);
+	Page<CatalogPrice> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging);
 
 	Therapy findByMaterialNumber(String materialNumber) throws ResourceNotFoundException;
 

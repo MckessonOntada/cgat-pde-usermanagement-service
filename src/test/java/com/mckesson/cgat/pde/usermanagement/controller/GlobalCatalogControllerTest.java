@@ -26,7 +26,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponseDto;
+import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
+import com.mckesson.cgat.pde.usermanagement.model.DistributionChannel;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
 
 @WebMvcTest(GlobalCatalogController.class)
@@ -51,7 +52,7 @@ public class GlobalCatalogControllerTest {
 		String query = "";
 		List<String> accountNumbers = new ArrayList<>();
 
-		Page<CatalogPriceResponseDto> mockResponse = getCatalogs();
+		Page<CatalogPrice> mockResponse = getCatalogs();
 
 		when(therapyService.findAllGlobalCatalogs(anyList(), anyString(), any(PageRequest.class)))
 			.thenReturn(mockResponse);
@@ -68,31 +69,31 @@ public class GlobalCatalogControllerTest {
 			.andReturn();
 	}
 
-	private Page<CatalogPriceResponseDto> getCatalogs() {
+	private Page<CatalogPrice> getCatalogs() {
 		Integer pageNo = 0;
 		Integer pageSize = 20;
 		String sortBy = "name";
 		String sortOrder = "asc";
-		List<CatalogPriceResponseDto> catalogs = new ArrayList<>();
-		CatalogPriceResponseDto catalog1 = CatalogPriceResponseDto.builder()
+		List<CatalogPrice> catalogs = new ArrayList<>();
+		CatalogPrice catalog1 = CatalogPrice.builder()
 			.salesOrg("1100")
-			.distChannel("20")
+			.distChannel(DistributionChannel.ALL)
 			.sapMaterial("12")
 			.variant("v1")
 			.variantDescription("version 1")
 			.ndc("c1")
 			.build();
-		CatalogPriceResponseDto catalog2 = CatalogPriceResponseDto.builder()
+		CatalogPrice catalog2 = CatalogPrice.builder()
 			.salesOrg("1000")
-			.distChannel("40")
+			.distChannel(DistributionChannel.ALL)
 			.sapMaterial("18")
 			.variant("v2")
 			.variantDescription("version 2")
 			.ndc("c2")
 			.build();
-		CatalogPriceResponseDto catalog3 = CatalogPriceResponseDto.builder()
+		CatalogPrice catalog3 = CatalogPrice.builder()
 			.salesOrg("8545")
-			.distChannel("80")
+			.distChannel(DistributionChannel.ALL)
 			.sapMaterial("22")
 			.variant("v3")
 			.variantDescription("version 3")

@@ -30,7 +30,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import com.mckesson.cgat.pde.usermanagement.dto.TherapyResponseDto;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -62,7 +61,7 @@ public class GlobalTherapyControllerTest {
 		String sortOrder = "asc";
 		String query = "";
 
-		Page<TherapyResponseDto> mockResponse = getTherapies();
+		Page<Therapy> mockResponse = getTherapies();
 
 		when(therapyService.findAllGlobalTherapies(anyString(), any(PageRequest.class))).thenReturn(mockResponse);
 
@@ -77,27 +76,27 @@ public class GlobalTherapyControllerTest {
 			.andReturn();
 	}
 
-	private Page<TherapyResponseDto> getTherapies() {
+	private Page<Therapy> getTherapies() {
 		Integer pageNo = 0;
 		Integer pageSize = 20;
 		String sortBy = "name";
 		String sortOrder = "asc";
-		List<TherapyResponseDto> therapies = new ArrayList<>();
-		TherapyResponseDto therapy1 = TherapyResponseDto.builder()
+		List<Therapy> therapies = new ArrayList<>();
+		Therapy therapy1 = Therapy.builder()
 			.materialNumber("12")
 			.materialDescription("PCM")
 			.ndcNumber("89")
 			.strength("650mg")
 			.dosage("SOS")
 			.build();
-		TherapyResponseDto therapy2 = TherapyResponseDto.builder()
+		Therapy therapy2 = Therapy.builder()
 			.materialNumber("18")
 			.materialDescription("PANTOP")
 			.ndcNumber("76")
 			.strength("40mg")
 			.dosage("BB")
 			.build();
-		TherapyResponseDto therapy3 = TherapyResponseDto.builder()
+		Therapy therapy3 = Therapy.builder()
 			.materialNumber("27")
 			.materialDescription("ONDEM")
 			.ndcNumber("22")

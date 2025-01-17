@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponseDto;
+import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,9 +35,8 @@ public class GlobalCatalogController {
 
 	@GetMapping
 	@Operation(summary = "Fetch all catalogs for provided soldto accounts lists.")
-	public ResponseEntity<Page<CatalogPriceResponseDto>> findAllCatalogs(
-			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize,
-			@RequestParam(required = false) String query,
+	public ResponseEntity<Page<CatalogPrice>> findAllCatalogs(@RequestParam(defaultValue = "0") Integer pageNo,
+			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
 			@NotEmpty(message = "Account Numbers can not be empty") @RequestParam List<String> accountNumbers) {
 		Pageable paging = PageRequest.of(pageNo, pageSize);
 		return new ResponseEntity<>(therapyService.findAllGlobalCatalogs(accountNumbers, query, paging), HttpStatus.OK);
