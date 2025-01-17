@@ -1,5 +1,4 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 @Tag(name = "Therapies", description = "Controller for getting all therapies.")
 @RequestMapping(path = "/therapies", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
+
 public class GlobalTherapyController {
 
 	private final TherapyService therapyService;
@@ -36,6 +36,14 @@ public class GlobalTherapyController {
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query) {
 		Pageable paging = PageRequest.of(pageNo, pageSize);
 		return new ResponseEntity<>(therapyService.findAllGlobalTherapies(query, paging), HttpStatus.OK);
+
+	@GetMapping("/{materialNumber}")
+	@Operation(summary = "Find Therapy by Material Number")
+	public ResponseEntity<Therapy> findByMaterialNumber(@PathVariable String materialNumber)
+			throws ResourceNotFoundException {
+		log.debug("Fetching therapy with materialNumber: {}", materialNumber);
+		return new ResponseEntity<>(therapyService.findByMaterialNumber(materialNumber), HttpStatus.OK);
+
 	}
 
 }

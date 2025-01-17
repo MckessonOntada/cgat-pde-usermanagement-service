@@ -1,7 +1,18 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
-import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponseDto;
-import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,20 +21,22 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponseDto;
+import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.model.DistributionChannel;
+import com.mckesson.cgat.pde.usermanagement.model.Therapy;
+import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
+import com.mckesson.cgat.pde.usermanagement.util.TestUtils;
 
 @WebMvcTest(TherapyController.class)
 @ContextConfiguration(classes = { TherapyController.class })
@@ -46,8 +59,6 @@ public class TherapyControllerTest {
 
 	private String pageSize;
 
-	private String query = "";
-
 	@BeforeEach
 	public void beforeEach() {
 		pageNo = "0";
@@ -55,72 +66,282 @@ public class TherapyControllerTest {
 		paging = PageRequest.of(0, 20, Sort.by("name").ascending());
 		practiceId = "2";
 		userId = 2L;
+		TestUtils.setupPrincipal();
 	}
 
-	/*
-	 * @DisplayName("Test : FindAll Therapies")
-	 *
-	 * @Test public void findAllTherapiesTest() throws Exception {
-	 *
-	 * String salesOrg = "";
-	 *
-	 * Page<TherapyCatalogResponseDTO> therapies = getTherapies();
-	 *
-	 * when(therapyService.findAllTherapies(anyLong(), anyString(), anyList(),
-	 * any(Pageable.class), anyList())) .thenReturn(therapies);
-	 *
-	 * mockMvc .perform(get("/practices/{practiceId}/users/{userId}/therapies",
-	 * practiceId, userId).param("pageNo", pageNo) .param("pageSize", pageSize)
-	 * .param("query", "") .param("salesOrg", "") .param("customerIdentifier", "")
-	 * .contentType(MediaType.APPLICATION_JSON)) .andExpect(status().isOk()) .andReturn();
-	 * }
-	 *
-	 * @DisplayName("Test : FindAll SoldToAccounts")
-	 *
-	 * @Test public void findAllSoldToAccountsTest() throws Exception {
-	 *
-	 * Long therapyId = 12L; Page<AccountsResponseDTO> soldToAccounts =
-	 * getSoldToAccounts();
-	 *
-	 * when(therapyService.findAllSoldToAccounts(anyLong(), anyLong(), anyString(),
-	 * any(Pageable.class), anyString())) .thenReturn(soldToAccounts);
-	 *
-	 * mockMvc .perform(get(
-	 * "/practices/{practiceId}/users/{userId}/therapies/{therapyId}/soldtoaccounts",
-	 * practiceId, userId, therapyId) .param("pageNo", pageNo) .param("pageSize",
-	 * pageSize) .param("query", "") .param("salesOrg", "")
-	 * .contentType(MediaType.APPLICATION_JSON)) .andExpect(status().isOk()) .andReturn();
-	 * }
-	 *
-	 * @DisplayName("Test : FindAll ShipToAccounts")
-	 *
-	 * @Test public void findAllShipToAccountsTest() throws Exception {
-	 *
-	 * Long therapyId = 12L; String soldToAccount = "4"; Page<AccountsResponseDTO>
-	 * shipToAccounts = getShipToAccounts();
-	 *
-	 * when(therapyService.findAllShipToAccounts(anyString(), anyLong(),
-	 * any(PageRequest.class), anyString())) .thenReturn(shipToAccounts);
-	 *
-	 * mockMvc.perform(get(
-	 * "/practices/{practiceId}/users/{userId}/therapies/{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccounts",
-	 * practiceId, userId, therapyId, soldToAccount) .param("pageNo", pageNo)
-	 * .param("pageSize", pageSize) .param("query", "") .param("salesOrg", "")
-	 * .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn(); }
-	 *
-	 * @DisplayName("Test : Find TherapyById")
-	 *
-	 * @Test public void findTherapyByIdTest() throws Exception { Long therapyId = 12L;
-	 * Therapy therapy = Therapy.builder() .materialNumber("123") .ndcNumber("r34")
-	 * .materialDescription("paracetamol") .sellingUnitCode("p12")
-	 * .baseUnitOfMeasure("gm") .manufacturerName("sunpharma") .salesOrg("SUN") .build();
-	 * when(therapyService.findById(therapyId)).thenReturn(therapy);
-	 *
-	 * mockMvc
-	 * .perform(get("/practices/{practiceId}/users/{userId}/therapies/{therapyId}",
-	 * practiceId, userId, therapyId) .contentType(MediaType.APPLICATION_JSON))
-	 * .andExpect(status().isOk()) .andReturn(); }
-	 */
+	@Test
+	@DisplayName("Test : FindAll Therapies")
+	public void findAllTherapiesTest() throws Exception {
+
+		TherapyCatalogResponseDTO therapy1 = new TherapyCatalogResponseDTO() {
+			@Override
+			public String getId() {
+				return "";
+			}
+
+			@Override
+			public String getTherapyId() {
+				return "";
+			}
+
+			@Override
+			public String getTherapyDescription() {
+				return "";
+			}
+
+			@Override
+			public String getNdc() {
+				return "";
+			}
+
+			@Override
+			public String getUdi() {
+				return "";
+			}
+
+			@Override
+			public String getStrength() {
+				return "";
+			}
+
+			@Override
+			public String getDosage() {
+				return "";
+			}
+
+			@Override
+			public String getSellingUnitCode() {
+				return "";
+			}
+
+			@Override
+			public String getVendorName() {
+				return "";
+			}
+
+			@Override
+			public String getUpcCode() {
+				return "";
+			}
+
+			@Override
+			public String getDropshipIndicator() {
+				return "";
+			}
+
+			@Override
+			public String getStatus() {
+				return "";
+			}
+
+			@Override
+			public String getBaseUnitOfMeasure() {
+				return "";
+			}
+
+			@Override
+			public String getCgatIdentifier() {
+				return "";
+			}
+
+			@Override
+			public String getSalesOrganization() {
+				return "";
+			}
+
+			@Override
+			public String getCgatType() {
+				return "";
+			}
+
+			@Override
+			public String getProductLevelPricing() {
+				return "";
+			}
+
+			@Override
+			public String getMinimumOrderQuantity() {
+				return "";
+			}
+		};
+
+		when(therapyService.findAllTherapies(anyLong(), anyString(), anyList(), any(Pageable.class), anyList()))
+			.thenReturn(new PageImpl<>(List.of(therapy1), paging, 1L));
+
+		mockMvc
+			.perform(get("/practices/{practiceId}/users/current/therapies", practiceId).param("pageNo", pageNo)
+				.param("pageSize", pageSize)
+				.param("query", "")
+				.param("salesOrg", "")
+				.param("customerIdentifier", "")
+				.param("sortBy", "material_description")
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andReturn();
+	}
+
+	@Test
+	@DisplayName("Test : FindAll SoldToAccounts")
+	public void findAllSoldToAccountsTest() throws Exception {
+
+		Long therapyId = 12L;
+
+		when(therapyService.findAllSoldToAccounts(anyLong(), anyLong(), anyString(), any(Pageable.class),
+				any(DistributionChannel.class), anyString()))
+			.thenReturn(getAccounts());
+
+		mockMvc.perform(
+				get("/practices/{practiceId}/users/current/therapies/{therapyId}/soldtoaccounts", practiceId, therapyId)
+					.param("pageNo", pageNo)
+					.param("pageSize", pageSize)
+					.param("query", "")
+					.param("salesOrg", "")
+					.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andReturn();
+	}
+
+	@Test
+	@DisplayName("Test : FindAll ShipToAccounts")
+	public void findAllShipToAccountsTest() throws Exception {
+
+		Long therapyId = 12L;
+		String soldToAccountId = "4";
+
+		when(therapyService.findAllShipToAccounts(anyString(), anyLong(), any(PageRequest.class), anyString()))
+			.thenReturn(getAccounts());
+
+		mockMvc.perform(get(
+				"/practices/{practiceId}/users/current/therapies/{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccounts",
+				practiceId, therapyId, soldToAccountId)
+			.param("pageNo", pageNo)
+			.param("pageSize", pageSize)
+			.param("query", "")
+			.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+	}
+
+	@Test
+	@DisplayName("Test : Find TherapyById")
+	public void findTherapyByIdTest() throws Exception {
+		Long therapyId = 12L;
+		Therapy therapy = Therapy.builder()
+			.materialNumber("123")
+			.ndcNumber("r34")
+			.materialDescription("paracetamol")
+			.sellingUnitCode("p12")
+			.baseUnitOfMeasure("gm")
+			.manufacturerName("sunpharma")
+			.salesOrg("SUN")
+			.build();
+		when(therapyService.findById(therapyId)).thenReturn(therapy);
+
+		mockMvc
+			.perform(get("/practices/{practiceId}/users/current/therapies/{therapyId}", practiceId, userId, therapyId)
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andReturn();
+	}
+
+	private Page<AccountsResponseDTO> getAccounts() {
+		AccountsResponseDTO account1 = new AccountsResponseDTO() {
+
+			@Override
+			public String getZipCode() {
+				return "";
+			}
+
+			@Override
+			public String getTelephone() {
+				return "";
+			}
+
+			@Override
+			public String getStreet3() {
+				return "";
+			}
+
+			@Override
+			public String getStreet2() {
+				return "";
+			}
+
+			@Override
+			public String getStreet() {
+				return "";
+			}
+
+			@Override
+			public String getState() {
+				return "";
+			}
+
+			@Override
+			public String getSalesOrg() {
+				return "";
+			}
+
+			@Override
+			public Boolean getIsDefault() {
+				return false;
+			}
+
+			@Override
+			public String getId() {
+				return "";
+			}
+
+			@Override
+			public String getHouseNumber() {
+				return "";
+			}
+
+			@Override
+			public String getDivision() {
+				return "";
+			}
+
+			@Override
+			public String getDistrict() {
+				return "";
+			}
+
+			@Override
+			public String getDistChannel() {
+				return "20";
+			}
+
+			@Override
+			public String getCountry() {
+				return "";
+			}
+
+			@Override
+			public String getCompanyCode() {
+				return "";
+			}
+
+			@Override
+			public String getCity() {
+				return "";
+			}
+
+			@Override
+			public String getCgatIdentifier() {
+				return "";
+			}
+
+			@Override
+			public String getAccountNumber() {
+				return "";
+			}
+
+			@Override
+			public String getAccountName() {
+				return "";
+			}
+		};
+		return new PageImpl<>(List.of(account1), paging, 1L);
+	}
 
 	@DisplayName("Test : Find ALl Variants linked to SoldTo, ShipTO and TherapyId")
 	@Test

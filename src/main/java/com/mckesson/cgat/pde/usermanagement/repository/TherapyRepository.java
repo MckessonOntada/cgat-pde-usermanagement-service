@@ -1,6 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -185,5 +186,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			)
 			""", nativeQuery = true)
 	public Page<Therapy> findAllGlobalTherapies(@Param("query") String query, Pageable paging);
+
+	Optional<Therapy> findByMaterialNumber(String materialNumber);
+
 
 }

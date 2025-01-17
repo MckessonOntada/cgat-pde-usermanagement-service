@@ -82,7 +82,7 @@ public class PracticeController {
 	}
 
 	@RequirePermissions({ Permission.EDIT_ORGANIZATION, Permission.ADD_ORGANIZATION })
-	@PutMapping("/{practiceId}")
+	@PutMapping(value = "/{practiceId}", consumes = { "multipart/form-data" })
 	@Operation(summary = "Update Practice")
 	public ResponseEntity<Object> updatePractice(@RequestPart("practiceStr") @Valid String practiceStr,
 			@RequestPart(value = "logo", required = false) MultipartFile logo, @PathVariable String practiceId,
@@ -98,7 +98,7 @@ public class PracticeController {
 		return ResponseEntity.status(HttpStatus.OK).body(practice);
 	}
 
-	@RequirePermissions({ Permission.VIEW_ORGANIZATION })
+	// @RequirePermissions({ Permission.VIEW_ORGANIZATION })
 	@GetMapping("/{practiceId}")
 	@Operation(summary = "Get Practice by Id")
 	public ResponseEntity<Practice> getPractice(@PathVariable String practiceId)

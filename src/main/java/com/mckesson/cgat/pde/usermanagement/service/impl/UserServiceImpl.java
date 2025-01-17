@@ -58,12 +58,34 @@ public class UserServiceImpl implements UserService {
 			oktaStatus = UserProvisionedInOktaStatus.PROVISIONED;
 		}
 		catch (CGATHttpException e) {
-			log.error("Error occurred while provisioning user in okta, e: {}", e.getMessage());
-
+			log.error("Error occurred while provisioning user in Okta, userId: {}, error: {}", model.getId(),
+					e.getMessage(), e);
 		}
 		model.setProvisionedInOktaStatus(oktaStatus);
 		return userRepository.save(model);
 
+	}
+
+	@Override
+	public User retryOktaProvisioning(Long userId) throws ResourceNotFoundException {
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new ResourceNotFoundException("User not found for ID: " + userId));
+
+		if (UserProvisionedInOktaStatus.PROVISIONED.equals(user.getProvisionedInOktaStatus())) {
+			return user;
+		}
+
+		try {
+			oktaUserManagementService.updateOrCreateOktaUser(user);
+			user.setProvisionedInOktaStatus(UserProvisionedInOktaStatus.PROVISIONED);
+			userRepository.save(user);
+		}
+		catch (Exception e) {
+			log.error("Failed to provision user in Okta, userId: {}", userId, e);
+			throw e;
+		}
+
+		return user;
 	}
 
 	@Override
