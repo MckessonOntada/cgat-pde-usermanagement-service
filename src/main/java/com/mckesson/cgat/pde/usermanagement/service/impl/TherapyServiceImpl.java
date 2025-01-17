@@ -6,12 +6,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponseDto;
-import com.mckesson.cgat.pde.usermanagement.mapper.CatalogPriceMapper;
-import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
-import com.mckesson.cgat.pde.usermanagement.repository.CatalogPriceRepository;
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -19,15 +13,21 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponseDto;
 import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelProjectionDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.mapper.CatalogPriceMapper;
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
+import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
 import com.mckesson.cgat.pde.usermanagement.model.DistributionChannel;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
+import com.mckesson.cgat.pde.usermanagement.repository.CatalogPriceRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.TherapyRepository;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -139,6 +139,34 @@ public class TherapyServiceImpl implements TherapyService {
 	public Page<AccountsResponseDTO> findAllCustomerIdentifiers(Long userId, String query, Pageable paging) {
 		return therapyRepository.findAllCustomerIdentifiers(userId, query, paging,
 				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
+	}
+
+	public Page<Therapy> findAllGlobalTherapies(String query, Pageable paging) {
+		try {
+			log.info(" Inside method - findAllGlobalTherapies");
+			log.info("query: {}", StringUtils.toRootLowerCase(query));
+			return therapyRepository.findAllGlobalTherapies(StringUtils.toRootLowerCase(query), paging);
+		}
+		catch (Exception e) {
+			log.error("Exception occurred in findAllGlobalTherapies and exception details", e);
+			throw e;
+		}
+
+	}
+
+	public Page<CatalogPrice> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging) {
+		try {
+			log.info(" Inside method - findAllGlobalCatalogs");
+			log.info("accountIds : {}, query: {}", accountIds, StringUtils.toRootLowerCase(query));
+			return catalogPriceRepository.findAllGlobalCatalogs(accountIds,
+					AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), StringUtils.toRootLowerCase(query),
+					paging);
+		}
+		catch (Exception e) {
+			log.error("Exception occurred in findAllGlobalCatalogs and exception details", e);
+			throw e;
+		}
+
 	}
 
 }

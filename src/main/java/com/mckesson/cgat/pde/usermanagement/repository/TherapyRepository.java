@@ -173,6 +173,20 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 	public Page<AccountsResponseDTO> findAllCustomerIdentifiers(@Param("userId") Long userId,
 			@Param("query") String query, Pageable paging, @Param("partnerFunction") String partnerFunction);
 
+	@Query(value = """
+			SELECT m.*
+			FROM catalog.material m
+			WHERE
+			(
+					:query is null
+					or LOWER(m.material_number) like %:query%
+					or LOWER(m.ndc_number) like %:query%
+					or LOWER(m.material_description) like %:query%
+					or LOWER(m.generic_name) like %:query%
+			)
+			""", nativeQuery = true)
+	public Page<Therapy> findAllGlobalTherapies(@Param("query") String query, Pageable paging);
+
 	Optional<Therapy> findByMaterialNumber(String materialNumber);
 
 }

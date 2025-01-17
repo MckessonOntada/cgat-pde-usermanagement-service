@@ -4,7 +4,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+import com.mckesson.cgat.pde.usermanagement.model.converters.DistributionChannelConverter;
+
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -14,7 +17,10 @@ import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
@@ -97,6 +103,9 @@ import lombok.ToString;
 @Data
 @ToString
 @Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "catalog_price", schema = "catalog")
 public class CatalogPrice {
 
@@ -146,8 +155,9 @@ public class CatalogPrice {
 
 	@Size(max = 2)
 	@NotBlank
+	@Convert(converter = DistributionChannelConverter.class)
 	@Column(name = "dist_channel")
-	private String distChannel;
+	private DistributionChannel distChannel;
 
 	@Size(max = 2)
 	@NotBlank

@@ -164,6 +164,30 @@ public class TherapyServiceImplTest {
 		return new PageImpl<>(List.of(account1, account2, account3, account4, account5), paging, 5L);
 	}
 
+	@DisplayName("Test : FindAll Global Therapies")
+	@Test
+	public void findAllGlobalTherapiesTest() {
+		String query = "";
+		Mockito.when(therapyRepository.findAllGlobalTherapies(anyString(), Mockito.any(Pageable.class)))
+			.thenReturn(getAllGlobalTherapies());
+		therapyService.findAllGlobalTherapies(query, paging);
+		verify(therapyRepository).findAllGlobalTherapies(query, paging);
+	}
+
+	@DisplayName("Test : FindAll Global Therapies")
+	@Test
+	public void findAllGlobalCatalogsTest() {
+		String query = "";
+		List<String> accounts = new ArrayList<>();
+		Mockito
+			.when(catalogPriceRepository.findAllGlobalCatalogs(anyList(), anyString(), anyString(),
+					Mockito.any(Pageable.class)))
+			.thenReturn(getAllGlobalCatalogs());
+		therapyService.findAllGlobalCatalogs(accounts, query, paging);
+		verify(catalogPriceRepository).findAllGlobalCatalogs(accounts,
+				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), query, paging);
+	}
+
 	@DisplayName("Test : FindAll Variants linked to soldToAccount, ShipToAccounts and TherapyId")
 	@Test
 	public void findAllVariantsLinkedToShipToAccountsForTherapyTest() {
@@ -266,46 +290,62 @@ public class TherapyServiceImplTest {
 		return catalogPrice;
 	}
 
-	private Page<Object[]> getTherapies() {
-		List<Object[]> therapies = new ArrayList<>();
-		Object[] therapy1 = { "1", "ndc1", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1",
-				"udi1", "ndc1", "tdesc4", "1", "udi1", "" };
-		Object[] therapy2 = { "2", "ndc2", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1",
-				"udi1", "ndc1", "tdesc4", "1", "udi1", "" };
-		Object[] therapy3 = { "3", "ndc3", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1",
-				"udi1", "ndc1", "tdesc4", "1", "udi1", "" };
-		Object[] therapy4 = { "4", "ndc4", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1", "udi1", "ndc1", "tdesc4", "1",
-				"udi1", "ndc1", "tdesc4", "1", "udi1", "" };
+	private Page<Therapy> getAllGlobalTherapies() {
+		Integer pageNo = 0;
+		Integer pageSize = 20;
+		String sortBy = "name";
+		String sortOrder = "asc";
+		List<Therapy> therapies = new ArrayList<>();
+		Therapy therapy1 = Therapy.builder()
+			.materialNumber("12")
+			.materialDescription("PCM")
+			.ndcNumber("89")
+			.strength("650mg")
+			.dosage("SOS")
+			.build();
+		Therapy therapy2 = Therapy.builder()
+			.materialNumber("18")
+			.materialDescription("PANTOP")
+			.ndcNumber("76")
+			.strength("40mg")
+			.dosage("BB")
+			.build();
+
 		therapies.add(therapy1);
 		therapies.add(therapy2);
-		therapies.add(therapy3);
-		therapies.add(therapy4);
-		return new PageImpl<>(therapies, paging, therapies.size());
+		Sort sort = "asc".equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+		return new PageImpl<>(therapies, pageable, therapies.size());
 	}
 
-	private Page<Object[]> getSoldToAccounts() {
-		List<Object[]> soldToAccounts = new ArrayList<>();
-		Object[] soldToAccount1 = { "", "acnumber1", "4", "12", "1", "", "", "8989898900", "delhi", "dist1", "delhi",
-				"india", "001", "", "" };
-		Object[] soldToAccount2 = { "", "acnumber2", "7", "145", "6", "", "", "8989898901", "delhi", "dist3", "delhi",
-				"india", "003", "", "" };
-		Object[] soldToAccount3 = { "", "acnumber3", "9", "102", "11", "", "", "8989898902", "delhi", "dist2", "delhi",
-				"india", "009", "", "" };
-		soldToAccounts.add(soldToAccount1);
-		soldToAccounts.add(soldToAccount2);
-		soldToAccounts.add(soldToAccount3);
-		return new PageImpl<>(soldToAccounts, paging, soldToAccounts.size());
-	}
+	private Page<CatalogPrice> getAllGlobalCatalogs() {
+		Integer pageNo = 0;
+		Integer pageSize = 20;
+		String sortBy = "name";
+		String sortOrder = "asc";
+		List<CatalogPrice> catalogs = new ArrayList<>();
+		CatalogPrice catalog1 = CatalogPrice.builder()
+			.salesOrg("1100")
+			.distChannel(DistributionChannel.PL)
+			.sapMaterial("12")
+			.variant("v1")
+			.variantDescription("version 1")
+			.ndc("c1")
+			.build();
+		CatalogPrice catalog2 = CatalogPrice.builder()
+			.salesOrg("1000")
+			.distChannel(DistributionChannel.SD)
+			.sapMaterial("18")
+			.variant("v2")
+			.variantDescription("version 2")
+			.ndc("c2")
+			.build();
 
-	private Page<Object[]> getShipToAccounts() {
-		List<Object[]> shipToAccounts = new ArrayList<>();
-		Object[] shipToAccount1 = { "", "acnumber1", "101", "12", "1", "", "", "8989898900", "delhi", "dist1", "delhi",
-				"india", "001", "", "" };
-		Object[] shipToAccount2 = { "", "acnumber2", "102", "145", "6", "", "", "8989898901", "delhi", "dist3", "delhi",
-				"india", "003", "", "" };
-		shipToAccounts.add(shipToAccount1);
-		shipToAccounts.add(shipToAccount2);
-		return new PageImpl<>(shipToAccounts, paging, shipToAccounts.size());
+		catalogs.add(catalog1);
+		catalogs.add(catalog2);
+		Sort sort = "asc".equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+		return new PageImpl<>(catalogs, pageable, catalogs.size());
 	}
 
 }

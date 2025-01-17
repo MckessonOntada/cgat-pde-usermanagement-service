@@ -1,11 +1,17 @@
 package com.mckesson.cgat.pde.usermanagement.mapper;
 
-import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponseDto;
-import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
-import org.mapstruct.*;
+import java.util.List;
+
+import org.mapstruct.BeanMapping;
+import org.mapstruct.IterableMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
+import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.factory.Mappers;
 
-import java.util.List;
+import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponseDto;
+import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface CatalogPriceMapper {
