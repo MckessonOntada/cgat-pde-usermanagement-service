@@ -190,6 +190,7 @@ public class UserController {
 			@RequestBody RolePermissionsPatchDTO rolePermissions)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
+		UserRequestAuthorizationValidator.canLoggedInUserManageRoleAndPermissions(userId);
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(userService.linkUserToRoleAndPermissions(userId, userType, rolePermissions));
 	}
