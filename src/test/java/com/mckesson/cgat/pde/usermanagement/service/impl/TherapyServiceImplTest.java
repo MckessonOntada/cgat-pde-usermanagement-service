@@ -17,7 +17,6 @@ import java.util.List;
 
 import java.util.Optional;
 
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,7 +48,6 @@ import com.mckesson.cgat.pde.usermanagement.repository.TherapyRepository;
 
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
-
 @ExtendWith(MockitoExtension.class)
 public class TherapyServiceImplTest {
 
@@ -74,7 +72,7 @@ public class TherapyServiceImplTest {
 	public void beforeEach() {
 		paging = PageRequest.of(0, 20, Sort.by("name").ascending());
 	}
-  
+
 	@DisplayName("Test: FindAll Therapies")
 	@Test
 	public void findAllTherapiesTest() {

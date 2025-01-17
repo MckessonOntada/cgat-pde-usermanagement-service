@@ -2,6 +2,8 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -9,22 +11,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import com.mckesson.cgat.pde.usermanagement.model.Therapy;
-import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
-import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -33,18 +28,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-
-import com.mckesson.cgat.pde.usermanagement.dto.TherapyResponseDto;
-import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
-
-import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-
+import com.mckesson.cgat.pde.usermanagement.dto.TherapyResponseDto;
+import com.mckesson.cgat.pde.usermanagement.model.Therapy;
+import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
+import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 @WebMvcTest(GlobalTherapyController.class)
 @ContextConfiguration(classes = { GlobalTherapyController.class })
@@ -58,11 +47,11 @@ public class GlobalTherapyControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
 
-  	@BeforeEach
+	@BeforeEach
 	public void setup() {
 		MockitoAnnotations.openMocks(this);
 	}
-  
+
 	@DisplayName("Test: FindAll Global Therapies")
 	@Test
 	void findAllTherapiesTest() throws Exception {
@@ -122,6 +111,7 @@ public class GlobalTherapyControllerTest {
 		Sort sort = "asc".equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 		return new PageImpl<>(therapies, pageable, therapies.size());
+	}
 
 	@Test
 	void testFindByMaterialNumber_Success() throws Exception {

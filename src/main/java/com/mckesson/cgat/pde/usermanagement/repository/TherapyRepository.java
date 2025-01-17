@@ -189,5 +189,4 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 
 	Optional<Therapy> findByMaterialNumber(String materialNumber);
 
-
 }
