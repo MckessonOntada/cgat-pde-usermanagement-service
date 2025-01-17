@@ -56,6 +56,7 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 					(
 						:query is null
 						or LOWER(cp.ndc) like %:query%
+						or LOWER(cp.udi) like %:query%
 						or LOWER(cp.dist_channel) like %:query%
 						or LOWER(cp.sap_material) like %:query%
 					)

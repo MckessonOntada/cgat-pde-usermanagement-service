@@ -144,8 +144,8 @@ public class TherapyServiceImpl implements TherapyService {
 	public Page<TherapyResponseDto> findAllGlobalTherapies(String query, Pageable paging) {
 		try {
 			log.info(" Inside method - findAllGlobalTherapies");
-			log.info("query: {}", query);
-			Page<Therapy> allTherapies = therapyRepository.findAllGlobalTherapies(query, paging);
+			log.info("query: {}", StringUtils.toRootLowerCase(query));
+			Page<Therapy> allTherapies = therapyRepository.findAllGlobalTherapies(StringUtils.toRootLowerCase(query), paging);
 			List<TherapyResponseDto> therapies = therapyMapper.toTherapiesResponseDtoList(allTherapies.getContent());
 			return new PageImpl<>(therapies, paging, allTherapies.getTotalElements());
 		}
@@ -159,9 +159,9 @@ public class TherapyServiceImpl implements TherapyService {
 	public Page<CatalogPriceResponseDto> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging) {
 		try {
 			log.info(" Inside method - findAllGlobalCatalogs");
-			log.info("accountIds : {}, query: {}", accountIds, query);
+			log.info("accountIds : {}, query: {}", accountIds, StringUtils.toRootLowerCase(query));
 			Page<CatalogPrice> allCatalogs = catalogPriceRepository.findAllGlobalCatalogs(accountIds,
-					AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), query, paging);
+					AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), StringUtils.toRootLowerCase(query), paging);
 			List<CatalogPriceResponseDto> catalogs = catalogPriceMapper
 				.toCatalogResponseDtoList(allCatalogs.getContent());
 			return new PageImpl<>(catalogs, paging, allCatalogs.getTotalElements());

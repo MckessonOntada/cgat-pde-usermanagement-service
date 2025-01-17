@@ -23,6 +23,7 @@ public interface TherapyMapper {
 	@Mapping(source = "strength", target = "strength")
 	@Mapping(source = "dosage", target = "dosage")
 	@Mapping(source = "materialDescription", target = "materialDescription")
+	@Mapping(source = "genericName", target = "genericName")
 	@BeanMapping(ignoreByDefault = true)
 	TherapyResponseDto toTherapyResponseDto(Therapy therapy);
 

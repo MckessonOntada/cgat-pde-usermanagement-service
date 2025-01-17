@@ -29,6 +29,7 @@ public interface CatalogPriceMapper {
 	@Mapping(source = "variant", target = "variant")
 	@Mapping(source = "variantDescription", target = "variantDescription")
 	@Mapping(source = "ndc", target = "ndc")
+	@Mapping(source = "udi", target = "udi")
 	@Mapping(source = "soldToCustomer", target = "soldToCustomer")
 	@Mapping(source = "shipToCustomer", target = "shipToCustomer")
 	@BeanMapping(ignoreByDefault = true)
