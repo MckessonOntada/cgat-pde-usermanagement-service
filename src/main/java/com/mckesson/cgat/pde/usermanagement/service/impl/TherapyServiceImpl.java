@@ -6,6 +6,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.mckesson.cgat.pde.usermanagement.model.*;
+import com.mckesson.cgat.pde.usermanagement.repository.TherapyConfigRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -18,10 +20,6 @@ import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelProjectionDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.mapper.CatalogPriceMapper;
-import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
-import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
-import com.mckesson.cgat.pde.usermanagement.model.DistributionChannel;
-import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.cgat.pde.usermanagement.repository.CatalogPriceRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.TherapyRepository;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
@@ -39,12 +37,15 @@ public class TherapyServiceImpl implements TherapyService {
 
 	private final CatalogPriceMapper catalogPriceMapper;
 
+	private final TherapyConfigRepository therapyConfigRepository;
+
 	public TherapyServiceImpl(TherapyRepository therapyRepository, CatalogPriceRepository catalogPriceRepository,
-			CatalogPriceMapper catalogPriceMapper) {
+                              CatalogPriceMapper catalogPriceMapper, TherapyConfigRepository therapyConfigRepository) {
 		this.therapyRepository = therapyRepository;
 		this.catalogPriceRepository = catalogPriceRepository;
 		this.catalogPriceMapper = catalogPriceMapper;
-	}
+        this.therapyConfigRepository = therapyConfigRepository;
+    }
 
 	public Page<TherapyCatalogResponseDTO> findAllTherapies(Long userId, String query, List<String> salesOrg,
 			Pageable paging, List<String> customerIdentifier) {
@@ -167,6 +168,26 @@ public class TherapyServiceImpl implements TherapyService {
 			throw e;
 		}
 
+	}
+
+	@Override
+	public TherapyConfig findConfigByMaterialNumber(String materialNumber) throws ResourceNotFoundException {
+		return therapyConfigRepository.findById(materialNumber)
+				.orElseThrow(
+						() -> new ResourceNotFoundException("Therapy config not found with materialNumber: " + materialNumber));
+	}
+
+	@Override
+	public void updateTherapyConfigs(List<String> materialNumbers, boolean patientInfo, boolean coiId) throws ResourceNotFoundException {
+		for (String materialNumber : materialNumbers) {
+			TherapyConfig config = therapyConfigRepository.findById(materialNumber)
+					.orElseGet(() -> new TherapyConfig(materialNumber, patientInfo, coiId));
+
+			config.setPatientInformation(patientInfo);
+			config.setCoiId(coiId);
+
+			therapyConfigRepository.save(config);
+		}
 	}
 
 }
