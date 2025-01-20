@@ -63,7 +63,7 @@ public class PracticeServiceImpl implements PracticeService {
 				.description(CustomUtils.ORG_ADMIN_ROLE_DESC)
 				.isActive(Boolean.TRUE)
 				.practiceId(savedPractice)
-				.permissions(Permission.getPermissions(UserType.ADMIN))
+				.permissions(Permission.getPermissions(UserType.GENERAL))
 				.build();
 			roleRepository.save(adminRole);
 		}

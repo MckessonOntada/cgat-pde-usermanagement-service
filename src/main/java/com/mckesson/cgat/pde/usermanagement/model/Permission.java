@@ -31,14 +31,14 @@ public enum Permission {
 	MANAGE_SYSTEM_CONFIGURATIONS(true, false), VIEW_ACCOUNTS(true, true), CREATE_INVOICES(false, true),
 	APPROVE_PENDING_USER_REQUEST(true, true), MANAGE_PAYMENT_HISTORY(false, true);
 
-	boolean isActiveForAdmin;
+	boolean isActiveForSystemAdmin;
 
 	boolean isActiveForOthers;
 
 	public static Set<Permission> getPermissions(UserType userType) {
 		Set<Permission> permissions = EnumSet.noneOf(Permission.class);
 		for (Permission permission : Permission.values()) {
-			if (userType.equals(UserType.ADMIN) && permission.isActiveForAdmin()) {
+			if (userType.equals(UserType.ADMIN) && permission.isActiveForSystemAdmin()) {
 				permissions.add(permission);
 			}
 			else if (userType.equals(UserType.GENERAL) && permission.isActiveForOthers()) {
