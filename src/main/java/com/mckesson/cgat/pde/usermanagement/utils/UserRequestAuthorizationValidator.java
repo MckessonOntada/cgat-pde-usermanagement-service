@@ -4,6 +4,8 @@ import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessE
 import com.mckesson.cgat.pde.usermanagement.model.LoggedInUserDetails;
 import com.mckesson.cgat.pde.usermanagement.model.UserType;
 
+import java.util.Optional;
+
 public class UserRequestAuthorizationValidator {
 
 	public static final String SYSTEM_ADMIN_ROLE = "System Admin";
@@ -51,5 +53,15 @@ public class UserRequestAuthorizationValidator {
 	// // To:do return permissions.contains(permission);
 	// return true;
 	// }
+	public static void canLoggedInUserManageRoleAndPermissions(Long userId) throws UnauthorizedAccessException {
+		// logged in user cannot manage their own roles and permission
+		if (Optional.ofNullable(UserSecurityUtils.getLoggedInUser())
+			.map(LoggedInUserDetails::getId)
+			.filter(id -> id.equals(String.valueOf(userId)))
+			.isPresent()) {
+			throw new UnauthorizedAccessException(CustomUtils.UNAUTHORIZED_MESSAGE);
+		}
+
+	}
 
 }
