@@ -6,7 +6,11 @@ import java.util.List;
 
 @Data
 public class TherapyConfigRequestDTO {
-    private List<String> materialNumbers;
-    private boolean patientInfo;
-    private boolean coiId;
+
+	private List<String> materialNumbers;
+
+	private boolean patientInfo;
+
+	private boolean coiId;
+
 }
