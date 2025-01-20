@@ -1,16 +1,14 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
+import com.mckesson.cgat.pde.usermanagement.dto.TherapyConfigRequestDTO;
+import com.mckesson.cgat.pde.usermanagement.model.TherapyConfig;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
@@ -49,5 +47,25 @@ public class GlobalTherapyController {
 		return new ResponseEntity<>(therapyService.findByMaterialNumber(materialNumber), HttpStatus.OK);
 
 	}
+
+	@GetMapping("/config/{materialNumber}")
+	@Operation(summary = "Find Therapy config by Material Number")
+	public ResponseEntity<TherapyConfig> findConfigByMaterialNumber(@PathVariable String materialNumber)
+			throws ResourceNotFoundException {
+		log.debug("Fetching therapy config with materialNumber: {}", materialNumber);
+		return new ResponseEntity<>(therapyService.findConfigByMaterialNumber(materialNumber), HttpStatus.OK);
+	}
+
+	@PostMapping("/config/update")
+	@Operation(summary = "Update Therapy Configurations")
+	public ResponseEntity<String> updateTherapyConfigs(
+			@RequestBody TherapyConfigRequestDTO request) throws ResourceNotFoundException {
+		log.debug("Updating therapy configs for materialNumbers: {}", request.getMaterialNumbers());
+
+		therapyService.updateTherapyConfigs(request.getMaterialNumbers(), request.isPatientInfo(), request.isCoiId());
+		return new ResponseEntity<>("Therapy configurations updated successfully", HttpStatus.OK);
+	}
+
+
 
 }
