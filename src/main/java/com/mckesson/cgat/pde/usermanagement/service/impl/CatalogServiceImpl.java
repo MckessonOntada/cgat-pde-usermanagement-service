@@ -13,44 +13,50 @@ import java.util.List;
 @Service
 @Slf4j
 public class CatalogServiceImpl implements CatalogService {
-    private final CatalogServiceRepository catalogServiceRepository;
 
-    public CatalogServiceImpl(CatalogServiceRepository catalogServiceRepository) {
-        this.catalogServiceRepository = catalogServiceRepository;
-    }
+	private final CatalogServiceRepository catalogServiceRepository;
 
-    @Override
-    public List<CatalogConfiguration> saveCatalogConfiguration(CatalogConfigurationDTO configurationDTO) {
-            log.info("Starting to save catalog configurations for {} catalog prices.", configurationDTO.getCatalogPrices().size());
+	public CatalogServiceImpl(CatalogServiceRepository catalogServiceRepository) {
+		this.catalogServiceRepository = catalogServiceRepository;
+	}
 
-            List<CatalogConfiguration> catalogConfigurations = configurationDTO.getCatalogPrices().stream()
-                    .map(catalogPrice -> CatalogConfiguration.builder()
-                            .materialId(catalogPrice.getSapMaterial())
-                            .variant(catalogPrice.getVariant())
-                            .shipToAccount(catalogPrice.getShipToCustomer())
-                            .soldToAccount(catalogPrice.getSoldToCustomer())
-                            .steps(configurationDTO.getSteps())
-                            .build())
-                    .toList();
+	@Override
+	public List<CatalogConfiguration> saveCatalogConfiguration(CatalogConfigurationDTO configurationDTO) {
+		log.info("Starting to save catalog configurations for {} catalog prices.",
+				configurationDTO.getCatalogPrices().size());
 
-            log.info("Saving {} catalog configurations to the database.", catalogConfigurations.size());
-            return catalogServiceRepository.saveAll(catalogConfigurations);
+		List<CatalogConfiguration> catalogConfigurations = configurationDTO.getCatalogPrices()
+			.stream()
+			.map(catalogPrice -> CatalogConfiguration.builder()
+				.materialId(catalogPrice.getSapMaterial())
+				.variant(catalogPrice.getVariant())
+				.shipToAccount(catalogPrice.getShipToCustomer())
+				.soldToAccount(catalogPrice.getSoldToCustomer())
+				.steps(configurationDTO.getSteps())
+				.build())
+			.toList();
 
-    }
+		log.info("Saving {} catalog configurations to the database.", catalogConfigurations.size());
+		return catalogServiceRepository.saveAll(catalogConfigurations);
 
+	}
 
-    @Override
-    public CatalogConfiguration findCatalogConfigurationByFields(String materialId, String variant, String shipToAccount, String soldToAccount) throws ResourceNotFoundException {
-        log.info("Searching for CatalogConfiguration with materialId: {}, variant: {}, shipToAccount: {}, soldToAccount: {}",
-                materialId, variant, shipToAccount, soldToAccount);
+	@Override
+	public CatalogConfiguration findCatalogConfigurationByFields(String materialId, String variant,
+			String shipToAccount, String soldToAccount) throws ResourceNotFoundException {
+		log.info(
+				"Searching for CatalogConfiguration with materialId: {}, variant: {}, shipToAccount: {}, soldToAccount: {}",
+				materialId, variant, shipToAccount, soldToAccount);
 
-        return catalogServiceRepository.findByMaterialIdAndVariantAndShipToAccountAndSoldToAccount(
-                        materialId, variant, shipToAccount, soldToAccount)
-                .orElseThrow(() -> {
-                    log.error("CatalogConfiguration not found with materialId: {}, variant: {}, shipToAccount: {}, soldToAccount: {}",
-                            materialId, variant, shipToAccount, soldToAccount);
-                    return new ResourceNotFoundException("CatalogConfiguration not found with the provided fields");
-                });
-    }
+		return catalogServiceRepository
+			.findByMaterialIdAndVariantAndShipToAccountAndSoldToAccount(materialId, variant, shipToAccount,
+					soldToAccount)
+			.orElseThrow(() -> {
+				log.error(
+						"CatalogConfiguration not found with materialId: {}, variant: {}, shipToAccount: {}, soldToAccount: {}",
+						materialId, variant, shipToAccount, soldToAccount);
+				return new ResourceNotFoundException("CatalogConfiguration not found with the provided fields");
+			});
+	}
 
 }
