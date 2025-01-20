@@ -396,8 +396,8 @@ class UserControllerTest {
 	@Test
 	void linkUserToRoles_permissionsTest() throws Exception {
 		Long roleId = 101L;
-		List<Long> accountIds = List.of(1L, 2L);
-		RolePermissionsPatchDTO rolePermissions = new RolePermissionsPatchDTO(roleId, user.getPermissions());
+		RolePermissionsPatchDTO rolePermissions = new RolePermissionsPatchDTO(roleId,
+				Permission.getPermissions(UserType.ADMIN));
 		when(userService.linkUserToRoleAndPermissions(user.getId(), UserType.ADMIN, rolePermissions)).thenReturn(user);
 		ResultActions result = mockMvc
 			.perform(patch(apiUrl + "/{userId}/roles-permissions", user.getPracticeId(), user.getId())
