@@ -7,6 +7,9 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface CatalogServiceRepository extends JpaRepository<CatalogConfiguration,Long > {
-    Optional<CatalogConfiguration> findByMaterialIdAndVariantAndShipToAccountAndSoldToAccount(String materialId, String variant, String shipToAccount, String soldToAccount);
+public interface CatalogServiceRepository extends JpaRepository<CatalogConfiguration, Long> {
+
+	Optional<CatalogConfiguration> findByMaterialIdAndVariantAndShipToAccountAndSoldToAccount(String materialId,
+			String variant, String shipToAccount, String soldToAccount);
+
 }

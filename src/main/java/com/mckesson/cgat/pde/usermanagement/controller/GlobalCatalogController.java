@@ -32,11 +32,12 @@ import lombok.extern.slf4j.Slf4j;
 public class GlobalCatalogController {
 
 	private final TherapyService therapyService;
+
 	private final CatalogService catalogService;
 
-	public GlobalCatalogController(TherapyService therapyService,CatalogService catalogService) {
+	public GlobalCatalogController(TherapyService therapyService, CatalogService catalogService) {
 		this.therapyService = therapyService;
-		this.catalogService=catalogService;
+		this.catalogService = catalogService;
 	}
 
 	@GetMapping
@@ -47,18 +48,21 @@ public class GlobalCatalogController {
 		Pageable paging = PageRequest.of(pageNo, pageSize);
 		return new ResponseEntity<>(therapyService.findAllGlobalCatalogs(accountNumbers, query, paging), HttpStatus.OK);
 	}
+
 	@PostMapping("/catalogConfigure")
-	@Operation(summary = "Configure the catalog materials according to materialId, variant, soldTo account and shipTo account")
-	public ResponseEntity<List<CatalogConfiguration>> configureCatalogMaterial(@Valid @RequestBody CatalogConfigurationDTO configuration) {
-                return new ResponseEntity<>(catalogService.saveCatalogConfiguration(configuration),HttpStatus.OK);
+	@Operation(
+			summary = "Configure the catalog materials according to materialId, variant, soldTo account and shipTo account")
+	public ResponseEntity<List<CatalogConfiguration>> configureCatalogMaterial(
+			@Valid @RequestBody CatalogConfigurationDTO configuration) {
+		return new ResponseEntity<>(catalogService.saveCatalogConfiguration(configuration), HttpStatus.OK);
 	}
+
 	@GetMapping("/catalogConfiguration")
-	public ResponseEntity<CatalogConfiguration> findCatalogConfigurationByFields(
-			@RequestParam String materialId,
-			@RequestParam String variant,
-			@RequestParam String shipToAccount,
-			@RequestParam String soldToAccount) throws ResourceNotFoundException {
-		CatalogConfiguration catalogConfiguration = catalogService.findCatalogConfigurationByFields(materialId, variant, shipToAccount, soldToAccount);
+	public ResponseEntity<CatalogConfiguration> findCatalogConfigurationByFields(@RequestParam String materialId,
+			@RequestParam String variant, @RequestParam String shipToAccount, @RequestParam String soldToAccount)
+			throws ResourceNotFoundException {
+		CatalogConfiguration catalogConfiguration = catalogService.findCatalogConfigurationByFields(materialId, variant,
+				shipToAccount, soldToAccount);
 		return ResponseEntity.ok(catalogConfiguration);
 	}
 

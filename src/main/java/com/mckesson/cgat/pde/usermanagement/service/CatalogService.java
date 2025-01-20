@@ -10,8 +10,9 @@ import java.util.List;
 @Service
 public interface CatalogService {
 
-    List<CatalogConfiguration> saveCatalogConfiguration(CatalogConfigurationDTO configuration);
+	List<CatalogConfiguration> saveCatalogConfiguration(CatalogConfigurationDTO configuration);
 
-    CatalogConfiguration findCatalogConfigurationByFields(String materialId, String variant, String shipToAccount, String soldToAccount) throws ResourceNotFoundException;
+	CatalogConfiguration findCatalogConfigurationByFields(String materialId, String variant, String shipToAccount,
+			String soldToAccount) throws ResourceNotFoundException;
+
 }
-

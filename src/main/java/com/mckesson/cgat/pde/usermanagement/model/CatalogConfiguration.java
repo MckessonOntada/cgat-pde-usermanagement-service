@@ -15,31 +15,32 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Data
-@Table(name = "catalog_configuration", schema = "catalog", indexes = {
-        @Index(name = "idx_material_variant_shipto_soldto", columnList = "materialId, variant, shipToAccount, soldToAccount")},
-        uniqueConstraints = {
-                @UniqueConstraint(name = "Configuration is already present for this combination", columnNames = {"materialId", "variant", "shipToAccount", "soldToAccount"})
-        })
+@Table(name = "catalog_configuration", schema = "catalog",
+		indexes = { @Index(name = "idx_material_variant_shipto_soldto",
+				columnList = "materialId, variant, shipToAccount, soldToAccount") },
+		uniqueConstraints = { @UniqueConstraint(name = "Configuration is already present for this combination",
+				columnNames = { "materialId", "variant", "shipToAccount", "soldToAccount" }) })
 
 public class CatalogConfiguration {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(nullable = false)
-    private String materialId;
+	@Column(nullable = false)
+	private String materialId;
 
-    @Column(nullable = false)
-    private String variant;
+	@Column(nullable = false)
+	private String variant;
 
-    @Column(nullable = false)
-    private String shipToAccount;
+	@Column(nullable = false)
+	private String shipToAccount;
 
-    @Column(nullable = false)
-    private String soldToAccount;
+	@Column(nullable = false)
+	private String soldToAccount;
 
-    @Convert(converter = StepDTOConverter.class)
-    @Column(nullable = false, columnDefinition = "text")
-    private List<StepDTO> steps;
+	@Convert(converter = StepDTOConverter.class)
+	@Column(nullable = false, columnDefinition = "text")
+	private List<StepDTO> steps;
+
 }
