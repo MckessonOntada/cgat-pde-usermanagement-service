@@ -64,14 +64,12 @@ public class GlobalTherapyController {
 
 	@PostMapping("/config/update")
 	@Operation(summary = "Update Therapy Configurations")
-	public ResponseEntity<String> updateTherapyConfigs(
-			@RequestBody TherapyConfigRequestDTO request) throws ResourceNotFoundException {
+	public ResponseEntity<String> updateTherapyConfigs(@RequestBody TherapyConfigRequestDTO request)
+			throws ResourceNotFoundException {
 		log.debug("Updating therapy configs for materialNumbers: {}", request.getMaterialNumbers());
 
 		therapyService.updateTherapyConfigs(request.getMaterialNumbers(), request.isPatientInfo(), request.isCoiId());
 		return new ResponseEntity<>("Therapy configurations updated successfully", HttpStatus.OK);
 	}
-
-
 
 }

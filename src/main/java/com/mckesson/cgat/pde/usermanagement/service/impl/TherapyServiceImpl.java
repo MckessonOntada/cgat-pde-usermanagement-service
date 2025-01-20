@@ -40,12 +40,12 @@ public class TherapyServiceImpl implements TherapyService {
 	private final TherapyConfigRepository therapyConfigRepository;
 
 	public TherapyServiceImpl(TherapyRepository therapyRepository, CatalogPriceRepository catalogPriceRepository,
-                              CatalogPriceMapper catalogPriceMapper, TherapyConfigRepository therapyConfigRepository) {
+			CatalogPriceMapper catalogPriceMapper, TherapyConfigRepository therapyConfigRepository) {
 		this.therapyRepository = therapyRepository;
 		this.catalogPriceRepository = catalogPriceRepository;
 		this.catalogPriceMapper = catalogPriceMapper;
-        this.therapyConfigRepository = therapyConfigRepository;
-    }
+		this.therapyConfigRepository = therapyConfigRepository;
+	}
 
 	public Page<TherapyCatalogResponseDTO> findAllTherapies(Long userId, String query, List<String> salesOrg,
 			Pageable paging, List<String> customerIdentifier) {
@@ -173,15 +173,16 @@ public class TherapyServiceImpl implements TherapyService {
 	@Override
 	public TherapyConfig findConfigByMaterialNumber(String materialNumber) throws ResourceNotFoundException {
 		return therapyConfigRepository.findById(materialNumber)
-				.orElseThrow(
-						() -> new ResourceNotFoundException("Therapy config not found with materialNumber: " + materialNumber));
+			.orElseThrow(() -> new ResourceNotFoundException(
+					"Therapy config not found with materialNumber: " + materialNumber));
 	}
 
 	@Override
-	public void updateTherapyConfigs(List<String> materialNumbers, boolean patientInfo, boolean coiId) throws ResourceNotFoundException {
+	public void updateTherapyConfigs(List<String> materialNumbers, boolean patientInfo, boolean coiId)
+			throws ResourceNotFoundException {
 		for (String materialNumber : materialNumbers) {
 			TherapyConfig config = therapyConfigRepository.findById(materialNumber)
-					.orElseGet(() -> new TherapyConfig(materialNumber, patientInfo, coiId));
+				.orElseGet(() -> new TherapyConfig(materialNumber, patientInfo, coiId));
 
 			config.setPatientInformation(patientInfo);
 			config.setCoiId(coiId);
