@@ -2,6 +2,6 @@ package com.mckesson.cgat.pde.usermanagement.model;
 
 public enum UserType {
 
-	ADMIN, GENERAL
+	ADMIN, GENERAL, ORG_ADMIN
 
 }

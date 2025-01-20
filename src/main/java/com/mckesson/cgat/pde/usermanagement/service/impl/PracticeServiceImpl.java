@@ -3,10 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
-import com.mckesson.cgat.pde.usermanagement.dto.PracticeLogoResponseDto;
-import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,9 +12,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.mckesson.cgat.pde.usermanagement.dto.PracticeLogoResponseDto;
+import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.Practice;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
+import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
 import com.mckesson.cgat.pde.usermanagement.service.PracticeService;
@@ -63,7 +63,7 @@ public class PracticeServiceImpl implements PracticeService {
 				.description(CustomUtils.ORG_ADMIN_ROLE_DESC)
 				.isActive(Boolean.TRUE)
 				.practiceId(savedPractice)
-				.permissions(Set.of(Permission.values()))
+				.permissions(Permission.ROLE_PERMISSIONS_MAP.get(UserType.ORG_ADMIN))
 				.build();
 			roleRepository.save(adminRole);
 		}
