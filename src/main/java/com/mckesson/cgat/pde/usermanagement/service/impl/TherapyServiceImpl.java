@@ -2,8 +2,10 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.mckesson.cgat.pde.usermanagement.model.*;
@@ -183,16 +185,25 @@ public class TherapyServiceImpl implements TherapyService {
 
 		List<TherapyConfig> existingConfigs = therapyConfigRepository.findAllByMaterialNumber(materialNumbers);
 
-		List<TherapyConfig> updatedConfigs = materialNumbers.stream()
-			.map(materialNumber -> existingConfigs.stream()
-				.filter(config -> config.getMaterialNumber().equals(materialNumber))
-				.findFirst()
-				.orElse(TherapyConfig.builder()
+		Map<String, TherapyConfig> existingConfigMap = existingConfigs.stream()
+			.collect(Collectors.toMap(TherapyConfig::getMaterialNumber, Function.identity()));
+
+		List<TherapyConfig> updatedConfigs = materialNumbers.stream().map(materialNumber -> {
+			TherapyConfig config = existingConfigMap.get(materialNumber);
+
+			if (config != null) {
+				config.setPatientInformation(patientInfo);
+				config.setCoiId(coiId);
+				return config;
+			}
+			else {
+				return TherapyConfig.builder()
 					.materialNumber(materialNumber)
 					.patientInformation(patientInfo)
 					.coiId(coiId)
-					.build()))
-			.collect(Collectors.toList());
+					.build();
+			}
+		}).collect(Collectors.toList());
 
 		therapyConfigRepository.saveAll(updatedConfigs);
 	}
