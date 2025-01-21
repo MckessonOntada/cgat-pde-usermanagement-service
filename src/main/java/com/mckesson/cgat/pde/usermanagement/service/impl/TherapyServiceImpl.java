@@ -172,7 +172,7 @@ public class TherapyServiceImpl implements TherapyService {
 
 	@Override
 	public TherapyConfig findConfigByMaterialNumber(String materialNumber) throws ResourceNotFoundException {
-		return therapyConfigRepository.findById(materialNumber)
+		return therapyConfigRepository.findByMaterialNumber(materialNumber)
 			.orElseThrow(() -> new ResourceNotFoundException(
 					"Therapy config not found with materialNumber: " + materialNumber));
 	}
@@ -180,15 +180,21 @@ public class TherapyServiceImpl implements TherapyService {
 	@Override
 	public void updateTherapyConfigs(List<String> materialNumbers, boolean patientInfo, boolean coiId)
 			throws ResourceNotFoundException {
-		for (String materialNumber : materialNumbers) {
-			TherapyConfig config = therapyConfigRepository.findById(materialNumber)
-				.orElseGet(() -> new TherapyConfig(materialNumber, patientInfo, coiId));
 
-			config.setPatientInformation(patientInfo);
-			config.setCoiId(coiId);
+		List<TherapyConfig> existingConfigs = therapyConfigRepository.findAllByMaterialNumber(materialNumbers);
 
-			therapyConfigRepository.save(config);
-		}
+		List<TherapyConfig> updatedConfigs = materialNumbers.stream()
+			.map(materialNumber -> existingConfigs.stream()
+				.filter(config -> config.getMaterialNumber().equals(materialNumber))
+				.findFirst()
+				.orElse(TherapyConfig.builder()
+					.materialNumber(materialNumber)
+					.patientInformation(patientInfo)
+					.coiId(coiId)
+					.build()))
+			.collect(Collectors.toList());
+
+		therapyConfigRepository.saveAll(updatedConfigs);
 	}
 
 }
