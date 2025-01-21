@@ -24,7 +24,7 @@ import java.util.List;
 
 public class CatalogConfiguration {
 
-	private static final String CATALOG_CONFIG_SEQUENCE = "CATALOG_CONFIG_SEQUENCE";
+	private static final String CATALOG_CONFIG_SEQUENCE = "catalog.CATALOG_CONFIG_SEQUENCE";
 
 	@Id
 	@GeneratedValue(generator = CATALOG_CONFIG_SEQUENCE, strategy = GenerationType.SEQUENCE)
