@@ -24,13 +24,17 @@ import java.util.List;
 
 public class CatalogConfiguration {
 
+	private static final String CATALOG_CONFIG_SEQUENCE = "CATALOG_CONFIG_SEQUENCE";
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(generator = CATALOG_CONFIG_SEQUENCE, strategy = GenerationType.SEQUENCE)
+	@SequenceGenerator(name = CATALOG_CONFIG_SEQUENCE, sequenceName = CATALOG_CONFIG_SEQUENCE, allocationSize = 1)
 	private Long id;
 
 	@Column(nullable = false)
 	private String materialId;
 
+	@Column(nullable = false)
 	private String variant;
 
 	@Column(nullable = false)
