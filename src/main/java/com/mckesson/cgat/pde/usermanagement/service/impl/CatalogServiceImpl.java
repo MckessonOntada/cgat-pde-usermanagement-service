@@ -14,6 +14,8 @@ import java.util.List;
 @Slf4j
 public class CatalogServiceImpl implements CatalogService {
 
+	private static final String CATALOG_CONFIGURATION_NOT_FOUND = "Catalog configuration not found with the provided catalog attributes";
+
 	private final CatalogServiceRepository catalogServiceRepository;
 
 	public CatalogServiceImpl(CatalogServiceRepository catalogServiceRepository) {
@@ -55,7 +57,7 @@ public class CatalogServiceImpl implements CatalogService {
 				log.error(
 						"CatalogConfiguration not found with materialId: {}, variant: {}, shipToAccount: {}, soldToAccount: {}",
 						materialId, variant, shipToAccount, soldToAccount);
-				return new ResourceNotFoundException("CatalogConfiguration not found with the provided fields");
+				return new ResourceNotFoundException(CATALOG_CONFIGURATION_NOT_FOUND);
 			});
 	}
 
