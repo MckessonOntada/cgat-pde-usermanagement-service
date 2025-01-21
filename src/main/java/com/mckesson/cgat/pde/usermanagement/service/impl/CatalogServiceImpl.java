@@ -23,9 +23,9 @@ public class CatalogServiceImpl implements CatalogService {
 	@Override
 	public List<CatalogConfiguration> saveCatalogConfiguration(CatalogConfigurationDTO configurationDTO) {
 		log.info("Starting to save catalog configurations for {} catalog prices.",
-				configurationDTO.getCatalogAttributes().size());
+				configurationDTO.getCatalogConfigurationAttributes().size());
 
-		List<CatalogConfiguration> catalogConfigurations = configurationDTO.getCatalogAttributes()
+		List<CatalogConfiguration> catalogConfigurations = configurationDTO.getCatalogConfigurationAttributes()
 			.stream()
 			.map(catalogPrice -> CatalogConfiguration.builder()
 				.materialId(catalogPrice.getSapMaterial())

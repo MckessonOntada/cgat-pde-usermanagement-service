@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class CatalogAttributes {
+public class CatalogConfigurationAttributes {
 
 	@Size(max = 18)
 	@NotBlank
