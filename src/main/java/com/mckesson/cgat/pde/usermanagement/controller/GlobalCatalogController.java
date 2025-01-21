@@ -49,7 +49,7 @@ public class GlobalCatalogController {
 		return new ResponseEntity<>(therapyService.findAllGlobalCatalogs(accountNumbers, query, paging), HttpStatus.OK);
 	}
 
-	@PostMapping("/catalogConfigure")
+	@PostMapping("/configure")
 	@Operation(
 			summary = "Configure the catalog materials according to materialId, variant, soldTo account and shipTo account")
 	public ResponseEntity<List<CatalogConfiguration>> configureCatalogMaterial(
@@ -57,7 +57,7 @@ public class GlobalCatalogController {
 		return new ResponseEntity<>(catalogService.saveCatalogConfiguration(configuration), HttpStatus.OK);
 	}
 
-	@GetMapping("/catalogConfiguration")
+	@GetMapping("/configuration")
 	public ResponseEntity<CatalogConfiguration> findCatalogConfigurationByFields(@RequestParam String materialId,
 			@RequestParam String variant, @RequestParam String shipToAccount, @RequestParam String soldToAccount)
 			throws ResourceNotFoundException {
