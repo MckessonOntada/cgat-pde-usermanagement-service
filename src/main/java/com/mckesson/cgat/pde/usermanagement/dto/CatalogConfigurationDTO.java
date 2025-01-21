@@ -9,7 +9,7 @@ import java.util.List;
 public class CatalogConfigurationDTO {
 
 	@NotEmpty(message = "At least one catalog price is required")
-	private List<CatalogAttributes> catalogAttributes;
+	private List<CatalogConfigurationAttributes> catalogConfigurationAttributes;
 
 	@NotEmpty(message = "At least one step is required")
 	private List<StepDTO> steps;
