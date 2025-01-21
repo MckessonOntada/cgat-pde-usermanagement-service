@@ -1,12 +1,13 @@
 package com.mckesson.cgat.pde.usermanagement.model;
 
 import com.mckesson.cgat.pde.usermanagement.dto.StepDTO;
-import com.mckesson.cgat.pde.usermanagement.mapper.StepDTOConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.List;
 
@@ -30,7 +31,6 @@ public class CatalogConfiguration {
 	@Column(nullable = false)
 	private String materialId;
 
-	@Column(nullable = false)
 	private String variant;
 
 	@Column(nullable = false)
@@ -39,8 +39,8 @@ public class CatalogConfiguration {
 	@Column(nullable = false)
 	private String soldToAccount;
 
-	@Convert(converter = StepDTOConverter.class)
-	@Column(nullable = false, columnDefinition = "text")
+	@Column(nullable = false)
+	@JdbcTypeCode(SqlTypes.JSON)
 	private List<StepDTO> steps;
 
 }
