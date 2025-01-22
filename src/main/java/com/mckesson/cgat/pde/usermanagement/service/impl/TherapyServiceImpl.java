@@ -176,10 +176,9 @@ public class TherapyServiceImpl implements TherapyService {
 
 	@Override
 	@Transactional
-	public void updateTherapyConfigs(List<String> materialNumbers, boolean patientInfo, boolean coiId)
-			throws ResourceNotFoundException {
+	public void updateTherapyConfigs(List<String> materialNumbers, boolean patientInfo, boolean coiId) {
 
-		List<TherapyConfig> existingConfigs = therapyConfigRepository.findAllByMaterialNumber(materialNumbers);
+		List<TherapyConfig> existingConfigs = therapyConfigRepository.findByMaterialNumberIn(materialNumbers);
 
 		Map<String, TherapyConfig> existingConfigMap = existingConfigs.stream()
 			.collect(Collectors.toMap(TherapyConfig::getMaterialNumber, Function.identity()));

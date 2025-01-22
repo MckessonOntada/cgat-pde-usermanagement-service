@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialConfigDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyConfigRequestDTO;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -56,8 +57,7 @@ public class GlobalTherapyController {
 
 	@PostMapping("/config/update")
 	@Operation(summary = "Update Therapy Configurations")
-	public ResponseEntity<String> updateTherapyConfigs(@RequestBody TherapyConfigRequestDTO request)
-			throws ResourceNotFoundException {
+	public ResponseEntity<String> updateTherapyConfigs(@Valid @RequestBody TherapyConfigRequestDTO request) {
 		log.debug("Updating therapy configs for materialNumbers: {}", request.getMaterialNumbers());
 
 		therapyService.updateTherapyConfigs(request.getMaterialNumbers(), request.isPatientInfo(), request.isCoiId());

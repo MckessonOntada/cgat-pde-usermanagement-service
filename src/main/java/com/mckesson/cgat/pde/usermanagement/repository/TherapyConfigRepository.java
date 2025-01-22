@@ -16,8 +16,6 @@ import java.util.Optional;
 @Repository
 public interface TherapyConfigRepository extends JpaRepository<TherapyConfig, Long> {
 
-	@Query(value = "SELECT * FROM catalog.material_config WHERE material_number IN (:materialNumbers)",
-			nativeQuery = true)
-	List<TherapyConfig> findAllByMaterialNumber(@Param("materialNumbers") List<String> materialNumbers);
+	List<TherapyConfig> findByMaterialNumberIn(@Param("materialNumbers") List<String> materialNumbers);
 
 }
