@@ -3,9 +3,11 @@ package com.mckesson.cgat.pde.usermanagement.dto;
 import java.util.Set;
 
 import com.mckesson.cgat.pde.usermanagement.model.QuestionnaireConfigurationType;
+import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +20,8 @@ import lombok.ToString;
 public class QuestionnaireDTO {
 
 	private Long id;
-	
+
+	@Size(max = 20, message = "Template name must be between 2 to 20 characters")
 	@NotBlank(message = "Template name can not be blank")
 	private String name;
 

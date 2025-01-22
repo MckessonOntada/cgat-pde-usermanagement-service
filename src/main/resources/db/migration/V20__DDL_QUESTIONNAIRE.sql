@@ -3,7 +3,11 @@ CREATE TABLE IF NOT EXISTS catalog.questionnaire (
     name VARCHAR(255) NOT NULL,
     questions jsonb NOT NULL,
     configured_at VARCHAR[],
-    is_active INTEGER NOT NULL
+    is_active INTEGER NOT NULL,
+    created_at 		TIMESTAMP,
+    created_by 		VARCHAR(255),
+    updated_at 		TIMESTAMP,
+    updated_by 		VARCHAR(255)
 );
 
 CREATE SEQUENCE catalog.questionnaire_id_seq START WITH 1 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE  CACHE 20;

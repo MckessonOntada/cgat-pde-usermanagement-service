@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.mckesson.cgat.pde.usermanagement.dto.QuestionnaireDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Questionnaire;
+import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 @Service
 public interface QuestionnaireService {
@@ -14,7 +15,8 @@ public interface QuestionnaireService {
 
 	List<Questionnaire> getAllQuestionnaires();
 
-	Questionnaire updateQuestionnaire(QuestionnaireDTO questionnaire);
+	Questionnaire updateQuestionnaire(QuestionnaireDTO questionnaire) throws ResourceNotFoundException;
 
 	void deleteQuestionnaire(Long id);
+
 }
