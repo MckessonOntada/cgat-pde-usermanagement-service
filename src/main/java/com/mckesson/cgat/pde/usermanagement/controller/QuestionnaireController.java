@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.mckesson.cgat.pde.usermanagement.dto.QuestionnaireDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Questionnaire;
 import com.mckesson.cgat.pde.usermanagement.service.QuestionnaireService;
+import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -45,15 +45,9 @@ public class QuestionnaireController {
 
 	@PutMapping
 	@Operation(summary = "Update Questionnaire")
-	public ResponseEntity<Questionnaire> updateQuestionnaire(@RequestBody QuestionnaireDTO questionnaire) {
+	public ResponseEntity<Questionnaire> updateQuestionnaire(@RequestBody QuestionnaireDTO questionnaire)
+			throws ResourceNotFoundException {
 		return new ResponseEntity<>(questionnaireService.updateQuestionnaire(questionnaire), HttpStatus.OK);
-	}
-
-	@DeleteMapping("/{id}")
-	@Operation(summary = "Delete Questionnaire")
-	public ResponseEntity<Questionnaire> deleteQuestionnaire(@RequestBody Long id) {
-		questionnaireService.deleteQuestionnaire(id);
-		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 }

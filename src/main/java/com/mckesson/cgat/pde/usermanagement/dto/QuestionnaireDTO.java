@@ -3,7 +3,6 @@ package com.mckesson.cgat.pde.usermanagement.dto;
 import java.util.Set;
 
 import com.mckesson.cgat.pde.usermanagement.model.QuestionnaireConfigurationType;
-import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -21,13 +20,13 @@ public class QuestionnaireDTO {
 
 	private Long id;
 
-	@Size(max = 20, message = "Template name must be between 2 to 20 characters")
+	@Size(max = 20, message = "Template name cannot exceed 20 characters.")
 	@NotBlank(message = "Template name can not be blank")
 	private String name;
 
 	@NotEmpty(message = "At least one question is required")
 	private Set<QuestionDTO> questions;
 
-	private Set<QuestionnaireConfigurationType> configuredFor;
+	private Set<QuestionnaireConfigurationType> configuredAt;
 
 }

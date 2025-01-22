@@ -22,7 +22,7 @@ enum QuestionType {
 @ToString
 public class QuestionDTO {
 
-	@Size(max = 20, message = "The question cannot exceed 5000 characters.")
+	@Size(max = 20, message = "Question cannot exceed 5000 characters.")
 	@NotBlank(message = "Question can not be blank")
 	private String question;
 

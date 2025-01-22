@@ -17,6 +17,4 @@ public interface QuestionnaireService {
 
 	Questionnaire updateQuestionnaire(QuestionnaireDTO questionnaire) throws ResourceNotFoundException;
 
-	void deleteQuestionnaire(Long id);
-
 }

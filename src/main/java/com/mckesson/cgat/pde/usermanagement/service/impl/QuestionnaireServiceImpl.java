@@ -39,16 +39,6 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 		return questionnaireRepository.findAll();
 	}
 
-	/*
-	 * update maine : 1. add new question 2. delete qeustion and add same 3. delete one
-	 * from 2 4. update particular question attribute 5. update questionnaire attribute
-	 * like name or question rename
-	 *
-	 * approach 1. link and unlink patch api for questio to questionnare 2. update(put)
-	 * api for question attribute or questionnare attribute or 1. jaise bnaya vaisa,
-	 * hamesha complete object ayega..update h to id set krke db mai daldo and new h to
-	 * new bna do
-	 */
 	public Questionnaire updateQuestionnaire(QuestionnaireDTO questionnaireDTO) throws ResourceNotFoundException {
 		log.info(" Inside method - updateQuestionnaire..");
 		log.info("questionnaireDTO: {}", questionnaireDTO);
@@ -64,12 +54,6 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 			return questionnaireRepository.save(questionnaire);
 		}
 		throw new ResourceNotFoundException("Questionnaire not found with id: " + questionnaireDTO.getId());
-	}
-
-	/* rakhna h kya */
-	public void deleteQuestionnaire(Long id) {
-		log.info(" Inside method - deleteQuestionnaire..");
-		questionnaireRepository.deleteById(id);
 	}
 
 }
