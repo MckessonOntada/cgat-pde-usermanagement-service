@@ -1,10 +1,23 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
+import java.io.*;
 
+import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
+import com.mckesson.cgat.pde.usermanagement.model.*;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -30,6 +43,7 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -42,6 +56,9 @@ public class UserServiceImpl implements UserService {
 	private final RoleRepository roleRepository;
 
 	private final OktaUserManagementService oktaUserManagementService;
+
+	@Autowired
+	Validator validator;
 
 	public UserServiceImpl(UserRepository userRepository, AccountRepository repository, RoleRepository roleRepository,
 			OktaUserManagementService oktaUserManagementService) {
@@ -87,6 +104,40 @@ public class UserServiceImpl implements UserService {
 		}
 
 		return user;
+	}
+
+	@Override
+	public void uploadUsers(MultipartFile userDataFile, UserType userType, Long practiceId, OutputStream outputStream)
+			throws FileNotValidException {
+		List<User> users = new ArrayList<>();
+		// Map to store failed user
+		Map<User, String> failedUser = new LinkedHashMap<>();
+
+		// Parse CSV and Store User Data
+		parseUserDataCSV(userDataFile, userType, users, practiceId, failedUser);
+
+		for (User user : users) {
+			try {
+				// Validate User
+				validateUser(user);
+				// Save User
+				createUser(user);
+			}
+			catch (IllegalArgumentException e) {
+				// User Validation Failed
+				log.error("Validation failed for User {}", user.getName().getFirstName());
+				log.error(e.getMessage());
+				failedUser.put(user, e.getMessage());
+			}
+			catch (DataIntegrityViolationException e) {
+				// Failed to save user
+				log.error("Data Integrity violation for User {}", user.getName().getFirstName());
+				log.error(e.getMessage());
+				failedUser.put(user, e.getCause().getCause().getMessage());
+			}
+		}
+		// Create output csv
+		createOutputCSV(outputStream, failedUser);
 	}
 
 	@Override
@@ -210,6 +261,136 @@ public class UserServiceImpl implements UserService {
 		userRepository.resetDefaultPayToAccount(userId, UserPreferenceType.DEFAULT_PAY_TO_ACCOUNT.name());
 		user.getPreferences().add(userPreference);
 		return userRepository.save(user);
+	}
+
+	// =======================================================
+	// Private methods (Bulk User Upload)
+	// =======================================================
+
+	private void parseUserDataCSV(MultipartFile userDataFile, UserType userType, List<User> users, Long practiceId,
+			Map<User, String> failedUser) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(userDataFile.getInputStream()));
+				CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
+
+			for (CSVRecord record : csvParser) {
+				List<String> userData = record.toList();
+				User user = createUserFromCSVRecord(userData, practiceId);
+				try {
+					attachUserRole(user, userType, userData.get(12).trim());
+					attachAccounts(user, userData.get(13).trim());
+					users.add(user);
+				}
+				catch (ResourceNotFoundException e) {
+					failedUser.put(user, e.getMessage());
+				}
+				catch (IllegalArgumentException e) {
+					failedUser.put(user, e.getMessage());
+				}
+
+			}
+		}
+		catch (IOException e) {
+			log.error("Unable to read User Data CSV");
+			throw new FileNotValidException("Unable to read User Data CSV");
+		}
+		catch (IndexOutOfBoundsException e) {
+			log.error("Invalid User Data file, some columns are missing");
+			throw new FileNotValidException("Invalid User Data file, some columns are missing");
+		}
+	}
+
+	private User createUserFromCSVRecord(List<String> userData, Long practiceId) {
+		Name userName = Name.builder()
+			.firstName(userData.get(0))
+			.middleName(userData.get(1))
+			.lastName(userData.get(2))
+			.build();
+
+		Address userAddress = Address.builder()
+			.address1(userData.get(3))
+			.address2(userData.get(4))
+			.zip(userData.get(5))
+			.city(userData.get(6))
+			.state(userData.get(7))
+			.build();
+
+		Contact userContact = Contact.builder()
+			.email(userData.get(8))
+			.countryCode(userData.get(9))
+			.phone(userData.get(10))
+			.fax(userData.get(11))
+			.build();
+
+		return User.builder().practiceId(practiceId).name(userName).contact(userContact).address(userAddress).build();
+	}
+
+	private void attachUserRole(User user, UserType userType, String roleName) throws ResourceNotFoundException {
+		if (userType.equals(UserType.ADMIN)) {
+			Role systemAdminRole = roleRepository.findByName(UserRequestAuthorizationValidator.SYSTEM_ADMIN_ROLE);
+			user.setRole(systemAdminRole);
+			user.setPermissions(new HashSet<>(systemAdminRole.getPermissions()));
+		}
+		else {
+			if (roleName.isEmpty()) {
+				throw new IllegalArgumentException("Role name can not be null");
+			}
+			Role role = roleRepository.findByNameAndIsActiveTrue(roleName)
+				.orElseThrow(() -> new ResourceNotFoundException("Role not found with this Name :" + roleName));
+
+			user.setRole(role);
+		}
+	}
+
+	private void attachAccounts(User user, String accountIdsString) throws ResourceNotFoundException {
+		if (accountIdsString.isEmpty())
+			return;
+
+		List<Long> accountIds = Arrays.stream(accountIdsString.split(","))
+			.map(String::trim)
+			.map(Long::parseLong)
+			.collect(Collectors.toList());
+		List<Account> accounts = accountRepository.findAllById(accountIds);
+
+		if (accounts.size() != accountIds.size()) {
+			log.error("Some of the provided account IDs does not exist {}", accountIdsString);
+			throw new ResourceNotFoundException("Some of the provided account IDs does not exist.");
+		}
+
+		user.getAccounts().addAll(accounts);
+
+	}
+
+	private void validateUser(User user) {
+		// Trigger validation with the BasicInfo group
+		Set<ConstraintViolation<User>> violations = validator.validate(user, BasicInfo.class);
+
+		if (!violations.isEmpty()) {
+			StringBuilder errorMessage = new StringBuilder("Validation errors: ");
+			for (ConstraintViolation<User> violation : violations) {
+				errorMessage.append(violation.getPropertyPath())
+					.append(" ")
+					.append(violation.getMessage())
+					.append("; ");
+			}
+			throw new IllegalArgumentException(errorMessage.toString());
+		}
+	}
+
+	private void createOutputCSV(OutputStream outputStream, Map<User, String> failedUser) {
+		try (OutputStreamWriter writer = new OutputStreamWriter(outputStream);
+				CSVPrinter csvPrinter = new CSVPrinter(writer,
+						CSVFormat.DEFAULT.withHeader("First Name", "Phone", "Email", "Message"))) {
+
+			for (Map.Entry<User, String> e : failedUser.entrySet()) {
+				User user = e.getKey();
+				csvPrinter.printRecord(user.getName().getFirstName(), user.getContact().getPhone(),
+						user.getContact().getEmail(), e.getValue());
+			}
+		}
+		catch (IOException e) {
+			log.error("Unable to process output csv file, error message: {}", e.getMessage());
+			throw new RuntimeException("Failed to generate output csv file");
+		}
 	}
 
 }
