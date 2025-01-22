@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.mckesson.cgat.pde.usermanagement.dto.MaterialConfigDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -290,7 +291,7 @@ public class TherapyServiceImplTest {
 		return catalogPrice;
 	}
 
-	private Page<Therapy> getAllGlobalTherapies() {
+	private Page<MaterialConfigDTO> getAllGlobalTherapies() {
 		Integer pageNo = 0;
 		Integer pageSize = 20;
 		String sortBy = "name";

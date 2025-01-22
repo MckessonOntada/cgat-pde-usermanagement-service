@@ -1,5 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.repository;
 
+import com.mckesson.cgat.pde.usermanagement.dto.MaterialConfigDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.cgat.pde.usermanagement.model.TherapyConfig;
 import jakarta.validation.constraints.Size;
@@ -17,7 +19,5 @@ public interface TherapyConfigRepository extends JpaRepository<TherapyConfig, Lo
 	@Query(value = "SELECT * FROM catalog.material_config WHERE material_number IN (:materialNumbers)",
 			nativeQuery = true)
 	List<TherapyConfig> findAllByMaterialNumber(@Param("materialNumbers") List<String> materialNumbers);
-
-	Optional<TherapyConfig> findByMaterialNumber(String materialNumber);
 
 }

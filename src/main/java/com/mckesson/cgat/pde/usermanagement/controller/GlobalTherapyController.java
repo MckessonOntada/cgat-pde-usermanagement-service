@@ -1,7 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
+import com.mckesson.cgat.pde.usermanagement.dto.MaterialConfigDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyConfigRequestDTO;
-import com.mckesson.cgat.pde.usermanagement.model.TherapyConfig;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -39,7 +39,7 @@ public class GlobalTherapyController {
 
 	@GetMapping
 	@Operation(summary = "Fetch all therapies.")
-	public ResponseEntity<Page<Therapy>> findAllThreapies(@RequestParam(defaultValue = "0") Integer pageNo,
+	public ResponseEntity<Page<MaterialConfigDTO>> findAllThreapies(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query) {
 		Pageable paging = PageRequest.of(pageNo, pageSize);
 		return new ResponseEntity<>(therapyService.findAllGlobalTherapies(query, paging), HttpStatus.OK);
@@ -52,14 +52,6 @@ public class GlobalTherapyController {
 		log.debug("Fetching therapy with materialNumber: {}", materialNumber);
 		return new ResponseEntity<>(therapyService.findByMaterialNumber(materialNumber), HttpStatus.OK);
 
-	}
-
-	@GetMapping("/config/{materialNumber}")
-	@Operation(summary = "Find Therapy config by Material Number")
-	public ResponseEntity<TherapyConfig> findConfigByMaterialNumber(@PathVariable String materialNumber)
-			throws ResourceNotFoundException {
-		log.debug("Fetching therapy config with materialNumber: {}", materialNumber);
-		return new ResponseEntity<>(therapyService.findConfigByMaterialNumber(materialNumber), HttpStatus.OK);
 	}
 
 	@PostMapping("/config/update")

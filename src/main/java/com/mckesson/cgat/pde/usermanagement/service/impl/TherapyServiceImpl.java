@@ -8,8 +8,10 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.mckesson.cgat.pde.usermanagement.dto.MaterialConfigDTO;
 import com.mckesson.cgat.pde.usermanagement.model.*;
 import com.mckesson.cgat.pde.usermanagement.repository.TherapyConfigRepository;
+import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -144,7 +146,7 @@ public class TherapyServiceImpl implements TherapyService {
 				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 	}
 
-	public Page<Therapy> findAllGlobalTherapies(String query, Pageable paging) {
+	public Page<MaterialConfigDTO> findAllGlobalTherapies(String query, Pageable paging) {
 		try {
 			log.info(" Inside method - findAllGlobalTherapies");
 			log.info("query: {}", StringUtils.toRootLowerCase(query));
@@ -173,13 +175,7 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	@Override
-	public TherapyConfig findConfigByMaterialNumber(String materialNumber) throws ResourceNotFoundException {
-		return therapyConfigRepository.findByMaterialNumber(materialNumber)
-			.orElseThrow(() -> new ResourceNotFoundException(
-					"Therapy config not found with materialNumber: " + materialNumber));
-	}
-
-	@Override
+	@Transactional
 	public void updateTherapyConfigs(List<String> materialNumbers, boolean patientInfo, boolean coiId)
 			throws ResourceNotFoundException {
 
