@@ -1,8 +1,10 @@
 package com.mckesson.cgat.pde.usermanagement.service;
 
+import java.io.OutputStream;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -10,6 +12,7 @@ import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
 import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
 
@@ -27,6 +30,9 @@ public interface UserService {
 	User updateUser(Long userId, User model) throws ResourceNotFoundException;
 
 	User createUser(User model);
+
+	void uploadUsers(MultipartFile userData, UserType userType, Long practiceId, OutputStream outputStream)
+			throws FileNotValidException;
 
 	User linkUserToAccounts(Long userId, List<Long> accountIds) throws ResourceNotFoundException;
 
