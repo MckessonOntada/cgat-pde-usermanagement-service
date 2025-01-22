@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 public class TherapyConfig {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "material_config_id_seq")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "catalog.material_config_id_seq")
 	@SequenceGenerator(name = "material_config_id_seq", sequenceName = "catalog.material_config_id_seq",
 			allocationSize = 1)
 	private Long id;
