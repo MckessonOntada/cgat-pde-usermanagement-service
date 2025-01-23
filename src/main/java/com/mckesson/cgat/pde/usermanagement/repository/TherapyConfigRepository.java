@@ -18,4 +18,30 @@ public interface TherapyConfigRepository extends JpaRepository<TherapyConfig, Lo
 
 	List<TherapyConfig> findByMaterialNumberIn(@Param("materialNumbers") List<String> materialNumbers);
 
+	@Query(value = """
+			    SELECT m.id,
+			           m.material_number as therapyId,
+			           m.material_description as therapyDescription,
+			           m.ndc_number as ndc,
+			           m.strength,
+			           m.dosage,
+			           m.selling_unit_code,
+			           m.vendor_name,
+			           m.upc_code,
+			           m.dropship_indicator,
+			           m.item_status as status,
+			           m.base_unit_of_measure,
+			           m.cgat_identifier,
+			           m.sales_organization,
+			           m.cgat_type,
+			           m.product_level_pricing,
+			           m.scan_qty,
+			           tc.coi_id ,
+			        	tc.patient_information
+			    FROM catalog.material m
+			    JOIN catalog.material_config tc ON m.material_number = tc.material_number
+			    WHERE m.material_number = :materialNumber
+			""", nativeQuery = true)
+	Optional<MaterialConfigDTO> findDetailedByMaterialNumber(@Param("materialNumber") String materialNumber);
+
 }
