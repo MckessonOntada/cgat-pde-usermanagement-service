@@ -87,7 +87,8 @@ public class UserController {
 		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
 
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		HttpStatus status = userService.uploadUsers(userData, userType, practiceId, outputStream);
+		Boolean uploadStatus = userService.uploadUsers(userData, userType, practiceId, outputStream);
+		HttpStatus status = uploadStatus ? HttpStatus.OK : HttpStatus.PARTIAL_CONTENT;
 
 		return ResponseEntity.status(status)
 			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=FailedUsers.csv")
