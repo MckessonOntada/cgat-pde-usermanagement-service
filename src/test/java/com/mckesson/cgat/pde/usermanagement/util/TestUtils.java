@@ -4,6 +4,7 @@ import com.mckesson.cgat.pde.usermanagement.model.LoggedInUserDetails;
 import com.mckesson.cgat.pde.usermanagement.model.Name;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
+import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.cgat.pde.usermanagement.utils.OrganizationContext;
 import com.mckesson.cgat.pde.usermanagement.utils.UserCurrentRequestContext;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -51,7 +52,7 @@ public class TestUtils {
 			.id("1")
 			.name(Name.builder().firstName("John").lastName("Doe").build())
 			.role(Role.builder().name("System Admin").build())
-			.permissions(new HashSet(Arrays.asList(Permission.values())))
+			.permissions(Permission.getPermissions(UserType.ADMIN))
 			.practiceId(1)
 			.userName("John Doe")
 			.build();
