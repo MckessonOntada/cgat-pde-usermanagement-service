@@ -17,4 +17,20 @@ public class TherapyConfigRequestDTO {
 
 	private boolean isCoiIdRequired;
 
+	public boolean getIsPatientInformationRequired() {
+		return isPatientInformationRequired;
+	}
+
+	public boolean getIsCoiIdRequired() {
+		return isCoiIdRequired;
+	}
+
+	public void setIsPatientInformationRequired(boolean isPatientInformationRequired) {
+		this.isPatientInformationRequired = isPatientInformationRequired;
+	}
+
+	public void setIsCoiIdRequired(boolean isCoiIdRequired) {
+		this.isCoiIdRequired = isCoiIdRequired;
+	}
+
 }
