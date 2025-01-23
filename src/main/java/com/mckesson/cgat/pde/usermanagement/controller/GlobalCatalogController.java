@@ -5,6 +5,8 @@ import java.util.List;
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogConfigurationDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.CatalogConfiguration;
+import com.mckesson.cgat.pde.usermanagement.model.Permission;
+import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
 import com.mckesson.cgat.pde.usermanagement.service.CatalogService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import jakarta.validation.Valid;
@@ -50,6 +52,7 @@ public class GlobalCatalogController {
 		return new ResponseEntity<>(therapyService.findAllGlobalCatalogs(accountNumbers, query, paging), HttpStatus.OK);
 	}
 
+	@RequirePermissions({ Permission.MANAGE_CATALOG })
 	@PostMapping("/configure")
 	@Operation(
 			summary = "Configure the catalog materials according to materialId, variant, soldTo account and shipTo account")
@@ -58,7 +61,10 @@ public class GlobalCatalogController {
 		return new ResponseEntity<>(catalogService.saveCatalogConfiguration(configuration), HttpStatus.OK);
 	}
 
+	@RequirePermissions({ Permission.VIEW_CATALOG })
 	@GetMapping("/configuration")
+	@Operation(
+			summary = "Get catalog configuration according to materialId, variant, soldTo account and shipTo account")
 	public ResponseEntity<CatalogResponseDTO> findCatalogConfiguration(@RequestParam String materialId,
 			@RequestParam(required = false) String variant, @RequestParam String shipToAccount,
 			@RequestParam String soldToAccount) throws ResourceNotFoundException {
