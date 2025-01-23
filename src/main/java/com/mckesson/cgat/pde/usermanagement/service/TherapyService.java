@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.service;
 
 import java.util.List;
 
+import com.mckesson.cgat.pde.usermanagement.dto.MaterialConfigDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -44,5 +45,10 @@ public interface TherapyService {
 	Page<CatalogPrice> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging);
 
 	Therapy findByMaterialNumber(String materialNumber) throws ResourceNotFoundException;
+
+	void updateTherapyConfigs(List<String> materialNumbers, boolean isPatientInformationRequired,
+			boolean isCoiIdRequired);
+
+	MaterialConfigDTO findTherapyDetailsByMaterialNumber(String materialNumber) throws ResourceNotFoundException;
 
 }

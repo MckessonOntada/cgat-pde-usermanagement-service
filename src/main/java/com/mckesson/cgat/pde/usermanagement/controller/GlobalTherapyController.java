@@ -1,5 +1,10 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
+import com.mckesson.cgat.pde.usermanagement.dto.MaterialConfigDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.TherapyConfigRequestDTO;
+import com.mckesson.cgat.pde.usermanagement.model.Permission;
+import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -7,7 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,6 +41,7 @@ public class GlobalTherapyController {
 	}
 
 	@GetMapping
+	@RequirePermissions({ Permission.VIEW_MATERIAL })
 	@Operation(summary = "Fetch all therapies.")
 	public ResponseEntity<Page<Therapy>> findAllThreapies(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query) {
@@ -47,6 +55,26 @@ public class GlobalTherapyController {
 			throws ResourceNotFoundException {
 		log.debug("Fetching therapy with materialNumber: {}", materialNumber);
 		return new ResponseEntity<>(therapyService.findByMaterialNumber(materialNumber), HttpStatus.OK);
+
+	}
+
+	@PostMapping("/config/update")
+	@RequirePermissions({ Permission.MANAGE_MATERIAL })
+	@Operation(summary = "Update Therapy Configurations")
+	public ResponseEntity<String> updateTherapyConfigs(@Valid @RequestBody TherapyConfigRequestDTO request) {
+		log.debug("Updating therapy configs for materialNumbers: {}", request.getMaterialNumbers());
+		therapyService.updateTherapyConfigs(request.getMaterialNumbers(), request.getIsPatientInformationRequired(),
+				request.getIsCoiIdRequired());
+		return new ResponseEntity<>("Therapy configurations updated successfully", HttpStatus.OK);
+	}
+
+	@GetMapping("config/{materialNumber}")
+	@RequirePermissions({ Permission.VIEW_MATERIAL })
+	@Operation(summary = "Find Therapy details by Material Number")
+	public ResponseEntity<MaterialConfigDTO> findTherapyDetailsByMaterialNumber(@PathVariable String materialNumber)
+			throws ResourceNotFoundException {
+		log.debug("Fetching therapy details with materialNumber: {}", materialNumber);
+		return new ResponseEntity<>(therapyService.findTherapyDetailsByMaterialNumber(materialNumber), HttpStatus.OK);
 
 	}
 

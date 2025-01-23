@@ -2,10 +2,16 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.mckesson.cgat.pde.usermanagement.dto.MaterialConfigDTO;
+import com.mckesson.cgat.pde.usermanagement.model.*;
+import com.mckesson.cgat.pde.usermanagement.repository.TherapyConfigRepository;
+import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -18,10 +24,6 @@ import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelProjectionDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.mapper.CatalogPriceMapper;
-import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
-import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
-import com.mckesson.cgat.pde.usermanagement.model.DistributionChannel;
-import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.cgat.pde.usermanagement.repository.CatalogPriceRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.TherapyRepository;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
@@ -39,11 +41,14 @@ public class TherapyServiceImpl implements TherapyService {
 
 	private final CatalogPriceMapper catalogPriceMapper;
 
+	private final TherapyConfigRepository therapyConfigRepository;
+
 	public TherapyServiceImpl(TherapyRepository therapyRepository, CatalogPriceRepository catalogPriceRepository,
-			CatalogPriceMapper catalogPriceMapper) {
+			CatalogPriceMapper catalogPriceMapper, TherapyConfigRepository therapyConfigRepository) {
 		this.therapyRepository = therapyRepository;
 		this.catalogPriceRepository = catalogPriceRepository;
 		this.catalogPriceMapper = catalogPriceMapper;
+		this.therapyConfigRepository = therapyConfigRepository;
 	}
 
 	public Page<TherapyCatalogResponseDTO> findAllTherapies(Long userId, String query, List<String> salesOrg,
@@ -167,6 +172,44 @@ public class TherapyServiceImpl implements TherapyService {
 			throw e;
 		}
 
+	}
+
+	@Override
+	@Transactional
+	public void updateTherapyConfigs(List<String> materialNumbers, boolean isPatientInformationRequired,
+			boolean isCoiIdRequired) {
+
+		List<TherapyConfig> existingConfigs = therapyConfigRepository.findByMaterialNumberIn(materialNumbers);
+
+		Map<String, TherapyConfig> existingConfigMap = existingConfigs.stream()
+			.collect(Collectors.toMap(TherapyConfig::getMaterialNumber, Function.identity()));
+
+		List<TherapyConfig> updatedConfigs = materialNumbers.stream().map(materialNumber -> {
+			TherapyConfig config = existingConfigMap.get(materialNumber);
+
+			if (config != null) {
+				config.setIsPatientInformationRequired(isPatientInformationRequired);
+				config.setIsCoiIdRequired(isCoiIdRequired);
+				return config;
+			}
+			else {
+				return TherapyConfig.builder()
+					.materialNumber(materialNumber)
+					.isPatientInformationRequired(isPatientInformationRequired)
+					.isCoiIdRequired(isCoiIdRequired)
+					.build();
+			}
+		}).collect(Collectors.toList());
+
+		therapyConfigRepository.saveAll(updatedConfigs);
+	}
+
+	@Override
+	public MaterialConfigDTO findTherapyDetailsByMaterialNumber(String materialNumber)
+			throws ResourceNotFoundException {
+		return therapyConfigRepository.findDetailedByMaterialNumber(materialNumber)
+			.orElseThrow(() -> new ResourceNotFoundException(
+					"Therapy config not found with materialNumber: " + materialNumber));
 	}
 
 }
