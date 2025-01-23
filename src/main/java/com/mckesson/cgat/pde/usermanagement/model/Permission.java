@@ -20,16 +20,16 @@ public enum Permission {
 	VIEW_PENDING_ORDERS(false, true), ADD_ORDERS(false, true), EDIT_ORDERS(false, true), APPROVE_ORDERS(false, true),
 	CANCEL_ORDER(false, true), REJECT_ORDER(false, true), ADD_APPROVER_GROUP(false, true),
 	VIEW_APPROVER_GROUP(false, true), MANAGE_APPROVER_GROUP(false, true), EDIT_APPROVER_GROUP(false, true),
-	VIEW_QUESTIONIARE(true, false), CONFIGURE_QUESTIONNIARE(true, false), DEACTIVATE_QUESTIONNIARE(true, false),
+	VIEW_QUESTIONNAIRE(true, false), CONFIGURE_QUESTIONNAIRE(true, false), DEACTIVATE_QUESTIONNAIRE(true, false),
 	MANAGE_MATERIAL(true, false), VIEW_MATERIAL(true, false), VIEW_CATALOG(true, false), PAY_INVOICES(false, true),
-	MANAGE_CUSTOMER_STATEMENT(false, true), MANAGE_CATALOG(true, false), ADD_QUESTIONNIARE(true, false),
+	MANAGE_CUSTOMER_STATEMENT(false, true), MANAGE_CATALOG(true, false), ADD_QUESTIONNAIRE(true, false),
 	VIEW_INVOICES(false, true), MANAGE_INVOICES(false, true), VIEW_PAYMENT_HISTORY(false, true),
-	VIEW_CUSTOMER_STATEMENT(false, true), VIEW_PAYMENT_METHOD(false, true), ADD_PAYMENT_METHOD(false, true),
-	MANAGE_PAYMENT_METHODS(false, true), DELETE_PAYMENT_METHODS(false, true), VIEW_PAYMENT_METHOD_ACCOUNT(false, true),
-	ADD_PAYMENT_METHOD_ACCOUNT(false, true), MANAGE_PAYMENT_METHODS_ACCOUNT(false, true),
-	DELETE_PAYMENT_METHODS_ACCOUNT(false, true), CANCEL_PAYMENT(false, true), VIEW_CREDIT_LISTING(false, true),
-	MANAGE_SYSTEM_CONFIGURATIONS(true, false), VIEW_ACCOUNTS(true, true), CREATE_INVOICES(false, true),
-	APPROVE_PENDING_USER_REQUEST(true, true), MANAGE_PAYMENT_HISTORY(false, true);
+	VIEW_CUSTOMER_STATEMENT(false, true), VIEW_PAYMENT_METHOD_CARD(false, true), ADD_PAYMENT_METHOD_CARD(false, true),
+	MANAGE_PAYMENT_METHOD_CARD(false, true), DELETE_PAYMENT_METHOD_CARD(false, true),
+	VIEW_PAYMENT_METHOD_BANK(false, true), ADD_PAYMENT_METHOD_BANK(false, true),
+	MANAGE_PAYMENT_METHOD_BANK(false, true), DELETE_PAYMENT_METHOD_BANK(false, true), CANCEL_PAYMENT(false, true),
+	VIEW_CREDIT_LISTING(false, true), MANAGE_SYSTEM_CONFIGURATIONS(true, false), VIEW_ACCOUNTS(true, true),
+	CREATE_INVOICES(false, true), APPROVE_PENDING_USER_REQUEST(true, true), MANAGE_PAYMENT_HISTORY(false, true);
 
 	boolean isActiveForSystemAdmin;
 
