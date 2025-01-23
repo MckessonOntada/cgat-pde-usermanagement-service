@@ -270,7 +270,7 @@ public class UserServiceImpl implements UserService {
 				List<String> userData = record.toList();
 				User user = createUserFromCSVRecord(userData, practiceId);
 				try {
-					attachUserRole(user, userType, userData.get(12).trim());
+					attachUserRole(user, userType, userData.get(12).trim(), practiceId);
 					attachAccounts(user, userData.get(13).trim());
 					users.add(user);
 				}
@@ -315,10 +315,17 @@ public class UserServiceImpl implements UserService {
 			.fax(userData.get(11))
 			.build();
 
-		return User.builder().practiceId(practiceId).name(userName).contact(userContact).address(userAddress).build();
+		return User.builder()
+			.practiceId(practiceId)
+			.name(userName)
+			.contact(userContact)
+			.address(userAddress)
+			.isActive(true)
+			.build();
 	}
 
-	private void attachUserRole(User user, UserType userType, String roleName) throws ResourceNotFoundException {
+	private void attachUserRole(User user, UserType userType, String roleName, Long practiceId)
+			throws ResourceNotFoundException {
 		if (userType.equals(UserType.ADMIN)) {
 			Role systemAdminRole = roleRepository.findByName(UserRequestAuthorizationValidator.SYSTEM_ADMIN_ROLE);
 			user.setRole(systemAdminRole);
@@ -328,8 +335,9 @@ public class UserServiceImpl implements UserService {
 			if (roleName.isEmpty()) {
 				throw new IllegalArgumentException("Role name can not be null");
 			}
-			Role role = roleRepository.findByNameAndIsActiveTrue(roleName)
-				.orElseThrow(() -> new ResourceNotFoundException("Role not found with this Name :" + roleName));
+			Role role = roleRepository.findByNameAndPracticeId_IdAndIsActiveTrue(roleName, practiceId)
+				.orElseThrow(() -> new ResourceNotFoundException(
+						String.format("Role not found with this Name: %s and PracticeId: %s", roleName, practiceId)));
 
 			user.setRole(role);
 		}
