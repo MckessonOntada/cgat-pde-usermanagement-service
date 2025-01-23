@@ -46,7 +46,8 @@ public interface TherapyService {
 
 	Therapy findByMaterialNumber(String materialNumber) throws ResourceNotFoundException;
 
-	void updateTherapyConfigs(List<String> materialNumbers, boolean patientInfo, boolean coiId);
+	void updateTherapyConfigs(List<String> materialNumbers, boolean isPatientInformationRequired,
+			boolean isCoiIdRequired);
 
 	MaterialConfigDTO findTherapyDetailsByMaterialNumber(String materialNumber) throws ResourceNotFoundException;
 

@@ -176,7 +176,8 @@ public class TherapyServiceImpl implements TherapyService {
 
 	@Override
 	@Transactional
-	public void updateTherapyConfigs(List<String> materialNumbers, boolean patientInfo, boolean coiId) {
+	public void updateTherapyConfigs(List<String> materialNumbers, boolean isPatientInformationRequired,
+			boolean isCoiIdRequired) {
 
 		List<TherapyConfig> existingConfigs = therapyConfigRepository.findByMaterialNumberIn(materialNumbers);
 
@@ -187,15 +188,15 @@ public class TherapyServiceImpl implements TherapyService {
 			TherapyConfig config = existingConfigMap.get(materialNumber);
 
 			if (config != null) {
-				config.setPatientInformation(patientInfo);
-				config.setCoiId(coiId);
+				config.setIsPatientInformationRequired(isPatientInformationRequired);
+				config.setIsCoiIdRequired(isCoiIdRequired);
 				return config;
 			}
 			else {
 				return TherapyConfig.builder()
 					.materialNumber(materialNumber)
-					.patientInformation(patientInfo)
-					.coiId(coiId)
+					.isPatientInformationRequired(isPatientInformationRequired)
+					.isCoiIdRequired(isCoiIdRequired)
 					.build();
 			}
 		}).collect(Collectors.toList());

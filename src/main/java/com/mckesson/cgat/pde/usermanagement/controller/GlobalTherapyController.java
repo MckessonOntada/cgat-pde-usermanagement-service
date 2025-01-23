@@ -64,7 +64,8 @@ public class GlobalTherapyController {
 	public ResponseEntity<String> updateTherapyConfigs(@Valid @RequestBody TherapyConfigRequestDTO request) {
 		log.debug("Updating therapy configs for materialNumbers: {}", request.getMaterialNumbers());
 
-		therapyService.updateTherapyConfigs(request.getMaterialNumbers(), request.isPatientInfo(), request.isCoiId());
+		therapyService.updateTherapyConfigs(request.getMaterialNumbers(), request.isPatientInformationRequired(),
+				request.isCoiIdRequired());
 		return new ResponseEntity<>("Therapy configurations updated successfully", HttpStatus.OK);
 	}
 
