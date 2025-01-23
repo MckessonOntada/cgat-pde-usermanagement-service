@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import java.util.List;
 
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogConfigurationDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.CatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.CatalogConfiguration;
 import com.mckesson.cgat.pde.usermanagement.service.CatalogService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -58,10 +59,10 @@ public class GlobalCatalogController {
 	}
 
 	@GetMapping("/configuration")
-	public ResponseEntity<CatalogConfiguration> findCatalogConfigurationByFields(@RequestParam String materialId,
-			@RequestParam String variant, @RequestParam String shipToAccount, @RequestParam String soldToAccount)
-			throws ResourceNotFoundException {
-		CatalogConfiguration catalogConfiguration = catalogService.findCatalogConfigurationByFields(materialId, variant,
+	public ResponseEntity<CatalogResponseDTO> findCatalogConfigurationByFields(@RequestParam String materialId,
+			@RequestParam(required = false) String variant, @RequestParam String shipToAccount,
+			@RequestParam String soldToAccount) throws ResourceNotFoundException {
+		CatalogResponseDTO catalogConfiguration = catalogService.findCatalogConfigurationByFields(materialId, variant,
 				shipToAccount, soldToAccount);
 		return ResponseEntity.ok(catalogConfiguration);
 	}
