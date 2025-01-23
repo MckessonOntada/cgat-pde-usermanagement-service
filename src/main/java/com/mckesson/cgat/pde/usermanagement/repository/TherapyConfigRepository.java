@@ -36,8 +36,8 @@ public interface TherapyConfigRepository extends JpaRepository<TherapyConfig, Lo
 			           m.cgat_type,
 			           m.product_level_pricing,
 			           m.scan_qty,
-			           tc.coi_id ,
-			        	tc.patient_information
+			           tc.is_coi_id_required,
+			        	tc.is_patient_information_required
 			    FROM catalog.material m
 			    JOIN catalog.material_config tc ON m.material_number = tc.material_number
 			    WHERE m.material_number = :materialNumber

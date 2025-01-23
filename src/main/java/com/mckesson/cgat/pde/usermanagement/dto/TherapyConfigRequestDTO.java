@@ -13,8 +13,8 @@ public class TherapyConfigRequestDTO {
 	@Size(min = 1, message = "Material numbers must not be empty.")
 	private List<String> materialNumbers;
 
-	private boolean patientInfo;
+	private boolean isPatientInformationRequired;
 
-	private boolean coiId;
+	private boolean isCoiIdRequired;
 
 }

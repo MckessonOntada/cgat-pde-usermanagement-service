@@ -31,10 +31,10 @@ public class TherapyConfig {
 	@Column(name = "material_number", nullable = false, unique = true)
 	private String materialNumber;
 
-	@Column(name = "coi_id", nullable = false)
-	private Boolean coiId;
+	@Column(name = "is_coi_id_required", nullable = false)
+	private Boolean isCoiIdRequired;
 
-	@Column(name = "patient_information", nullable = false)
-	private Boolean patientInformation;
+	@Column(name = "is_patient_information_required", nullable = false)
+	private Boolean isPatientInformationRequired;
 
 }
