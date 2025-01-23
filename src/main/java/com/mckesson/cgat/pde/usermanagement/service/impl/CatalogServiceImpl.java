@@ -34,15 +34,16 @@ public class CatalogServiceImpl implements CatalogService {
 
 		List<CatalogConfiguration> catalogConfigurations = configurationDTO.getCatalogConfigurationAttributes()
 			.stream()
-			.map(attr -> CatalogConfiguration.builder()
-				.id(CatalogConfigId.builder()
+			.map(attr -> {
+				CatalogConfigId id = CatalogConfigId.builder()
 					.soldToAccount(attr.getSoldToCustomer())
 					.shipToAccount(attr.getShipToCustomer())
 					.materialId(attr.getSapMaterial())
 					.variant(StringUtils.isNotEmpty(attr.getVariant()) ? attr.getVariant() : UNKNOWN)
-					.build())
-				.steps(configurationDTO.getSteps())
-				.build())
+					.build();
+
+				return CatalogConfiguration.builder().id(id).steps(configurationDTO.getSteps()).build();
+			})
 			.toList();
 
 		log.info("Saving {} catalog configurations to the database.", catalogConfigurations.size());
@@ -50,7 +51,7 @@ public class CatalogServiceImpl implements CatalogService {
 	}
 
 	@Override
-	public CatalogResponseDTO findCatalogConfigurationByFields(String materialId, String variant, String shipToAccount,
+	public CatalogResponseDTO findCatalogConfiguration(String materialId, String variant, String shipToAccount,
 			String soldToAccount) throws ResourceNotFoundException {
 		log.info(
 				"Searching for CatalogConfiguration with materialId: {}, variant: {}, shipToAccount: {}, soldToAccount: {}",

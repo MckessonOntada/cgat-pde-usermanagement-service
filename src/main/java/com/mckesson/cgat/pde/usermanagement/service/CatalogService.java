@@ -13,7 +13,7 @@ public interface CatalogService {
 
 	List<CatalogConfiguration> saveCatalogConfiguration(CatalogConfigurationDTO configuration);
 
-	CatalogResponseDTO findCatalogConfigurationByFields(String materialId, String variant, String shipToAccount,
+	CatalogResponseDTO findCatalogConfiguration(String materialId, String variant, String shipToAccount,
 			String soldToAccount) throws ResourceNotFoundException;
 
 }
