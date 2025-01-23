@@ -40,12 +40,14 @@ public interface TherapyService {
 	CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForTherapy(String soldToAccountId,
 			String shipToAccountId, String variantType, Long therapyId);
 
-	Page<MaterialConfigDTO> findAllGlobalTherapies(String query, Pageable paging);
+	Page<Therapy> findAllGlobalTherapies(String query, Pageable paging);
 
 	Page<CatalogPrice> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging);
 
 	Therapy findByMaterialNumber(String materialNumber) throws ResourceNotFoundException;
 
 	void updateTherapyConfigs(List<String> materialNumbers, boolean patientInfo, boolean coiId);
+
+	MaterialConfigDTO findTherapyDetailsByMaterialNumber(String materialNumber) throws ResourceNotFoundException;
 
 }

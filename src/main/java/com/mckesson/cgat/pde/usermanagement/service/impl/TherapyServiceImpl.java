@@ -146,7 +146,7 @@ public class TherapyServiceImpl implements TherapyService {
 				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 	}
 
-	public Page<MaterialConfigDTO> findAllGlobalTherapies(String query, Pageable paging) {
+	public Page<Therapy> findAllGlobalTherapies(String query, Pageable paging) {
 		try {
 			log.info(" Inside method - findAllGlobalTherapies");
 			log.info("query: {}", StringUtils.toRootLowerCase(query));
@@ -201,6 +201,14 @@ public class TherapyServiceImpl implements TherapyService {
 		}).collect(Collectors.toList());
 
 		therapyConfigRepository.saveAll(updatedConfigs);
+	}
+
+	@Override
+	public MaterialConfigDTO findTherapyDetailsByMaterialNumber(String materialNumber)
+			throws ResourceNotFoundException {
+		return therapyConfigRepository.findDetailedByMaterialNumber(materialNumber)
+			.orElseThrow(() -> new ResourceNotFoundException(
+					"Therapy config not found with materialNumber: " + materialNumber));
 	}
 
 }

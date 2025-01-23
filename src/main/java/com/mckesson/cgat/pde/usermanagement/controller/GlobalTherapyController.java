@@ -2,6 +2,8 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialConfigDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyConfigRequestDTO;
+import com.mckesson.cgat.pde.usermanagement.model.Permission;
+import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -39,8 +41,9 @@ public class GlobalTherapyController {
 	}
 
 	@GetMapping
+	@RequirePermissions({ Permission.VIEW_MATERIAL })
 	@Operation(summary = "Fetch all therapies.")
-	public ResponseEntity<Page<MaterialConfigDTO>> findAllThreapies(@RequestParam(defaultValue = "0") Integer pageNo,
+	public ResponseEntity<Page<Therapy>> findAllThreapies(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query) {
 		Pageable paging = PageRequest.of(pageNo, pageSize);
 		return new ResponseEntity<>(therapyService.findAllGlobalTherapies(query, paging), HttpStatus.OK);
@@ -56,12 +59,23 @@ public class GlobalTherapyController {
 	}
 
 	@PostMapping("/config/update")
+	@RequirePermissions({ Permission.MANAGE_MATERIAL })
 	@Operation(summary = "Update Therapy Configurations")
 	public ResponseEntity<String> updateTherapyConfigs(@Valid @RequestBody TherapyConfigRequestDTO request) {
 		log.debug("Updating therapy configs for materialNumbers: {}", request.getMaterialNumbers());
 
 		therapyService.updateTherapyConfigs(request.getMaterialNumbers(), request.isPatientInfo(), request.isCoiId());
 		return new ResponseEntity<>("Therapy configurations updated successfully", HttpStatus.OK);
+	}
+
+	@GetMapping("config/{materialNumber}")
+	@RequirePermissions({ Permission.VIEW_MATERIAL })
+	@Operation(summary = "Find Therapy details by Material Number")
+	public ResponseEntity<MaterialConfigDTO> findTherapyDetailsByMaterialNumber(@PathVariable String materialNumber)
+			throws ResourceNotFoundException {
+		log.debug("Fetching therapy details with materialNumber: {}", materialNumber);
+		return new ResponseEntity<>(therapyService.findTherapyDetailsByMaterialNumber(materialNumber), HttpStatus.OK);
+
 	}
 
 }
