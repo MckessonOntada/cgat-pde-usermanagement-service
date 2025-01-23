@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -107,8 +108,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void uploadUsers(MultipartFile userDataFile, UserType userType, Long practiceId, OutputStream outputStream)
-			throws FileNotValidException {
+	public HttpStatus uploadUsers(MultipartFile userDataFile, UserType userType, Long practiceId,
+			OutputStream outputStream) throws FileNotValidException {
 		List<User> users = new ArrayList<>();
 		// Map to store failed user
 		Map<User, String> failedUser = new LinkedHashMap<>();
@@ -138,6 +139,8 @@ public class UserServiceImpl implements UserService {
 		}
 		// Create output csv
 		createOutputCSV(outputStream, failedUser);
+
+		return failedUser.size() > 0 ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK;
 	}
 
 	@Override

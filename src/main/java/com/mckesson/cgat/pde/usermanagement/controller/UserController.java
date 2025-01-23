@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
+import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -43,7 +44,6 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 @RestController
 @Tag(name = "Users", description = "Controller for Managing user-related operations and data.")
@@ -79,20 +79,20 @@ public class UserController {
 
 	@RequirePermissions({ Permission.ADD_USERS })
 	@PostMapping(value = "/upload", consumes = { "multipart/form-data" })
-	@Operation(summary = "Create new user")
-	public ResponseEntity<StreamingResponseBody> uploadUsers(@RequestPart("userData") MultipartFile userData,
+	@Operation(summary = "Upload bulk users")
+	public ResponseEntity<byte[]> uploadUsers(@RequestPart("userData") MultipartFile userData,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType,
 			@NotNull(message = "Practice Id is Required") @PathVariable Long practiceId)
 			throws FileNotValidException, UnauthorizedAccessException {
 		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
-		StreamingResponseBody stream = outputStream -> {
-			userService.uploadUsers(userData, userType, practiceId, outputStream);
-		};
 
-		return ResponseEntity.status(HttpStatus.OK)
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		HttpStatus status = userService.uploadUsers(userData, userType, practiceId, outputStream);
+
+		return ResponseEntity.status(status)
 			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=FailedUsers.csv")
 			.contentType(MediaType.parseMediaType("text/csv"))
-			.body(stream);
+			.body(outputStream.toByteArray());
 	}
 
 	@RequirePermissions({ Permission.ADD_USERS, Permission.EDIT_USERS })
