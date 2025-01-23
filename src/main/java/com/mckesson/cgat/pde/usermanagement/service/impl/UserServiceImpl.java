@@ -25,6 +25,14 @@ import org.springframework.util.CollectionUtils;
 
 import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CGATHttpException;
+import com.mckesson.cgat.pde.usermanagement.model.Account;
+import com.mckesson.cgat.pde.usermanagement.model.Permission;
+import com.mckesson.cgat.pde.usermanagement.model.Role;
+import com.mckesson.cgat.pde.usermanagement.model.User;
+import com.mckesson.cgat.pde.usermanagement.model.UserPreference;
+import com.mckesson.cgat.pde.usermanagement.model.UserPreferenceType;
+import com.mckesson.cgat.pde.usermanagement.model.UserProvisionedInOktaStatus;
+import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
@@ -220,7 +228,7 @@ public class UserServiceImpl implements UserService {
 			Role systemAdminRole = roleRepository.findByName(UserRequestAuthorizationValidator.SYSTEM_ADMIN_ROLE);
 			user.getPermissions().clear();
 			user.setRole(systemAdminRole);
-			user.setPermissions(new HashSet<>(systemAdminRole.getPermissions()));
+			user.setPermissions(Permission.getPermissions(userType.ADMIN));
 		}
 		else {
 			Role role = roleRepository.findByIdAndIsActiveTrue(rolePermissions.getRoleId())
