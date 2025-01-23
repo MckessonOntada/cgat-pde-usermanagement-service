@@ -59,10 +59,10 @@ public class GlobalCatalogController {
 	}
 
 	@GetMapping("/configuration")
-	public ResponseEntity<CatalogResponseDTO> findCatalogConfigurationByFields(@RequestParam String materialId,
+	public ResponseEntity<CatalogResponseDTO> findCatalogConfiguration(@RequestParam String materialId,
 			@RequestParam(required = false) String variant, @RequestParam String shipToAccount,
 			@RequestParam String soldToAccount) throws ResourceNotFoundException {
-		CatalogResponseDTO catalogConfiguration = catalogService.findCatalogConfigurationByFields(materialId, variant,
+		CatalogResponseDTO catalogConfiguration = catalogService.findCatalogConfiguration(materialId, variant,
 				shipToAccount, soldToAccount);
 		return ResponseEntity.ok(catalogConfiguration);
 	}
