@@ -1,0 +1,34 @@
+package com.mckesson.cgat.pde.usermanagement.model;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Entity
+@Table(name = "questionnaire_configuration", schema = "catalog")
+public class QuestionnaireConfiguration extends AuditColumns implements Serializable {
+
+	@Id
+	@GeneratedValue(generator = "catalog.questionnaire_configuration_id_seq")
+	@SequenceGenerator(name = "catalog.questionnaire_configuration_id_seq", schema = "catalog",
+			sequenceName = "catalog.questionnaire_configuration_id_seq", allocationSize = 1)
+	private Long id;
+
+	@Column(nullable = false)
+	private String questionnaireId;
+
+	@Column(nullable = false)
+	private QuestionnaireConfigurationType configuredType;
+
+	@Column(nullable = false)
+	private String entityId;
+
+}

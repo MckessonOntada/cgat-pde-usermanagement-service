@@ -1,6 +1,8 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
+import com.mckesson.cgat.pde.usermanagement.dto.QuestionnaireConfigurationDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Questionnaire;
+import com.mckesson.cgat.pde.usermanagement.model.QuestionnaireConfigurationType;
 import com.mckesson.cgat.pde.usermanagement.service.QuestionnaireService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,6 +43,15 @@ public class QuestionnaireController {
 			@RequestBody Questionnaire questionnaire) throws ResourceNotFoundException {
 		return new ResponseEntity<>(questionnaireService.updateQuestionnaire(questionnaireId, questionnaire),
 				HttpStatus.OK);
+	}
+
+	@PostMapping("/configure")
+	@Operation(summary = "Create Questionnaire")
+	public ResponseEntity<Void> configureQuestionnaire(
+			@RequestBody QuestionnaireConfigurationDTO questionnaireConfigurationDTO,
+			@RequestParam QuestionnaireConfigurationType type) {
+		questionnaireService.configureQuestionnaire(type, questionnaireConfigurationDTO);
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 }
