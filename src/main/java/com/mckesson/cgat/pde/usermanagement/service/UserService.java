@@ -12,6 +12,7 @@ import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
 import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
@@ -31,7 +32,7 @@ public interface UserService {
 
 	User createUser(User model);
 
-	void uploadUsers(MultipartFile userData, UserType userType, Long practiceId, OutputStream outputStream)
+	HttpStatus uploadUsers(MultipartFile userData, UserType userType, Long practiceId, OutputStream outputStream)
 			throws FileNotValidException;
 
 	User linkUserToAccounts(Long userId, List<Long> accountIds) throws ResourceNotFoundException;
