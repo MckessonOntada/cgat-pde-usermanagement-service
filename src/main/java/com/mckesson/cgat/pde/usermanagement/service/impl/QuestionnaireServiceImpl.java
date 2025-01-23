@@ -1,16 +1,13 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
-import com.mckesson.cgat.pde.usermanagement.dto.QuestionnaireDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Questionnaire;
 import com.mckesson.cgat.pde.usermanagement.repository.QuestionnaireRepository;
 import com.mckesson.cgat.pde.usermanagement.service.QuestionnaireService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
-
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @Slf4j
@@ -22,15 +19,8 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 		this.questionnaireRepository = questionnaireRepository;
 	}
 
-	public Questionnaire createQuestionnaire(QuestionnaireDTO questionnaireDTO) {
-		log.info(" Inside method - configureQuestionnaire..");
-		log.info("questionnaireDTO: {}", questionnaireDTO);
-
-		Questionnaire questionnaire = Questionnaire.builder()
-			.name(questionnaireDTO.getName())
-			.questions(questionnaireDTO.getQuestions())
-			.isActive(true)
-			.build();
+	public Questionnaire createQuestionnaire(Questionnaire questionnaire) {
+		log.info("saving questionnaire");
 		return questionnaireRepository.save(questionnaire);
 	}
 
@@ -39,21 +29,16 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 		return questionnaireRepository.findAll();
 	}
 
-	public Questionnaire updateQuestionnaire(QuestionnaireDTO questionnaireDTO) throws ResourceNotFoundException {
-		log.info(" Inside method - updateQuestionnaire..");
-		log.info("questionnaireDTO: {}", questionnaireDTO);
-		Questionnaire questionnaire = Questionnaire.builder()
-			.name(questionnaireDTO.getName())
-			.questions(questionnaireDTO.getQuestions())
-			.build();
-		if (questionnaireDTO.getId() != null) {
-			questionnaireRepository.findById(questionnaireDTO.getId())
-				.orElseThrow(
-						() -> new ResourceNotFoundException("Invalid Questionnaire id: " + questionnaireDTO.getId()));
-			questionnaire.setId(questionnaireDTO.getId());
-			return questionnaireRepository.save(questionnaire);
+	public Questionnaire updateQuestionnaire(Long questionnaireId, Questionnaire questionnaireObj)
+			throws ResourceNotFoundException {
+		log.info("updating questionnaire for id: {} ", questionnaireId);
+
+		Questionnaire qs = questionnaireRepository.findById(questionnaireId)
+			.orElseThrow(() -> new ResourceNotFoundException("Questionnaire not found for id: {} " + questionnaireId));
+		if (qs != null) {
+			questionnaireObj.setId(questionnaireId);
 		}
-		throw new ResourceNotFoundException("Questionnaire not found with id: " + questionnaireDTO.getId());
+		return questionnaireRepository.save(questionnaireObj);
 	}
 
 }

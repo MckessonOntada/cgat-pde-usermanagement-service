@@ -1,10 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.dto;
 
-import java.util.Set;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,7 +9,7 @@ import lombok.ToString;
 
 enum QuestionType {
 
-	RADIO, TEXT
+	RADIO, CHECKBOX, SELECT, INPUT, UPLOAD
 
 }
 
@@ -22,17 +19,16 @@ enum QuestionType {
 @ToString
 public class QuestionDTO {
 
-	@Size(max = 20, message = "Question cannot exceed 5000 characters.")
-	@NotBlank(message = "Question can not be blank")
-	private String question;
+	@NotBlank(message = "Question text can not be blank")
+	private String questionText;
 
 	@NotNull(message = "Question type cannot be null")
 	private QuestionType type;
 
-	private Set<String> options;
-
 	private boolean isMandatory;
 
 	private boolean isDocUploadRequired;
+
+	private String additionalData;
 
 }

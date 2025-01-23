@@ -1,20 +1,19 @@
 package com.mckesson.cgat.pde.usermanagement.service;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
-import com.mckesson.cgat.pde.usermanagement.dto.QuestionnaireDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Questionnaire;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public interface QuestionnaireService {
 
-	Questionnaire createQuestionnaire(QuestionnaireDTO questionnaire);
+	Questionnaire createQuestionnaire(Questionnaire questionnaire);
 
 	List<Questionnaire> getAllQuestionnaires();
 
-	Questionnaire updateQuestionnaire(QuestionnaireDTO questionnaire) throws ResourceNotFoundException;
+	Questionnaire updateQuestionnaire(Long questionnaireId, Questionnaire questionnaire)
+			throws ResourceNotFoundException;
 
 }

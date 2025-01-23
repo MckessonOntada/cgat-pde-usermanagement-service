@@ -1,31 +1,23 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
-import java.util.List;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.mckesson.cgat.pde.usermanagement.dto.QuestionnaireDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Questionnaire;
 import com.mckesson.cgat.pde.usermanagement.service.QuestionnaireService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @Tag(name = "Questionnaire", description = "Controller for Managing Questionnaires operations and data.")
 @RequestMapping(path = "/questionnaires", consumes = "application/json", produces = MediaType.APPLICATION_JSON_VALUE)
 public class QuestionnaireController {
 
-	private QuestionnaireService questionnaireService;
+	private final QuestionnaireService questionnaireService;
 
 	public QuestionnaireController(QuestionnaireService questionnaireService) {
 		this.questionnaireService = questionnaireService;
@@ -33,7 +25,7 @@ public class QuestionnaireController {
 
 	@PostMapping
 	@Operation(summary = "Create Questionnaire")
-	public ResponseEntity<Questionnaire> createQuestionnaire(@RequestBody QuestionnaireDTO questionnaire) {
+	public ResponseEntity<Questionnaire> createQuestionnaire(@RequestBody Questionnaire questionnaire) {
 		return new ResponseEntity<>(questionnaireService.createQuestionnaire(questionnaire), HttpStatus.OK);
 	}
 
@@ -43,11 +35,12 @@ public class QuestionnaireController {
 		return new ResponseEntity<>(questionnaireService.getAllQuestionnaires(), HttpStatus.OK);
 	}
 
-	@PutMapping
+	@PutMapping("/{questionnaireId}")
 	@Operation(summary = "Update Questionnaire")
-	public ResponseEntity<Questionnaire> updateQuestionnaire(@RequestBody QuestionnaireDTO questionnaire)
-			throws ResourceNotFoundException {
-		return new ResponseEntity<>(questionnaireService.updateQuestionnaire(questionnaire), HttpStatus.OK);
+	public ResponseEntity<Questionnaire> updateQuestionnaire(@PathVariable Long questionnaireId,
+			@RequestBody Questionnaire questionnaire) throws ResourceNotFoundException {
+		return new ResponseEntity<>(questionnaireService.updateQuestionnaire(questionnaireId, questionnaire),
+				HttpStatus.OK);
 	}
 
 }

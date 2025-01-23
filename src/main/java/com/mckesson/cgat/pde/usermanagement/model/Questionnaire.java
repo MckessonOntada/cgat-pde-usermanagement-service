@@ -1,6 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.model;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 import org.hibernate.annotations.JdbcTypeCode;
@@ -42,7 +43,7 @@ public class Questionnaire extends AuditColumns implements Serializable {
 
 	@Column(nullable = false)
 	@JdbcTypeCode(SqlTypes.JSON)
-	private Set<QuestionDTO> questions;
+	private List<QuestionDTO> questions;
 
 	@Column(name = "configured_at")
 	private Set<QuestionnaireConfigurationType> configuredAt;
