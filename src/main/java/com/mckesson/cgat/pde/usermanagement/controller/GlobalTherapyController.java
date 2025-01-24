@@ -1,6 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
-import com.mckesson.cgat.pde.usermanagement.dto.MaterialConfigDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyConfigRequestDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
@@ -68,10 +68,10 @@ public class GlobalTherapyController {
 		return new ResponseEntity<>("Therapy configurations updated successfully", HttpStatus.OK);
 	}
 
-	@GetMapping("config/{materialNumber}")
+	@GetMapping("/config/{materialNumber}")
 	@RequirePermissions({ Permission.VIEW_MATERIAL })
 	@Operation(summary = "Find Therapy details by Material Number")
-	public ResponseEntity<MaterialConfigDTO> findTherapyDetailsByMaterialNumber(@PathVariable String materialNumber)
+	public ResponseEntity<MaterialResponseDTO> findTherapyDetailsByMaterialNumber(@PathVariable String materialNumber)
 			throws ResourceNotFoundException {
 		log.debug("Fetching therapy details with materialNumber: {}", materialNumber);
 		return new ResponseEntity<>(therapyService.findTherapyDetailsByMaterialNumber(materialNumber), HttpStatus.OK);
