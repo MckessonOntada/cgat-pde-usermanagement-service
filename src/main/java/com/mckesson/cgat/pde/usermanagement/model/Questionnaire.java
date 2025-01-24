@@ -4,19 +4,13 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
+import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.NumericBooleanConverter;
 import org.hibernate.type.SqlTypes;
 
 import com.mckesson.cgat.pde.usermanagement.dto.QuestionDTO;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -46,6 +40,7 @@ public class Questionnaire extends AuditColumns implements Serializable {
 	private List<QuestionDTO> questions;
 
 	@Column(name = "configured_at")
+	@Enumerated(EnumType.STRING)
 	private Set<QuestionnaireConfigurationType> configuredAt;
 
 	@Convert(converter = NumericBooleanConverter.class)

@@ -22,13 +22,15 @@ public class QuestionnaireConfiguration extends AuditColumns implements Serializ
 			sequenceName = "catalog.questionnaire_configuration_id_seq", allocationSize = 1)
 	private Long id;
 
-	@Column(nullable = false)
-	private String questionnaireId;
+	@ManyToOne
+	@JoinColumn(name = "questionnaire_id", nullable = false)
+	private Questionnaire questionnaireId;
 
-	@Column(nullable = false)
+	@Column(nullable = false, name = "configured_type")
+	@Enumerated(EnumType.STRING)
 	private QuestionnaireConfigurationType configuredType;
 
-	@Column(nullable = false)
+	@Column(nullable = false, name = "entity_id")
 	private String entityId;
 
 }

@@ -8,11 +8,13 @@ import com.mckesson.cgat.pde.usermanagement.repository.QuestionnaireConfiguratio
 import com.mckesson.cgat.pde.usermanagement.repository.QuestionnaireRepository;
 import com.mckesson.cgat.pde.usermanagement.service.QuestionnaireService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -51,20 +53,30 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 	}
 
 	@Override
-	public void configureQuestionnaire(QuestionnaireConfigurationType type,
-			QuestionnaireConfigurationDTO questionnaireConfigurationDTO) {
-		List<QuestionnaireConfiguration> list = new ArrayList<>();
-		for (String questionId : questionnaireConfigurationDTO.getQuestionnarieIds()) {
-			for (String entityId : questionnaireConfigurationDTO.getEntityIds()) {
-				list.add(QuestionnaireConfiguration.builder()
+	@Transactional
+	public void configureQuestionnaireWithMaster(QuestionnaireConfigurationType type,
+			QuestionnaireConfigurationDTO questionnaireConfigurationDTO) throws ResourceNotFoundException {
+		List<Questionnaire> questionnaireList = questionnaireRepository
+			.findAllById(questionnaireConfigurationDTO.getQuestionnaireIds());
+
+		if (questionnaireList.size() != questionnaireConfigurationDTO.getQuestionnaireIds().size()) {
+			throw new ResourceNotFoundException("Some Questionnaire Ids not found");
+		}
+
+		questionnaireList.forEach(q -> q.getConfiguredAt().add(type));
+
+		List<QuestionnaireConfiguration> questionnaireConfigurationList = questionnaireList.stream()
+			.flatMap(questionId -> questionnaireConfigurationDTO.getEntityIds()
+				.stream()
+				.map(entityId -> QuestionnaireConfiguration.builder()
 					.configuredType(type)
 					.questionnaireId(questionId)
 					.entityId(entityId)
-					.build());
-			}
-		}
+					.build()))
+			.collect(Collectors.toList());
 
-		questionnaireConfigurationRepository.saveAll(list);
+		questionnaireRepository.saveAll(questionnaireList);
+		questionnaireConfigurationRepository.saveAll(questionnaireConfigurationList);
 
 	}
 

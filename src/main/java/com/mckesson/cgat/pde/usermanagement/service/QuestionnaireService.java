@@ -18,7 +18,7 @@ public interface QuestionnaireService {
 	Questionnaire updateQuestionnaire(Long questionnaireId, Questionnaire questionnaire)
 			throws ResourceNotFoundException;
 
-	void configureQuestionnaire(QuestionnaireConfigurationType type,
-			QuestionnaireConfigurationDTO questionnaireConfigurationDTO);
+	void configureQuestionnaireWithMaster(QuestionnaireConfigurationType type,
+			QuestionnaireConfigurationDTO questionnaireConfigurationDTO) throws ResourceNotFoundException;
 
 }

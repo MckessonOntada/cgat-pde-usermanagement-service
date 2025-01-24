@@ -7,7 +7,7 @@ import java.util.List;
 @Data
 public class QuestionnaireConfigurationDTO {
 
-	List<String> questionnarieIds;
+	List<Long> questionnaireIds;
 
 	List<String> entityIds;
 

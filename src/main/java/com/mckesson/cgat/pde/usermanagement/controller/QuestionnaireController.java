@@ -46,11 +46,11 @@ public class QuestionnaireController {
 	}
 
 	@PostMapping("/configure")
-	@Operation(summary = "Create Questionnaire")
-	public ResponseEntity<Void> configureQuestionnaire(
+	@Operation(summary = "Configure Questionnaire with Master")
+	public ResponseEntity<Void> configureQuestionnaireWithMaster(
 			@RequestBody QuestionnaireConfigurationDTO questionnaireConfigurationDTO,
-			@RequestParam QuestionnaireConfigurationType type) {
-		questionnaireService.configureQuestionnaire(type, questionnaireConfigurationDTO);
+			@RequestParam QuestionnaireConfigurationType type) throws ResourceNotFoundException {
+		questionnaireService.configureQuestionnaireWithMaster(type, questionnaireConfigurationDTO);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
