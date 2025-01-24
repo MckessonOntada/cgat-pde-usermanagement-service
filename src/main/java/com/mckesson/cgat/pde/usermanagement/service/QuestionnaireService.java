@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.service;
 
+import com.mckesson.cgat.pde.usermanagement.dto.DeLinkQuestionnaireConfigurationDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.QuestionnaireConfigurationDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Questionnaire;
 import com.mckesson.cgat.pde.usermanagement.model.QuestionnaireConfigurationType;
@@ -20,5 +21,8 @@ public interface QuestionnaireService {
 
 	void configureQuestionnaireWithMaster(QuestionnaireConfigurationType type,
 			QuestionnaireConfigurationDTO questionnaireConfigurationDTO) throws ResourceNotFoundException;
+
+	void deLinkConfigureQuestionnaireWithMaster(DeLinkQuestionnaireConfigurationDTO dto,
+			QuestionnaireConfigurationType type) throws ResourceNotFoundException;
 
 }

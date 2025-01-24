@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
+import com.mckesson.cgat.pde.usermanagement.dto.DeLinkQuestionnaireConfigurationDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.QuestionnaireConfigurationDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Questionnaire;
 import com.mckesson.cgat.pde.usermanagement.model.QuestionnaireConfigurationType;
@@ -52,6 +53,15 @@ public class QuestionnaireController {
 			@Valid @RequestBody QuestionnaireConfigurationDTO questionnaireConfigurationDTO,
 			@RequestParam QuestionnaireConfigurationType type) throws ResourceNotFoundException {
 		questionnaireService.configureQuestionnaireWithMaster(type, questionnaireConfigurationDTO);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	@DeleteMapping("/configure/deLink")
+	@Operation(summary = "De Configure Questionnaire with Master")
+	public ResponseEntity<Void> deLinkConfigureQuestionnaireWithMaster(
+			@Valid @RequestBody DeLinkQuestionnaireConfigurationDTO dto,
+			@RequestParam QuestionnaireConfigurationType type) throws ResourceNotFoundException {
+		questionnaireService.deLinkConfigureQuestionnaireWithMaster(dto, type);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
