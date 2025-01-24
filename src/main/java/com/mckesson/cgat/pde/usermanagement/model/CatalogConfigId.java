@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.model;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
@@ -11,6 +12,7 @@ import java.io.Serializable;
 @Embeddable
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 public class CatalogConfigId implements Serializable {
 
 	private String materialId;
