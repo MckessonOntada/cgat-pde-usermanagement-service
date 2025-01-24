@@ -7,6 +7,7 @@ import com.mckesson.cgat.pde.usermanagement.service.QuestionnaireService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -48,7 +49,7 @@ public class QuestionnaireController {
 	@PostMapping("/configure")
 	@Operation(summary = "Configure Questionnaire with Master")
 	public ResponseEntity<Void> configureQuestionnaireWithMaster(
-			@RequestBody QuestionnaireConfigurationDTO questionnaireConfigurationDTO,
+			@Valid @RequestBody QuestionnaireConfigurationDTO questionnaireConfigurationDTO,
 			@RequestParam QuestionnaireConfigurationType type) throws ResourceNotFoundException {
 		questionnaireService.configureQuestionnaireWithMaster(type, questionnaireConfigurationDTO);
 		return new ResponseEntity<>(HttpStatus.OK);

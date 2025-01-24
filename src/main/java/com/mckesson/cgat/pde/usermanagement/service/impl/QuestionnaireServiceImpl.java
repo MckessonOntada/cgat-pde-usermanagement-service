@@ -65,9 +65,10 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 
 		questionnaireList.forEach(q -> q.getConfiguredAt().add(type));
 
+		List<String> entityIds = generateEntityIds(type, questionnaireConfigurationDTO);
+
 		List<QuestionnaireConfiguration> questionnaireConfigurationList = questionnaireList.stream()
-			.flatMap(questionId -> questionnaireConfigurationDTO.getEntityIds()
-				.stream()
+			.flatMap(questionId -> entityIds.stream()
 				.map(entityId -> QuestionnaireConfiguration.builder()
 					.configuredType(type)
 					.questionnaireId(questionId)
@@ -78,6 +79,49 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 		questionnaireRepository.saveAll(questionnaireList);
 		questionnaireConfigurationRepository.saveAll(questionnaireConfigurationList);
 
+	}
+
+	private List<String> generateEntityIds(QuestionnaireConfigurationType type,
+			QuestionnaireConfigurationDTO questionnaireConfigurationDTO) {
+		switch (type) {
+			case Account:
+				if (questionnaireConfigurationDTO.getAccountNumberList() == null
+						|| questionnaireConfigurationDTO.getAccountNumberList().isEmpty()) {
+					throw new IllegalArgumentException("Account Number List should not be null or Empty");
+				}
+				return questionnaireConfigurationDTO.getAccountNumberList();
+
+			case Material:
+				if (questionnaireConfigurationDTO.getMaterialNumberList() == null
+						|| questionnaireConfigurationDTO.getMaterialNumberList().isEmpty()) {
+					throw new IllegalArgumentException("Material Number List should not be null or Empty");
+				}
+				return questionnaireConfigurationDTO.getMaterialNumberList();
+
+			case Catalog:
+				if (questionnaireConfigurationDTO.getCatalogIdList() == null
+						|| questionnaireConfigurationDTO.getCatalogIdList().isEmpty()) {
+					throw new IllegalArgumentException("Catalog Id List should not be null or Empty");
+				}
+				return questionnaireConfigurationDTO.getCatalogIdList().stream().map(catalog -> {
+					// Start with A, B, and C
+					List<String> parts = new ArrayList<>();
+					parts.add(catalog.getSoldTo());
+					parts.add(catalog.getShipTo());
+					parts.add(catalog.getMaterial());
+
+					// Add D if it's not null
+					if (catalog.getVariant() != null) {
+						parts.add(catalog.getVariant());
+					}
+
+					// Join the parts with "_"
+					return String.join("_", parts);
+				}).collect(Collectors.toList());
+
+			default:
+				throw new IllegalArgumentException("Unknown configuration type: " + type);
+		}
 	}
 
 }
