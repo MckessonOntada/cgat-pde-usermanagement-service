@@ -53,17 +53,48 @@ public class CatalogServiceImpl implements CatalogService {
 	@Override
 	public CatalogResponseDTO findCatalogConfiguration(String materialId, String variant, String shipToAccount,
 			String soldToAccount) throws ResourceNotFoundException {
+		logSearchDetails(materialId, variant, shipToAccount, soldToAccount);
+		CatalogConfigId id = buildCatalogConfigId(materialId, variant, shipToAccount, soldToAccount);
+		return catalogServiceRepository.findCatalogDetailsById(id)
+			.orElseThrow(() -> new ResourceNotFoundException(CATALOG_CONFIGURATION_NOT_FOUND));
+	}
+
+	@Override
+	public void deleteCatalogConfiguration(String materialId, String variant, String shipToAccount,
+			String soldToAccount) throws ResourceNotFoundException {
+		CatalogConfigId id = buildCatalogConfigId(materialId, variant, shipToAccount, soldToAccount);
+
+		catalogServiceRepository.findById(id)
+			.orElseThrow(() -> new ResourceNotFoundException(CATALOG_CONFIGURATION_NOT_FOUND));
+
+		catalogServiceRepository.deleteById(id);
+		log.info("Configuration deleted for materialId: {}, variant: {}, shipToAccount: {}, soldToAccount: {}",
+				materialId, variant, shipToAccount, soldToAccount);
+	}
+
+	@Override
+	public CatalogConfiguration findCatalogConf(String materialId, String variant, String shipToAccount,
+			String soldToAccount) throws ResourceNotFoundException {
+		logSearchDetails(materialId, variant, shipToAccount, soldToAccount);
+		CatalogConfigId id = buildCatalogConfigId(materialId, variant, shipToAccount, soldToAccount);
+		return catalogServiceRepository.findById(id)
+			.orElseThrow(() -> new ResourceNotFoundException(CATALOG_CONFIGURATION_NOT_FOUND));
+	}
+
+	private void logSearchDetails(String materialId, String variant, String shipToAccount, String soldToAccount) {
 		log.info(
 				"Searching for CatalogConfiguration with materialId: {}, variant: {}, shipToAccount: {}, soldToAccount: {}",
 				materialId, variant, shipToAccount, soldToAccount);
-		CatalogConfigId id = CatalogConfigId.builder()
+	}
+
+	private CatalogConfigId buildCatalogConfigId(String materialId, String variant, String shipToAccount,
+			String soldToAccount) {
+		return CatalogConfigId.builder()
 			.materialId(materialId)
 			.variant(StringUtils.isNotEmpty(variant) ? variant : UNKNOWN)
 			.soldToAccount(soldToAccount)
 			.shipToAccount(shipToAccount)
 			.build();
-		return catalogServiceRepository.findCatalogDetailsById(id)
-			.orElseThrow(() -> new ResourceNotFoundException(CATALOG_CONFIGURATION_NOT_FOUND));
 	}
 
 }
