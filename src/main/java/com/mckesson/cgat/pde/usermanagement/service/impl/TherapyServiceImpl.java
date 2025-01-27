@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.mckesson.cgat.pde.usermanagement.dto.MaterialConfigDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.*;
 import com.mckesson.cgat.pde.usermanagement.repository.TherapyConfigRepository;
 import jakarta.transaction.Transactional;
@@ -205,7 +205,7 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	@Override
-	public MaterialConfigDTO findTherapyDetailsByMaterialNumber(String materialNumber)
+	public MaterialResponseDTO findTherapyDetailsByMaterialNumber(String materialNumber)
 			throws ResourceNotFoundException {
 		return therapyConfigRepository.findDetailedByMaterialNumber(materialNumber)
 			.orElseThrow(() -> new ResourceNotFoundException(
