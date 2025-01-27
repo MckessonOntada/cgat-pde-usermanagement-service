@@ -10,6 +10,8 @@ import org.hibernate.type.NumericBooleanConverter;
 import org.hibernate.type.SqlTypes;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -29,15 +31,15 @@ public class Questionnaire extends AuditColumns implements Serializable {
 	private Long id;
 
 	@Column(nullable = false)
-	private String name;
+	private String templateName;
 
 	@Column(nullable = false)
 	@JdbcTypeCode(SqlTypes.JSON)
-	private String questions;
+	private List<Object> questions;
 
 	@Column(name = "configured_at")
 	@Enumerated(EnumType.STRING)
-	private Set<QuestionnaireConfigurationType> configuredAt;
+	private Set<QuestionnaireConfigurationType> configuredAt = new HashSet<>();
 
 	@Convert(converter = NumericBooleanConverter.class)
 	private boolean isActive = true;

@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS catalog.questionnaire (
     id INTEGER PRIMARY KEY NOT NULL,
-    name VARCHAR(255) NOT NULL,
+    template_name VARCHAR(255) NOT NULL,
     questions jsonb NOT NULL,
     configured_at VARCHAR[],
     is_active INTEGER NOT NULL,
