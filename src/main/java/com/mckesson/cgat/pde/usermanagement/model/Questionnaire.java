@@ -1,20 +1,16 @@
 package com.mckesson.cgat.pde.usermanagement.model;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Set;
-
 import jakarta.persistence.*;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.NumericBooleanConverter;
-import org.hibernate.type.SqlTypes;
-
-import com.mckesson.cgat.pde.usermanagement.dto.QuestionDTO;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.NumericBooleanConverter;
+import org.hibernate.type.SqlTypes;
+
+import java.io.Serializable;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -37,7 +33,7 @@ public class Questionnaire extends AuditColumns implements Serializable {
 
 	@Column(nullable = false)
 	@JdbcTypeCode(SqlTypes.JSON)
-	private List<QuestionDTO> questions;
+	private String questions;
 
 	@Column(name = "configured_at")
 	@Enumerated(EnumType.STRING)
