@@ -145,6 +145,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User updateUser(Long userId, User model) throws ResourceNotFoundException {
 		User user = getUser(userId);
+		model.getContact().setEmail(user.getContact().getEmail());
 		user.setAddress(model.getAddress());
 		user.setContact(model.getContact());
 		user.setName(model.getName());
