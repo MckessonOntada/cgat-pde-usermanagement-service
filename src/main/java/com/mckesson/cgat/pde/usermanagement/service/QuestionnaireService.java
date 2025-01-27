@@ -5,6 +5,8 @@ import com.mckesson.cgat.pde.usermanagement.dto.QuestionnaireConfigurationDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Questionnaire;
 import com.mckesson.cgat.pde.usermanagement.model.QuestionnaireConfigurationType;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,8 +15,6 @@ import java.util.List;
 public interface QuestionnaireService {
 
 	Questionnaire createQuestionnaire(Questionnaire questionnaire);
-
-	List<Questionnaire> getAllQuestionnaires();
 
 	Questionnaire updateQuestionnaire(Long questionnaireId, Questionnaire questionnaire)
 			throws ResourceNotFoundException;
@@ -27,5 +27,7 @@ public interface QuestionnaireService {
 
 	List<Questionnaire> getAllConfiguredQuestionnaires(String sapMaterial, String soldToCustomer, String shipToCustomer,
 			String variant);
+
+	Page<Questionnaire> findAll(Pageable paging, String query, List<String> status);
 
 }

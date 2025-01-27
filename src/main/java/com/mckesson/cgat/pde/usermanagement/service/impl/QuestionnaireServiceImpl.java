@@ -9,10 +9,14 @@ import com.mckesson.cgat.pde.usermanagement.model.QuestionnaireConfigurationType
 import com.mckesson.cgat.pde.usermanagement.repository.QuestionnaireConfigurationRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.QuestionnaireRepository;
 import com.mckesson.cgat.pde.usermanagement.service.QuestionnaireService;
+import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +26,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class QuestionnaireServiceImpl implements QuestionnaireService {
 
-	QuestionnaireRepository questionnaireRepository;
+	private final QuestionnaireRepository questionnaireRepository;
 
-	QuestionnaireConfigurationRepository questionnaireConfigurationRepository;
+	private final QuestionnaireConfigurationRepository questionnaireConfigurationRepository;
 
 	public QuestionnaireServiceImpl(QuestionnaireRepository questionnaireRepository,
 			QuestionnaireConfigurationRepository questionnaireConfigurationRepository) {
@@ -32,16 +36,13 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 		this.questionnaireConfigurationRepository = questionnaireConfigurationRepository;
 	}
 
+	@Override
 	public Questionnaire createQuestionnaire(Questionnaire questionnaire) {
 		log.info("saving questionnaire");
 		return questionnaireRepository.save(questionnaire);
 	}
 
-	public List<Questionnaire> getAllQuestionnaires() {
-		log.info(" Inside method - getAllQuestionnaires..");
-		return questionnaireRepository.findAll();
-	}
-
+	@Override
 	public Questionnaire updateQuestionnaire(Long questionnaireId, Questionnaire questionnaireObj)
 			throws ResourceNotFoundException {
 		log.info("updating questionnaire for id: {} ", questionnaireId);
@@ -147,6 +148,23 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 			.collect(Collectors.toList());
 		return questionnaires;
 
+	}
+
+	@Override
+	public Page<Questionnaire> findAll(Pageable paging, String query, List<String> status) {
+
+		String statusActive = CustomUtils.object_status.ALL.name();
+		if (!CollectionUtils.isEmpty(status)) {
+			if (status.stream().anyMatch(i -> i.equalsIgnoreCase(CustomUtils.object_status.ACTIVE.name()))) {
+				statusActive = CustomUtils.object_status.ACTIVE.name();
+			}
+			if (status.stream().anyMatch(i -> i.equalsIgnoreCase(CustomUtils.object_status.INACTIVE.name()))) {
+				statusActive = CustomUtils.object_status.ACTIVE.name().equals(statusActive)
+						? CustomUtils.object_status.ALL.name() : CustomUtils.object_status.INACTIVE.name();
+			}
+		}
+
+		return questionnaireRepository.findAllByQueryText(query, statusActive, paging);
 	}
 
 	private String getEntityId(DeLinkQuestionnaireConfigurationDTO dto, QuestionnaireConfigurationType type) {
