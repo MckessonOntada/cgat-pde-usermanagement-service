@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import java.util.List;
 
+import com.mckesson.cgat.pde.usermanagement.dto.TherapyDetailsDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -89,7 +90,7 @@ public class TherapyController {
 
 	@GetMapping("/{therapyId}")
 	@Operation(summary = "Find Therapy by id")
-	public Therapy findbyId(@PathVariable Long therapyId) throws ResourceNotFoundException {
+	public TherapyDetailsDTO findbyId(@PathVariable Long therapyId) throws ResourceNotFoundException {
 		return therapyService.findById(therapyId);
 	}
 

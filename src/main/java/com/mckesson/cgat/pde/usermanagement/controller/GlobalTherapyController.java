@@ -2,15 +2,19 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyConfigRequestDTO;
+import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -76,6 +80,18 @@ public class GlobalTherapyController {
 		log.debug("Fetching therapy details with materialNumber: {}", materialNumber);
 		return new ResponseEntity<>(therapyService.findTherapyDetailsByMaterialNumber(materialNumber), HttpStatus.OK);
 
+	}
+
+	@DeleteMapping("/config/{materialNumber}")
+	@RequirePermissions({ Permission.MANAGE_MATERIAL })
+	@Operation(summary = "Delete Configuration by Material Number")
+	public ResponseEntity<String> deleteConfigByMaterialNumber(@PathVariable String materialNumber)
+			throws ResourceNotFoundException {
+		if (materialNumber == null || materialNumber.trim().isEmpty()) {
+			throw new IllegalArgumentException("Material number cannot be null or empty.");
+		}
+		therapyService.deleteConfigByMaterialNumber(materialNumber);
+		return new ResponseEntity<>("Therapy configurations deleted successfully", HttpStatus.OK);
 	}
 
 }

@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.service;
 import java.util.List;
 
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.TherapyDetailsDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ public interface TherapyService {
 	Page<AccountsResponseDTO> findAllShipToAccounts(String soldToAccountId, Long therapyId, Pageable paging,
 			String query);
 
-	Therapy findById(Long id) throws ResourceNotFoundException;
+	TherapyDetailsDTO findById(Long id) throws ResourceNotFoundException;
 
 	ProgramChannelResponseDTO findAllProgramAndChannels(Long userId, Long therapyId);
 
@@ -50,5 +51,7 @@ public interface TherapyService {
 			boolean isCoiIdRequired);
 
 	MaterialResponseDTO findTherapyDetailsByMaterialNumber(String materialNumber) throws ResourceNotFoundException;
+
+	void deleteConfigByMaterialNumber(String materialNumber) throws ResourceNotFoundException;
 
 }

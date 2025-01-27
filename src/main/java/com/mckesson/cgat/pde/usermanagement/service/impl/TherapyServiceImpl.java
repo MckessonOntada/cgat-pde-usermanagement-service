@@ -4,11 +4,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.TherapyDetailsDTO;
 import com.mckesson.cgat.pde.usermanagement.model.*;
 import com.mckesson.cgat.pde.usermanagement.repository.TherapyConfigRepository;
 import jakarta.transaction.Transactional;
@@ -70,8 +72,8 @@ public class TherapyServiceImpl implements TherapyService {
 				StringUtils.toRootLowerCase(query), paging, AccountPartnerFunction.SHIP_TO.getPartnerFunctionType());
 	}
 
-	public Therapy findById(Long id) throws ResourceNotFoundException {
-		return therapyRepository.findById(id)
+	public TherapyDetailsDTO findById(Long id) throws ResourceNotFoundException {
+		return therapyRepository.findDetailedByMaterialNumber(id.toString())
 			.orElseThrow(() -> new ResourceNotFoundException("Therapy not found with id: " + id));
 	}
 
@@ -210,6 +212,17 @@ public class TherapyServiceImpl implements TherapyService {
 		return therapyConfigRepository.findDetailedByMaterialNumber(materialNumber)
 			.orElseThrow(() -> new ResourceNotFoundException(
 					"Therapy config not found with materialNumber: " + materialNumber));
+	}
+
+	@Override
+	@Transactional
+	public void deleteConfigByMaterialNumber(String materialNumber) throws ResourceNotFoundException {
+		int deletedCount = therapyConfigRepository.removeTherapyConfigByMaterialNumber(materialNumber);
+
+		if (deletedCount == 0) {
+			throw new ResourceNotFoundException(
+					String.format("Therapy config not found with materialNumber: %s", materialNumber));
+		}
 	}
 
 }
