@@ -21,6 +21,6 @@ public class QuestionnaireConfigurationDTO {
 
 	@Nullable
 	@Valid
-	List<QuestionnaireConfigurationCatalogDTO> catalogIdList;
+	List<CatalogConfigurationAttributes> catalogIdAttributes;
 
 }

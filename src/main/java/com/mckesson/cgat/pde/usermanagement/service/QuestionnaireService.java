@@ -19,10 +19,10 @@ public interface QuestionnaireService {
 	Questionnaire updateQuestionnaire(Long questionnaireId, Questionnaire questionnaire)
 			throws ResourceNotFoundException;
 
-	void configureQuestionnaireWithMaster(QuestionnaireConfigurationType type,
+	void configureQuestionnaire(QuestionnaireConfigurationType type,
 			QuestionnaireConfigurationDTO questionnaireConfigurationDTO) throws ResourceNotFoundException;
 
-	void deLinkConfigureQuestionnaireWithMaster(DeLinkQuestionnaireConfigurationDTO dto,
-			QuestionnaireConfigurationType type) throws ResourceNotFoundException;
+	void deLinkConfiguredQuestionnaire(DeLinkQuestionnaireConfigurationDTO dto, QuestionnaireConfigurationType type)
+			throws ResourceNotFoundException;
 
 }

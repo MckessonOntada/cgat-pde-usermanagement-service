@@ -10,14 +10,14 @@ import lombok.Data;
 public class DeLinkQuestionnaireConfigurationDTO {
 
 	@NotNull
-	Long questionnaireId;
+	private Long questionnaireId;
 
-	String materialNumber;
+	private String materialNumber;
 
-	String accountNumber;
+	private String accountNumber;
 
 	@Nullable
 	@Valid
-	QuestionnaireConfigurationCatalogDTO catalogId;
+	private CatalogConfigurationAttributes catalogId;
 
 }

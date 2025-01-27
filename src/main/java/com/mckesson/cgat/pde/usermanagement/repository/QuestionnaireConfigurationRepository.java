@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface QuestionnaireConfigurationRepository extends JpaRepository<QuestionnaireConfiguration, Long> {
 
-	@Query("SELECT COUNT(q) FROM QuestionnaireConfiguration q WHERE q.questionnaireId.id = :questionnaireId AND q.configuredType = :configuredType")
+	@Query("SELECT COUNT(q.id) FROM QuestionnaireConfiguration q WHERE q.questionnaireId.id = :questionnaireId AND q.configuredType = :configuredType")
 	long countByQuestionnaireIdAndConfiguredType(@Param("questionnaireId") Long questionnaireId,
 			@Param("configuredType") QuestionnaireConfigurationType configuredType);
 

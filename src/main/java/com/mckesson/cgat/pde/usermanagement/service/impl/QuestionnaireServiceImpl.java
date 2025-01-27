@@ -1,7 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
+import com.mckesson.cgat.pde.usermanagement.dto.CatalogConfigurationAttributes;
 import com.mckesson.cgat.pde.usermanagement.dto.DeLinkQuestionnaireConfigurationDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.QuestionnaireConfigurationCatalogDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.QuestionnaireConfigurationDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Questionnaire;
 import com.mckesson.cgat.pde.usermanagement.model.QuestionnaireConfiguration;
@@ -56,7 +56,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 
 	@Override
 	@Transactional
-	public void configureQuestionnaireWithMaster(QuestionnaireConfigurationType type,
+	public void configureQuestionnaire(QuestionnaireConfigurationType type,
 			QuestionnaireConfigurationDTO questionnaireConfigurationDTO) throws ResourceNotFoundException {
 		List<Questionnaire> questionnaireList = questionnaireRepository
 			.findAllById(questionnaireConfigurationDTO.getQuestionnaireIds());
@@ -70,10 +70,10 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 		List<String> entityIds = generateEntityIds(type, questionnaireConfigurationDTO);
 
 		List<QuestionnaireConfiguration> questionnaireConfigurationList = questionnaireList.stream()
-			.flatMap(questionId -> entityIds.stream()
+			.flatMap(questionnaireId -> entityIds.stream()
 				.map(entityId -> QuestionnaireConfiguration.builder()
 					.configuredType(type)
-					.questionnaireId(questionId)
+					.questionnaireId(questionnaireId)
 					.entityId(entityId)
 					.build()))
 			.collect(Collectors.toList());
@@ -101,13 +101,13 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 				return questionnaireConfigurationDTO.getMaterialNumberList();
 
 			case Catalog:
-				if (questionnaireConfigurationDTO.getCatalogIdList() == null
-						|| questionnaireConfigurationDTO.getCatalogIdList().isEmpty()) {
+				if (questionnaireConfigurationDTO.getCatalogIdAttributes() == null
+						|| questionnaireConfigurationDTO.getCatalogIdAttributes().isEmpty()) {
 					throw new IllegalArgumentException("Catalog Id List should not be null or Empty");
 				}
-				return questionnaireConfigurationDTO.getCatalogIdList()
+				return questionnaireConfigurationDTO.getCatalogIdAttributes()
 					.stream()
-					.map(catalog -> getCatalogId(catalog))
+					.map(this::getCatalogId)
 					.collect(Collectors.toList());
 
 			default:
@@ -117,21 +117,21 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 
 	@Override
 	@Transactional
-	public void deLinkConfigureQuestionnaireWithMaster(DeLinkQuestionnaireConfigurationDTO dto,
+	public void deLinkConfiguredQuestionnaire(DeLinkQuestionnaireConfigurationDTO dto,
 			QuestionnaireConfigurationType type) throws ResourceNotFoundException {
+		Questionnaire questionnaire = questionnaireRepository.findById(dto.getQuestionnaireId())
+			.orElseThrow(() -> new ResourceNotFoundException(
+					"Questionnaire not found with Id: " + dto.getQuestionnaireId()));
+
 		String entityId = getEntityId(dto, type);
 		questionnaireConfigurationRepository
 			.deleteByQuestionnaireIdAndEntityIdAndConfiguredType(dto.getQuestionnaireId(), entityId, type);
 		long count = questionnaireConfigurationRepository
 			.countByQuestionnaireIdAndConfiguredType(dto.getQuestionnaireId(), type);
 		if (count == 0) {
-			Questionnaire questionnaire = questionnaireRepository.findById(dto.getQuestionnaireId())
-				.orElseThrow(() -> new ResourceNotFoundException(
-						"Questionnaire not found with Id: " + dto.getQuestionnaireId()));
 			questionnaire.getConfiguredAt().remove(type);
 			questionnaireRepository.save(questionnaire);
 		}
-
 	}
 
 	private String getEntityId(DeLinkQuestionnaireConfigurationDTO dto, QuestionnaireConfigurationType type) {
@@ -153,11 +153,11 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 		}
 	}
 
-	private String getCatalogId(QuestionnaireConfigurationCatalogDTO catalog) {
+	private String getCatalogId(CatalogConfigurationAttributes catalog) {
 		List<String> parts = new ArrayList<>();
-		parts.add(catalog.getSoldTo());
-		parts.add(catalog.getShipTo());
-		parts.add(catalog.getMaterial());
+		parts.add(catalog.getSoldToCustomer());
+		parts.add(catalog.getShipToCustomer());
+		parts.add(catalog.getSapMaterial());
 
 		if (catalog.getVariant() != null) {
 			parts.add(catalog.getVariant());

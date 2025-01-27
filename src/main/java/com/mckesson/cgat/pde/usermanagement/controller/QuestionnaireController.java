@@ -48,20 +48,20 @@ public class QuestionnaireController {
 	}
 
 	@PostMapping("/configure")
-	@Operation(summary = "Configure Questionnaire with Master")
-	public ResponseEntity<Void> configureQuestionnaireWithMaster(
+	@Operation(summary = "Configure Questionnaire")
+	public ResponseEntity<Void> configureQuestionnaire(
 			@Valid @RequestBody QuestionnaireConfigurationDTO questionnaireConfigurationDTO,
 			@RequestParam QuestionnaireConfigurationType type) throws ResourceNotFoundException {
-		questionnaireService.configureQuestionnaireWithMaster(type, questionnaireConfigurationDTO);
+		questionnaireService.configureQuestionnaire(type, questionnaireConfigurationDTO);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@DeleteMapping("/configure/deLink")
-	@Operation(summary = "De Configure Questionnaire with Master")
-	public ResponseEntity<Void> deLinkConfigureQuestionnaireWithMaster(
+	@Operation(summary = "De Configure Questionnaire")
+	public ResponseEntity<Void> deLinkConfigureQuestionnaire(
 			@Valid @RequestBody DeLinkQuestionnaireConfigurationDTO dto,
 			@RequestParam QuestionnaireConfigurationType type) throws ResourceNotFoundException {
-		questionnaireService.deLinkConfigureQuestionnaireWithMaster(dto, type);
+		questionnaireService.deLinkConfiguredQuestionnaire(dto, type);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
