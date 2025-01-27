@@ -65,4 +65,14 @@ public class QuestionnaireController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
+	@GetMapping("/configured-questionnaire")
+	@Operation(summary = "Fetch all configured questionnaire for the data")
+	public ResponseEntity<List<Questionnaire>> getAllConfiguredQuestionnaires(@RequestParam String soldToCustomer,
+			@RequestParam String shipToCustomer, @RequestParam String sapMaterial,
+			@RequestParam(required = false) String variant) throws ResourceNotFoundException {
+
+		return new ResponseEntity<>(questionnaireService.getAllConfiguredQuestionnaires(sapMaterial, soldToCustomer,
+				shipToCustomer, variant), HttpStatus.OK);
+	}
+
 }

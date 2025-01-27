@@ -25,4 +25,7 @@ public interface QuestionnaireService {
 	void deLinkConfiguredQuestionnaire(DeLinkQuestionnaireConfigurationDTO dto, QuestionnaireConfigurationType type)
 			throws ResourceNotFoundException;
 
+	List<Questionnaire> getAllConfiguredQuestionnaires(String sapMaterial, String soldToCustomer, String shipToCustomer,
+			String variant);
+
 }

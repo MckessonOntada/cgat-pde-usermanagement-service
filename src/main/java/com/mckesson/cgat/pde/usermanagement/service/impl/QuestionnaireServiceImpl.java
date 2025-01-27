@@ -107,7 +107,8 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 				}
 				return questionnaireConfigurationDTO.getCatalogIdAttributes()
 					.stream()
-					.map(this::getCatalogId)
+					.map(catalog -> getCatalogId(catalog.getSapMaterial(), catalog.getSoldToCustomer(),
+							catalog.getShipToCustomer(), catalog.getVariant()))
 					.collect(Collectors.toList());
 
 			default:
@@ -134,6 +135,20 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 		}
 	}
 
+	@Override
+	public List<Questionnaire> getAllConfiguredQuestionnaires(String sapMaterial, String soldToCustomer,
+			String shipToCustomer, String variant) {
+		String catalogId = getCatalogId(sapMaterial, soldToCustomer, shipToCustomer, variant);
+		List<QuestionnaireConfiguration> allConfiguredQuestionnaires = questionnaireConfigurationRepository
+			.getAllConfiguredQuestionnaires(sapMaterial, soldToCustomer, catalogId);
+		List<Questionnaire> questionnaires = allConfiguredQuestionnaires.stream()
+			.map(QuestionnaireConfiguration::getQuestionnaireId)
+			.distinct()
+			.collect(Collectors.toList());
+		return questionnaires;
+
+	}
+
 	private String getEntityId(DeLinkQuestionnaireConfigurationDTO dto, QuestionnaireConfigurationType type) {
 		switch (type) {
 			case Account:
@@ -147,20 +162,21 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 			case Catalog:
 				if (dto.getCatalogId() == null)
 					throw new IllegalArgumentException("CatalogId should not be null");
-				return getCatalogId(dto.getCatalogId());
+				return getCatalogId(dto.getCatalogId().getSapMaterial(), dto.getCatalogId().getSoldToCustomer(),
+						dto.getCatalogId().getShipToCustomer(), dto.getCatalogId().getVariant());
 			default:
 				throw new IllegalArgumentException("Unknown configuration type: " + type);
 		}
 	}
 
-	private String getCatalogId(CatalogConfigurationAttributes catalog) {
+	private String getCatalogId(String sapMaterial, String soldToCustomer, String shipToCustomer, String variant) {
 		List<String> parts = new ArrayList<>();
-		parts.add(catalog.getSoldToCustomer());
-		parts.add(catalog.getShipToCustomer());
-		parts.add(catalog.getSapMaterial());
+		parts.add(sapMaterial);
+		parts.add(soldToCustomer);
+		parts.add(shipToCustomer);
 
-		if (catalog.getVariant() != null) {
-			parts.add(catalog.getVariant());
+		if (variant != null) {
+			parts.add(variant);
 		}
 
 		// Join the parts with "_"
