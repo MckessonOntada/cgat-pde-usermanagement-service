@@ -7,6 +7,7 @@ import com.mckesson.cgat.pde.usermanagement.model.CatalogConfiguration;
 import com.mckesson.cgat.pde.usermanagement.repository.CatalogServiceRepository;
 import com.mckesson.cgat.pde.usermanagement.service.CatalogService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -60,14 +61,17 @@ public class CatalogServiceImpl implements CatalogService {
 	}
 
 	@Override
+	@Transactional
 	public void deleteCatalogConfiguration(String materialId, String variant, String shipToAccount,
 			String soldToAccount) throws ResourceNotFoundException {
 		CatalogConfigId id = buildCatalogConfigId(materialId, variant, shipToAccount, soldToAccount);
 
-		catalogServiceRepository.findById(id)
-			.orElseThrow(() -> new ResourceNotFoundException(CATALOG_CONFIGURATION_NOT_FOUND));
+		int deletedCount = catalogServiceRepository.removeCatalogConfigurationById(id);
 
-		catalogServiceRepository.deleteById(id);
+		if (deletedCount == 0) {
+			throw new ResourceNotFoundException(CATALOG_CONFIGURATION_NOT_FOUND);
+		}
+
 		log.info("Configuration deleted for materialId: {}, variant: {}, shipToAccount: {}, soldToAccount: {}",
 				materialId, variant, shipToAccount, soldToAccount);
 	}
@@ -91,9 +95,9 @@ public class CatalogServiceImpl implements CatalogService {
 			String soldToAccount) {
 		return CatalogConfigId.builder()
 			.materialId(materialId)
-			.variant(StringUtils.isNotEmpty(variant) ? variant : UNKNOWN)
 			.soldToAccount(soldToAccount)
 			.shipToAccount(shipToAccount)
+			.variant(StringUtils.isNotEmpty(variant) ? variant : UNKNOWN)
 			.build();
 	}
 

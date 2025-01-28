@@ -85,19 +85,19 @@ public class GlobalCatalogController {
 	}
 
 	@RequirePermissions({ Permission.VIEW_CATALOG })
-	@GetMapping("/configuration/materialId/{materialId}/soldtoaccount/{soldToAccount}/shiptoaccount/{shipToAccount}")
+	@GetMapping("/configuration/material/{materialId}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}")
 	@Operation(
 			summary = "Get catalog configuration according to materialId, variant, soldTo account and shipTo account")
 	public ResponseEntity<CatalogConfiguration> findCatalogConf(
-			@PathVariable @NotNull(message = "'soldToAccount' cannot be null") @NotEmpty(
-					message = "'soldToAccount' cannot be empty") String soldToAccount,
-			@PathVariable @NotNull(message = "'shipToAccount' cannot be null") @NotEmpty(
-					message = "'shipToAccount' cannot be empty") String shipToAccount,
+			@PathVariable @NotNull(message = "'soldToAccountId' cannot be null") @NotEmpty(
+					message = "'soldToAccount' cannot be empty") String soldToAccountId,
+			@PathVariable @NotNull(message = "'shipToAccountId' cannot be null") @NotEmpty(
+					message = "'shipToAccount' cannot be empty") String shipToAccountId,
 			@RequestParam(required = false) String variant,
 			@PathVariable @NotNull(message = "'materialId' cannot be null") String materialId)
 			throws ResourceNotFoundException {
-		CatalogConfiguration configuration = catalogService.findCatalogConf(materialId, variant, shipToAccount,
-				soldToAccount);
+		CatalogConfiguration configuration = catalogService.findCatalogConf(materialId, variant, shipToAccountId,
+				soldToAccountId);
 		return ResponseEntity.ok(configuration);
 	}
 
