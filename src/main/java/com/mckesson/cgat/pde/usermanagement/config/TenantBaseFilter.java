@@ -81,7 +81,7 @@ public class TenantBaseFilter extends CGATBaseFilter {
 			pathMatcher = new AntPathMatcher();
 		}
 		String[] urlsToExclude = { "/public/**", "/user/current", "/questionnaires/**", "/therapies/config/**",
-				"/global/**" };
+				"/global/**", "/catalogs/**" };
 
 		return Stream.of(urlsToExclude, CGATBaseFilter.URLS_TO_EXCLUDE)
 			.flatMap(Stream::of)
