@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Tag(name = "Permissions", description = "Controller for getting all permissions.")
-@RequestMapping(path = "/permissions", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/global/permissions", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class GlobalPermissionController {
 
