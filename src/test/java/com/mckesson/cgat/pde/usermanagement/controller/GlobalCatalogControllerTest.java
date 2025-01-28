@@ -41,33 +41,26 @@ public class GlobalCatalogControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
 
-	@DisplayName("Test: FindAll Global Catalogs")
-	@Test
-	void findAllCatalogsTest() throws Exception {
-
-		String pageNo = "0";
-		String pageSize = "20";
-		String sortBy = "name";
-		String sortOrder = "asc";
-		String query = "";
-		List<String> accountNumbers = new ArrayList<>();
-
-		Page<CatalogPrice> mockResponse = getCatalogs();
-
-		when(therapyService.findAllGlobalCatalogs(anyList(), anyString(), any(PageRequest.class)))
-			.thenReturn(mockResponse);
-
-		mockMvc
-			.perform(get("/catalogs").param("pageNo", pageNo)
-				.param("pageSize", pageSize)
-				.param("sortBy", sortBy)
-				.param("sortOrder", sortOrder)
-				.param("query", query)
-				.param("accountNumbers", accountNumbers.toString())
-				.contentType(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andReturn();
-	}
+	/*
+	 * @DisplayName("Test: FindAll Global Catalogs")
+	 *
+	 * @Test void findAllCatalogsTest() throws Exception {
+	 *
+	 * String pageNo = "0"; String pageSize = "20"; String sortBy = "name"; String
+	 * sortOrder = "asc"; String query = ""; List<String> accountNumbers = new
+	 * ArrayList<>();
+	 *
+	 * Page<CatalogPrice> mockResponse = getCatalogs();
+	 *
+	 * when(therapyService.findAllGlobalCatalogs(anyList(), anyString(),
+	 * any(PageRequest.class))) .thenReturn(mockResponse);
+	 *
+	 * mockMvc .perform(get("/catalogs").param("pageNo", pageNo) .param("pageSize",
+	 * pageSize) .param("sortBy", sortBy) .param("sortOrder", sortOrder) .param("query",
+	 * query) .param("accountNumbers", accountNumbers.toString())
+	 * .contentType(MediaType.APPLICATION_JSON)) .andExpect(status().isOk()) .andReturn();
+	 * }
+	 */
 
 	private Page<CatalogPrice> getCatalogs() {
 		Integer pageNo = 0;

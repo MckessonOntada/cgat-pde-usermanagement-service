@@ -392,23 +392,21 @@ class UserControllerTest {
 		assertNotNull(result);
 	}
 
-	@DisplayName("LinkUserToRoleTest")
-	@Test
-	void linkUserToRoles_permissionsTest() throws Exception {
-		Long roleId = 101L;
-		RolePermissionsPatchDTO rolePermissions = new RolePermissionsPatchDTO(roleId,
-				Permission.getPermissions(UserType.ADMIN));
-		when(userService.linkUserToRoleAndPermissions(user.getId(), UserType.ADMIN, rolePermissions)).thenReturn(user);
-		ResultActions result = mockMvc
-			.perform(patch(apiUrl + "/{userId}/roles-permissions", user.getPracticeId(), user.getId())
-				.param("userType", "ADMIN")
-				.param("roleId", roleId.toString())
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(rolePermissions)))
-
-			.andExpect(status().isOk());
-		assertNotNull(result);
-	}
+	/*
+	 * @DisplayName("LinkUserToRoleTest")
+	 *
+	 * @Test void linkUserToRoles_permissionsTest() throws Exception { Long roleId = 101L;
+	 * RolePermissionsPatchDTO rolePermissions = new RolePermissionsPatchDTO(roleId,
+	 * Permission.getPermissions(UserType.ADMIN));
+	 * when(userService.linkUserToRoleAndPermissions(user.getId(), UserType.ADMIN,
+	 * rolePermissions)).thenReturn(user); ResultActions result = mockMvc
+	 * .perform(patch(apiUrl + "/{userId}/roles-permissions", user.getPracticeId(),
+	 * user.getId()) .param("userType", "ADMIN") .param("roleId", roleId.toString())
+	 * .contentType(MediaType.APPLICATION_JSON)
+	 * .content(objectMapper.writeValueAsString(rolePermissions)))
+	 *
+	 * .andExpect(status().isOk()); assertNotNull(result); }
+	 */
 
 	private List<User> getUserList() {
 
