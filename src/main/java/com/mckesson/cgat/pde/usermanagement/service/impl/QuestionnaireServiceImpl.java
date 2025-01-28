@@ -10,6 +10,7 @@ import com.mckesson.cgat.pde.usermanagement.repository.QuestionnaireConfiguratio
 import com.mckesson.cgat.pde.usermanagement.repository.QuestionnaireRepository;
 import com.mckesson.cgat.pde.usermanagement.service.QuestionnaireService;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
+import com.mckesson.jbat.auth.module.exception.BadRequestException;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -58,7 +59,8 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 	@Override
 	@Transactional
 	public void configureQuestionnaire(QuestionnaireConfigurationType type,
-			QuestionnaireConfigurationDTO questionnaireConfigurationDTO) throws ResourceNotFoundException {
+			QuestionnaireConfigurationDTO questionnaireConfigurationDTO)
+			throws ResourceNotFoundException, BadRequestException {
 		List<Questionnaire> questionnaireList = questionnaireRepository
 			.findAllById(questionnaireConfigurationDTO.getQuestionnaireIds());
 
@@ -85,26 +87,26 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 	}
 
 	private List<String> generateEntityIds(QuestionnaireConfigurationType type,
-			QuestionnaireConfigurationDTO questionnaireConfigurationDTO) {
+			QuestionnaireConfigurationDTO questionnaireConfigurationDTO) throws BadRequestException {
 		switch (type) {
 			case Account:
 				if (questionnaireConfigurationDTO.getAccountNumberList() == null
 						|| questionnaireConfigurationDTO.getAccountNumberList().isEmpty()) {
-					throw new IllegalArgumentException("Account Number List should not be null or Empty");
+					throw new BadRequestException("Account Number List should not be null or Empty");
 				}
 				return questionnaireConfigurationDTO.getAccountNumberList();
 
 			case Material:
 				if (questionnaireConfigurationDTO.getMaterialNumberList() == null
 						|| questionnaireConfigurationDTO.getMaterialNumberList().isEmpty()) {
-					throw new IllegalArgumentException("Material Number List should not be null or Empty");
+					throw new BadRequestException("Material Number List should not be null or Empty");
 				}
 				return questionnaireConfigurationDTO.getMaterialNumberList();
 
 			case Catalog:
 				if (questionnaireConfigurationDTO.getCatalogIdAttributes() == null
 						|| questionnaireConfigurationDTO.getCatalogIdAttributes().isEmpty()) {
-					throw new IllegalArgumentException("Catalog Id List should not be null or Empty");
+					throw new BadRequestException("Catalog Id List should not be null or Empty");
 				}
 				return questionnaireConfigurationDTO.getCatalogIdAttributes()
 					.stream()
@@ -113,7 +115,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 					.collect(Collectors.toList());
 
 			default:
-				throw new IllegalArgumentException("Unknown configuration type: " + type);
+				throw new BadRequestException("Unknown configuration type: " + type);
 		}
 	}
 

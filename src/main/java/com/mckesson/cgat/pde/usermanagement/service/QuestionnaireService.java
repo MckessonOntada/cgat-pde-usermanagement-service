@@ -4,6 +4,7 @@ import com.mckesson.cgat.pde.usermanagement.dto.DeLinkQuestionnaireConfiguration
 import com.mckesson.cgat.pde.usermanagement.dto.QuestionnaireConfigurationDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Questionnaire;
 import com.mckesson.cgat.pde.usermanagement.model.QuestionnaireConfigurationType;
+import com.mckesson.jbat.auth.module.exception.BadRequestException;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,7 +21,8 @@ public interface QuestionnaireService {
 			throws ResourceNotFoundException;
 
 	void configureQuestionnaire(QuestionnaireConfigurationType type,
-			QuestionnaireConfigurationDTO questionnaireConfigurationDTO) throws ResourceNotFoundException;
+			QuestionnaireConfigurationDTO questionnaireConfigurationDTO)
+			throws ResourceNotFoundException, BadRequestException;
 
 	void deLinkConfiguredQuestionnaire(DeLinkQuestionnaireConfigurationDTO dto, QuestionnaireConfigurationType type)
 			throws ResourceNotFoundException;

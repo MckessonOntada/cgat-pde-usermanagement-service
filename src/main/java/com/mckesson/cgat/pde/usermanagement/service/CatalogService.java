@@ -4,6 +4,8 @@ import com.mckesson.cgat.pde.usermanagement.dto.CatalogConfigurationDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.CatalogConfiguration;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,5 +17,16 @@ public interface CatalogService {
 
 	CatalogResponseDTO findCatalogConfiguration(String materialId, String variant, String shipToAccount,
 			String soldToAccount) throws ResourceNotFoundException;
+
+	void deleteCatalogConfiguration(String materialId, String variant, String shipToAccount, String soldToAccount)
+			throws ResourceNotFoundException;
+
+	CatalogConfiguration findCatalogConf(@NotNull(message = "'materialId' cannot be null") String materialId,
+			String variant,
+			@NotNull(message = "'shipToAccount' cannot be null") @NotEmpty(
+					message = "'shipToAccount' cannot be empty") String shipToAccount,
+			@NotNull(message = "'soldToAccount' cannot be null") @NotEmpty(
+					message = "'soldToAccount' cannot be empty") String soldToAccount)
+			throws ResourceNotFoundException;
 
 }
