@@ -86,7 +86,7 @@ public class GlobalTherapyController {
 	@DeleteMapping("/config/{materialNumber}")
 	@RequirePermissions({ Permission.MANAGE_MATERIAL })
 	@Operation(summary = "Delete Configuration by Material Number")
-	public ResponseEntity<Object> deleteConfigByMaterialNumber(
+	public ResponseEntity<String> deleteConfigByMaterialNumber(
 			@PathVariable @NotNull(message = "Material number cannot be null ") @NotEmpty(
 					message = "Material number cannot be empty") String materialNumber)
 			throws ResourceNotFoundException {
