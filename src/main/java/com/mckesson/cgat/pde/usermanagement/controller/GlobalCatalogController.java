@@ -84,7 +84,7 @@ public class GlobalCatalogController {
 		return ResponseEntity.ok("Configuration removed");
 	}
 
-	@RequirePermissions({ Permission.VIEW_CATALOG })
+	@RequirePermissions({ Permission.ADD_ORDERS, Permission.EDIT_ORDERS})
 	@GetMapping("/configuration/material/{materialId}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}")
 	@Operation(
 			summary = "Get catalog configuration according to materialId, variant, soldTo account and shipTo account")
