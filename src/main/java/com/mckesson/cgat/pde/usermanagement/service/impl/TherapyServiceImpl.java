@@ -70,8 +70,8 @@ public class TherapyServiceImpl implements TherapyService {
 				StringUtils.toRootLowerCase(query), paging, AccountPartnerFunction.SHIP_TO.getPartnerFunctionType());
 	}
 
-	public MaterialResponseDTO findById(Long id) throws ResourceNotFoundException {
-		return therapyConfigRepository.findDetailedByMaterialNumber(id.toString())
+	public Therapy findById(Long id) throws ResourceNotFoundException {
+		return therapyRepository.findById(id)
 			.orElseThrow(() -> new ResourceNotFoundException("Therapy not found with id: " + id));
 	}
 

@@ -7,6 +7,7 @@ import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -85,13 +86,13 @@ public class GlobalTherapyController {
 	@DeleteMapping("/config/{materialNumber}")
 	@RequirePermissions({ Permission.MANAGE_MATERIAL })
 	@Operation(summary = "Delete Configuration by Material Number")
-	public ResponseEntity<String> deleteConfigByMaterialNumber(@PathVariable String materialNumber)
+	public ResponseEntity<Object> deleteConfigByMaterialNumber(
+			@PathVariable @NotNull(message = "Material number cannot be null ") @NotEmpty(
+					message = "Material number cannot be empty") String materialNumber)
 			throws ResourceNotFoundException {
-		if (materialNumber == null || materialNumber.trim().isEmpty()) {
-			throw new IllegalArgumentException("Material number cannot be null or empty.");
-		}
+
 		therapyService.deleteConfigByMaterialNumber(materialNumber);
-		return new ResponseEntity<>("Therapy configurations deleted successfully", HttpStatus.OK);
+		return new ResponseEntity<>(materialNumber, HttpStatus.OK);
 	}
 
 }
