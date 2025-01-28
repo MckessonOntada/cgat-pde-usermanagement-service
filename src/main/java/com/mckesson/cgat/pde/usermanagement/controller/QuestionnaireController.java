@@ -90,4 +90,19 @@ public class QuestionnaireController {
 				shipToCustomer, variant), HttpStatus.OK);
 	}
 
+	@PatchMapping("/{questionnaireId}/deactivate")
+	@Operation(summary = "Deactivate questionnaire by Id")
+	public ResponseEntity<Void> deactivateQuestionnaire(@PathVariable Long questionnaireId)
+			throws ResourceNotFoundException {
+		questionnaireService.deactivateQuestionnaire(questionnaireId);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	@GetMapping("/{questionnaireId}")
+	@Operation(summary = "Get questionnaire by Id")
+	public ResponseEntity<Questionnaire> getQuestionnaireById(@PathVariable Long questionnaireId)
+			throws ResourceNotFoundException {
+		return new ResponseEntity<>(questionnaireService.fetchQuestionnaireById(questionnaireId), HttpStatus.OK);
+	}
+
 }

@@ -169,6 +169,19 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 		return questionnaireRepository.findAllByQueryText(query, statusActive, paging);
 	}
 
+	@Override
+	public void deactivateQuestionnaire(Long questionnaireId) throws ResourceNotFoundException {
+		Questionnaire questionnaire = fetchQuestionnaireById(questionnaireId);
+		questionnaire.setActive(false);
+		questionnaireRepository.save(questionnaire);
+	}
+
+	@Override
+	public Questionnaire fetchQuestionnaireById(Long questionnaireId) throws ResourceNotFoundException {
+		return questionnaireRepository.findById(questionnaireId)
+			.orElseThrow(() -> new ResourceNotFoundException("Questionnaire not found with Id: " + questionnaireId));
+	}
+
 	private String getEntityId(DeLinkQuestionnaireConfigurationDTO dto, QuestionnaireConfigurationType type) {
 		switch (type) {
 			case Account:

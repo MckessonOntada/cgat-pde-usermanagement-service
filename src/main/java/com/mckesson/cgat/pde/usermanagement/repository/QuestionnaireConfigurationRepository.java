@@ -24,13 +24,15 @@ public interface QuestionnaireConfigurationRepository extends JpaRepository<Ques
 			@Param("entityId") String entityId, @Param("configuredType") QuestionnaireConfigurationType configuredType);
 
 	@Query(nativeQuery = true, value = """
-			    SELECT * FROM catalog.questionnaire_configuration
-			    WHERE
-			        (configured_type = 'Material' AND entity_id = :sapMaterial)
-			    OR
-			        (configured_type = 'Account' AND entity_id = :soldToCustomer)
-			    OR
-			        (configured_type = 'Catalog' AND entity_id = :catalogId)
+			      SELECT qc.*
+			      FROM catalog.questionnaire_configuration qc
+			      JOIN catalog.questionnaire q ON qc.questionnaire_id = q.id
+			      WHERE q.is_active = 1
+			        AND (
+			              (qc.configured_type = 'Material' AND qc.entity_id = :sapMaterial)
+			           OR (qc.configured_type = 'Account' AND qc.entity_id = :soldToCustomer)
+			           OR (qc.configured_type = 'Catalog' AND qc.entity_id = :catalogId)
+			            );
 			""")
 	List<QuestionnaireConfiguration> getAllConfiguredQuestionnaires(String sapMaterial, String soldToCustomer,
 			String catalogId);
