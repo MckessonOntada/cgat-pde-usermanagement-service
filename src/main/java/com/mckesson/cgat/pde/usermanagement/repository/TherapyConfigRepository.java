@@ -19,7 +19,7 @@ public interface TherapyConfigRepository extends JpaRepository<TherapyConfig, Lo
 	@Query("""
 			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,tc)
 			    FROM Therapy m
-			    JOIN TherapyConfig tc
+			    LEFT JOIN TherapyConfig tc
 			    ON m.materialNumber = tc.materialNumber
 			    WHERE m.materialNumber = :materialNumber
 			""")

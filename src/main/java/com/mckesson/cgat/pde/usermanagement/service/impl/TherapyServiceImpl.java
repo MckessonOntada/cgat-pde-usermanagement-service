@@ -4,13 +4,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.TherapyDetailsDTO;
 import com.mckesson.cgat.pde.usermanagement.model.*;
 import com.mckesson.cgat.pde.usermanagement.repository.TherapyConfigRepository;
 import jakarta.transaction.Transactional;
@@ -72,8 +70,8 @@ public class TherapyServiceImpl implements TherapyService {
 				StringUtils.toRootLowerCase(query), paging, AccountPartnerFunction.SHIP_TO.getPartnerFunctionType());
 	}
 
-	public TherapyDetailsDTO findById(Long id) throws ResourceNotFoundException {
-		return therapyRepository.findDetailedByMaterialNumber(id.toString())
+	public MaterialResponseDTO findById(Long id) throws ResourceNotFoundException {
+		return therapyConfigRepository.findDetailedByMaterialNumber(id.toString())
 			.orElseThrow(() -> new ResourceNotFoundException("Therapy not found with id: " + id));
 	}
 

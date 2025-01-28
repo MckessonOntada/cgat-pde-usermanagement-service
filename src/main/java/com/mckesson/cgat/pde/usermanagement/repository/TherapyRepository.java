@@ -190,30 +190,4 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 
 	Optional<Therapy> findByMaterialNumber(String materialNumber);
 
-	@Query(value = """
-			    SELECT m.id,
-			           m.material_number as therapyId,
-			           m.material_description as therapyDescription,
-			           m.ndc_number as ndc,
-			           m.strength,
-			           m.dosage,
-			           m.selling_unit_code,
-			           m.vendor_name,
-			           m.upc_code,
-			           m.dropship_indicator,
-			           m.item_status as status,
-			           m.base_unit_of_measure,
-			           m.cgat_identifier,
-			           m.sales_organization,
-			           m.cgat_type,
-			           m.product_level_pricing,
-			           m.scan_qty,
-			           tc.is_coi_id_required,
-			        	tc.is_patient_information_required
-			    FROM catalog.material m
-			    LEFT JOIN catalog.material_config tc ON m.material_number = tc.material_number
-			    WHERE m.material_number = :materialNumber
-			""", nativeQuery = true)
-	Optional<TherapyDetailsDTO> findDetailedByMaterialNumber(@Param("materialNumber") String materialNumber);
-
 }
