@@ -1,16 +1,21 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
-import com.mckesson.cgat.pde.usermanagement.dto.MaterialConfigDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyConfigRequestDTO;
+import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -68,14 +73,26 @@ public class GlobalTherapyController {
 		return new ResponseEntity<>("Therapy configurations updated successfully", HttpStatus.OK);
 	}
 
-	@GetMapping("config/{materialNumber}")
+	@GetMapping("/config/{materialNumber}")
 	@RequirePermissions({ Permission.VIEW_MATERIAL })
 	@Operation(summary = "Find Therapy details by Material Number")
-	public ResponseEntity<MaterialConfigDTO> findTherapyDetailsByMaterialNumber(@PathVariable String materialNumber)
+	public ResponseEntity<MaterialResponseDTO> findTherapyDetailsByMaterialNumber(@PathVariable String materialNumber)
 			throws ResourceNotFoundException {
 		log.debug("Fetching therapy details with materialNumber: {}", materialNumber);
 		return new ResponseEntity<>(therapyService.findTherapyDetailsByMaterialNumber(materialNumber), HttpStatus.OK);
 
+	}
+
+	@DeleteMapping("/config/{materialNumber}")
+	@RequirePermissions({ Permission.MANAGE_MATERIAL })
+	@Operation(summary = "Delete Configuration by Material Number")
+	public ResponseEntity<String> deleteConfigByMaterialNumber(
+			@PathVariable @NotNull(message = "Material number cannot be null ") @NotEmpty(
+					message = "Material number cannot be empty") String materialNumber)
+			throws ResourceNotFoundException {
+
+		therapyService.deleteConfigByMaterialNumber(materialNumber);
+		return new ResponseEntity<>(materialNumber, HttpStatus.OK);
 	}
 
 }

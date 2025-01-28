@@ -10,6 +10,7 @@ import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
 import com.mckesson.cgat.pde.usermanagement.service.CatalogService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -64,13 +65,40 @@ public class GlobalCatalogController {
 	@RequirePermissions({ Permission.VIEW_CATALOG })
 	@GetMapping("/configuration")
 	@Operation(
-			summary = "Get catalog configuration according to materialId, variant, soldTo account and shipTo account")
+			summary = "Get catalog configuration with catalog price according to materialId, variant, soldTo account and shipTo account")
 	public ResponseEntity<CatalogResponseDTO> findCatalogConfiguration(@RequestParam String materialId,
 			@RequestParam(required = false) String variant, @RequestParam String shipToAccount,
 			@RequestParam String soldToAccount) throws ResourceNotFoundException {
 		CatalogResponseDTO catalogConfiguration = catalogService.findCatalogConfiguration(materialId, variant,
 				shipToAccount, soldToAccount);
 		return ResponseEntity.ok(catalogConfiguration);
+	}
+
+	@RequirePermissions({ Permission.MANAGE_CATALOG })
+	@DeleteMapping("/configuration")
+	@Operation(summary = "Delete catalog configuration using materialId, variant, soldTo account and shipTo account")
+	public ResponseEntity<String> deleteCatalogConfiguration(@RequestParam String materialId,
+			@RequestParam(required = false) String variant, @RequestParam String shipToAccount,
+			@RequestParam String soldToAccount) throws ResourceNotFoundException {
+		catalogService.deleteCatalogConfiguration(materialId, variant, shipToAccount, soldToAccount);
+		return ResponseEntity.ok("Configuration removed");
+	}
+
+	@RequirePermissions({ Permission.ADD_ORDERS, Permission.EDIT_ORDERS })
+	@GetMapping("/configuration/material/{materialId}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}")
+	@Operation(
+			summary = "Get catalog configuration according to materialId, variant, soldTo account and shipTo account")
+	public ResponseEntity<CatalogConfiguration> findCatalogConf(
+			@PathVariable @NotNull(message = "'soldToAccountId' cannot be null") @NotEmpty(
+					message = "'soldToAccount' cannot be empty") String soldToAccountId,
+			@PathVariable @NotNull(message = "'shipToAccountId' cannot be null") @NotEmpty(
+					message = "'shipToAccount' cannot be empty") String shipToAccountId,
+			@RequestParam(required = false) String variant,
+			@PathVariable @NotNull(message = "'materialId' cannot be null") String materialId)
+			throws ResourceNotFoundException {
+		CatalogConfiguration configuration = catalogService.findCatalogConf(materialId, variant, shipToAccountId,
+				soldToAccountId);
+		return ResponseEntity.ok(configuration);
 	}
 
 }

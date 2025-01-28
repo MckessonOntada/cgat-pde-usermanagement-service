@@ -15,16 +15,21 @@ public interface CatalogServiceRepository extends JpaRepository<CatalogConfigura
 
 	@Query("""
 			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.CatalogResponseDTO(c, p)
-			    FROM CatalogConfiguration c
-			    LEFT JOIN CatalogPrice p
+			    FROM CatalogPrice p
+			    LEFT JOIN CatalogConfiguration c
 			    ON c.id.materialId = p.sapMaterial
 			    AND c.id.soldToAccount = p.soldToCustomer
 			    AND c.id.shipToAccount = p.shipToCustomer
 			    AND (c.id.variant = p.variant
 			         OR (c.id.variant = 'unknown' AND p.variant IS NULL)
 			    )
-			    WHERE c.id = :id
+			    WHERE p.sapMaterial = :#{#id.materialId}
+			    AND p.soldToCustomer = :#{#id.soldToAccount}
+			    AND p.shipToCustomer = :#{#id.shipToAccount}
+			    AND (p.variant = :#{#id.variant} OR (p.variant IS NULL AND :#{#id.variant} = 'unknown'))
 			""")
 	Optional<CatalogResponseDTO> findCatalogDetailsById(@Param("id") CatalogConfigId id);
+
+	int removeCatalogConfigurationById(CatalogConfigId id);
 
 }

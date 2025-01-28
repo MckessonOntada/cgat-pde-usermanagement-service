@@ -40,7 +40,6 @@ public class Contact implements Serializable {
 
 	@NotEmpty(message = "Phone Number is required", groups = BasicInfo.class)
 	@Pattern(regexp = "\\d{10}", message = "Phone number must be 10 digits", groups = BasicInfo.class)
-	@Column(unique = true)
 	private String phone;
 
 	@Size(max = 15, groups = BasicInfo.class)

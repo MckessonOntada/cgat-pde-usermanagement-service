@@ -7,6 +7,7 @@ import com.mckesson.cgat.pde.usermanagement.model.CatalogConfiguration;
 import com.mckesson.cgat.pde.usermanagement.repository.CatalogServiceRepository;
 import com.mckesson.cgat.pde.usermanagement.service.CatalogService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -53,17 +54,51 @@ public class CatalogServiceImpl implements CatalogService {
 	@Override
 	public CatalogResponseDTO findCatalogConfiguration(String materialId, String variant, String shipToAccount,
 			String soldToAccount) throws ResourceNotFoundException {
+		logSearchDetails(materialId, variant, shipToAccount, soldToAccount);
+		CatalogConfigId id = buildCatalogConfigId(materialId, variant, shipToAccount, soldToAccount);
+		return catalogServiceRepository.findCatalogDetailsById(id)
+			.orElseThrow(() -> new ResourceNotFoundException(CATALOG_CONFIGURATION_NOT_FOUND));
+	}
+
+	@Override
+	@Transactional
+	public void deleteCatalogConfiguration(String materialId, String variant, String shipToAccount,
+			String soldToAccount) throws ResourceNotFoundException {
+		CatalogConfigId id = buildCatalogConfigId(materialId, variant, shipToAccount, soldToAccount);
+
+		int deletedCount = catalogServiceRepository.removeCatalogConfigurationById(id);
+
+		if (deletedCount == 0) {
+			throw new ResourceNotFoundException(CATALOG_CONFIGURATION_NOT_FOUND);
+		}
+
+		log.info("Configuration deleted for materialId: {}, variant: {}, shipToAccount: {}, soldToAccount: {}",
+				materialId, variant, shipToAccount, soldToAccount);
+	}
+
+	@Override
+	public CatalogConfiguration findCatalogConf(String materialId, String variant, String shipToAccount,
+			String soldToAccount) throws ResourceNotFoundException {
+		logSearchDetails(materialId, variant, shipToAccount, soldToAccount);
+		CatalogConfigId id = buildCatalogConfigId(materialId, variant, shipToAccount, soldToAccount);
+		return catalogServiceRepository.findById(id)
+			.orElseThrow(() -> new ResourceNotFoundException(CATALOG_CONFIGURATION_NOT_FOUND));
+	}
+
+	private void logSearchDetails(String materialId, String variant, String shipToAccount, String soldToAccount) {
 		log.info(
 				"Searching for CatalogConfiguration with materialId: {}, variant: {}, shipToAccount: {}, soldToAccount: {}",
 				materialId, variant, shipToAccount, soldToAccount);
-		CatalogConfigId id = CatalogConfigId.builder()
+	}
+
+	private CatalogConfigId buildCatalogConfigId(String materialId, String variant, String shipToAccount,
+			String soldToAccount) {
+		return CatalogConfigId.builder()
 			.materialId(materialId)
-			.variant(StringUtils.isNotEmpty(variant) ? variant : UNKNOWN)
 			.soldToAccount(soldToAccount)
 			.shipToAccount(shipToAccount)
+			.variant(StringUtils.isNotEmpty(variant) ? variant : UNKNOWN)
 			.build();
-		return catalogServiceRepository.findCatalogDetailsById(id)
-			.orElseThrow(() -> new ResourceNotFoundException(CATALOG_CONFIGURATION_NOT_FOUND));
 	}
 
 }

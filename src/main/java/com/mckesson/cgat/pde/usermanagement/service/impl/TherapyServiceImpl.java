@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.mckesson.cgat.pde.usermanagement.dto.MaterialConfigDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.*;
 import com.mckesson.cgat.pde.usermanagement.repository.TherapyConfigRepository;
 import jakarta.transaction.Transactional;
@@ -205,11 +205,22 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	@Override
-	public MaterialConfigDTO findTherapyDetailsByMaterialNumber(String materialNumber)
+	public MaterialResponseDTO findTherapyDetailsByMaterialNumber(String materialNumber)
 			throws ResourceNotFoundException {
 		return therapyConfigRepository.findDetailedByMaterialNumber(materialNumber)
 			.orElseThrow(() -> new ResourceNotFoundException(
 					"Therapy config not found with materialNumber: " + materialNumber));
+	}
+
+	@Override
+	@Transactional
+	public void deleteConfigByMaterialNumber(String materialNumber) throws ResourceNotFoundException {
+		int deletedCount = therapyConfigRepository.removeTherapyConfigByMaterialNumber(materialNumber);
+
+		if (deletedCount == 0) {
+			throw new ResourceNotFoundException(
+					String.format("Therapy config not found with materialNumber: %s", materialNumber));
+		}
 	}
 
 }
