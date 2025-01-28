@@ -5,6 +5,7 @@ import com.mckesson.cgat.pde.usermanagement.dto.QuestionnaireConfigurationDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Questionnaire;
 import com.mckesson.cgat.pde.usermanagement.model.QuestionnaireConfigurationType;
 import com.mckesson.cgat.pde.usermanagement.service.QuestionnaireService;
+import com.mckesson.jbat.auth.module.exception.BadRequestException;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -65,7 +66,7 @@ public class QuestionnaireController {
 	@Operation(summary = "Configure Questionnaire")
 	public ResponseEntity<Void> configureQuestionnaire(
 			@Valid @RequestBody QuestionnaireConfigurationDTO questionnaireConfigurationDTO,
-			@RequestParam QuestionnaireConfigurationType type) throws ResourceNotFoundException {
+			@RequestParam QuestionnaireConfigurationType type) throws ResourceNotFoundException, BadRequestException {
 		questionnaireService.configureQuestionnaire(type, questionnaireConfigurationDTO);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
