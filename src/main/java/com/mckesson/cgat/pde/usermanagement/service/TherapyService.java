@@ -51,4 +51,6 @@ public interface TherapyService {
 
 	MaterialResponseDTO findTherapyDetailsByMaterialNumber(String materialNumber) throws ResourceNotFoundException;
 
+	void deleteConfigByMaterialNumber(String materialNumber) throws ResourceNotFoundException;
+
 }

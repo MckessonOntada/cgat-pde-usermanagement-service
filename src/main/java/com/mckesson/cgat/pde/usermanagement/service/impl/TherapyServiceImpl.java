@@ -212,4 +212,15 @@ public class TherapyServiceImpl implements TherapyService {
 					"Therapy config not found with materialNumber: " + materialNumber));
 	}
 
+	@Override
+	@Transactional
+	public void deleteConfigByMaterialNumber(String materialNumber) throws ResourceNotFoundException {
+		int deletedCount = therapyConfigRepository.removeTherapyConfigByMaterialNumber(materialNumber);
+
+		if (deletedCount == 0) {
+			throw new ResourceNotFoundException(
+					String.format("Therapy config not found with materialNumber: %s", materialNumber));
+		}
+	}
+
 }
