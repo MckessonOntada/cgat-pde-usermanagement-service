@@ -97,11 +97,15 @@ public class CatalogServiceImpl implements CatalogService {
 
 	@Override
 	public CatalogConfiguration findCatalogConf(String materialId, String variant, String shipToAccount,
-			String soldToAccount) throws ResourceNotFoundException {
+			String soldToAccount) {
 		logSearchDetails(materialId, variant, shipToAccount, soldToAccount);
 		CatalogConfigId id = buildCatalogConfigId(materialId, variant, shipToAccount, soldToAccount);
-		return catalogServiceRepository.findById(id)
-			.orElseThrow(() -> new ResourceNotFoundException(CATALOG_CONFIGURATION_NOT_FOUND));
+		return catalogServiceRepository.findById(id).orElseGet(() -> {
+			log.info(
+					"Catalog configuration not found for materialId: {}, variant: {}, shipToAccount: {}, soldToAccount: {}",
+					materialId, variant, shipToAccount, soldToAccount);
+			return new CatalogConfiguration();
+		});
 	}
 
 	private void logSearchDetails(String materialId, String variant, String shipToAccount, String soldToAccount) {
