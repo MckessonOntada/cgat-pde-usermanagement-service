@@ -1,11 +1,15 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
+import com.mckesson.cgat.pde.usermanagement.dto.CatalogDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogConfigurationDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.CatalogConfigId;
 import com.mckesson.cgat.pde.usermanagement.model.CatalogConfiguration;
+import com.mckesson.cgat.pde.usermanagement.model.Questionnaire;
+import com.mckesson.cgat.pde.usermanagement.model.QuestionnaireConfigurationType;
 import com.mckesson.cgat.pde.usermanagement.repository.CatalogServiceRepository;
 import com.mckesson.cgat.pde.usermanagement.service.CatalogService;
+import com.mckesson.cgat.pde.usermanagement.service.QuestionnaireService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +28,12 @@ public class CatalogServiceImpl implements CatalogService {
 
 	private final CatalogServiceRepository catalogServiceRepository;
 
-	public CatalogServiceImpl(CatalogServiceRepository catalogServiceRepository) {
+	private final QuestionnaireService questionnaireService;
+
+	public CatalogServiceImpl(CatalogServiceRepository catalogServiceRepository,
+			QuestionnaireService questionnaireService) {
 		this.catalogServiceRepository = catalogServiceRepository;
+		this.questionnaireService = questionnaireService;
 	}
 
 	@Override
@@ -52,12 +60,23 @@ public class CatalogServiceImpl implements CatalogService {
 	}
 
 	@Override
-	public CatalogResponseDTO findCatalogConfiguration(String materialId, String variant, String shipToAccount,
+	public CatalogDetailsResponseDTO findCatalogConfiguration(String materialId, String variant, String shipToAccount,
 			String soldToAccount) throws ResourceNotFoundException {
 		logSearchDetails(materialId, variant, shipToAccount, soldToAccount);
 		CatalogConfigId id = buildCatalogConfigId(materialId, variant, shipToAccount, soldToAccount);
-		return catalogServiceRepository.findCatalogDetailsById(id)
+		CatalogResponseDTO catalogResponseDTO = catalogServiceRepository.findCatalogDetailsById(id)
 			.orElseThrow(() -> new ResourceNotFoundException(CATALOG_CONFIGURATION_NOT_FOUND));
+
+		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
+				QuestionnaireConfigurationType.Material, materialId, soldToAccount, shipToAccount, variant);
+
+		CatalogDetailsResponseDTO catalogDetailsResponseDTO = CatalogDetailsResponseDTO.builder()
+			.questionnaires(questionnaires)
+			.build();
+
+		catalogDetailsResponseDTO.setCatalogConfiguration(catalogResponseDTO.getCatalogConfiguration());
+		catalogDetailsResponseDTO.setCatalogPrice(catalogResponseDTO.getCatalogPrice());
+		return catalogDetailsResponseDTO;
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.service;
 import java.util.List;
 import java.util.Set;
 
+import com.mckesson.cgat.pde.usermanagement.dto.AccountDetailsResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -32,5 +33,7 @@ public interface AccountService {
 			throws ResourceNotFoundException, UnauthorizedAccessException;
 
 	Page<AccountsResponseDTO> findAllPayToAccounts(Long userId, String query, Pageable paging);
+
+	AccountDetailsResponseDTO getAccountDetails(Long accountId) throws ResourceNotFoundException;
 
 }

@@ -37,4 +37,15 @@ public interface QuestionnaireConfigurationRepository extends JpaRepository<Ques
 	List<QuestionnaireConfiguration> getAllConfiguredQuestionnaires(String sapMaterial, String soldToCustomer,
 			String catalogId);
 
+	@Query(nativeQuery = true, value = """
+			      SELECT qc.*
+			      FROM catalog.questionnaire_configuration qc
+			      JOIN catalog.questionnaire q ON qc.questionnaire_id = q.id
+			      WHERE q.is_active = 1
+				  AND qc.configured_type = :configuredType
+			      AND qc.entity_id = :entityId;
+			""")
+	List<QuestionnaireConfiguration> getAllConfiguredQuestionnairesForSpecificType(String entityId,
+			String configuredType);
+
 }

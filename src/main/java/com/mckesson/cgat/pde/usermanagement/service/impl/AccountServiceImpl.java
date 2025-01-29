@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.mckesson.cgat.pde.usermanagement.dto.AccountDetailsResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.model.*;
+import com.mckesson.cgat.pde.usermanagement.service.QuestionnaireService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -15,11 +18,6 @@ import org.springframework.util.CollectionUtils;
 import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.ForbiddenActionException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
-import com.mckesson.cgat.pde.usermanagement.model.Account;
-import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
-import com.mckesson.cgat.pde.usermanagement.model.Practice;
-import com.mckesson.cgat.pde.usermanagement.model.User;
-import com.mckesson.cgat.pde.usermanagement.model.UserPreferenceType;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.UserPreferenceRepository;
@@ -41,12 +39,16 @@ public class AccountServiceImpl implements AccountService {
 
 	private final UserRepository userRepository;
 
+	private final QuestionnaireService questionnaireService;
+
 	public AccountServiceImpl(AccountRepository accountRepository, PracticeRepository practiceRepository,
-			UserRepository userRepository, UserPreferenceRepository userPreferenceRepository) {
+			UserRepository userRepository, UserPreferenceRepository userPreferenceRepository,
+			QuestionnaireService questionnaireService) {
 		this.accountRepository = accountRepository;
 		this.practiceRepository = practiceRepository;
 		this.userRepository = userRepository;
 		this.userPreferenceRepository = userPreferenceRepository;
+		this.questionnaireService = questionnaireService;
 	}
 
 	@Override
@@ -149,6 +151,21 @@ public class AccountServiceImpl implements AccountService {
 			allAccounts.add(preferencedPaytoAccount);
 		}
 		return new PageImpl<>(allAccounts, paging, allAccounts.size());
+	}
+
+	@Override
+	public AccountDetailsResponseDTO getAccountDetails(Long accountId) throws ResourceNotFoundException {
+		Account account = getAccount(accountId);
+
+		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
+				QuestionnaireConfigurationType.Material, "", account.getAccountNumber(), "", "");
+
+		AccountDetailsResponseDTO detailsResponseDTO = AccountDetailsResponseDTO.builder()
+			.account(account)
+			.questionnaireList(questionnaires)
+			.build();
+
+		return detailsResponseDTO;
 	}
 
 }
