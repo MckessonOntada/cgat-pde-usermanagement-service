@@ -26,7 +26,6 @@ public interface CatalogService {
 			@NotNull(message = "'shipToAccount' cannot be null") @NotEmpty(
 					message = "'shipToAccount' cannot be empty") String shipToAccount,
 			@NotNull(message = "'soldToAccount' cannot be null") @NotEmpty(
-					message = "'soldToAccount' cannot be empty") String soldToAccount)
-			throws ResourceNotFoundException;
+					message = "'soldToAccount' cannot be empty") String soldToAccount);
 
 }

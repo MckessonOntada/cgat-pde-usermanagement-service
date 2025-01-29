@@ -94,8 +94,7 @@ public class GlobalCatalogController {
 			@PathVariable @NotNull(message = "'shipToAccountId' cannot be null") @NotEmpty(
 					message = "'shipToAccount' cannot be empty") String shipToAccountId,
 			@RequestParam(required = false) String variant,
-			@PathVariable @NotNull(message = "'materialId' cannot be null") String materialId)
-			throws ResourceNotFoundException {
+			@PathVariable @NotNull(message = "'materialId' cannot be null") String materialId) {
 		CatalogConfiguration configuration = catalogService.findCatalogConf(materialId, variant, shipToAccountId,
 				soldToAccountId);
 		return ResponseEntity.ok(configuration);
