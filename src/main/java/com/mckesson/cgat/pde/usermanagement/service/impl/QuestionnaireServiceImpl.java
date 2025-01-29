@@ -50,10 +50,10 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 
 		Questionnaire qs = questionnaireRepository.findById(questionnaireId)
 			.orElseThrow(() -> new ResourceNotFoundException("Questionnaire not found for id: {} " + questionnaireId));
-		if (qs != null) {
-			questionnaireObj.setId(questionnaireId);
-		}
-		return questionnaireRepository.save(questionnaireObj);
+
+		qs.setTemplateName(questionnaireObj.getTemplateName());
+		qs.setQuestions(questionnaireObj.getQuestions());
+		return questionnaireRepository.save(qs);
 	}
 
 	@Override
