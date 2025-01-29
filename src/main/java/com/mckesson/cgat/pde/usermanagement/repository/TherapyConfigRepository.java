@@ -27,4 +27,7 @@ public interface TherapyConfigRepository extends JpaRepository<TherapyConfig, Lo
 
 	int removeTherapyConfigByMaterialNumber(String materialNumber);
 
+	@Query("SELECT m.materialNumber FROM Therapy m WHERE m.id = :id")
+	Optional<String> findMaterialNumberById(@Param("id") Long id);
+
 }

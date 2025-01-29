@@ -95,4 +95,15 @@ public class GlobalTherapyController {
 		return new ResponseEntity<>(materialNumber, HttpStatus.OK);
 	}
 
+	@GetMapping("/config/therapyId/{id}")
+	@RequirePermissions({ Permission.VIEW_MATERIAL })
+	@Operation(summary = "Find Therapy details by Material Number")
+	public ResponseEntity<MaterialResponseDTO> findTherapyDetailsByMaterialNumber(@PathVariable Long id)
+			throws ResourceNotFoundException {
+		log.debug("Fetching therapy details with materialNumber: {}", id);
+		String materialNumber = therapyService.findMaterialNumberById(id);
+		return new ResponseEntity<>(therapyService.findTherapyDetailsByMaterialNumber(materialNumber), HttpStatus.OK);
+
+	}
+
 }

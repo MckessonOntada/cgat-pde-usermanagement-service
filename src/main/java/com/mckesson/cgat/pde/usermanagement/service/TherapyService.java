@@ -53,4 +53,6 @@ public interface TherapyService {
 
 	void deleteConfigByMaterialNumber(String materialNumber) throws ResourceNotFoundException;
 
+	String findMaterialNumberById(Long id) throws ResourceNotFoundException;
+
 }
