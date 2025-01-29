@@ -1,7 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.service;
 
+import com.mckesson.cgat.pde.usermanagement.dto.CatalogDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogConfigurationDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.CatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.CatalogConfiguration;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import jakarta.validation.constraints.NotEmpty;
@@ -15,7 +15,7 @@ public interface CatalogService {
 
 	List<CatalogConfiguration> saveCatalogConfiguration(CatalogConfigurationDTO configuration);
 
-	CatalogResponseDTO findCatalogConfiguration(String materialId, String variant, String shipToAccount,
+	CatalogDetailsResponseDTO findCatalogConfiguration(String materialId, String variant, String shipToAccount,
 			String soldToAccount) throws ResourceNotFoundException;
 
 	void deleteCatalogConfiguration(String materialId, String variant, String shipToAccount, String soldToAccount)
