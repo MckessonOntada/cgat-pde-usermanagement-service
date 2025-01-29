@@ -19,8 +19,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.client.HttpClientErrorException.BadRequest;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -109,6 +109,11 @@ public class ServiceExceptionHandler {
 	@ExceptionHandler(BadRequestException.class)
 	public ResponseEntity<?> badRequestException(BadRequestException ex, WebRequest request) {
 		return buildResponseEntity(ex, request, HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(NoResourceFoundException.class)
+	public ResponseEntity<String> handleNoResourceFoundException(NoResourceFoundException e) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Requested API not found " + e.getMessage());
 	}
 
 }
