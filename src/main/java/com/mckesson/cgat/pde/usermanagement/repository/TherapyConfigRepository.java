@@ -27,7 +27,13 @@ public interface TherapyConfigRepository extends JpaRepository<TherapyConfig, Lo
 
 	int removeTherapyConfigByMaterialNumber(String materialNumber);
 
-	@Query("SELECT m.materialNumber FROM Therapy m WHERE m.id = :id")
-	Optional<String> findMaterialNumberById(@Param("id") Long id);
+	@Query("""
+			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,tc)
+			    FROM Therapy m
+			    LEFT JOIN TherapyConfig tc
+			    ON m.materialNumber = tc.materialNumber
+			    WHERE m.id = :id
+			""")
+	Optional<MaterialResponseDTO> findTherapyDetailsById(@Param("id") Long id);
 
 }

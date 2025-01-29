@@ -101,8 +101,7 @@ public class GlobalTherapyController {
 	public ResponseEntity<MaterialResponseDTO> findTherapyDetailsByMaterialNumber(@PathVariable Long id)
 			throws ResourceNotFoundException {
 		log.debug("Fetching therapy details with materialNumber: {}", id);
-		String materialNumber = therapyService.findMaterialNumberById(id);
-		return new ResponseEntity<>(therapyService.findTherapyDetailsByMaterialNumber(materialNumber), HttpStatus.OK);
+		return new ResponseEntity<>(therapyService.findTherapyDetailsById(id), HttpStatus.OK);
 
 	}
 

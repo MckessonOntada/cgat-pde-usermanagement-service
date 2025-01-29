@@ -224,8 +224,8 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	@Override
-	public String findMaterialNumberById(Long id) throws ResourceNotFoundException {
-		return therapyConfigRepository.findMaterialNumberById(id)
+	public MaterialResponseDTO findTherapyDetailsById(Long id) throws ResourceNotFoundException {
+		return therapyConfigRepository.findTherapyDetailsById(id)
 			.orElseThrow(() -> new ResourceNotFoundException("Therapy not found with id: " + id));
 	}
 
