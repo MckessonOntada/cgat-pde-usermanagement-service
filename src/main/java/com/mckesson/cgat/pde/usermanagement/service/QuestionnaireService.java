@@ -36,4 +36,7 @@ public interface QuestionnaireService {
 
 	Questionnaire fetchQuestionnaireById(Long questionnaireId) throws ResourceNotFoundException;
 
+	List<Questionnaire> getAllConfiguredQuestionnairesForSpecificType(QuestionnaireConfigurationType type,
+			String sapMaterial, String soldToCustomer, String shipToCustomer, String variant);
+
 }

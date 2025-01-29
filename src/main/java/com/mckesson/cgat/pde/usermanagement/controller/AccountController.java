@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import java.util.List;
 import java.util.Set;
 
+import com.mckesson.cgat.pde.usermanagement.dto.AccountDetailsResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -75,6 +76,16 @@ public class AccountController {
 	public ResponseEntity<Account> getAccount(@PathVariable Long accountId)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		Account account = accountService.getAccount(accountId);
+		return new ResponseEntity<>(account, HttpStatus.OK);
+
+	}
+
+	@RequirePermissions({ Permission.VIEW_ORGANIZATION, Permission.VIEW_USERS })
+	@GetMapping("/configuration/{accountId}")
+	@Operation(summary = "Get account details with configurations by accountId ")
+	public ResponseEntity<AccountDetailsResponseDTO> getAccountDetails(@PathVariable Long accountId)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
+		AccountDetailsResponseDTO account = accountService.getAccountDetails(accountId);
 		return new ResponseEntity<>(account, HttpStatus.OK);
 
 	}

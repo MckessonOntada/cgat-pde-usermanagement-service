@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface QuestionnaireRepository extends JpaRepository<Questionnaire, Long> {
 
@@ -32,5 +34,7 @@ public interface QuestionnaireRepository extends JpaRepository<Questionnaire, Lo
 			""", nativeQuery = true)
 	public Page<Questionnaire> findAllByQueryText(@Param("query") String query, @Param("status") String status,
 			Pageable paging);
+
+	List<Questionnaire> findByIdInAndIsActiveTrue(List<Long> questionnaireIds);
 
 }

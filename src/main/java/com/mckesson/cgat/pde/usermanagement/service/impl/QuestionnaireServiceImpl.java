@@ -62,7 +62,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 			QuestionnaireConfigurationDTO questionnaireConfigurationDTO)
 			throws ResourceNotFoundException, BadRequestException {
 		List<Questionnaire> questionnaireList = questionnaireRepository
-			.findAllById(questionnaireConfigurationDTO.getQuestionnaireIds());
+			.findByIdInAndIsActiveTrue(questionnaireConfigurationDTO.getQuestionnaireIds());
 
 		if (questionnaireList.size() != questionnaireConfigurationDTO.getQuestionnaireIds().size()) {
 			throw new ResourceNotFoundException("Some Questionnaire Ids not found");
@@ -127,7 +127,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 			.orElseThrow(() -> new ResourceNotFoundException(
 					"Questionnaire not found with Id: " + dto.getQuestionnaireId()));
 
-		String entityId = getEntityId(dto, type);
+		String entityId = getEntityId(dto.getMaterialNumber(), dto.getAccountNumber(), dto.getCatalogId(), type);
 		questionnaireConfigurationRepository
 			.deleteByQuestionnaireIdAndEntityIdAndConfiguredType(dto.getQuestionnaireId(), entityId, type);
 		long count = questionnaireConfigurationRepository
@@ -182,21 +182,44 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 			.orElseThrow(() -> new ResourceNotFoundException("Questionnaire not found with Id: " + questionnaireId));
 	}
 
-	private String getEntityId(DeLinkQuestionnaireConfigurationDTO dto, QuestionnaireConfigurationType type) {
+	@Override
+	public List<Questionnaire> getAllConfiguredQuestionnairesForSpecificType(QuestionnaireConfigurationType type,
+			String sapMaterial, String soldToCustomer, String shipToCustomer, String variant) {
+
+		CatalogConfigurationAttributes catalogConfigurationAttributes = CatalogConfigurationAttributes.builder()
+			.variant(variant)
+			.soldToCustomer(soldToCustomer)
+			.shipToCustomer(shipToCustomer)
+			.sapMaterial(sapMaterial)
+			.build();
+		String entityId = getEntityId(sapMaterial, soldToCustomer, catalogConfigurationAttributes, type);
+
+		List<QuestionnaireConfiguration> allConfiguredQuestionnaires = questionnaireConfigurationRepository
+			.getAllConfiguredQuestionnairesForSpecificType(entityId, type.name());
+		List<Questionnaire> questionnaires = allConfiguredQuestionnaires.stream()
+			.map(QuestionnaireConfiguration::getQuestionnaireId)
+			.distinct()
+			.collect(Collectors.toList());
+		return questionnaires;
+
+	}
+
+	private String getEntityId(String materialNumber, String accountNumber,
+			CatalogConfigurationAttributes catalogAttributes, QuestionnaireConfigurationType type) {
 		switch (type) {
 			case Account:
-				if (dto.getAccountNumber() == null)
+				if (accountNumber == null)
 					throw new IllegalArgumentException("Account Number should not be null");
-				return dto.getAccountNumber();
+				return accountNumber;
 			case Material:
-				if (dto.getMaterialNumber() == null)
+				if (materialNumber == null)
 					throw new IllegalArgumentException("Material Number should not be null");
-				return dto.getMaterialNumber();
+				return materialNumber;
 			case Catalog:
-				if (dto.getCatalogId() == null)
+				if (catalogAttributes == null)
 					throw new IllegalArgumentException("CatalogId should not be null");
-				return getCatalogId(dto.getCatalogId().getSapMaterial(), dto.getCatalogId().getSoldToCustomer(),
-						dto.getCatalogId().getShipToCustomer(), dto.getCatalogId().getVariant());
+				return getCatalogId(catalogAttributes.getSapMaterial(), catalogAttributes.getSoldToCustomer(),
+						catalogAttributes.getShipToCustomer(), catalogAttributes.getVariant());
 			default:
 				throw new IllegalArgumentException("Unknown configuration type: " + type);
 		}
