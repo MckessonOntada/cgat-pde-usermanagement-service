@@ -54,7 +54,7 @@ public class QuestionnaireController {
 
 	}
 
-	@PutMapping("/{questionnaireId}")
+	@PatchMapping("/{questionnaireId}")
 	@Operation(summary = "Update Questionnaire")
 	public ResponseEntity<Questionnaire> updateQuestionnaire(@PathVariable Long questionnaireId,
 			@RequestBody Questionnaire questionnaire) throws ResourceNotFoundException {
