@@ -20,8 +20,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 
 	@Query(value = """
 				SELECT m.id, m.material_number as therapyId, m.material_description as therapyDescription, m.ndc_number as ndc, cp.udi, m.strength, m.dosage, m.selling_unit_code,
-				m.vendor_name, m.upc_code, m.dropship_indicator, m.item_status as status, m.base_unit_of_measure, m.cgat_identifier, m.sales_organization,
-				m.cgat_type, m.product_level_pricing, cp.minimum_order_quantity
+				m.vendor_name, m.upc_code, m.dropship_indicator, m.item_status as status, m.base_unit_of_measure, m.cgat_therapy_type, m.sales_organization,
+				 m.product_level_pricing, cp.minimum_order_quantity
 				FROM catalog.material m
 				JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
 				JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
@@ -53,8 +53,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						)
 				)
 				GROUP BY m.id, m.material_number, m.material_description, m.ndc_number, cp.udi, m.strength, m.dosage, m.selling_unit_code,
-				m.vendor_name, m.upc_code, m.dropship_indicator, m.base_unit_of_measure, m.cgat_identifier, m.sales_organization,
-				m.cgat_type, m.product_level_pricing, cp.minimum_order_quantity
+				m.vendor_name, m.upc_code, m.dropship_indicator, m.base_unit_of_measure, m.cgat_therapy_type, m.sales_organization,
+				 m.product_level_pricing, cp.minimum_order_quantity
 			""",
 			nativeQuery = true)
 	public Page<TherapyCatalogResponseDTO> findAllTherapies(@Param("userId") Long userId, @Param("query") String query,

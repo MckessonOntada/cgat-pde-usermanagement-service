@@ -140,17 +140,12 @@ public class TherapyControllerTest {
 			}
 
 			@Override
-			public String getCgatIdentifier() {
+			public String getCgatTherapyType() {
 				return "";
 			}
 
 			@Override
 			public String getSalesOrganization() {
-				return "";
-			}
-
-			@Override
-			public String getCgatType() {
 				return "";
 			}
 
