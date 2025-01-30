@@ -68,7 +68,7 @@ public class CatalogServiceImpl implements CatalogService {
 			.orElseThrow(() -> new ResourceNotFoundException(CATALOG_CONFIGURATION_NOT_FOUND));
 
 		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
-				QuestionnaireConfigurationType.Material, materialId, soldToAccount, shipToAccount, variant);
+				QuestionnaireConfigurationType.Catalog, materialId, soldToAccount, shipToAccount, variant);
 
 		CatalogDetailsResponseDTO catalogDetailsResponseDTO = CatalogDetailsResponseDTO.builder()
 			.questionnaires(questionnaires)
