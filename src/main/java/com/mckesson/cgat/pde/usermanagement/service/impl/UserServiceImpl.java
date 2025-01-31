@@ -352,25 +352,20 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
-	private void attachAccounts(User user, String accountIdsString) throws ResourceNotFoundException {
-		if (accountIdsString.isEmpty())
+	private void attachAccounts(User user, String accountNumbers) throws ResourceNotFoundException {
+		if (accountNumbers.isEmpty())
 			return;
 
-		List<Long> accountIds = Arrays.stream(accountIdsString.split(",")).map(String::trim).map(accountId -> {
-			try {
-				return Long.parseLong(accountId);
-			}
-			catch (NumberFormatException e) {
-				log.error("Invalid Account Id: {}", accountId);
-				throw new IllegalArgumentException("Invalid Account Id: " + accountId);
-			}
-		}).collect(Collectors.toList());
+		List<String> accountNumberList = Arrays.stream(accountNumbers.split(","))
+			.map(String::trim)
+			.collect(Collectors.toList());
 
-		List<Account> accounts = accountRepository.findAllById(accountIds);
+		List<Account> accounts = accountRepository.findAllByAccountNumberIn(accountNumberList);
 
-		if (accounts.size() != accountIds.size()) {
-			log.error("Some of the provided account IDs does not exist {}", accountIdsString);
-			throw new ResourceNotFoundException("Some of the provided account IDs does not exist.");
+		if (accounts.size() != accountNumberList.size()) {
+			log.error("Some of the provided Account Numbers does not exist {}", accountNumbers);
+			throw new ResourceNotFoundException(
+					"Some of the provided Account Numbers does not exist: " + accountNumbers);
 		}
 		user.setAccounts(new HashSet<>(accounts));
 
