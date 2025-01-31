@@ -137,4 +137,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	List<Long> findAccountIdsByUser(@Param("userId") Long userId, @Param("practiceId") Long practiceId,
 			String partnerFunction);
 
+	List<Account> findAllByAccountNumberIn(List<String> accountNumberList);
+
 }
