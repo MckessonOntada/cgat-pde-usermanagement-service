@@ -20,11 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -79,33 +75,27 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 		List<QuestionnaireConfiguration> existingConfigs = questionnaireConfigurationRepository
 			.findByEntityIdInAndConfiguredType(entityIds, type);
 
-		Map<String, QuestionnaireConfiguration> existingMap = existingConfigs.stream()
-			.collect(Collectors.toMap(questionnaireConfiguration -> createQuestionConfigKey(
-					questionnaireConfiguration.getQuestionnaireId().getId(), questionnaireConfiguration.getEntityId()),
-					Function.identity()));
+		Map<String, Set<QuestionnaireConfiguration>> existingMap = new HashMap<>();
+
+		existingConfigs
+			.forEach(config -> existingMap.computeIfAbsent(config.getEntityId(), k -> new HashSet<>()).add(config));
 
 		List<QuestionnaireConfiguration> questionnaireConfigurationList = questionnaireList.stream()
-			.flatMap(questionnaire -> entityIds.stream().map(entityId -> {
-				String k = createQuestionConfigKey(questionnaire.getId(), entityId);
-				if (existingMap.containsKey(k)) {
-					return existingMap.get(k);
-				}
-				return QuestionnaireConfiguration.builder()
-					.configuredType(type)
-					.questionnaireId(questionnaire)
-					.entityId(entityId)
-					.build();
-
-			}))
+			.flatMap(questionnaire -> entityIds.stream()
+				.map(entityId -> existingMap.getOrDefault(entityId, Collections.emptySet())
+					.stream()
+					.filter(config -> config.getQuestionnaireId().getId().equals(questionnaire.getId()))
+					.findFirst()
+					.orElseGet(() -> QuestionnaireConfiguration.builder()
+						.configuredType(type)
+						.questionnaireId(questionnaire)
+						.entityId(entityId)
+						.build())))
 			.collect(Collectors.toList());
 
 		questionnaireRepository.saveAll(questionnaireList);
 		questionnaireConfigurationRepository.saveAll(questionnaireConfigurationList);
 
-	}
-
-	private String createQuestionConfigKey(long questionnaireId, String entityId) {
-		return questionnaireId + "_" + entityId;
 	}
 
 	private List<String> generateEntityIds(QuestionnaireConfigurationType type,
