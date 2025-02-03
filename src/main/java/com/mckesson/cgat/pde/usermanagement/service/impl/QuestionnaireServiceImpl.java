@@ -20,8 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -73,13 +72,25 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 
 		List<String> entityIds = generateEntityIds(type, questionnaireConfigurationDTO);
 
+		List<QuestionnaireConfiguration> existingConfigs = questionnaireConfigurationRepository
+			.findByEntityIdInAndConfiguredType(entityIds, type);
+
+		Map<String, Set<QuestionnaireConfiguration>> existingMap = new HashMap<>();
+
+		existingConfigs
+			.forEach(config -> existingMap.computeIfAbsent(config.getEntityId(), k -> new HashSet<>()).add(config));
+
 		List<QuestionnaireConfiguration> questionnaireConfigurationList = questionnaireList.stream()
-			.flatMap(questionnaireId -> entityIds.stream()
-				.map(entityId -> QuestionnaireConfiguration.builder()
-					.configuredType(type)
-					.questionnaireId(questionnaireId)
-					.entityId(entityId)
-					.build()))
+			.flatMap(questionnaire -> entityIds.stream()
+				.map(entityId -> existingMap.getOrDefault(entityId, Collections.emptySet())
+					.stream()
+					.filter(config -> config.getQuestionnaireId().getId().equals(questionnaire.getId()))
+					.findFirst()
+					.orElseGet(() -> QuestionnaireConfiguration.builder()
+						.configuredType(type)
+						.questionnaireId(questionnaire)
+						.entityId(entityId)
+						.build())))
 			.collect(Collectors.toList());
 
 		questionnaireRepository.saveAll(questionnaireList);
