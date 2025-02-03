@@ -28,11 +28,9 @@ public interface TherapyCatalogResponseDTO {
 
 	String getBaseUnitOfMeasure();
 
-	String getCgatIdentifier();
+	String getCgatTherapyType();
 
 	String getSalesOrganization();
-
-	String getCgatType();
 
 	String getProductLevelPricing();
 

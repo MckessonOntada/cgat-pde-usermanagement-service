@@ -13,6 +13,7 @@ import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.auth.module.exception.BadRequestException;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -53,10 +54,10 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 
 		Questionnaire qs = questionnaireRepository.findById(questionnaireId)
 			.orElseThrow(() -> new ResourceNotFoundException("Questionnaire not found for id: {} " + questionnaireId));
-		if (qs != null) {
-			questionnaireObj.setId(questionnaireId);
-		}
-		return questionnaireRepository.save(questionnaireObj);
+
+		qs.setTemplateName(questionnaireObj.getTemplateName());
+		qs.setQuestions(questionnaireObj.getQuestions());
+		return questionnaireRepository.save(qs);
 	}
 
 	@Override
@@ -252,7 +253,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 		parts.add(soldToCustomer);
 		parts.add(shipToCustomer);
 
-		if (variant != null) {
+		if (StringUtils.isNotEmpty(variant)) {
 			parts.add(variant);
 		}
 

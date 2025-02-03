@@ -158,7 +158,7 @@ public class AccountServiceImpl implements AccountService {
 		Account account = getAccount(accountId);
 
 		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
-				QuestionnaireConfigurationType.Material, "", account.getAccountNumber(), "", "");
+				QuestionnaireConfigurationType.Account, "", account.getAccountNumber(), "", "");
 
 		AccountDetailsResponseDTO detailsResponseDTO = AccountDetailsResponseDTO.builder()
 			.account(account)

@@ -366,17 +366,13 @@ public class Therapy {
 	@Column(name = "manufacturer_part_number")
 	private String manufacturerPartNumber;
 
-	@Size(max = 1)
-	@Column(name = "cgat_identifier")
+	@Size(max = 10)
+	@Column(name = "cgat_therapy_type")
 	private String cgatIdentifier;
 
 	@Size(max = 4)
 	@Column(name = "sales_organization")
 	private String salesOrg;
-
-	@Size(max = 2)
-	@Column(name = "cgat_type")
-	private String cgatType;
 
 	@Size(max = 1)
 	@Column(name = "product_level_pricing")
