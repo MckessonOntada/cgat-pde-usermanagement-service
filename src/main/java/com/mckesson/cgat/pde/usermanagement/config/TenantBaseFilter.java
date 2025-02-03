@@ -68,10 +68,6 @@ public class TenantBaseFilter extends CGATBaseFilter {
 			log.error("Error occurred in TenantFilter. Message: {} ", e.getMessage(), e);
 			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 		}
-		finally {
-			OrganizationContext.clear();
-		}
-
 	}
 
 	@Override
