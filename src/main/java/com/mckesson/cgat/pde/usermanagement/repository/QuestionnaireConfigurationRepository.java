@@ -48,4 +48,7 @@ public interface QuestionnaireConfigurationRepository extends JpaRepository<Ques
 	List<QuestionnaireConfiguration> getAllConfiguredQuestionnairesForSpecificType(String entityId,
 			String configuredType);
 
+	List<QuestionnaireConfiguration> findByEntityIdInAndConfiguredType(List<String> entityIds,
+			QuestionnaireConfigurationType type);
+
 }
