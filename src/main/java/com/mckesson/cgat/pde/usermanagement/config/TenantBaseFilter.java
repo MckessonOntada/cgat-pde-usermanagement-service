@@ -48,13 +48,12 @@ public class TenantBaseFilter extends CGATBaseFilter {
 			}
 
 			LoggedInUserDetails loggedInUser = UserSecurityUtils.getLoggedInUser();
-			boolean systemAdmin = UserRequestAuthorizationValidator.isSystemAdmin(loggedInUser);
 
 			/*
 			 * Only system admins are allowed to fetch data of different practice ids.
 			 * Normal users can fetch data of only assigned practice.
 			 */
-			if (!systemAdmin && loggedInUser.getPracticeId() != tenantIdFromRequest) {
+			if (!isUserAuthorized(loggedInUser, tenantIdFromRequest)) {
 				throw new UnauthorizedAccessException(CustomUtils.UNAUTHORIZED_MESSAGE);
 			}
 			else {
@@ -86,6 +85,11 @@ public class TenantBaseFilter extends CGATBaseFilter {
 		return Stream.of(urlsToExclude, CGATBaseFilter.URLS_TO_EXCLUDE)
 			.flatMap(Stream::of)
 			.anyMatch(f -> pathMatcher.match(f, request.getServletPath()));
+	}
+
+	public static boolean isUserAuthorized(LoggedInUserDetails loggedInUser, Long tenantIdFromRequest) {
+		return (UserRequestAuthorizationValidator.isSystemAdmin(loggedInUser)
+				|| loggedInUser.getPracticeId() == tenantIdFromRequest);
 	}
 
 }
