@@ -2,8 +2,10 @@ package com.mckesson.cgat.pde.usermanagement.config;
 
 import java.io.IOException;
 
+import com.mckesson.cgat.pde.usermanagement.model.LoggedInUserDetails;
 import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
+import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,7 +31,9 @@ public class PracticeFilter extends CGATBaseFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		try {
-			Long organisationId = extractTenantIdFromRequest(request);
+			/*If a user passes the tenant base filter, it means they are either a system admin or a valid organization user.
+			Here, we are checking whether the user's organization is active or not.*/
+			Long organisationId = UserSecurityUtils.getLoggedInUser().getPracticeId();
 
 			Boolean isPracticeActive = practiceRepository.findIsActiveById(organisationId).orElse(Boolean.TRUE);
 
@@ -44,5 +48,6 @@ public class PracticeFilter extends CGATBaseFilter {
 			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 		}
 	}
+
 
 }
