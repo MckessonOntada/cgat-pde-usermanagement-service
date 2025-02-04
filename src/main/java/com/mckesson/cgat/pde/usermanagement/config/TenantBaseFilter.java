@@ -22,13 +22,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.AntPathMatcher;
 
-import static com.mckesson.jbat.auth.module.constant.UtilsConstant.SWAGGER_URL_TO_EXCLUDE;
-
 @Component
 @Slf4j
 public class TenantBaseFilter extends CGATBaseFilter {
 
-	private final String PRACTICE = "practices";
+	public static final String PRACTICE = "practices";
 
 	private AntPathMatcher pathMatcher;
 
@@ -40,12 +38,7 @@ public class TenantBaseFilter extends CGATBaseFilter {
 			 * Fetching practice id from the request url. It would be like:
 			 * /practice/{practiceId}/
 			 */
-			String requestServletPath = request.getServletPath().substring(1);
-			List<String> servletPath = Arrays.asList(requestServletPath.split("/"));
-			long tenantIdFromRequest = 1L;
-			if (servletPath.contains(PRACTICE) && !requestServletPath.matches(PRACTICE)) {
-				tenantIdFromRequest = Long.parseLong(servletPath.get(servletPath.indexOf(PRACTICE) + 1));
-			}
+			Long tenantIdFromRequest = extractTenantIdFromRequest(request);
 
 			LoggedInUserDetails loggedInUser = UserSecurityUtils.getLoggedInUser();
 
@@ -68,6 +61,10 @@ public class TenantBaseFilter extends CGATBaseFilter {
 			log.error("Error occurred in TenantFilter. Message: {} ", e.getMessage(), e);
 			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 		}
+		finally {
+			OrganizationContext.clear();
+		}
+
 	}
 
 	@Override
@@ -86,6 +83,21 @@ public class TenantBaseFilter extends CGATBaseFilter {
 	public static boolean isUserAuthorized(LoggedInUserDetails loggedInUser, Long tenantIdFromRequest) {
 		return (UserRequestAuthorizationValidator.isSystemAdmin(loggedInUser)
 				|| loggedInUser.getPracticeId() == tenantIdFromRequest);
+	}
+
+	public static Long extractTenantIdFromRequest(HttpServletRequest request) {
+		String requestServletPath = request.getServletPath().substring(1);
+		List<String> servletPath = Arrays.asList(requestServletPath.split("/"));
+		long tenantIdFromRequest = 1L;
+
+		if (servletPath.contains(PRACTICE) && !requestServletPath.matches(PRACTICE)) {
+			try {
+				tenantIdFromRequest = Long.parseLong(servletPath.get(servletPath.indexOf(PRACTICE) + 1));
+			} catch (NumberFormatException | IndexOutOfBoundsException e) {
+				log.warn("Invalid tenant ID format in request path: {}", requestServletPath, e);
+			}
+		}
+		return tenantIdFromRequest;
 	}
 
 }
