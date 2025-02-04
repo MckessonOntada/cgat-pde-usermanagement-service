@@ -106,7 +106,7 @@ public class UserFilterUtils {
 
 	private LoggedInUserDetails buildLoggedInUser(User user) {
 		Name userName = user.getName();
-		LoggedInUserDetails loggedInUser = LoggedInUserDetails.builder()
+		return LoggedInUserDetails.builder()
 			.id(String.valueOf(user.getId()))
 			.name(userName)
 			.role(user.getRole())
@@ -114,7 +114,6 @@ public class UserFilterUtils {
 			.practiceId(user.getPracticeId())
 			.userName(userName.getFirstName() + " " + userName.getLastName())
 			.build();
-		return loggedInUser;
 	}
 
 }

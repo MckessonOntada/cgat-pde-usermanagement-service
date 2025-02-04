@@ -79,4 +79,13 @@ public class FilterConfiguration {
 		return registrationBean;
 	}
 
+	@Bean
+	public FilterRegistrationBean<PracticeValidityFilter> practiceFilterRegistrationBean(
+			PracticeValidityFilter practiceFilter) {
+		FilterRegistrationBean<PracticeValidityFilter> registrationBean = new FilterRegistrationBean<>(practiceFilter);
+		registrationBean.addUrlPatterns("/*");
+		registrationBean.setOrder(6);
+		return registrationBean;
+	}
+
 }

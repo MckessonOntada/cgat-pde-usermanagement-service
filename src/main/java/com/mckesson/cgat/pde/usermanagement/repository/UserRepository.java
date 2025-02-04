@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.repository;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -62,8 +63,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 	List<User> findByCreatedAt(Date createdAt);
 
-	User findByContactEmail(String email);
-
 	@Modifying
 	@Query(value = "Delete from usermanagement.user_account_mapping where user_id =:userId and account_id =:accountId",
 			nativeQuery = true)
@@ -73,5 +72,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	@Query(value = "Delete from usermanagement.user_preference where user_id =:userId and type =:preferenceType",
 			nativeQuery = true)
 	void resetDefaultPayToAccount(@Param("userId") Long userId, @Param("preferenceType") String preferenceType);
+
+	Optional<User> findByContactEmailAndIsActiveTrue(String email);
 
 }

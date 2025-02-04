@@ -22,13 +22,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.AntPathMatcher;
 
-import static com.mckesson.jbat.auth.module.constant.UtilsConstant.SWAGGER_URL_TO_EXCLUDE;
-
 @Component
 @Slf4j
 public class TenantBaseFilter extends CGATBaseFilter {
 
-	private final String PRACTICE = "practices";
+	public static final String PRACTICE = "practices";
 
 	private AntPathMatcher pathMatcher;
 
@@ -40,21 +38,15 @@ public class TenantBaseFilter extends CGATBaseFilter {
 			 * Fetching practice id from the request url. It would be like:
 			 * /practice/{practiceId}/
 			 */
-			String requestServletPath = request.getServletPath().substring(1);
-			List<String> servletPath = Arrays.asList(requestServletPath.split("/"));
-			long tenantIdFromRequest = 1L;
-			if (servletPath.contains(PRACTICE) && !requestServletPath.matches(PRACTICE)) {
-				tenantIdFromRequest = Long.parseLong(servletPath.get(servletPath.indexOf(PRACTICE) + 1));
-			}
+			Long tenantIdFromRequest = extractTenantIdFromRequest(request);
 
 			LoggedInUserDetails loggedInUser = UserSecurityUtils.getLoggedInUser();
-			boolean systemAdmin = UserRequestAuthorizationValidator.isSystemAdmin(loggedInUser);
 
 			/*
 			 * Only system admins are allowed to fetch data of different practice ids.
 			 * Normal users can fetch data of only assigned practice.
 			 */
-			if (!systemAdmin && loggedInUser.getPracticeId() != tenantIdFromRequest) {
+			if (!isUserAuthorized(loggedInUser, tenantIdFromRequest)) {
 				throw new UnauthorizedAccessException(CustomUtils.UNAUTHORIZED_MESSAGE);
 			}
 			else {
@@ -86,6 +78,27 @@ public class TenantBaseFilter extends CGATBaseFilter {
 		return Stream.of(urlsToExclude, CGATBaseFilter.URLS_TO_EXCLUDE)
 			.flatMap(Stream::of)
 			.anyMatch(f -> pathMatcher.match(f, request.getServletPath()));
+	}
+
+	public static boolean isUserAuthorized(LoggedInUserDetails loggedInUser, Long tenantIdFromRequest) {
+		return (UserRequestAuthorizationValidator.isSystemAdmin(loggedInUser)
+				|| loggedInUser.getPracticeId() == tenantIdFromRequest);
+	}
+
+	public static Long extractTenantIdFromRequest(HttpServletRequest request) {
+		String requestServletPath = request.getServletPath().substring(1);
+		List<String> servletPath = Arrays.asList(requestServletPath.split("/"));
+		long tenantIdFromRequest = 1L;
+
+		if (servletPath.contains(PRACTICE) && !requestServletPath.matches(PRACTICE)) {
+			try {
+				tenantIdFromRequest = Long.parseLong(servletPath.get(servletPath.indexOf(PRACTICE) + 1));
+			}
+			catch (NumberFormatException | IndexOutOfBoundsException e) {
+				log.warn("Invalid tenant ID format in request path: {}", requestServletPath, e);
+			}
+		}
+		return tenantIdFromRequest;
 	}
 
 }
