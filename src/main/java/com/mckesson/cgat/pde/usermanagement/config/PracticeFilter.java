@@ -47,8 +47,10 @@ public class PracticeFilter extends CGATBaseFilter {
 			filterChain.doFilter(request, response);
 		}
 		catch (Exception e) {
+			HttpStatus status = (e instanceof UnauthorizedAccessException) ? HttpStatus.UNAUTHORIZED
+					: HttpStatus.INTERNAL_SERVER_ERROR;
 			log.error("Error occurred in PracticeFilter. Message: {}", e.getMessage(), e);
-			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			response.setStatus(status.value());
 		}
 	}
 
