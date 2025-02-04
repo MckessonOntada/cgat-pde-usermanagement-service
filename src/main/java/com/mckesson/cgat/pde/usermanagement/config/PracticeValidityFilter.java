@@ -2,7 +2,6 @@ package com.mckesson.cgat.pde.usermanagement.config;
 
 import java.io.IOException;
 
-import com.mckesson.cgat.pde.usermanagement.model.LoggedInUserDetails;
 import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
@@ -16,13 +15,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
-import com.mckesson.cgat.pde.usermanagement.utils.OrganizationContext;
-
-import static com.mckesson.cgat.pde.usermanagement.config.TenantBaseFilter.extractTenantIdFromRequest;
 
 @Slf4j
 @Component
-public class PracticeFilter extends CGATBaseFilter {
+public class PracticeValidityFilter extends CGATBaseFilter {
 
 	@Autowired
 	private PracticeRepository practiceRepository;

@@ -80,8 +80,9 @@ public class FilterConfiguration {
 	}
 
 	@Bean
-	public FilterRegistrationBean<PracticeFilter> practiceFilterRegistrationBean(PracticeFilter practiceFilter) {
-		FilterRegistrationBean<PracticeFilter> registrationBean = new FilterRegistrationBean<>(practiceFilter);
+	public FilterRegistrationBean<PracticeValidityFilter> practiceFilterRegistrationBean(
+			PracticeValidityFilter practiceFilter) {
+		FilterRegistrationBean<PracticeValidityFilter> registrationBean = new FilterRegistrationBean<>(practiceFilter);
 		registrationBean.addUrlPatterns("/*");
 		registrationBean.setOrder(6);
 		return registrationBean;
