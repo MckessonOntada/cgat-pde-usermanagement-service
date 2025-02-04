@@ -93,7 +93,8 @@ public class TenantBaseFilter extends CGATBaseFilter {
 		if (servletPath.contains(PRACTICE) && !requestServletPath.matches(PRACTICE)) {
 			try {
 				tenantIdFromRequest = Long.parseLong(servletPath.get(servletPath.indexOf(PRACTICE) + 1));
-			} catch (NumberFormatException | IndexOutOfBoundsException e) {
+			}
+			catch (NumberFormatException | IndexOutOfBoundsException e) {
 				log.warn("Invalid tenant ID format in request path: {}", requestServletPath, e);
 			}
 		}
