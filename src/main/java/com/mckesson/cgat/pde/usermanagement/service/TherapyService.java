@@ -18,23 +18,23 @@ public interface TherapyService {
 	Page<TherapyCatalogResponseDTO> findAllTherapies(Long userId, String query, List<String> salesOrg, Pageable paging,
 			List<String> customerIdentifier);
 
-	Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, Long therapyId, String query, Pageable paging,
+	Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, String therapyId, String query, Pageable paging,
 			DistributionChannel channel, String program);
 
-	Page<AccountsResponseDTO> findAllShipToAccounts(String soldToAccountId, Long therapyId, Pageable paging,
+	Page<AccountsResponseDTO> findAllShipToAccounts(String soldToAccountId, String therapyId, Pageable paging,
 			String query);
 
 	Therapy findById(Long id) throws ResourceNotFoundException;
 
-	ProgramChannelResponseDTO findAllProgramAndChannels(Long userId, Long therapyId);
+	ProgramChannelResponseDTO findAllProgramAndChannels(Long userId, String therapyId);
 
 	Page<AccountsResponseDTO> findAllCustomerIdentifiers(Long userId, String query, Pageable paging);
 
 	Page<CatalogPriceResponseDto> findAllVariantsLinkedToShipToAccountsForTherapy(String soldToAccountId,
-			String shipToAccountId, Long therapyId, Pageable paging);
+			String shipToAccountId, String therapyId, Pageable paging);
 
 	CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForTherapy(String soldToAccountId,
-			String shipToAccountId, String variantType, Long therapyId);
+			String shipToAccountId, String variantType, String therapyId);
 
 	Page<Therapy> findAllGlobalTherapies(String query, Pageable paging);
 

@@ -181,7 +181,7 @@ public class TherapyControllerTest {
 
 		Long therapyId = 12L;
 
-		when(therapyService.findAllSoldToAccounts(anyLong(), anyLong(), anyString(), any(Pageable.class),
+		when(therapyService.findAllSoldToAccounts(anyLong(), anyString(), anyString(), any(Pageable.class),
 				any(DistributionChannel.class), anyString()))
 			.thenReturn(getAccounts());
 
@@ -203,7 +203,7 @@ public class TherapyControllerTest {
 		Long therapyId = 12L;
 		String soldToAccountId = "4";
 
-		when(therapyService.findAllShipToAccounts(anyString(), anyLong(), any(PageRequest.class), anyString()))
+		when(therapyService.findAllShipToAccounts(anyString(), anyString(), any(PageRequest.class), anyString()))
 			.thenReturn(getAccounts());
 
 		mockMvc.perform(get(
@@ -346,7 +346,7 @@ public class TherapyControllerTest {
 		String shipToAccount = "103";
 		Page<CatalogPriceResponseDto> catalogPriceResponseDtos = getCatalogPriceList();
 
-		when(therapyService.findAllVariantsLinkedToShipToAccountsForTherapy(anyString(), anyString(), anyLong(),
+		when(therapyService.findAllVariantsLinkedToShipToAccountsForTherapy(anyString(), anyString(), anyString(),
 				any(PageRequest.class)))
 			.thenReturn(catalogPriceResponseDtos);
 
@@ -368,7 +368,7 @@ public class TherapyControllerTest {
 		CatalogPriceResponseDto catalogPriceResponseDtos = getCatalogPrice();
 
 		when(therapyService.findPriceOfVariantLinkedToShipToAccountsForTherapy(anyString(), anyString(), anyString(),
-				anyLong()))
+				anyString()))
 			.thenReturn(catalogPriceResponseDtos);
 
 		mockMvc.perform(get(
@@ -390,7 +390,7 @@ public class TherapyControllerTest {
 		catalogPriceResponseDtos.setVariantDescription(null);
 
 		when(therapyService.findPriceOfVariantLinkedToShipToAccountsForTherapy(anyString(), anyString(), anyString(),
-				anyLong()))
+				anyString()))
 			.thenReturn(catalogPriceResponseDtos);
 
 		mockMvc.perform(get(

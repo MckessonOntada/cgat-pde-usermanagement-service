@@ -95,8 +95,7 @@ public class TherapyServiceImplTest {
 			.when(therapyRepository.findAllSoldToAccounts(anyLong(), anyString(), anyString(),
 					Mockito.any(Pageable.class), anyString(), anyString(), anyString()))
 			.thenReturn(getAccounts());
-		therapyService.findAllSoldToAccounts(userId, Long.valueOf(therapyId), query, paging, DistributionChannel.SD,
-				"");
+		therapyService.findAllSoldToAccounts(userId, therapyId, query, paging, DistributionChannel.SD, "");
 		verify(therapyRepository, times(1)).findAllSoldToAccounts(userId, therapyId, query, paging,
 				DistributionChannel.SD.getCode(), "", "SH");
 	}
@@ -111,7 +110,7 @@ public class TherapyServiceImplTest {
 			.when(therapyRepository.findAllShipToAccounts(anyString(), anyString(), anyString(),
 					Mockito.any(Pageable.class), anyString()))
 			.thenReturn(getAccounts());
-		therapyService.findAllShipToAccounts(soldToAccount, Long.valueOf(therapyId), paging, "");
+		therapyService.findAllShipToAccounts(soldToAccount, therapyId, paging, "");
 		verify(therapyRepository, times(1)).findAllShipToAccounts(soldToAccount, therapyId, "", paging, "SP");
 	}
 
@@ -198,8 +197,7 @@ public class TherapyServiceImplTest {
 			.when(catalogPriceRepository.findAllCatalogPricesLinkedToShipToAccountsForTherapy(anyString(), anyString(),
 					anyString(), Mockito.any(Pageable.class)))
 			.thenReturn(getAllVariantsLinkedToShipToAccounts());
-		therapyService.findAllVariantsLinkedToShipToAccountsForTherapy(soldToAccount, shipToAccount,
-				Long.valueOf(therapyId), paging);
+		therapyService.findAllVariantsLinkedToShipToAccountsForTherapy(soldToAccount, shipToAccount, therapyId, paging);
 		verify(catalogPriceRepository, times(1)).findAllCatalogPricesLinkedToShipToAccountsForTherapy(soldToAccount,
 				shipToAccount, therapyId, paging);
 	}
@@ -216,7 +214,7 @@ public class TherapyServiceImplTest {
 					anyString(), anyString()))
 			.thenReturn(getCatalogPrice());
 		therapyService.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccount, shipToAccount, variantType,
-				Long.valueOf(therapyId));
+				therapyId);
 		verify(catalogPriceRepository, times(1)).findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccount,
 				shipToAccount, therapyId, variantType);
 	}
@@ -233,7 +231,7 @@ public class TherapyServiceImplTest {
 					anyString(), anyString()))
 			.thenReturn(getCatalogPriceWithEmptyVariant());
 		therapyService.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccount, shipToAccount, variantType,
-				Long.valueOf(therapyId));
+				therapyId);
 		verify(catalogPriceRepository, times(1)).findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccount,
 				shipToAccount, therapyId, variantType);
 	}

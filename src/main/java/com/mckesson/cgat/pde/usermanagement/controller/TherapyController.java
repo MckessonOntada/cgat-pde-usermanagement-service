@@ -66,7 +66,7 @@ public class TherapyController {
 	@GetMapping("/{therapyId}/soldtoaccounts")
 	@Operation(
 			summary = "Find all soldto accounts from which the selected therapy is being offered, and the logged in user has access to")
-	public Page<AccountsResponseDTO> findAllSoldToAccountsByTherapy(@PathVariable Long therapyId,
+	public Page<AccountsResponseDTO> findAllSoldToAccountsByTherapy(@PathVariable String therapyId,
 			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(required = false) String query,
 			@RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(required = false) DistributionChannel channel,
@@ -81,7 +81,7 @@ public class TherapyController {
 	@Operation(
 			summary = "Find all shipto accounts that is linked to the selected soldto account and the therapy also being offered from that shipto account")
 	public Page<AccountsResponseDTO> findAllShipToAccountsForTherapy(@PathVariable String soldToAccountId,
-			@PathVariable Long therapyId, @RequestParam(defaultValue = "0") Integer pageNo,
+			@PathVariable String therapyId, @RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query) {
 		Pageable paging = PageRequest.of(pageNo, pageSize);
 		return therapyService.findAllShipToAccounts(soldToAccountId, therapyId, paging, query);
@@ -101,7 +101,7 @@ public class TherapyController {
 					message = "'soldToAccountId' cannot be empty") String soldToAccountId,
 			@PathVariable @NotNull(message = "'shipToAccountId' cannot be null") @NotEmpty(
 					message = "'shipToAccountId' cannot be empty") String shipToAccountId,
-			@PathVariable @NotNull(message = "'therapyId' cannot be null") Long therapyId,
+			@PathVariable @NotNull(message = "'therapyId' cannot be null") String therapyId,
 			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize) {
 		Pageable paging = PageRequest.of(pageNo, pageSize);
 		return therapyService.findAllVariantsLinkedToShipToAccountsForTherapy(soldToAccountId, shipToAccountId,
@@ -117,7 +117,7 @@ public class TherapyController {
 			@PathVariable @NotNull(message = "'shipToAccountId' cannot be null") @NotEmpty(
 					message = "'shipToAccountId' cannot be empty") String shipToAccountId,
 			@RequestParam(required = false) String variantType,
-			@PathVariable @NotNull(message = "'therapyId' cannot be null") Long therapyId) {
+			@PathVariable @NotNull(message = "'therapyId' cannot be null") String therapyId) {
 		return therapyService.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccountId, shipToAccountId,
 				variantType, therapyId);
 	}
@@ -125,7 +125,7 @@ public class TherapyController {
 	@GetMapping("/{therapyId}/programs-channels")
 	@Operation(
 			summary = "Find all programs and channels from which the selected therapy is being offered, and the logged in user has access to")
-	public ResponseEntity<ProgramChannelResponseDTO> findAllProgramAndChannels(@PathVariable Long therapyId) {
+	public ResponseEntity<ProgramChannelResponseDTO> findAllProgramAndChannels(@PathVariable String therapyId) {
 		return new ResponseEntity<>(therapyService.findAllProgramAndChannels(
 				Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), therapyId), HttpStatus.OK);
 	}

@@ -57,17 +57,17 @@ public class TherapyServiceImpl implements TherapyService {
 				customerIdentifier, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 	}
 
-	public Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, Long therapyId, String query, Pageable paging,
+	public Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, String therapyId, String query, Pageable paging,
 			DistributionChannel channel, String program) {
-		return therapyRepository.findAllSoldToAccounts(userId, therapyId.toString(), StringUtils.toRootLowerCase(query),
-				paging, null != channel ? channel.getCode() : null, program,
+		return therapyRepository.findAllSoldToAccounts(userId, therapyId, StringUtils.toRootLowerCase(query), paging,
+				null != channel ? channel.getCode() : null, program,
 				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 	}
 
-	public Page<AccountsResponseDTO> findAllShipToAccounts(String soldToAccountId, Long therapyId, Pageable paging,
+	public Page<AccountsResponseDTO> findAllShipToAccounts(String soldToAccountId, String therapyId, Pageable paging,
 			String query) {
-		return therapyRepository.findAllShipToAccounts(soldToAccountId, therapyId.toString(),
-				StringUtils.toRootLowerCase(query), paging, AccountPartnerFunction.SHIP_TO.getPartnerFunctionType());
+		return therapyRepository.findAllShipToAccounts(soldToAccountId, therapyId, StringUtils.toRootLowerCase(query),
+				paging, AccountPartnerFunction.SHIP_TO.getPartnerFunctionType());
 	}
 
 	public Therapy findById(Long id) throws ResourceNotFoundException {
@@ -77,14 +77,14 @@ public class TherapyServiceImpl implements TherapyService {
 
 	@Override
 	public Page<CatalogPriceResponseDto> findAllVariantsLinkedToShipToAccountsForTherapy(String soldToAccountId,
-			String shipToAccountId, Long therapyId, Pageable paging) {
+			String shipToAccountId, String therapyId, Pageable paging) {
 		try {
 			log.info(" Inside method - findAllVariantsLinkedToShipToAccountsForTherapy..");
 			log.info("soldToAccountId: {} , shipToAccountId: {} and therapyId: {}", soldToAccountId, shipToAccountId,
 					therapyId);
 			Page<CatalogPrice> allVariants = catalogPriceRepository
-				.findAllCatalogPricesLinkedToShipToAccountsForTherapy(soldToAccountId, shipToAccountId,
-						therapyId.toString(), paging);
+				.findAllCatalogPricesLinkedToShipToAccountsForTherapy(soldToAccountId, shipToAccountId, therapyId,
+						paging);
 			List<CatalogPriceResponseDto> allTherapyVariants = catalogPriceMapper
 				.toResponseDtoVariantsList(allVariants.getContent());
 			return new PageImpl<>(allTherapyVariants, paging, allVariants.getTotalElements());
@@ -99,13 +99,13 @@ public class TherapyServiceImpl implements TherapyService {
 
 	@Override
 	public CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForTherapy(String soldToAccountId,
-			String shipToAccountId, String variantType, Long therapyId) {
+			String shipToAccountId, String variantType, String therapyId) {
 		try {
 			log.info(" Inside method - findPriceOfVariantLinkedToShipToAccountsForTherapy..");
 			log.info("soldToAccountId: {} , shipToAccountId: {} , variantType: {} and therapyId: {}", soldToAccountId,
 					shipToAccountId, variantType, therapyId);
 			CatalogPrice catalogPrice = catalogPriceRepository.findPriceOfVariantLinkedToShipToAccountsForTherapy(
-					soldToAccountId, shipToAccountId, therapyId.toString(), variantType);
+					soldToAccountId, shipToAccountId, therapyId, variantType);
 			return catalogPriceMapper.toResponseDto(catalogPrice);
 		}
 		catch (Exception e) {
@@ -123,10 +123,10 @@ public class TherapyServiceImpl implements TherapyService {
 					() -> new ResourceNotFoundException("Therapy not found with materialNumber: " + materialNumber));
 	}
 
-	public ProgramChannelResponseDTO findAllProgramAndChannels(Long userId, Long therapyId) {
+	public ProgramChannelResponseDTO findAllProgramAndChannels(Long userId, String therapyId) {
 
 		List<ProgramChannelProjectionDTO> programAndChannels = therapyRepository.findAllProgramAndChannels(userId,
-				therapyId.toString(), AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
+				therapyId, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 
 		Set<String> uniquePrograms = null != programAndChannels ? (programAndChannels.stream()
 			.map(ProgramChannelProjectionDTO::getProgram)
