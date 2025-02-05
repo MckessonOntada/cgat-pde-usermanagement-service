@@ -97,7 +97,7 @@ public class GlobalTherapyController {
 	}
 
 	@GetMapping("/config/therapyId/{id}")
-	@RequirePermissions({ Permission.VIEW_MATERIAL })
+	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.ADD_ORDERS, Permission.EDIT_ORDERS })
 	@Operation(summary = "Find Therapy details by Material Number")
 	public ResponseEntity<MaterialResponseDTO> findTherapyDetailsById(@PathVariable Long id)
 			throws ResourceNotFoundException {
