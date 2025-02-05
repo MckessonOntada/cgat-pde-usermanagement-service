@@ -1,27 +1,18 @@
 package com.mckesson.cgat.pde.usermanagement.model;
 
-import java.io.Serializable;
-import java.time.Instant;
-import java.util.Date;
-
 import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
-import lombok.Getter;
-import lombok.Setter;
+import java.io.Serializable;
+import java.time.Instant;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -38,12 +29,10 @@ public abstract class AuditColumns implements Serializable {
 
 	@Column(name = "CREATED_BY")
 	@CreatedBy
-	@JsonIgnore
 	private String createdBy;
 
 	@Column(name = "CREATED_BY_IMPERSONATOR")
 	@CreatedBy
-	@JsonIgnore
 	private String createdByImpersonator;
 
 	@Column(name = "UPDATED_AT")
@@ -53,12 +42,10 @@ public abstract class AuditColumns implements Serializable {
 
 	@Column(name = "UPDATED_BY")
 	@LastModifiedBy
-	@JsonIgnore
 	private String updatedBy;
 
 	@Column(name = "UPDATED_BY_IMPERSONATOR")
 	@CreatedBy
-	@JsonIgnore
 	private String updatedByImpersonator;
 
 	@PrePersist
