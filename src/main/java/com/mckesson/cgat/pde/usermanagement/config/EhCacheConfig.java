@@ -51,14 +51,24 @@ public class EhCacheConfig {
 			.withService(eventListenerConfig)
 			.build();
 
+		CacheConfiguration<String, Object> defaultCacheConfig = CacheConfigurationBuilder
+			.newCacheConfigurationBuilder(String.class, Object.class, sharedPool)
+			.withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofDays(1)))
+			.withService(eventListenerConfig)
+			.build();
+
 		javax.cache.configuration.Configuration<String, Page<Therapy>> allTherapyCacheConfig = Eh107Configuration
 			.fromEhcacheCacheConfiguration(allTherapyConfiguration);
 
 		javax.cache.configuration.Configuration<String, MaterialDetailsResponseDTO> therapyConfig = Eh107Configuration
 			.fromEhcacheCacheConfiguration(therapyConfiguration);
 
+		javax.cache.configuration.Configuration<String, Object> defaultCache = Eh107Configuration
+			.fromEhcacheCacheConfiguration(defaultCacheConfig);
+
 		cacheManager.createCache("materialCache", allTherapyCacheConfig);
 		cacheManager.createCache("singleMaterialCache", therapyConfig);
+		cacheManager.createCache("defaultCache", defaultCache);
 
 		return cacheManager;
 	}
