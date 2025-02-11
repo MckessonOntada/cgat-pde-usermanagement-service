@@ -36,12 +36,12 @@ public class CacheServiceImpl implements CacheService {
 	private final CacheManager cacheManager;
 
 	public CacheServiceImpl(TherapyRepository therapyRepository, TherapyConfigRepository therapyConfigRepository,
-                            QuestionnaireService questionnaireService, CacheManager cacheManager) {
+			QuestionnaireService questionnaireService, CacheManager cacheManager) {
 		this.therapyRepository = therapyRepository;
 		this.therapyConfigRepository = therapyConfigRepository;
 		this.questionnaireService = questionnaireService;
-        this.cacheManager = cacheManager;
-    }
+		this.cacheManager = cacheManager;
+	}
 
 	@Cacheable(value = "materialCache", key = "#query + '-' + #paging.pageNumber + '-' + #paging.pageSize")
 	public Page<Therapy> findAllGlobalTherapies(String query, Pageable paging) {
@@ -88,8 +88,8 @@ public class CacheServiceImpl implements CacheService {
 	}
 
 	public void testCacheEvents() {
-		Cache<String, MaterialDetailsResponseDTO> cache =
-				cacheManager.getCache("singleMaterialCache", String.class, MaterialDetailsResponseDTO.class);
+		Cache<String, MaterialDetailsResponseDTO> cache = cacheManager.getCache("singleMaterialCache", String.class,
+				MaterialDetailsResponseDTO.class);
 		if (cache == null) {
 			log.error("❌ Cache 'singleMaterialCache' not found!");
 			return;
@@ -99,4 +99,5 @@ public class CacheServiceImpl implements CacheService {
 		cache.put("testKey", new MaterialDetailsResponseDTO());
 		cache.remove("testKey");
 	}
+
 }

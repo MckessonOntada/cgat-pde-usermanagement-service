@@ -23,5 +23,6 @@ public interface CacheService {
 	MaterialDetailsResponseDTO findTherapyDetailsByMaterialNumber(String materialNumber)
 			throws ResourceNotFoundException;
 
-    void testCacheEvents();
+	void testCacheEvents();
+
 }

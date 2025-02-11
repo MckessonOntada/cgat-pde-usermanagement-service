@@ -65,10 +65,10 @@ public class CacheDemoController {
 		return new ResponseEntity<>(materialNumber, HttpStatus.OK);
 	}
 
-    @GetMapping("/test")
-    public String testCache() {
-        cacheService.testCacheEvents();
-        return "Cache events triggered!";
-    }
+	@GetMapping("/test")
+	public String testCache() {
+		cacheService.testCacheEvents();
+		return "Cache events triggered!";
+	}
 
 }

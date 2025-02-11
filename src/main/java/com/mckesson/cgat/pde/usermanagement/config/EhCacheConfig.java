@@ -36,8 +36,8 @@ public class EhCacheConfig {
 		CacheEventListenerConfigurationBuilder eventListenerConfig = CacheEventListenerConfigurationBuilder
 			.newEventListenerConfiguration(CustomCacheEventListener.class, EventType.CREATED, EventType.UPDATED,
 					EventType.REMOVED)
-			.unordered().synchronous();
-
+			.unordered()
+			.synchronous();
 
 		CacheConfiguration<String, Page<Therapy>> allTherapyConfiguration = CacheConfigurationBuilder
 			.newCacheConfigurationBuilder(String.class, (Class<Page<Therapy>>) (Class<?>) Page.class, sharedPool)
