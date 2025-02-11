@@ -11,7 +11,7 @@ public class CustomCacheEventListener implements CacheEventListener<Object, Obje
 
 	@Override
 	public void onEvent(CacheEvent<? extends Object, ? extends Object> event) {
-		log.info("🔥 Cache Event: {} | Key: {} | Old Value: {} | New Value: {}", event.getType(), event.getKey(),
+		log.debug("🔥 Cache Event: {} | Key: {} | Old Value: {} | New Value: {}", event.getType(), event.getKey(),
 				event.getOldValue(), event.getNewValue());
 	}
 

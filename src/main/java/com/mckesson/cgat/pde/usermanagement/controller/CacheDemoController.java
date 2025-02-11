@@ -22,7 +22,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(path = "/Cache/Therapies", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/cache/therapies", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Cache Controller ", description = "Controller for cache demo.")
 @Slf4j
 @Validated

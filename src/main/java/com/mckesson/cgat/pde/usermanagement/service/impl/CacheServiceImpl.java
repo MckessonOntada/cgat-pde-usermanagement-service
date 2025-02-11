@@ -88,16 +88,36 @@ public class CacheServiceImpl implements CacheService {
 	}
 
 	public void testCacheEvents() {
-		Cache<String, MaterialDetailsResponseDTO> cache = cacheManager.getCache("singleMaterialCache", String.class,
-				MaterialDetailsResponseDTO.class);
+		Cache<String, Object> cache = cacheManager.getCache("defaultCache", String.class, Object.class);
 		if (cache == null) {
-			log.error("❌ Cache 'singleMaterialCache' not found!");
+			log.error("❌ Cache 'defaultCache' not found!");
 			return;
 		}
-		cache.put("testKey", new MaterialDetailsResponseDTO());
-		cache.get("testKey");
-		cache.put("testKey", new MaterialDetailsResponseDTO());
-		cache.remove("testKey");
+		String testKey = "testKey";
+
+		log.info("📝 Adding an entry to the cache with key: {}", testKey);
+		cache.put(testKey, new MaterialDetailsResponseDTO());
+		log.info("✔️ Entry added successfully!");
+
+		Object value = cache.get(testKey);
+		if (value != null) {
+			log.info("✅ Cache hit: Retrieved value for key: {}", testKey);
+		}
+		else {
+			log.warn("⚠️ Cache miss: No value found for key: {}", testKey);
+		}
+		cache.put(testKey, new MaterialDetailsResponseDTO());
+		log.info("✔️ Cache entry updated successfully!");
+
+		cache.remove(testKey);
+		log.info("✔️ Cache entry removed successfully!");
+
+		if (cache.get(testKey) == null) {
+			log.info("✅ Key '{}' successfully removed from cache!", testKey);
+		}
+		else {
+			log.warn("⚠️ Key '{}' still exists in cache after removal!", testKey);
+		}
 	}
 
 }
