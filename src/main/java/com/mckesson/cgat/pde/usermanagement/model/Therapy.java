@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 import jakarta.persistence.Column;
@@ -117,7 +118,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "material", schema = "catalog")
-public class Therapy {
+public class Therapy implements Serializable {
 
 	@Id
 	@GeneratedValue(generator = "material_id_seq")

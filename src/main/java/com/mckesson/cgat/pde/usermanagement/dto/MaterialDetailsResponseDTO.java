@@ -6,13 +6,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MaterialDetailsResponseDTO extends MaterialResponseDTO {
+public class MaterialDetailsResponseDTO extends MaterialResponseDTO implements Serializable {
 
 	private List<Questionnaire> questionnaires;
 
