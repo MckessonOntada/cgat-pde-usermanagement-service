@@ -29,9 +29,8 @@ public class EhCacheConfig {
 		CacheManager cacheManager = Caching.getCachingProvider(EhcacheCachingProvider.class.getName())
 			.getCacheManager();
 
-		ResourcePoolsBuilder sharedPool = ResourcePoolsBuilder.newResourcePoolsBuilder()
-			.heap(100, MemoryUnit.MB)
-			.offheap(200, MemoryUnit.MB);
+		ResourcePoolsBuilder sharedPool = ResourcePoolsBuilder.newResourcePoolsBuilder().heap(100, MemoryUnit.MB);
+		// .offheap(200, MemoryUnit.MB);
 
 		CacheEventListenerConfigurationBuilder eventListenerConfig = CacheEventListenerConfigurationBuilder
 			.newEventListenerConfiguration(CustomCacheEventListener.class, EventType.CREATED, EventType.UPDATED,
