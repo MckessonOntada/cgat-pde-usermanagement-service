@@ -79,7 +79,6 @@ public class CGATWebClient {
 				.filter(logRequest())
 				.filter(logResponse())
 				.filter((request, next) -> next.exchange(request)
-					.doOnNext(response -> log.trace("Response: {}", response.statusCode()))
 					.retryWhen(Retry.backoff(maxAttempt, backoff)
 						.doBeforeRetry(retrySignal -> log.warn("Retrying...", retrySignal.failure()))))
 				.clientConnector(new ReactorClientHttpConnector(HttpClient.create()
