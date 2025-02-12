@@ -5,7 +5,7 @@ import java.util.Map;
 
 public enum AccountPartnerFunction {
 
-	SOLD_TO("SH"), SHIP_TO("SP"), PAYER("PY"), BILL_TO("BP");
+	SOLD_TO("SP"), SHIP_TO("SH"), PAYER("PY"), BILL_TO("BP");
 
 	private String partnerFunctionType;
 
