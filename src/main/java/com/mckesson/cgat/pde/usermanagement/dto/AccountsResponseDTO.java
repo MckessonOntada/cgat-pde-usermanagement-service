@@ -44,9 +44,8 @@ public interface AccountsResponseDTO {
 
 	String getCgatIdentifier();
 
-	default DistributionChannel getDistributionChannel() {
-		String channel = getDistChannel();
-		return channel != null ? DistributionChannel.fromCode(channel) : null;
+	default String getDistributionChannel() {
+		return getDistChannel();
 	}
 
 }
