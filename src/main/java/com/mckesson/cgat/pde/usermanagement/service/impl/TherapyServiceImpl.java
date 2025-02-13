@@ -58,10 +58,15 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	public Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, String therapyId, String query, Pageable paging,
-			DistributionChannel channel, String program) {
+			String channel, String program) {
 		return therapyRepository.findAllSoldToAccounts(userId, therapyId, StringUtils.toRootLowerCase(query), paging,
-				null != channel ? channel.getCode() : null, program,
-				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
+				channel, program, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
+	}
+
+	public Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, String therapyId, String query, Pageable paging,
+			List<String> channels, String program) {
+		return therapyRepository.findAllSoldToAccounts(userId, therapyId, StringUtils.toRootLowerCase(query), paging,
+				channels, program, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 	}
 
 	public Page<AccountsResponseDTO> findAllShipToAccounts(String soldToAccountId, String therapyId, Pageable paging,
@@ -133,10 +138,19 @@ public class TherapyServiceImpl implements TherapyService {
 			.filter(Objects::nonNull)
 			.collect(Collectors.toSet())) : Collections.emptySet();
 
-		Set<DistributionChannel> uniqueChannels = null != programAndChannels ? (programAndChannels.stream()
-			.map(ProgramChannelProjectionDTO::getChannel)
-			.map(DistributionChannel::fromCode)
-			.collect(Collectors.toSet())) : Collections.emptySet();
+		Set<String> uniqueChannels = programAndChannels != null
+				? programAndChannels.stream().map(ProgramChannelProjectionDTO::getChannel).map(channel -> {
+					if ("8545".equals(channel))
+						return "MPB";
+					if ("1000".equals(channel))
+						return "Speciality";
+					if ("1100".equals(channel) || channel.startsWith("2"))
+						return "3PL";
+					return null; // Ignore other entries
+				})
+					.filter(Objects::nonNull) // Remove ignored entries
+					.collect(Collectors.toSet())
+				: Collections.emptySet();
 
 		return ProgramChannelResponseDTO.builder().channels(uniqueChannels).programs(uniquePrograms).build();
 	}

@@ -69,8 +69,7 @@ public class Account implements Serializable {
 	private String salesOrg;
 
 	@Column(name = "distribution_channel")
-	@Convert(converter = DistributionChannelConverter.class)
-	private DistributionChannel distributionChannel;
+	private String distributionChannel;
 
 	@Column(name = "vistex_customer")
 	private String vistexCustomer;

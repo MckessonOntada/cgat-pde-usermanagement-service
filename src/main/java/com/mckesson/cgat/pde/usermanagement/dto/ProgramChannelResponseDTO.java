@@ -20,6 +20,6 @@ public class ProgramChannelResponseDTO {
 
 	private Set<String> programs;
 
-	private Set<DistributionChannel> channels;
+	private Set<String> channels;
 
 }

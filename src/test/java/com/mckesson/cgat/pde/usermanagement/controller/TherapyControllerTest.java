@@ -182,7 +182,7 @@ public class TherapyControllerTest {
 		Long therapyId = 12L;
 
 		when(therapyService.findAllSoldToAccounts(anyLong(), anyString(), anyString(), any(Pageable.class),
-				any(DistributionChannel.class), anyString()))
+				any(String.class), anyString()))
 			.thenReturn(getAccounts());
 
 		mockMvc.perform(

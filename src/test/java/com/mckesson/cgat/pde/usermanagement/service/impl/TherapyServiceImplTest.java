@@ -81,7 +81,7 @@ public class TherapyServiceImplTest {
 
 		therapyService.findAllTherapies(userId, query, new ArrayList<>(), paging, new ArrayList<>());
 		verify(therapyRepository, times(1)).findAllTherapies(userId, query, new ArrayList<>(), paging,
-				new ArrayList<>(), "SH");
+				new ArrayList<>(), "SP");
 	}
 
 	@DisplayName("Test: FindAll SoldToAccounts")
@@ -95,9 +95,8 @@ public class TherapyServiceImplTest {
 			.when(therapyRepository.findAllSoldToAccounts(anyLong(), anyString(), anyString(),
 					Mockito.any(Pageable.class), anyString(), anyString(), anyString()))
 			.thenReturn(getAccounts());
-		therapyService.findAllSoldToAccounts(userId, therapyId, query, paging, DistributionChannel.SD, "");
-		verify(therapyRepository, times(1)).findAllSoldToAccounts(userId, therapyId, query, paging,
-				DistributionChannel.SD.getCode(), "", "SH");
+		therapyService.findAllSoldToAccounts(userId, therapyId, query, paging, "80", "");
+		verify(therapyRepository, times(1)).findAllSoldToAccounts(userId, therapyId, query, paging, "80", "", "SP");
 	}
 
 	@DisplayName("Test: FindAll ShipToAccounts")
@@ -111,7 +110,7 @@ public class TherapyServiceImplTest {
 					Mockito.any(Pageable.class), anyString()))
 			.thenReturn(getAccounts());
 		therapyService.findAllShipToAccounts(soldToAccount, therapyId, paging, "");
-		verify(therapyRepository, times(1)).findAllShipToAccounts(soldToAccount, therapyId, "", paging, "SP");
+		verify(therapyRepository, times(1)).findAllShipToAccounts(soldToAccount, therapyId, "", paging, "SH");
 	}
 
 	@DisplayName("Test: Find Therapy ById")
@@ -324,7 +323,7 @@ public class TherapyServiceImplTest {
 		List<CatalogPrice> catalogs = new ArrayList<>();
 		CatalogPrice catalog1 = CatalogPrice.builder()
 			.salesOrg("1100")
-			.distChannel(DistributionChannel.PL)
+			.distChannel("10")
 			.sapMaterial("12")
 			.variant("v1")
 			.variantDescription("version 1")
@@ -332,7 +331,7 @@ public class TherapyServiceImplTest {
 			.build();
 		CatalogPrice catalog2 = CatalogPrice.builder()
 			.salesOrg("1000")
-			.distChannel(DistributionChannel.SD)
+			.distChannel("40")
 			.sapMaterial("18")
 			.variant("v2")
 			.variantDescription("version 2")

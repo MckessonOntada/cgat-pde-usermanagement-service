@@ -70,7 +70,7 @@ public class GlobalCatalogControllerTest {
 		List<CatalogPrice> catalogs = new ArrayList<>();
 		CatalogPrice catalog1 = CatalogPrice.builder()
 			.salesOrg("1100")
-			.distChannel(DistributionChannel.ALL)
+			.distChannel("80")
 			.sapMaterial("12")
 			.variant("v1")
 			.variantDescription("version 1")
@@ -78,7 +78,7 @@ public class GlobalCatalogControllerTest {
 			.build();
 		CatalogPrice catalog2 = CatalogPrice.builder()
 			.salesOrg("1000")
-			.distChannel(DistributionChannel.ALL)
+			.distChannel("80")
 			.sapMaterial("18")
 			.variant("v2")
 			.variantDescription("version 2")
@@ -86,7 +86,7 @@ public class GlobalCatalogControllerTest {
 			.build();
 		CatalogPrice catalog3 = CatalogPrice.builder()
 			.salesOrg("8545")
-			.distChannel(DistributionChannel.ALL)
+			.distChannel("80")
 			.sapMaterial("22")
 			.variant("v3")
 			.variantDescription("version 3")

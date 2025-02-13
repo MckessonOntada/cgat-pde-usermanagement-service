@@ -155,9 +155,8 @@ public class CatalogPrice {
 
 	@Size(max = 2)
 	@NotBlank
-	@Convert(converter = DistributionChannelConverter.class)
 	@Column(name = "dist_channel")
-	private DistributionChannel distChannel;
+	private String distChannel;
 
 	@Size(max = 2)
 	@NotBlank

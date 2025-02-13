@@ -1,7 +1,9 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -43,6 +45,9 @@ public class TherapyController {
 
 	private final TherapyService therapyService;
 
+	private static final Map<String, List<String>> CHANNEL_MAPPING = Map.of("MPB",
+			List.of("20", "30", "40", "50", "60"), "Speciality", List.of("10"), "3PL", List.of("10"));
+
 	public TherapyController(TherapyService therapyService) {
 		this.therapyService = therapyService;
 	}
@@ -68,13 +73,19 @@ public class TherapyController {
 			summary = "Find all soldto accounts from which the selected therapy is being offered, and the logged in user has access to")
 	public Page<AccountsResponseDTO> findAllSoldToAccountsByTherapy(@PathVariable String therapyId,
 			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(required = false) String query,
-			@RequestParam(defaultValue = "20") Integer pageSize,
-			@RequestParam(required = false) DistributionChannel channel,
+			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String channel,
 			@RequestParam(required = false) String program) {
-
-		Pageable paging = PageRequest.of(pageNo, pageSize);
-		return therapyService.findAllSoldToAccounts(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()),
-				therapyId, query, paging, channel, program);
+		if (StringUtils.isEmpty(channel) || (StringUtils.isNotEmpty(channel) && StringUtils.isNumeric(channel))) {
+			Pageable paging = PageRequest.of(pageNo, pageSize);
+			return therapyService.findAllSoldToAccounts(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()),
+					therapyId, query, paging, channel, program);
+		}
+		else {
+			Pageable paging = PageRequest.of(pageNo, pageSize);
+			List<String> channels = CHANNEL_MAPPING.get(channel);
+			return therapyService.findAllSoldToAccounts(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()),
+					therapyId, query, paging, channels, program);
+		}
 	}
 
 	@GetMapping("{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccounts")

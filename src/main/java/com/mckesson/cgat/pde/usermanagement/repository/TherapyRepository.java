@@ -110,6 +110,45 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier
 				FROM catalog.material m
 				JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
+				JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
+				JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
+				WHERE
+				(
+						(
+							:query is null
+							or LOWER(ac.sap_customer) like %:query%
+							or LOWER(ac.name_1) like %:query%
+						)
+					AND
+						(:channels IS NULL OR ac.distribution_channel IN (:channels))
+					AND
+						(
+						cast(:program as varchar) is null
+						or ac.cgat_identifier = :program
+						)
+					AND
+						m.material_number = :therapyId
+					AND
+						ac.partner_function = :partnerFunction
+					AND
+						uam.user_id = :userId
+					)
+					GROUP BY ac.id, ac.sap_customer, ac.name_1, ac.house_number, ac.street, ac.street_2,
+						 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code,
+						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel, ac.cgat_identifier
+			""",
+			nativeQuery = true)
+	public Page<AccountsResponseDTO> findAllSoldToAccounts(@Param("userId") Long userId,
+			@Param("therapyId") String therapyId, @Param("query") String query, Pageable paging,
+			@Param("channel") List<String> channels, @Param("program") String program,
+			@Param("partnerFunction") String partnerFunction);
+
+	@Query(value = """
+				SELECT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2,
+						 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code, false as isDefault,
+						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier
+				FROM catalog.material m
+				JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
 				JOIN usermanagement.account ac ON ac.sap_customer = cp.ship_to_customer
 				WHERE
 				(
@@ -135,7 +174,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			@Param("partnerFunction") String partnerFunction);
 
 	@Query(value = """
-			SELECT ac.cgat_identifier as program, ac.distribution_channel as channel
+			SELECT ac.cgat_identifier as program, ac.sales_org as channel
 			FROM catalog.material m
 			JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
 			JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
