@@ -140,7 +140,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			nativeQuery = true)
 	public Page<AccountsResponseDTO> findAllSoldToAccounts(@Param("userId") Long userId,
 			@Param("therapyId") String therapyId, @Param("query") String query, Pageable paging,
-			@Param("channel") List<String> channels, @Param("program") String program,
+			@Param("channels") List<String> channels, @Param("program") String program,
 			@Param("partnerFunction") String partnerFunction);
 
 	@Query(value = """
