@@ -1,13 +1,18 @@
 package com.mckesson.cgat.pde.usermanagement.config;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.resolver.DefaultAddressResolverGroup;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.util.Assert;
+import org.springframework.web.reactive.function.client.ClientResponse;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 import reactor.util.retry.Retry;
 
@@ -69,13 +74,13 @@ public class CGATWebClient {
 		public CGATWebClient build() {
 			Assert.notNull(baseURL, "Base URL is required");
 			WebClient.Builder builder = WebClient.builder();
-			builder.baseUrl(baseURL).defaultHeader("Content-Type", "application/json").filter((request, next) -> {
-				log.debug("Request: {} {}", request.method(), request);
-				return next.exchange(request)
-					.doOnNext(response -> log.trace("Response: {}", response.statusCode()))
+			builder.baseUrl(baseURL)
+				.defaultHeader("Content-Type", "application/json")
+				.filter(logRequest())
+				.filter(logResponse())
+				.filter((request, next) -> next.exchange(request)
 					.retryWhen(Retry.backoff(maxAttempt, backoff)
-						.doBeforeRetry(retrySignal -> log.warn("Retrying...", retrySignal.failure())));
-			})
+						.doBeforeRetry(retrySignal -> log.warn("Retrying...", retrySignal.failure()))))
 				.clientConnector(new ReactorClientHttpConnector(HttpClient.create()
 					.responseTimeout(responseTimeout)
 					.resolver(DefaultAddressResolverGroup.INSTANCE)
@@ -111,6 +116,7 @@ public class CGATWebClient {
 	}
 
 	public <T> T post(String uri, Object body, Class<T> responseType) {
+		logRequestBody(body);
 		return webClient.post()
 			.uri(uri)
 			.bodyValue(body)
@@ -128,5 +134,37 @@ public class CGATWebClient {
 	 * "XQU7QwwJIG0mgaOSQO8vnslTFxL8ircwylZSpPJVkID3o-yqilxsAuAMdBRsg_Mi") .build();
 	 * System.out.println(cgatWebClient.get("/salesorders/123/456", String.class)); }
 	 */
+	private static ExchangeFilterFunction logRequest() {
+		return ExchangeFilterFunction.ofRequestProcessor(clientRequest -> {
+			log.debug("Request: {} {}", clientRequest.method(), clientRequest.url());
+			clientRequest.headers()
+				.forEach((name, values) -> values.forEach(value -> log.debug("{}: {}", name, value)));
+			return Mono.just(clientRequest);
+		});
+	}
+
+	private static ExchangeFilterFunction logResponse() {
+		return ExchangeFilterFunction
+			.ofResponseProcessor(clientResponse -> clientResponse.bodyToMono(String.class).flatMap(body -> {
+				log.debug("Response Status: {}", clientResponse.statusCode());
+				log.debug("Response Headers: {}", clientResponse.headers().asHttpHeaders());
+				log.debug("Response Body: {}", body);
+
+				return Mono.just(ClientResponse.create(clientResponse.statusCode())
+					.headers(headers -> headers.addAll(clientResponse.headers().asHttpHeaders()))
+					.body(body)
+					.build());
+			}));
+	}
+
+	private void logRequestBody(Object body) {
+		try {
+			String requestBody = new ObjectMapper().writeValueAsString(body);
+			log.debug("Request Body: {}", requestBody);
+		}
+		catch (JsonProcessingException e) {
+			log.debug("Failed to log request body: {}", e.getMessage());
+		}
+	}
 
 }
