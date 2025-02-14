@@ -45,9 +45,14 @@ public class CGATHttpClient {
 			.header("Authorization", oktaApiToken)
 			.timeout(Duration.ofSeconds(5))
 			.build();
+		log.debug("Sending POST request to URL: {} with Headers: {} and Payload: {}", request.uri(),
+				request.headers().map(), payload);
 
 		HttpResponse<String> httpResponse = getHttpResponse(request);
+		log.debug("Received POST response for: {} with Status: {} and Body: {}", request.uri(),
+				httpResponse.statusCode(), httpResponse.body());
 		return httpResponse.body();
+
 	}
 
 	private String getQueryParams(HashMap<String, String> queryParams) {
@@ -67,7 +72,12 @@ public class CGATHttpClient {
 			.timeout(Duration.ofSeconds(5))
 			.build();
 
+		log.debug("Sending GET request to URL: {} with Headers: {}", request.uri(), request.headers().map());
+
 		HttpResponse<String> httpResponse = getHttpResponse(request);
+		log.debug("Received GET response for: {} with Status: {} and Body: {}", request.uri(),
+				httpResponse.statusCode(), httpResponse.body());
+
 		return httpResponse.body();
 	}
 
@@ -78,7 +88,13 @@ public class CGATHttpClient {
 			.header(HttpHeaders.AUTHORIZATION, oktaApiToken)
 			.timeout(Duration.ofSeconds(5))
 			.build();
+		log.debug("Sending PUT request to URL: {} with Headers: {} and Payload: {}", request.uri(),
+				request.headers().map(), "Assigning user to group");
+
 		HttpResponse<String> httpResponse = getHttpResponse(request);
+		log.debug("Received PUT response for: {} with Status: {} and Body: {}", request.uri(),
+				httpResponse.statusCode(), httpResponse.body());
+
 		return httpResponse.body();
 	}
 
