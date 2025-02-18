@@ -10,10 +10,16 @@ public class UserRequestAuthorizationValidator {
 
 	public static final String SYSTEM_ADMIN_ROLE = "System Admin";
 
+	public static final String CUSTOMER_CENTRE_ROLE = "Customer Centre";
+
 	private static final Long SYSTEM_LEVEL_ORGANISATION_ID = 1L;
 
 	public static boolean isSystemAdmin(LoggedInUserDetails loggedInUser) {
 		return SYSTEM_ADMIN_ROLE.equals(loggedInUser.getRole().getName());
+	}
+
+	public static boolean isCustomerCentreUser(LoggedInUserDetails loggedInUser) {
+		return CUSTOMER_CENTRE_ROLE.equals(loggedInUser.getRole().getName());
 	}
 
 	public static void canLoggedInUserManageUserType(UserType requestedUserType) throws UnauthorizedAccessException {
@@ -25,7 +31,7 @@ public class UserRequestAuthorizationValidator {
 			 * System Admins can be created only under global organization having the
 			 * identifier as 1
 			 */
-			if (!isSystemAdmin(loggedInUser)
+			if (!(isSystemAdmin(loggedInUser) || isCustomerCentreUser(loggedInUser))
 					|| !OrganizationContext.getCurrentOrgId().equals(SYSTEM_LEVEL_ORGANISATION_ID)) {
 				throw new UnauthorizedAccessException(CustomUtils.UNAUTHORIZED_MESSAGE);
 			}
