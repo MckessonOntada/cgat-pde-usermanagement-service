@@ -29,6 +29,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 					or LOWER(middle_name) like %:query%
 					or LOWER(last_name) like %:query%
 					or LOWER(email) like %:query%
+					or LOWER(CONCAT_WS(' ', first_name, NULLIF(middle_name,''), last_name)) like CONCAT('%', :query, '%')
 					)
 				and
 				practice_id =:practiceId
