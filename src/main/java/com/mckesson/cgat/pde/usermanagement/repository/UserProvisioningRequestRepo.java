@@ -16,35 +16,34 @@ import com.mckesson.cgat.pde.usermanagement.model.UserProvisioningStaus;
 @Repository
 public interface UserProvisioningRequestRepo extends JpaRepository<UserProvisioningRequest, Long> {
 
-	@Query(nativeQuery = true, value = """
-			SELECT *
-				FROM usermanagement.user_provisioning_request
-				WHERE
-					(
-						(   :query IS NULL
-						    OR LOWER(first_name) LIKE %:query%
-							OR LOWER(middle_name) LIKE %:query%
-							OR LOWER(last_name) LIKE %:query%
-							OR LOWER(email) LIKE %:query%
-						 )
+	@Query(nativeQuery = true,
+			value = """
+					SELECT *
+						FROM usermanagement.user_provisioning_request
+						WHERE
+							(
+								(   :query IS NULL
+								    or LOWER(CONCAT_WS(' ', first_name, NULLIF(middle_name,''), last_name)) like CONCAT('%', :query, '%')
+									OR LOWER(email) LIKE %:query%
+								 )
 
-					AND
-						practice_id =:practiceId
-					AND
-						(
-						 	cast(:requestStatus as varchar) IS NULL
-							OR status =:requestStatus
-						)
+							AND
+								practice_id =:practiceId
+							AND
+								(
+								 	cast(:requestStatus as varchar) IS NULL
+									OR status =:requestStatus
+								)
 
-					AND
-						(
-				 			(cast(:from as date) is null and cast(:to as date) is null)
-					 		OR
-					 		(created_at between :from and :to)
-					 	)
-					)
+							AND
+								(
+						 			(cast(:from as date) is null and cast(:to as date) is null)
+							 		OR
+							 		(created_at between :from and :to)
+							 	)
+							)
 
-			""")
+					""")
 
 	Page<UserProvisioningRequest> findAllByQueryText(@Param("query") String query,
 			@Param("requestStatus") String requestStatus, Pageable paging, @Param("practiceId") long practiceId,
