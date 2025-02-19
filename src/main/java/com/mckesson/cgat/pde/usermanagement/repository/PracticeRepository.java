@@ -44,6 +44,7 @@ public interface PracticeRepository extends JpaRepository<Practice, Long> {
 	@Query("SELECT p.isActive FROM Practice p WHERE p.id = :practiceId")
 	Optional<Boolean> findIsActiveById(Long practiceId);
 
-	Optional<String> findNameById(Long aLong);
+	@Query("SELECT p.name FROM Practice p WHERE p.id = :practiceId")
+	Optional<String> findNameById(@Param("practiceId") Long practiceId);
 
 }
