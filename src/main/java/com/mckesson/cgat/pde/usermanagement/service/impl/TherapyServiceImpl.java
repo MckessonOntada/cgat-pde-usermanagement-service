@@ -16,6 +16,7 @@ import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -109,9 +110,20 @@ public class TherapyServiceImpl implements TherapyService {
 			log.info(" Inside method - findPriceOfVariantLinkedToShipToAccountsForTherapy..");
 			log.info("soldToAccountId: {} , shipToAccountId: {} , variantType: {} and therapyId: {}", soldToAccountId,
 					shipToAccountId, variantType, therapyId);
-			CatalogPrice catalogPrice = catalogPriceRepository.findPriceOfVariantLinkedToShipToAccountsForTherapy(
-					soldToAccountId, shipToAccountId, therapyId, variantType);
-			return catalogPriceMapper.toResponseDto(catalogPrice);
+			Page<CatalogPriceResponse> catalogPriceResponsePage = catalogPriceRepository
+				.findFirstByPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccountId, shipToAccountId, therapyId,
+						variantType, PageRequest.of(0, 1));
+			CatalogPriceResponse catalogPrice = catalogPriceResponsePage.getContent().stream().findFirst().orElse(null);
+			CatalogPriceResponseDto responseDto = null;
+			if (catalogPrice != null) {
+				responseDto = catalogPriceMapper.toResponseDto(catalogPrice.getCatalogPrice());
+				if (responseDto != null) {
+					responseDto.setProductLevelPricing(Objects.equals(catalogPrice.getProductLevelPricing(), "Y"));
+
+				}
+			}
+
+			return responseDto;
 		}
 		catch (Exception e) {
 			log.error(

@@ -1,9 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import static org.junit.Assert.assertThrows;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -13,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,7 +32,6 @@ import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.mapper.CatalogPriceMapper;
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
-import com.mckesson.cgat.pde.usermanagement.model.DistributionChannel;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.cgat.pde.usermanagement.repository.CatalogPriceRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.TherapyRepository;
@@ -75,8 +73,8 @@ public class TherapyServiceImplTest {
 		List<TherapyCatalogResponseDTO> mockResponse = List.of(therapy1, therapy2, therapy3, therapy4, therapy5);
 
 		Mockito
-			.when(therapyRepository.findAllTherapies(anyLong(), anyString(), anyList(), Mockito.any(Pageable.class),
-					anyList(), anyString()))
+			.when(therapyRepository.findAllTherapies(anyLong(), anyString(), anyList(), any(Pageable.class), anyList(),
+					anyString()))
 			.thenReturn(new PageImpl<>(mockResponse, paging, 1L));
 
 		therapyService.findAllTherapies(userId, query, new ArrayList<>(), paging, new ArrayList<>());
@@ -92,8 +90,8 @@ public class TherapyServiceImplTest {
 		String therapyId = "18";
 
 		Mockito
-			.when(therapyRepository.findAllSoldToAccounts(anyLong(), anyString(), anyString(),
-					Mockito.any(Pageable.class), anyString(), anyString(), anyString()))
+			.when(therapyRepository.findAllSoldToAccounts(anyLong(), anyString(), anyString(), any(Pageable.class),
+					anyString(), anyString(), anyString()))
 			.thenReturn(getAccounts());
 		therapyService.findAllSoldToAccounts(userId, therapyId, query, paging, "80", "");
 		verify(therapyRepository, times(1)).findAllSoldToAccounts(userId, therapyId, query, paging, "80", "", "SP");
@@ -106,8 +104,8 @@ public class TherapyServiceImplTest {
 		String therapyId = "18";
 
 		Mockito
-			.when(therapyRepository.findAllShipToAccounts(anyString(), anyString(), anyString(),
-					Mockito.any(Pageable.class), anyString()))
+			.when(therapyRepository.findAllShipToAccounts(anyString(), anyString(), anyString(), any(Pageable.class),
+					anyString()))
 			.thenReturn(getAccounts());
 		therapyService.findAllShipToAccounts(soldToAccount, therapyId, paging, "");
 		verify(therapyRepository, times(1)).findAllShipToAccounts(soldToAccount, therapyId, "", paging, "SH");
@@ -166,7 +164,7 @@ public class TherapyServiceImplTest {
 	@Test
 	public void findAllGlobalTherapiesTest() {
 		String query = "";
-		Mockito.when(therapyRepository.findAllGlobalTherapies(anyString(), Mockito.any(Pageable.class)))
+		Mockito.when(therapyRepository.findAllGlobalTherapies(anyString(), any(Pageable.class)))
 			.thenReturn(getAllGlobalTherapies());
 		therapyService.findAllGlobalTherapies(query, paging);
 		verify(therapyRepository).findAllGlobalTherapies(query, paging);
@@ -179,7 +177,7 @@ public class TherapyServiceImplTest {
 		List<String> accounts = new ArrayList<>();
 		Mockito
 			.when(catalogPriceRepository.findAllGlobalCatalogs(anyList(), anyString(), anyString(),
-					Mockito.any(Pageable.class)))
+					any(Pageable.class)))
 			.thenReturn(getAllGlobalCatalogs());
 		therapyService.findAllGlobalCatalogs(accounts, query, paging);
 		verify(catalogPriceRepository).findAllGlobalCatalogs(accounts,
@@ -194,7 +192,7 @@ public class TherapyServiceImplTest {
 		String therapyId = "18";
 		Mockito
 			.when(catalogPriceRepository.findAllCatalogPricesLinkedToShipToAccountsForTherapy(anyString(), anyString(),
-					anyString(), Mockito.any(Pageable.class)))
+					anyString(), any(Pageable.class)))
 			.thenReturn(getAllVariantsLinkedToShipToAccounts());
 		therapyService.findAllVariantsLinkedToShipToAccountsForTherapy(soldToAccount, shipToAccount, therapyId, paging);
 		verify(catalogPriceRepository, times(1)).findAllCatalogPricesLinkedToShipToAccountsForTherapy(soldToAccount,
@@ -209,13 +207,13 @@ public class TherapyServiceImplTest {
 		String therapyId = "18";
 		String variantType = "Type B";
 		Mockito
-			.when(catalogPriceRepository.findPriceOfVariantLinkedToShipToAccountsForTherapy(anyString(), anyString(),
-					anyString(), anyString()))
-			.thenReturn(getCatalogPrice());
+			.when(catalogPriceRepository.findFirstByPriceOfVariantLinkedToShipToAccountsForTherapy(anyString(),
+					anyString(), anyString(), anyString(), any(Pageable.class)))
+			.thenReturn(getCatalogPriceResponse());
 		therapyService.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccount, shipToAccount, variantType,
 				therapyId);
-		verify(catalogPriceRepository, times(1)).findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccount,
-				shipToAccount, therapyId, variantType);
+		verify(catalogPriceRepository, times(1)).findFirstByPriceOfVariantLinkedToShipToAccountsForTherapy(
+				soldToAccount, shipToAccount, therapyId, variantType, PageRequest.of(0, 1));
 	}
 
 	@DisplayName("Test : Find Price of therapy with no variant linked to soldToAccount, ShipToAccounts and TherapyId")
@@ -226,13 +224,24 @@ public class TherapyServiceImplTest {
 		String therapyId = "18";
 		String variantType = "";
 		Mockito
-			.when(catalogPriceRepository.findPriceOfVariantLinkedToShipToAccountsForTherapy(anyString(), anyString(),
-					anyString(), anyString()))
-			.thenReturn(getCatalogPriceWithEmptyVariant());
+			.when(catalogPriceRepository.findFirstByPriceOfVariantLinkedToShipToAccountsForTherapy(anyString(),
+					anyString(), anyString(), anyString(), any(Pageable.class)))
+			.thenReturn(getCatalogPriceResponseWithEmptyVariant());
 		therapyService.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccount, shipToAccount, variantType,
 				therapyId);
-		verify(catalogPriceRepository, times(1)).findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccount,
-				shipToAccount, therapyId, variantType);
+		verify(catalogPriceRepository, times(1)).findFirstByPriceOfVariantLinkedToShipToAccountsForTherapy(
+				soldToAccount, shipToAccount, therapyId, variantType, PageRequest.of(0, 1));
+	}
+
+	private Page<CatalogPriceResponse> getCatalogPriceResponseWithEmptyVariant() {
+		List<CatalogPriceResponse> responses = new ArrayList<>();
+		CatalogPrice catalogPrice = getCatalogPriceWithEmptyVariant();
+		CatalogPriceResponse response = new CatalogPriceResponse();
+		response.setCatalogPrice(catalogPrice);
+		response.setProductLevelPricing("Y");
+		responses.add(response);
+		return new PageImpl<>(responses, paging, responses.size());
+
 	}
 
 	private CatalogPrice getCatalogPriceWithEmptyVariant() {
@@ -267,6 +276,16 @@ public class TherapyServiceImplTest {
 		catalogPrices.add(catalogPrice2);
 		return new PageImpl<>(catalogPrices, paging, catalogPrices.size());
 
+	}
+
+	private Page<CatalogPriceResponse> getCatalogPriceResponse() {
+		List<CatalogPriceResponse> responses = new ArrayList<>();
+		CatalogPrice catalogPrice = getCatalogPrice();
+		CatalogPriceResponse response = new CatalogPriceResponse();
+		response.setCatalogPrice(catalogPrice);
+		response.setProductLevelPricing("Y");
+		responses.add(response);
+		return new PageImpl<>(responses, paging, responses.size());
 	}
 
 	private CatalogPrice getCatalogPrice() {
