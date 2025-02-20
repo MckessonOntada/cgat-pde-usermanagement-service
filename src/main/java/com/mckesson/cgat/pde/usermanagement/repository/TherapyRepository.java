@@ -144,12 +144,12 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			@Param("partnerFunction") String partnerFunction);
 
 	@Query(value = """
-				SELECT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2,
+				SELECT ac.id, ac.sap_partner as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2,
 						 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code, false as isDefault,
 						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier
 				FROM catalog.material m
 				JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
-				JOIN usermanagement.account ac ON ac.sap_customer = cp.ship_to_customer
+				JOIN usermanagement.account ac ON ac.sap_partner = cp.ship_to_customer
 				WHERE
 				(
 					(
@@ -163,6 +163,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						cp.sap_material = :therapyId
 					AND
 						ac.partner_function = :partnerFunction
+					AND
+					    ac.sap_customer= :soldToAccountId
 					)
 					GROUP BY ac.id, ac.sap_customer, ac.name_1, ac.house_number, ac.street, ac.street_2,
 						 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code,
