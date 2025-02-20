@@ -5,6 +5,6 @@ CREATE TABLE IF NOT EXISTS catalog.material_config (
         is_patient_information_required BOOLEAN NOT NULL
     );
 
-CREATE SEQUENCE catalog.material_config_id_seq START 1 INCREMENT 1;
+CREATE SEQUENCE catalog.material_config_id_seq START WITH 1 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE  CACHE 20;
 
 CREATE INDEX IF NOT EXISTS idx_material_number ON catalog.material_config(material_number);
