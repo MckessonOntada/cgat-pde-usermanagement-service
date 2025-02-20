@@ -1,4 +1,5 @@
 --CREATE EXTENSION IF NOT EXISTS PG_TRGM with schema pg_catalog;
+CREATE SCHEMA IF NOT EXISTS usermanagement;
 
 CREATE TABLE IF NOT EXISTS practice
 (
@@ -24,7 +25,7 @@ CREATE TABLE IF NOT EXISTS practice
     updated_by 		VARCHAR(255)
 );
 
-CREATE SEQUENCE practice_sequence START WITH 1 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE  CACHE 20;
+CREATE SEQUENCE IF NOT EXISTS practice_sequence START WITH 100 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE  CACHE 20;
 
 CREATE TABLE  IF NOT EXISTS role (
     id INTEGER PRIMARY KEY,
@@ -38,7 +39,7 @@ CREATE TABLE  IF NOT EXISTS role (
     updated_by VARCHAR(255)
 );
 
-CREATE SEQUENCE role_sequence START WITH 2 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE  CACHE 20;
+CREATE SEQUENCE IF NOT EXISTS role_sequence START WITH 2 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE  CACHE 20;
 
 CREATE TABLE IF NOT EXISTS permission (
     id INTEGER PRIMARY KEY,
@@ -51,7 +52,7 @@ CREATE TABLE IF NOT EXISTS permission (
     updated_by VARCHAR(255)
 );
 
-CREATE SEQUENCE permission_sequence START WITH 1 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE CACHE 20;
+CREATE SEQUENCE IF NOT EXISTS permission_sequence START WITH 1 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE CACHE 20;
 
 CREATE TABLE IF NOT EXISTS role_permissions_mapping (
     role_id INTEGER NOT NULL,
@@ -181,10 +182,10 @@ CREATE TABLE IF NOT EXISTS user_account_mapping (
 
 
 
-CREATE SEQUENCE USER_SEQUENCE START WITH 2 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE  CACHE 20;
+CREATE SEQUENCE IF NOT EXISTS USER_SEQUENCE START WITH 2 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE  CACHE 20;
     
     
-CREATE SEQUENCE ACCOUNT_SEQUENCE START WITH 1 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE  CACHE 20;  
+CREATE SEQUENCE IF NOT EXISTS ACCOUNT_SEQUENCE START WITH 1 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE  CACHE 20;
    
 CREATE TABLE IF NOT EXISTS user_permission_mapping (
      user_id INTEGER NOT NULL,
@@ -220,12 +221,12 @@ CREATE TABLE IF NOT EXISTS user_provisioning_request(
     
 );
 
-CREATE SEQUENCE USER_PROVISIONING_SEQUENCE START WITH 1 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE  CACHE 20;
+CREATE SEQUENCE IF NOT EXISTS USER_PROVISIONING_SEQUENCE START WITH 1 INCREMENT BY 1 MINVALUE 1 NO MAXVALUE  CACHE 20;
 
 --CREATE INDEX user_provisioning_request_name_index  ON usermanagement.user_provisioning_request 
 --USING GIN (first_name gin_trgm_ops, middle_name gin_trgm_ops, last_name gin_trgm_ops, email gin_trgm_ops);
 
-CREATE INDEX user_provisioning_request_status_createdat_index  ON usermanagement.user_provisioning_request 
+CREATE INDEX IF NOT EXISTS user_provisioning_request_status_createdat_index  ON usermanagement.user_provisioning_request
 USING btree(status, created_at);
 
 
@@ -236,10 +237,10 @@ USING btree(status, created_at);
 -- CREATE INDEX user_name_email_index ON usermanagement.user 
 -- USING GIN (first_name gin_trgm_ops, middle_name gin_trgm_ops, last_name gin_trgm_ops, email gin_trgm_ops);
 
-CREATE INDEX user_status_createdat_index  ON usermanagement.user 
+CREATE INDEX IF NOT EXISTS user_status_createdat_index  ON usermanagement.user
 USING btree(is_active, created_at);
 
-CREATE INDEX role_status_updatedat_index ON usermanagement.role 
+CREATE INDEX IF NOT EXISTS role_status_updatedat_index ON usermanagement.role
 USING btree(is_active, updated_at);
 
 
