@@ -120,7 +120,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 							or LOWER(ac.name_1) like %:query%
 						)
 					AND
-						(cast(:channels as varchar) IS NULL OR ac.distribution_channel IN (:channels))
+						(COALESCE(:channels) IS NULL OR ac.distribution_channel IN (:channels))
 					AND
 						(
 						cast(:program as varchar) is null
