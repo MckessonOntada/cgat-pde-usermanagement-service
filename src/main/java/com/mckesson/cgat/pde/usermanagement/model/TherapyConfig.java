@@ -24,7 +24,7 @@ import java.io.Serializable;
 public class TherapyConfig implements Serializable {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "catalog.material_config_id_seq")
+	@GeneratedValue(generator = "material_config_id_seq", strategy = GenerationType.SEQUENCE)
 	@SequenceGenerator(name = "material_config_id_seq", sequenceName = "catalog.material_config_id_seq",
 			allocationSize = 1)
 	private Long id;
