@@ -94,7 +94,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						ac.partner_function = :partnerFunction
 					AND
 						uam.user_id = :userId
-					AND 
+					AND
 						cp.deleted = false
 					)
 					GROUP BY ac.id, ac.sap_customer, ac.name_1, ac.house_number, ac.street, ac.street_2,
@@ -135,7 +135,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						ac.partner_function = :partnerFunction
 					AND
 						uam.user_id = :userId
-					AND 
+					AND
 						cp.deleted = false
 					)
 					GROUP BY ac.id, ac.sap_customer, ac.name_1, ac.house_number, ac.street, ac.street_2,

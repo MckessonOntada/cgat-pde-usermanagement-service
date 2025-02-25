@@ -22,7 +22,7 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 			     cp.ship_to_customer = :shipToAccountId
 			AND
 			    cp.sap_material = :therapyId
-			AND 
+			AND
 				cp.deleted = false
 			""", nativeQuery = true)
 	Page<CatalogPrice> findAllCatalogPricesLinkedToShipToAccountsForTherapy(
