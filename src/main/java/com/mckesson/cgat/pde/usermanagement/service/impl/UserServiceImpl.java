@@ -254,7 +254,7 @@ public class UserServiceImpl implements UserService {
 		User user = userRepository.findById(userId).get();
 
 		if (accountRepository.findByAccountNumber(payToAccount,
-				AccountPartnerFunction.PAYER.getPartnerFunctionType()) == null)
+				AccountPartnerFunction.PAYER) == null)
 			throw new ResourceNotFoundException("Account not found with Number: " + payToAccount);
 
 		UserPreference userPreference = UserPreference.builder()
