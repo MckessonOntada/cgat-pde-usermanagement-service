@@ -253,7 +253,8 @@ public class UserServiceImpl implements UserService {
 	public User setDefaultPayToAccount(Long userId, String payToAccount) throws ResourceNotFoundException {
 		User user = userRepository.findById(userId).get();
 
-		if (accountRepository.findByAccountNumber(payToAccount) == null)
+		if (accountRepository.findByAccountNumber(payToAccount,
+				AccountPartnerFunction.PAYER.getPartnerFunctionType()) == null)
 			throw new ResourceNotFoundException("Account not found with Number: " + payToAccount);
 
 		UserPreference userPreference = UserPreference.builder()

@@ -98,7 +98,16 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 			String partnerFunction, @Param("salesOrg") List<String> salesOrg,
 			@Param("distChannels") List<String> distChannels);
 
-	Account findByAccountNumber(String accountNumber);
+	@Query(nativeQuery = true, value = """
+			select *
+			FROM usermanagement.account ua
+			WHERE
+			(
+					ua.sap_partner = :accountNumber
+			    AND
+			    	ua.partner_function = :partnerFunction
+			)""")
+	Account findByAccountNumber(String accountNumber, String partnerFunction);
 
 	@Query(value = """
 			SELECT DISTINCT ac1.id, ac1.sap_partner as AccountNumber, ac1.name_1 as AccountName, ac1.house_number, ac1.street, ac1.street_2, ac1.street_3,
