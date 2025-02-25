@@ -360,7 +360,7 @@ public class UserServiceImpl implements UserService {
 			.map(String::trim)
 			.collect(Collectors.toList());
 
-		List<Account> accounts = accountRepository.findAllByAccountNumberIn(accountNumberList);
+		List<Account> accounts = accountRepository.findAllByAccountNumberInAndPartnerFunction(accountNumberList, AccountPartnerFunction.SOLD_TO);
 
 		if (accounts.size() != accountNumberList.size()) {
 			log.error("Some of the provided Account Numbers does not exist {}", accountNumbers);

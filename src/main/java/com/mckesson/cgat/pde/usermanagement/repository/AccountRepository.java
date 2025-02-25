@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.repository;
 import java.util.List;
 import java.util.Set;
 
+import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -136,7 +137,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 			)""")
 	List<Long> findAccountIdsByUser(@Param("userId") Long userId, @Param("practiceId") Long practiceId,
 			String partnerFunction);
-
-	List<Account> findAllByAccountNumberIn(List<String> accountNumberList);
+	
+	List<Account> findAllByAccountNumberInAndPartnerFunction(List<String> accountNumberList, AccountPartnerFunction accountPartnerFunction);
 
 }
