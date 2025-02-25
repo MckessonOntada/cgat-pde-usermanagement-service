@@ -41,6 +41,7 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 			    cp.sap_material = :therapyId
 			AND
 				cp.deleted = false
+			AND
 				(
 				 :variantType IS NULL
 			     OR cp.variant = :variantType
