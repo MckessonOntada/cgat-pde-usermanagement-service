@@ -99,7 +99,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 			String partnerFunction, @Param("salesOrg") List<String> salesOrg,
 			@Param("distChannels") List<String> distChannels);
 
-	@Query(	"select a FROM Account a WHERE a.accountNumber = :accountNumber AND a.partnerFunction = :partnerFunction")
+	@Query("select a FROM Account a WHERE a.accountNumber = :accountNumber AND a.partnerFunction = :partnerFunction")
 	Account findByAccountNumber(String accountNumber, AccountPartnerFunction partnerFunction);
 
 	@Query(value = """
