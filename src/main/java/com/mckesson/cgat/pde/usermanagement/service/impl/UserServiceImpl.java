@@ -276,6 +276,11 @@ public class UserServiceImpl implements UserService {
 				CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
 
 			for (CSVRecord record : csvParser) {
+
+				if (record.stream().allMatch(String::isBlank)) {
+					break;
+				}
+
 				List<String> userData = record.toList();
 				User user = createUserFromCSVRecord(userData, practiceId);
 				try {
