@@ -335,21 +335,26 @@ public class UserServiceImpl implements UserService {
 
 	private void attachUserRole(User user, UserType userType, String roleName, Long practiceId)
 			throws ResourceNotFoundException {
+		if (roleName.isEmpty()) {
+			throw new IllegalArgumentException("Role name can not be null");
+		}
+		Role role;
 		if (userType.equals(UserType.ADMIN)) {
-			Role systemAdminRole = roleRepository.findByName(UserRequestAuthorizationValidator.SYSTEM_ADMIN_ROLE);
-			user.setRole(systemAdminRole);
-			user.setPermissions(new HashSet<>(systemAdminRole.getPermissions()));
+			// Assuming 1L practiceId for Admin Roles
+			role = roleRepository.findByNameAndPracticeId_IdAndIsActiveTrue(roleName, 1L)
+				.orElseThrow(() -> new ResourceNotFoundException(
+						String.format("Admin Role not found with this Name: %s", roleName)));
+
 		}
 		else {
-			if (roleName.isEmpty()) {
-				throw new IllegalArgumentException("Role name can not be null");
-			}
-			Role role = roleRepository.findByNameAndPracticeId_IdAndIsActiveTrue(roleName, practiceId)
+
+			role = roleRepository.findByNameAndPracticeId_IdAndIsActiveTrue(roleName, practiceId)
 				.orElseThrow(() -> new ResourceNotFoundException(
 						String.format("Role not found with this Name: %s and PracticeId: %s", roleName, practiceId)));
 
-			user.setRole(role);
 		}
+		user.setRole(role);
+		user.setPermissions(new HashSet<>(role.getPermissions()));
 	}
 
 	private void attachAccounts(User user, String accountNumbers) throws ResourceNotFoundException {
