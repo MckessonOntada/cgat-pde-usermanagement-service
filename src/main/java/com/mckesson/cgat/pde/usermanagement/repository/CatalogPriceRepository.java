@@ -22,6 +22,8 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 			     cp.ship_to_customer = :shipToAccountId
 			AND
 			    cp.sap_material = :therapyId
+			AND
+				cp.deleted = false
 			""", nativeQuery = true)
 	Page<CatalogPrice> findAllCatalogPricesLinkedToShipToAccountsForTherapy(
 			@Param("soldToAccountId") String soldToAccountId, @Param("shipToAccountId") String shipToAccountId,
@@ -37,6 +39,8 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 			     cp.ship_to_customer = :shipToAccountId
 			AND
 			    cp.sap_material = :therapyId
+			AND
+				cp.deleted = false
 			AND
 				(
 				 :variantType IS NULL
@@ -63,6 +67,7 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 					)
 					AND cp.sold_to_customer IN :accountIds
 					AND ac.partner_function = :partnerFunction
+					AND cp.deleted = false
 				)
 			""", nativeQuery = true)
 	Page<CatalogPrice> findAllGlobalCatalogs(@Param("accountIds") List<String> accountIds,

@@ -51,6 +51,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						or
 						cp.sold_to_customer IN (:customerIdentifier)
 						)
+					AND cp.deleted = false
 				)
 				GROUP BY m.id, m.material_number, m.material_description, m.ndc_number, cp.udi, m.strength, m.dosage, m.selling_unit_code,
 				m.vendor_name, m.upc_code, m.dropship_indicator, m.base_unit_of_measure, m.cgat_therapy_type, m.sales_organization,
@@ -93,6 +94,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						ac.partner_function = :partnerFunction
 					AND
 						uam.user_id = :userId
+					AND
+						cp.deleted = false
 					)
 					GROUP BY ac.id, ac.sap_customer, ac.name_1, ac.house_number, ac.street, ac.street_2,
 						 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code,
@@ -132,6 +135,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						ac.partner_function = :partnerFunction
 					AND
 						uam.user_id = :userId
+					AND
+						cp.deleted = false
 					)
 					GROUP BY ac.id, ac.sap_customer, ac.name_1, ac.house_number, ac.street, ac.street_2,
 						 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code,
@@ -165,6 +170,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						ac.partner_function = :partnerFunction
 					AND
 					    ac.sap_customer= :soldToAccountId
+					AND
+						cp.deleted = false
 					)
 					GROUP BY ac.id, ac.sap_customer, ac.name_1, ac.house_number, ac.street, ac.street_2,
 						 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code,
