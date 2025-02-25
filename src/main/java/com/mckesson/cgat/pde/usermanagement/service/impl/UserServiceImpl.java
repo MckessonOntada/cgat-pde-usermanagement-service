@@ -262,7 +262,7 @@ public class UserServiceImpl implements UserService {
 			.userId(userId)
 			.value(payToAccount)
 			.build();
-		
+
 		userRepository.resetDefaultPayToAccount(userId, UserPreferenceType.DEFAULT_PAY_TO_ACCOUNT.name());
 		user.getPreferences().add(userPreference);
 		return userRepository.save(user);
