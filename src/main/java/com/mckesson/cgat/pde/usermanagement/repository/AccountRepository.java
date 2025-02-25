@@ -137,7 +137,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 			)""")
 	List<Long> findAccountIdsByUser(@Param("userId") Long userId, @Param("practiceId") Long practiceId,
 			String partnerFunction);
-	
-	List<Account> findAllByAccountNumberInAndPartnerFunction(List<String> accountNumberList, AccountPartnerFunction accountPartnerFunction);
+
+	List<Account> findAllByAccountNumberInAndPartnerFunction(List<String> accountNumberList,
+			AccountPartnerFunction accountPartnerFunction);
 
 }
