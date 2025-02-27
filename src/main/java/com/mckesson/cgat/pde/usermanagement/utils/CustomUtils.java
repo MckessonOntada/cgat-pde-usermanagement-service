@@ -83,11 +83,10 @@ public class CustomUtils {
 		}
 	}
 
-
 	public static String getFullName(Name name) {
 		return name.getFirstName() + " " + name.getLastName();
-  }
-  
+	}
+
 	public static String determineDropshipIndicator(String itemCategoryGroup) {
 		if (itemCategoryGroup == null) {
 			return null;
