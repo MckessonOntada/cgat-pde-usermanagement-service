@@ -9,12 +9,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import jakarta.persistence.PostLoad;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.determineDropshipIndicator;
 
 /**
  * Copy below prompt to generate class using github copilot
@@ -167,8 +171,7 @@ public class Therapy implements Serializable {
 	@Column(name = "rxda_code")
 	private String rxdaCode;
 
-	@Size(max = 1)
-	@Column(name = "dropship_indicator")
+	@Transient
 	private String dropshipIndicator;
 
 	@Size(max = 1)
@@ -378,5 +381,10 @@ public class Therapy implements Serializable {
 	@Size(max = 1)
 	@Column(name = "product_level_pricing")
 	private String productLevelPricing;
+
+	@PostLoad
+	public void postLoad() {
+		this.dropshipIndicator = determineDropshipIndicator(this.itemCategoryGroup);
+	}
 
 }
