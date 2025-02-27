@@ -1,5 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.utils;
 
+import com.mckesson.cgat.pde.usermanagement.model.Name;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -79,6 +81,10 @@ public class CustomUtils {
 		catch (ParseException e) {
 			return false;
 		}
+	}
+
+	public static String getFullName(Name name) {
+		return name.getFirstName() + " " + name.getLastName();
 	}
 
 	public static String determineDropshipIndicator(String itemCategoryGroup) {

@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.model;
 
+import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -31,9 +32,17 @@ public abstract class AuditColumns implements Serializable {
 	@CreatedBy
 	private String createdBy;
 
+	@Column(name = "CREATED_BY_USER_NAME")
+	@CreatedBy
+	private String createdByUserName;
+
 	@Column(name = "CREATED_BY_IMPERSONATOR")
 	@CreatedBy
 	private String createdByImpersonator;
+
+	@Column(name = "CREATED_BY_IMPERSONATOR_USER_NAME")
+	@CreatedBy
+	private String createdByImpersonatorUserName;
 
 	@Column(name = "UPDATED_AT")
 	@LastModifiedDate
@@ -54,11 +63,13 @@ public abstract class AuditColumns implements Serializable {
 		if (loggedInUserDetails != null) {
 			this.createdBy = loggedInUserDetails.getId();
 			this.updatedBy = loggedInUserDetails.getId();
+			this.createdByUserName = CustomUtils.getFullName(loggedInUserDetails.getName());
 
 			LoggedInUserDetails impersonatedByUser = loggedInUserDetails.getImpersonatedByUser();
 			if (impersonatedByUser != null) {
 				this.createdByImpersonator = impersonatedByUser.getId();
 				this.updatedByImpersonator = impersonatedByUser.getId();
+				this.createdByImpersonatorUserName = CustomUtils.getFullName(impersonatedByUser.getName());
 			}
 
 		}

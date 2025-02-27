@@ -112,7 +112,7 @@ public class UserFilterUtils {
 			.role(user.getRole())
 			.permissions(user.getPermissions())
 			.practiceId(user.getPracticeId())
-			.userName(userName.getFirstName() + " " + userName.getLastName())
+			.userName(user.getContact().getEmail())
 			.build();
 	}
 
