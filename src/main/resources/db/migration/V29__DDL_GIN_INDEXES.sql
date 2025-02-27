@@ -15,11 +15,33 @@ USING GIN (name gin_trgm_ops);
 CREATE INDEX IF NOT EXISTS role_name_index  ON usermanagement.role 
 USING GIN (name gin_trgm_ops);
 
-CREATE INDEX IF NOT EXISTS user_name_email_index ON usermanagement.user 
-USING GIN (LOWER(first_name) gin_trgm_ops, LOWER(middle_name) gin_trgm_ops, LOWER(last_name) gin_trgm_ops, LOWER(email) gin_trgm_ops);
+CREATE INDEX user_name_email_index
+ON usermanagement.user 
+USING GIN (
+  LOWER(
+    COALESCE(first_name, '') || 
+    CASE 
+      WHEN middle_name IS NULL OR middle_name = '' THEN '' 
+      ELSE ' ' || middle_name 
+    END || 
+    ' ' || COALESCE(last_name, '')
+  ) 
+  gin_trgm_ops
+);
 
-CREATE INDEX IF NOT EXISTS user_provisioning_request_name_email_index ON usermanagement.user_provisioning_request 
-USING GIN (LOWER(first_name) gin_trgm_ops, LOWER(middle_name) gin_trgm_ops, LOWER(last_name) gin_trgm_ops, LOWER(email) gin_trgm_ops);
+CREATE INDEX user_provisioning_request_name_email_index
+ON usermanagement.user_provisioning_request 
+USING GIN (
+  LOWER(
+    COALESCE(first_name, '') || 
+    CASE 
+      WHEN middle_name IS NULL OR middle_name = '' THEN '' 
+      ELSE ' ' || middle_name 
+    END || 
+    ' ' || COALESCE(last_name, '')
+  ) 
+  gin_trgm_ops
+);
 
 CREATE INDEX IF NOT EXISTS questionnaire_template_name_index 
 ON catalog.questionnaire 
