@@ -22,6 +22,8 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 			     cp.ship_to_customer = :shipToAccountId
 			AND
 			    cp.sap_material = :therapyId
+			  	AND
+				cp.variant is not null
 			AND
 				cp.deleted = false
 			""", nativeQuery = true)
