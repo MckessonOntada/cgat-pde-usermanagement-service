@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.model;
 
+import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -62,13 +63,13 @@ public abstract class AuditColumns implements Serializable {
 		if (loggedInUserDetails != null) {
 			this.createdBy = loggedInUserDetails.getId();
 			this.updatedBy = loggedInUserDetails.getId();
-			this.createdByUserName = loggedInUserDetails.getUserName();
+			this.createdByUserName = CustomUtils.getFullName(loggedInUserDetails.getName());
 
 			LoggedInUserDetails impersonatedByUser = loggedInUserDetails.getImpersonatedByUser();
 			if (impersonatedByUser != null) {
 				this.createdByImpersonator = impersonatedByUser.getId();
 				this.updatedByImpersonator = impersonatedByUser.getId();
-				this.createdByImpersonatorUserName = impersonatedByUser.getUserName();
+				this.createdByImpersonatorUserName = CustomUtils.getFullName(impersonatedByUser.getName());
 			}
 
 		}
