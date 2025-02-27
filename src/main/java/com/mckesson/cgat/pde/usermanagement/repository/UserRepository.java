@@ -24,9 +24,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
 			WHERE
 				(
 					(
-					:query is null
-					or LOWER(email) like %:query%
-					or LOWER(CONCAT_WS(' ', first_name, NULLIF(middle_name,''), last_name)) like CONCAT('%', :query, '%')
+						:query IS NULL
+				        OR LOWER(email) LIKE CONCAT('%', :query, '%')
+				        OR LOWER(
+				            COALESCE(first_name, '') ||
+				            CASE
+				                WHEN middle_name IS NULL OR middle_name = '' THEN ''
+				                ELSE ' ' || middle_name
+				            END ||
+				            ' ' || COALESCE(last_name, '')
+				        ) LIKE CONCAT('%', :query, '%')
 					)
 				and
 				practice_id =:practiceId
@@ -54,8 +61,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 				     )
 				  )
 
-			""",
-			nativeQuery = true)
+			""", nativeQuery = true)
 	Page<User> findAllByQueryText(@Param("status") String status, @Param("query") String query, Pageable paging,
 			@Param("practiceId") long practiceId, @Param("from") LocalDate from, @Param("to") LocalDate to,
 			@Param("roleIds") List<Long> roleIds);
