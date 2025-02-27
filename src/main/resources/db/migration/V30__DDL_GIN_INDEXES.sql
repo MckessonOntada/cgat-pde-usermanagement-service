@@ -10,8 +10,6 @@ GENERATED ALWAYS AS (
 	first_name || COALESCE(' ' || middle_name, '') || ' ' || last_name
 ) STORED;
 
-CREATE EXTENSION IF NOT EXISTS PG_TRGM;
-
 CREATE INDEX IF NOT EXISTS catalog_ndc_udi_distchannel_sap_material_index  ON catalog.catalog_price 
 USING GIN (ndc gin_trgm_ops, udi gin_trgm_ops, dist_channel gin_trgm_ops, sap_material gin_trgm_ops);
 
