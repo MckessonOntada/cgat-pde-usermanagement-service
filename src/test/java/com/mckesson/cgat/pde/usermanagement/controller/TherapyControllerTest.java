@@ -158,6 +158,11 @@ public class TherapyControllerTest {
 			public String getMinimumOrderQuantity() {
 				return "";
 			}
+
+			@Override
+			public String getItemCategoryGroup() {
+				return "";
+			}
 		};
 
 		when(therapyService.findAllTherapies(anyLong(), anyString(), anyList(), any(Pageable.class), anyList()))
