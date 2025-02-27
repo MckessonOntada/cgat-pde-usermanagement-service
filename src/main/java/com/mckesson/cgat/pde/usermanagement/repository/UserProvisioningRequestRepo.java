@@ -22,16 +22,9 @@ public interface UserProvisioningRequestRepo extends JpaRepository<UserProvision
 				WHERE
 					(
 						(
-							:query IS NULL
-					        OR LOWER(email) LIKE CONCAT('%', :query, '%')
-					        OR LOWER(
-					            COALESCE(first_name, '') ||
-					            CASE
-					                WHEN middle_name IS NULL OR middle_name = '' THEN ''
-					                ELSE ' ' || middle_name
-					            END ||
-					            ' ' || COALESCE(last_name, '')
-					        ) LIKE CONCAT('%', :query, '%')
+						:query IS NULL
+				        OR LOWER(email) LIKE CONCAT('%', :query, '%')
+				        OR LOWER(full_name) LIKE CONCAT('%', :query, '%')
 						)
 					AND
 						practice_id =:practiceId

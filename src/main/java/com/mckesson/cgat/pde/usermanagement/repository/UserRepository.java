@@ -26,14 +26,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 					(
 						:query IS NULL
 				        OR LOWER(email) LIKE CONCAT('%', :query, '%')
-				        OR LOWER(
-				            COALESCE(first_name, '') ||
-				            CASE
-				                WHEN middle_name IS NULL OR middle_name = '' THEN ''
-				                ELSE ' ' || middle_name
-				            END ||
-				            ' ' || COALESCE(last_name, '')
-				        ) LIKE CONCAT('%', :query, '%')
+				        OR LOWER(full_name) LIKE CONCAT('%', :query, '%')
 					)
 				and
 				practice_id =:practiceId

@@ -1,3 +1,15 @@
+ALTER TABLE usermanagement.user 
+ADD COLUMN full_name TEXT 
+GENERATED ALWAYS AS (
+	first_name || COALESCE(' ' || middle_name, '') || ' ' || last_name
+) STORED;
+
+ALTER TABLE usermanagement.user_provisioning_request 
+ADD COLUMN full_name TEXT 
+GENERATED ALWAYS AS (
+	first_name || COALESCE(' ' || middle_name, '') || ' ' || last_name
+) STORED;
+
 CREATE EXTENSION IF NOT EXISTS PG_TRGM;
 
 CREATE INDEX IF NOT EXISTS catalog_ndc_udi_distchannel_sap_material_index  ON catalog.catalog_price 
@@ -15,33 +27,11 @@ USING GIN (name gin_trgm_ops);
 CREATE INDEX IF NOT EXISTS role_name_index  ON usermanagement.role 
 USING GIN (name gin_trgm_ops);
 
-CREATE INDEX user_name_email_index
-ON usermanagement.user 
-USING GIN (
-  LOWER(
-    COALESCE(first_name, '') || 
-    CASE 
-      WHEN middle_name IS NULL OR middle_name = '' THEN '' 
-      ELSE ' ' || middle_name 
-    END || 
-    ' ' || COALESCE(last_name, '')
-  ) 
-  gin_trgm_ops
-);
+CREATE INDEX IF NOT EXISTS user_name_email_index 
+ON usermanagement.user USING GIN (LOWER(full_name) gin_trgm_ops, LOWER(email) gin_trgm_ops);
 
-CREATE INDEX user_provisioning_request_name_email_index
-ON usermanagement.user_provisioning_request 
-USING GIN (
-  LOWER(
-    COALESCE(first_name, '') || 
-    CASE 
-      WHEN middle_name IS NULL OR middle_name = '' THEN '' 
-      ELSE ' ' || middle_name 
-    END || 
-    ' ' || COALESCE(last_name, '')
-  ) 
-  gin_trgm_ops
-);
+CREATE INDEX IF NOT EXISTS user_provisioning_request_name_email_index 
+ON usermanagement.user_provisioning_request USING GIN (LOWER(full_name) gin_trgm_ops, LOWER(email) gin_trgm_ops);
 
 CREATE INDEX IF NOT EXISTS questionnaire_template_name_index 
 ON catalog.questionnaire 
