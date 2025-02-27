@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.utils;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public class CustomUtils {
@@ -38,6 +39,14 @@ public class CustomUtils {
 
 	public static final String API_DATE_FORMAT = "dd/MM/yyyy";
 
+	private static final String INVENTORY = "I";
+
+	private static final String TRUE_DROPSHIP = "T";
+
+	private static final Set<String> INVENTORY_CATEGORIES = Set.of("NORM", "ZNRM", "ZFBC");
+
+	private static final Set<String> TRUE_DROPSHIP_CATEGORIES = Set.of("BANS", "BANC");
+
 	public static boolean validateEmail(String emailAddress) {
 		return Pattern.compile(regexPattern).matcher(emailAddress).matches();
 	}
@@ -70,6 +79,19 @@ public class CustomUtils {
 		catch (ParseException e) {
 			return false;
 		}
+	}
+
+	public static String determineDropshipIndicator(String itemCategoryGroup) {
+		if (itemCategoryGroup == null) {
+			return null;
+		}
+		else if (INVENTORY_CATEGORIES.contains(itemCategoryGroup)) {
+			return INVENTORY;
+		}
+		else if (TRUE_DROPSHIP_CATEGORIES.contains(itemCategoryGroup)) {
+			return TRUE_DROPSHIP;
+		}
+		return null;
 	}
 
 }
