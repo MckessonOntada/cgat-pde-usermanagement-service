@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.persistence.PostLoad;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Size;
@@ -170,8 +171,7 @@ public class Therapy implements Serializable {
 	@Column(name = "rxda_code")
 	private String rxdaCode;
 
-	@Size(max = 1)
-	@Column(name = "dropship_indicator")
+	@Transient
 	private String dropshipIndicator;
 
 	@Size(max = 1)

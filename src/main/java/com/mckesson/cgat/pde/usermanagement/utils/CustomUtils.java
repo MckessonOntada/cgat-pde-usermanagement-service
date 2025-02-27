@@ -45,7 +45,7 @@ public class CustomUtils {
 
 	private static final Set<String> INVENTORY_CATEGORIES = Set.of("NORM", "ZNRM", "ZFBC");
 
-	private static final Set<String> DROPSHIP_CATEGORIES = Set.of("BANS", "BANC");
+	private static final Set<String> TRUE_DROPSHIP_CATEGORIES = Set.of("BANS", "BANC");
 
 	public static boolean validateEmail(String emailAddress) {
 		return Pattern.compile(regexPattern).matcher(emailAddress).matches();
@@ -88,7 +88,7 @@ public class CustomUtils {
 		else if (INVENTORY_CATEGORIES.contains(itemCategoryGroup)) {
 			return INVENTORY;
 		}
-		else if (DROPSHIP_CATEGORIES.contains(itemCategoryGroup)) {
+		else if (TRUE_DROPSHIP_CATEGORIES.contains(itemCategoryGroup)) {
 			return TRUE_DROPSHIP;
 		}
 		return null;
