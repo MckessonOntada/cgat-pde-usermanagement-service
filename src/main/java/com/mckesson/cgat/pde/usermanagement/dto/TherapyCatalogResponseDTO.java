@@ -1,5 +1,9 @@
 package com.mckesson.cgat.pde.usermanagement.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.determineDropshipIndicator;
+
 public interface TherapyCatalogResponseDTO {
 
 	String getId();
@@ -22,7 +26,9 @@ public interface TherapyCatalogResponseDTO {
 
 	String getUpcCode();
 
-	String getDropshipIndicator();
+	default String getDropshipIndicator() {
+		return determineDropshipIndicator(getItemCategoryGroup());
+	}
 
 	String getStatus();
 
@@ -35,5 +41,8 @@ public interface TherapyCatalogResponseDTO {
 	String getProductLevelPricing();
 
 	String getMinimumOrderQuantity();
+
+	@JsonIgnore
+	String getItemCategoryGroup();
 
 }
