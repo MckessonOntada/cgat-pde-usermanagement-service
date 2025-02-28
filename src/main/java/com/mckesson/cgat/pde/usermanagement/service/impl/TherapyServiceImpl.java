@@ -152,6 +152,11 @@ public class TherapyServiceImpl implements TherapyService {
 					.collect(Collectors.toSet())
 				: Collections.emptySet();
 
+		if (uniqueChannels.size() > 1) {
+			// Add an option All
+			uniqueChannels.add("All");
+		}
+
 		return ProgramChannelResponseDTO.builder().channels(uniqueChannels).programs(uniquePrograms).build();
 	}
 

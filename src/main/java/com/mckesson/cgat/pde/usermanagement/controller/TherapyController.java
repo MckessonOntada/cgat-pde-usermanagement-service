@@ -46,7 +46,8 @@ public class TherapyController {
 	private final TherapyService therapyService;
 
 	private static final Map<String, List<String>> CHANNEL_MAPPING = Map.of("MPB",
-			List.of("20", "30", "40", "50", "60"), "Speciality", List.of("10"), "3PL", List.of("10"));
+			List.of("20", "30", "40", "50", "60"), "Speciality", List.of("10"), "3PL", List.of("10"), "All",
+			List.of("10", "20", "30", "40", "50", "60"));
 
 	public TherapyController(TherapyService therapyService) {
 		this.therapyService = therapyService;
