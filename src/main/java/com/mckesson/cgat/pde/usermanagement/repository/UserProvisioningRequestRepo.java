@@ -21,13 +21,11 @@ public interface UserProvisioningRequestRepo extends JpaRepository<UserProvision
 				FROM usermanagement.user_provisioning_request
 				WHERE
 					(
-						(   :query IS NULL
-						    OR LOWER(first_name) LIKE %:query%
-							OR LOWER(middle_name) LIKE %:query%
-							OR LOWER(last_name) LIKE %:query%
-							OR LOWER(email) LIKE %:query%
-						 )
-
+						(
+						:query IS NULL
+				        OR LOWER(email) LIKE CONCAT('%', :query, '%')
+				        OR LOWER(full_name) LIKE CONCAT('%', :query, '%')
+						)
 					AND
 						practice_id =:practiceId
 					AND
