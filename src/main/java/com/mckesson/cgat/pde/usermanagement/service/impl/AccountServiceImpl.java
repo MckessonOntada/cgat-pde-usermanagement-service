@@ -145,7 +145,8 @@ public class AccountServiceImpl implements AccountService {
 		allAccounts.addAll(allPayToAccounts.getContent());
 
 		AccountsResponseDTO preferencedPaytoAccount = userPreferenceRepository.findByUserIdAndType(userId,
-				UserPreferenceType.DEFAULT_PAY_TO_ACCOUNT.name());
+				UserPreferenceType.DEFAULT_PAY_TO_ACCOUNT.name(),
+				AccountPartnerFunction.PAYER.getPartnerFunctionType());
 		if (preferencedPaytoAccount != null) {
 			allAccounts.removeIf(a -> a.getAccountNumber().equals(preferencedPaytoAccount.getAccountNumber()));
 			allAccounts.add(preferencedPaytoAccount);

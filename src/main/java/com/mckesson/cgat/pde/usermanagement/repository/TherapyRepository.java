@@ -20,7 +20,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 
 	@Query(value = """
 				SELECT m.id, m.material_number as therapyId, m.material_description as therapyDescription, m.ndc_number as ndc, cp.udi, m.strength, m.dosage, m.selling_unit_code,
-				m.vendor_name, m.upc_code, m.dropship_indicator, m.item_status as status, m.base_unit_of_measure, m.cgat_therapy_type, m.sales_organization,
+				m.vendor_name, m.upc_code, m.item_category_group, m.item_status as status, m.base_unit_of_measure, m.cgat_therapy_type, m.sales_organization,
 				 m.product_level_pricing, cp.minimum_order_quantity
 				FROM catalog.material m
 				JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
@@ -51,9 +51,10 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						or
 						cp.sold_to_customer IN (:customerIdentifier)
 						)
+					AND cp.deleted = false
 				)
 				GROUP BY m.id, m.material_number, m.material_description, m.ndc_number, cp.udi, m.strength, m.dosage, m.selling_unit_code,
-				m.vendor_name, m.upc_code, m.dropship_indicator, m.base_unit_of_measure, m.cgat_therapy_type, m.sales_organization,
+				m.vendor_name, m.upc_code, m.item_category_group, m.base_unit_of_measure, m.cgat_therapy_type, m.sales_organization,
 				 m.product_level_pricing, cp.minimum_order_quantity
 			""",
 			nativeQuery = true)
@@ -93,6 +94,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						ac.partner_function = :partnerFunction
 					AND
 						uam.user_id = :userId
+					AND
+						cp.deleted = false
 					)
 					GROUP BY ac.id, ac.sap_customer, ac.name_1, ac.house_number, ac.street, ac.street_2,
 						 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code,
@@ -120,7 +123,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 							or LOWER(ac.name_1) like %:query%
 						)
 					AND
-						(cast(:channels as varchar) IS NULL OR ac.distribution_channel IN (:channels))
+						(COALESCE(:channels) IS NULL OR ac.distribution_channel IN (:channels))
 					AND
 						(
 						cast(:program as varchar) is null
@@ -132,6 +135,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						ac.partner_function = :partnerFunction
 					AND
 						uam.user_id = :userId
+					AND
+						cp.deleted = false
 					)
 					GROUP BY ac.id, ac.sap_customer, ac.name_1, ac.house_number, ac.street, ac.street_2,
 						 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code,
@@ -144,12 +149,12 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			@Param("partnerFunction") String partnerFunction);
 
 	@Query(value = """
-				SELECT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2,
+				SELECT ac.id, ac.sap_partner as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2,
 						 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code, false as isDefault,
 						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier
 				FROM catalog.material m
 				JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
-				JOIN usermanagement.account ac ON ac.sap_customer = cp.ship_to_customer
+				JOIN usermanagement.account ac ON ac.sap_partner = cp.ship_to_customer
 				WHERE
 				(
 					(
@@ -163,6 +168,10 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						cp.sap_material = :therapyId
 					AND
 						ac.partner_function = :partnerFunction
+					AND
+					    ac.sap_customer= :soldToAccountId
+					AND
+						cp.deleted = false
 					)
 					GROUP BY ac.id, ac.sap_customer, ac.name_1, ac.house_number, ac.street, ac.street_2,
 						 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code,

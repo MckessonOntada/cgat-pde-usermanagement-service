@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS catalog.material (
       updated_at timestamp NULL
 );
 
-CREATE SEQUENCE catalog.material_id_seq START 1 INCREMENT 1;
+CREATE SEQUENCE IF NOT EXISTS catalog.material_id_seq START 1 INCREMENT 1;
 
 CREATE TABLE IF NOT EXISTS catalog.catalog_price (
    id BIGINT PRIMARY KEY,
@@ -122,7 +122,7 @@ CREATE TABLE IF NOT EXISTS catalog.catalog_price (
    updated_at timestamp NULL
 );
 
-CREATE SEQUENCE catalog.catalog_price_id_seq START 1 INCREMENT 1;
+CREATE SEQUENCE IF NOT EXISTS catalog.catalog_price_id_seq START 1 INCREMENT 1;
 
 --CREATE INDEX IF NOT EXISTS catalog_ndc_udi_dc_materialidentifier_index  ON catalog.catalog_price 
 --USING GIN (ndc gin_trgm_ops, udi gin_trgm_ops, dist_channel gin_trgm_ops, material_identifier_for_cgat gin_trgm_ops);

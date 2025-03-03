@@ -91,6 +91,12 @@ public class PracticeServiceImpl implements PracticeService {
 	}
 
 	@Override
+	public String getPracticeName(Long practiceId) throws ResourceNotFoundException {
+		return practiceRepository.findNameById(practiceId)
+			.orElseThrow(() -> new ResourceNotFoundException("Practice not found for ID: " + practiceId));
+	}
+
+	@Override
 	public void deletePractice(String id) throws ResourceNotFoundException {
 		Optional<Practice> practiceOpt = practiceRepository.findById(Long.valueOf(id));
 		Practice practice = practiceOpt

@@ -58,7 +58,7 @@ public class Account implements Serializable {
 	@Column(name = "name_1")
 	private String accountName;
 
-	@Column(name = "sap_customer")
+	@Column(name = "sap_partner")
 	private String accountNumber;
 
 	@Column(name = "partner_function")

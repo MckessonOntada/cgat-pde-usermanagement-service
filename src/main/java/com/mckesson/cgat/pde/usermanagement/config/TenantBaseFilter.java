@@ -43,8 +43,9 @@ public class TenantBaseFilter extends CGATBaseFilter {
 			LoggedInUserDetails loggedInUser = UserSecurityUtils.getLoggedInUser();
 
 			/*
-			 * Only system admins are allowed to fetch data of different practice ids.
-			 * Normal users can fetch data of only assigned practice.
+			 * Only system admins and customer centre users are allowed to fetch data of
+			 * different practice ids. Normal users can fetch data of only assigned
+			 * practice.
 			 */
 			if (!isUserAuthorized(loggedInUser, tenantIdFromRequest)) {
 				throw new UnauthorizedAccessException(CustomUtils.UNAUTHORIZED_MESSAGE);
@@ -82,6 +83,7 @@ public class TenantBaseFilter extends CGATBaseFilter {
 
 	public static boolean isUserAuthorized(LoggedInUserDetails loggedInUser, Long tenantIdFromRequest) {
 		return (UserRequestAuthorizationValidator.isSystemAdmin(loggedInUser)
+				|| UserRequestAuthorizationValidator.isCustomerCentreUser(loggedInUser)
 				|| loggedInUser.getPracticeId() == tenantIdFromRequest);
 	}
 

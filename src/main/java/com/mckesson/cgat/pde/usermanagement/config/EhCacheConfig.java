@@ -20,8 +20,8 @@ import javax.cache.CacheManager;
 import javax.cache.Caching;
 import java.time.Duration;
 
-@Configuration
-@EnableCaching
+//@Configuration
+//@EnableCaching
 public class EhCacheConfig {
 
 	@Bean

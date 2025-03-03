@@ -225,17 +225,16 @@ public class UserServiceImpl implements UserService {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new ResourceNotFoundException("User not found with this Id :" + userId));
 
+		Role role = roleRepository.findByIdAndIsActiveTrue(rolePermissions.getRoleId())
+			.orElseThrow(
+					() -> new ResourceNotFoundException("Role not found with this Id :" + rolePermissions.getRoleId()));
+
 		if (userType.equals(UserType.ADMIN)) {
-			Role systemAdminRole = roleRepository.findByName(UserRequestAuthorizationValidator.SYSTEM_ADMIN_ROLE);
+			user.setRole(role);
 			user.getPermissions().clear();
-			user.setRole(systemAdminRole);
-			user.setPermissions(Permission.getPermissions(userType.ADMIN));
+			user.getPermissions().addAll(role.getPermissions());
 		}
 		else {
-			Role role = roleRepository.findByIdAndIsActiveTrue(rolePermissions.getRoleId())
-				.orElseThrow(() -> new ResourceNotFoundException(
-						"Role not found with this Id :" + rolePermissions.getRoleId()));
-
 			user.setRole(role);
 			user.getPermissions().clear();
 			user.setPermissions(rolePermissions.getPermissions());
@@ -254,7 +253,7 @@ public class UserServiceImpl implements UserService {
 	public User setDefaultPayToAccount(Long userId, String payToAccount) throws ResourceNotFoundException {
 		User user = userRepository.findById(userId).get();
 
-		if (accountRepository.findByAccountNumber(payToAccount) == null)
+		if (accountRepository.findByAccountNumber(payToAccount, AccountPartnerFunction.PAYER) == null)
 			throw new ResourceNotFoundException("Account not found with Number: " + payToAccount);
 
 		UserPreference userPreference = UserPreference.builder()
@@ -262,6 +261,7 @@ public class UserServiceImpl implements UserService {
 			.userId(userId)
 			.value(payToAccount)
 			.build();
+
 		userRepository.resetDefaultPayToAccount(userId, UserPreferenceType.DEFAULT_PAY_TO_ACCOUNT.name());
 		user.getPreferences().add(userPreference);
 		return userRepository.save(user);
@@ -277,6 +277,11 @@ public class UserServiceImpl implements UserService {
 				CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
 
 			for (CSVRecord record : csvParser) {
+
+				if (record.stream().allMatch(String::isBlank)) {
+					break;
+				}
+
 				List<String> userData = record.toList();
 				User user = createUserFromCSVRecord(userData, practiceId);
 				try {
@@ -336,21 +341,26 @@ public class UserServiceImpl implements UserService {
 
 	private void attachUserRole(User user, UserType userType, String roleName, Long practiceId)
 			throws ResourceNotFoundException {
+		if (roleName.isEmpty()) {
+			throw new IllegalArgumentException("Role name can not be null");
+		}
+		Role role;
 		if (userType.equals(UserType.ADMIN)) {
-			Role systemAdminRole = roleRepository.findByName(UserRequestAuthorizationValidator.SYSTEM_ADMIN_ROLE);
-			user.setRole(systemAdminRole);
-			user.setPermissions(new HashSet<>(systemAdminRole.getPermissions()));
+			// Assuming 1L practiceId for Admin Roles
+			role = roleRepository.findByNameAndPracticeId_IdAndIsActiveTrue(roleName, 1L)
+				.orElseThrow(() -> new ResourceNotFoundException(
+						String.format("Admin Role not found with this Name: %s", roleName)));
+
 		}
 		else {
-			if (roleName.isEmpty()) {
-				throw new IllegalArgumentException("Role name can not be null");
-			}
-			Role role = roleRepository.findByNameAndPracticeId_IdAndIsActiveTrue(roleName, practiceId)
+
+			role = roleRepository.findByNameAndPracticeId_IdAndIsActiveTrue(roleName, practiceId)
 				.orElseThrow(() -> new ResourceNotFoundException(
 						String.format("Role not found with this Name: %s and PracticeId: %s", roleName, practiceId)));
 
-			user.setRole(role);
 		}
+		user.setRole(role);
+		user.setPermissions(new HashSet<>(role.getPermissions()));
 	}
 
 	private void attachAccounts(User user, String accountNumbers) throws ResourceNotFoundException {
@@ -361,7 +371,8 @@ public class UserServiceImpl implements UserService {
 			.map(String::trim)
 			.collect(Collectors.toList());
 
-		List<Account> accounts = accountRepository.findAllByAccountNumberIn(accountNumberList);
+		List<Account> accounts = accountRepository.findAllByAccountNumberInAndPartnerFunction(accountNumberList,
+				AccountPartnerFunction.SOLD_TO);
 
 		if (accounts.size() != accountNumberList.size()) {
 			log.error("Some of the provided Account Numbers does not exist {}", accountNumbers);

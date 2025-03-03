@@ -36,11 +36,11 @@ public class CacheServiceImpl implements CacheService {
 	private final CacheManager cacheManager;
 
 	public CacheServiceImpl(TherapyRepository therapyRepository, TherapyConfigRepository therapyConfigRepository,
-			QuestionnaireService questionnaireService, CacheManager cacheManager) {
+			QuestionnaireService questionnaireService /* ,CacheManager cacheManager */) {
 		this.therapyRepository = therapyRepository;
 		this.therapyConfigRepository = therapyConfigRepository;
 		this.questionnaireService = questionnaireService;
-		this.cacheManager = cacheManager;
+		this.cacheManager = null;
 	}
 
 	@Cacheable(value = "materialCache", key = "#query + '-' + #paging.pageNumber + '-' + #paging.pageSize")

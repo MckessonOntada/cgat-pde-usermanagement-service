@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.repository;
 import java.util.List;
 import java.util.Set;
 
+import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -98,13 +99,14 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 			String partnerFunction, @Param("salesOrg") List<String> salesOrg,
 			@Param("distChannels") List<String> distChannels);
 
-	Account findByAccountNumber(String accountNumber);
+	@Query("select a FROM Account a WHERE a.accountNumber = :accountNumber AND a.partnerFunction = :partnerFunction")
+	Account findByAccountNumber(String accountNumber, AccountPartnerFunction partnerFunction);
 
 	@Query(value = """
-			SELECT DISTINCT ac1.id, ac1.sap_customer as AccountNumber, ac1.name_1 as AccountName, ac1.house_number, ac1.street, ac1.street_2, ac1.street_3,
+			SELECT DISTINCT ac1.id, ac1.sap_partner as AccountNumber, ac1.name_1 as AccountName, ac1.house_number, ac1.street, ac1.street_2, ac1.street_3,
 			ac1.telephone, ac1.city, ac1.district, ac1.state, ac1.country, ac1.zip_code, false as isDefault, ac1.sales_org, ac1.company_code
 			FROM usermanagement.account ac1
-			JOIN usermanagement.account ac2 ON ac1.sap_partner = ac2.sap_customer
+			JOIN usermanagement.account ac2 ON ac1.sap_customer = ac2.sap_customer
 			JOIN usermanagement.user_account_mapping uam ON ac2.id = uam.account_id
 			WHERE(
 					(
@@ -137,6 +139,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	List<Long> findAccountIdsByUser(@Param("userId") Long userId, @Param("practiceId") Long practiceId,
 			String partnerFunction);
 
-	List<Account> findAllByAccountNumberIn(List<String> accountNumberList);
+	List<Account> findAllByAccountNumberInAndPartnerFunction(List<String> accountNumberList,
+			AccountPartnerFunction accountPartnerFunction);
 
 }

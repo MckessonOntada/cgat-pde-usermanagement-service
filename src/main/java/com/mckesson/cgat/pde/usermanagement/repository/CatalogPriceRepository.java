@@ -24,10 +24,15 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 			     cp.ship_to_customer = :shipToAccountId
 			AND
 			    cp.sap_material = :therapyId
+			  	AND
+				cp.variant is not null
+			AND
+				cp.deleted = false
 			""", nativeQuery = true)
 	Page<CatalogPrice> findAllCatalogPricesLinkedToShipToAccountsForTherapy(
 			@Param("soldToAccountId") String soldToAccountId, @Param("shipToAccountId") String shipToAccountId,
 			@Param("therapyId") String therapyId, Pageable paging);
+
 
 	@Query("""
 			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponse(cp, m.productLevelPricing)
@@ -39,6 +44,8 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 					 cp.shipToCustomer = :shipToAccountId
 				AND
 					cp.sapMaterial = :therapyId
+        AND
+				  cp.deleted = false
 				AND
 					(
 					 :variantType IS NULL
@@ -64,6 +71,7 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 					)
 					AND cp.sold_to_customer IN :accountIds
 					AND ac.partner_function = :partnerFunction
+					AND cp.deleted = false
 				)
 			""", nativeQuery = true)
 	Page<CatalogPrice> findAllGlobalCatalogs(@Param("accountIds") List<String> accountIds,
