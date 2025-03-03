@@ -45,7 +45,7 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 					 OR cp.variant = :variantType
 					)
 			""")
-	Optional<CatalogPriceResponse> findFirstByPriceOfVariantLinkedToShipToAccountsForTherapy(
+	Optional<CatalogPriceResponse> findPriceOfVariantLinkedToShipToAccountsForTherapy(
 			@Param("soldToAccountId") String soldToAccountId, @Param("shipToAccountId") String shipToAccountId,
 			@Param("therapyId") String therapyId, @Param("variantType") String variantType);
 

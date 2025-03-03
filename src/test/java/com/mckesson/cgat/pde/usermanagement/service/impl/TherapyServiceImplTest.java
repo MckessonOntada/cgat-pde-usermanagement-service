@@ -207,13 +207,13 @@ public class TherapyServiceImplTest {
 		String therapyId = "18";
 		String variantType = "Type B";
 		Mockito
-			.when(catalogPriceRepository.findFirstByPriceOfVariantLinkedToShipToAccountsForTherapy(anyString(),
-					anyString(), anyString(), anyString()))
+			.when(catalogPriceRepository.findPriceOfVariantLinkedToShipToAccountsForTherapy(anyString(), anyString(),
+					anyString(), anyString()))
 			.thenReturn(Optional.of(getCatalogPriceResponse()));
 		therapyService.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccount, shipToAccount, variantType,
 				therapyId);
-		verify(catalogPriceRepository, times(1)).findFirstByPriceOfVariantLinkedToShipToAccountsForTherapy(
-				soldToAccount, shipToAccount, therapyId, variantType);
+		verify(catalogPriceRepository, times(1)).findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccount,
+				shipToAccount, therapyId, variantType);
 	}
 
 	@DisplayName("Test : Find Price of therapy with no variant linked to soldToAccount, ShipToAccounts and TherapyId")
@@ -224,13 +224,13 @@ public class TherapyServiceImplTest {
 		String therapyId = "18";
 		String variantType = "";
 		Mockito
-			.when(catalogPriceRepository.findFirstByPriceOfVariantLinkedToShipToAccountsForTherapy(anyString(),
-					anyString(), anyString(), anyString()))
+			.when(catalogPriceRepository.findPriceOfVariantLinkedToShipToAccountsForTherapy(anyString(), anyString(),
+					anyString(), anyString()))
 			.thenReturn(Optional.of(getCatalogPriceResponseWithEmptyVariant()));
 		therapyService.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccount, shipToAccount, variantType,
 				therapyId);
-		verify(catalogPriceRepository, times(1)).findFirstByPriceOfVariantLinkedToShipToAccountsForTherapy(
-				soldToAccount, shipToAccount, therapyId, variantType);
+		verify(catalogPriceRepository, times(1)).findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccount,
+				shipToAccount, therapyId, variantType);
 	}
 
 	private CatalogPriceResponse getCatalogPriceResponseWithEmptyVariant() {

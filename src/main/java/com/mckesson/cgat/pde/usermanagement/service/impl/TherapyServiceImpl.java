@@ -12,7 +12,6 @@ import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -106,7 +105,7 @@ public class TherapyServiceImpl implements TherapyService {
 		log.info("soldToAccountId: {} , shipToAccountId: {} , variantType: {} and therapyId: {}", soldToAccountId,
 				shipToAccountId, variantType, therapyId);
 		CatalogPriceResponse catalogPrice = catalogPriceRepository
-			.findFirstByPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccountId, shipToAccountId, therapyId,
+			.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccountId, shipToAccountId, therapyId,
 					variantType)
 			.orElseThrow(() -> new ResourceNotFoundException("Catalog price not found"));
 		CatalogPriceResponseDto responseDto = null;
