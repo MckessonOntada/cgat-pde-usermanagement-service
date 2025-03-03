@@ -1,6 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponse;
 import org.springframework.data.domain.Page;
@@ -44,9 +45,9 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 					 OR cp.variant = :variantType
 					)
 			""")
-	Page<CatalogPriceResponse> findFirstByPriceOfVariantLinkedToShipToAccountsForTherapy(
+	Optional<CatalogPriceResponse> findFirstByPriceOfVariantLinkedToShipToAccountsForTherapy(
 			@Param("soldToAccountId") String soldToAccountId, @Param("shipToAccountId") String shipToAccountId,
-			@Param("therapyId") String therapyId, @Param("variantType") String variantType, Pageable pageable);
+			@Param("therapyId") String therapyId, @Param("variantType") String variantType);
 
 	@Query(value = """
 			SELECT DISTINCT cp.*
