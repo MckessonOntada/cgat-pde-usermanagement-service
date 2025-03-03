@@ -286,4 +286,7 @@ public class CatalogPrice {
 	@Column(name = "minimum_order_quantity")
 	private String minimumOrderQuantity;
 
+	@Column(name = "deleted")
+	private boolean deleted;
+
 }

@@ -1,7 +1,9 @@
 package com.mckesson.cgat.pde.usermanagement.repository;
 
 import java.util.List;
+import java.util.Optional;
 
+import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,28 +33,27 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 			@Param("soldToAccountId") String soldToAccountId, @Param("shipToAccountId") String shipToAccountId,
 			@Param("therapyId") String therapyId, Pageable paging);
 
-	@Query(value = """
-			 SELECT cp.*
-			 FROM catalog.catalog_price cp
-			 JOIN catalog.material m ON m.material_number = cp.sap_material
-			 WHERE
-			 	cp.sold_to_customer = :soldToAccountId
-			 AND
-			     cp.ship_to_customer = :shipToAccountId
-			AND
-			    cp.sap_material = :therapyId
-			AND
-				cp.deleted = false
-			AND
-				(
-				 :variantType IS NULL
-			     OR cp.variant = :variantType
-				)
-			Limit 1
-			""", nativeQuery = true)
-	CatalogPrice findPriceOfVariantLinkedToShipToAccountsForTherapy(@Param("soldToAccountId") String soldToAccountId,
-			@Param("shipToAccountId") String shipToAccountId, @Param("therapyId") String therapyId,
-			@Param("variantType") String variantType);
+	@Query("""
+			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponse(cp, m.productLevelPricing)
+				 FROM CatalogPrice cp
+				 JOIN Therapy m ON m.materialNumber = cp.sapMaterial
+				 WHERE
+					cp.soldToCustomer = :soldToAccountId
+				 AND
+					 cp.shipToCustomer = :shipToAccountId
+				AND
+					cp.sapMaterial = :therapyId
+			     AND
+				  cp.deleted = false
+				AND
+					(
+					 :variantType IS NULL
+					 OR cp.variant = :variantType
+					)
+			""")
+	Optional<CatalogPriceResponse> findPriceOfVariantLinkedToShipToAccountsForTherapy(
+			@Param("soldToAccountId") String soldToAccountId, @Param("shipToAccountId") String shipToAccountId,
+			@Param("therapyId") String therapyId, @Param("variantType") String variantType);
 
 	@Query(value = """
 			SELECT DISTINCT cp.*
