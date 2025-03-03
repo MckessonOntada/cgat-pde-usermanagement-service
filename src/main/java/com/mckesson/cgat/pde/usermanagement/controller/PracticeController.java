@@ -141,4 +141,13 @@ public class PracticeController {
 		return practiceService.findAll(paging, query, status, location);
 	}
 
+	@RequirePermissions({ Permission.EDIT_ORDERS, Permission.ADD_ORDERS })
+	@GetMapping("/{practiceId}/name")
+	@Operation(summary = "Get Practice Name by Practice Id")
+	public ResponseEntity<String> getPracticeName(@PathVariable Long practiceId)
+			throws NumberFormatException, ResourceNotFoundException {
+		String practiceName = practiceService.getPracticeName(practiceId);
+		return ResponseEntity.status(HttpStatus.OK).body(practiceName);
+	}
+
 }

@@ -25,4 +25,6 @@ public interface PracticeService {
 
 	PracticeLogoResponseDto getPracticeLogo(String id) throws ResourceNotFoundException;
 
+	String getPracticeName(Long practiceId) throws ResourceNotFoundException;
+
 }
