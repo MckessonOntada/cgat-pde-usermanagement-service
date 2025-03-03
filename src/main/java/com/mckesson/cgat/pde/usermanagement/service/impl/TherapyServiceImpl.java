@@ -108,13 +108,9 @@ public class TherapyServiceImpl implements TherapyService {
 			.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccountId, shipToAccountId, therapyId,
 					variantType)
 			.orElseThrow(() -> new ResourceNotFoundException("Catalog price not found"));
-		CatalogPriceResponseDto responseDto = null;
-		if (catalogPrice != null) {
-			responseDto = catalogPriceMapper.toResponseDto(catalogPrice.getCatalogPrice());
-			if (responseDto != null) {
-				responseDto.setProductLevelPricing(Objects.equals(catalogPrice.getProductLevelPricing(), "Y"));
-
-			}
+		CatalogPriceResponseDto responseDto = catalogPriceMapper.toResponseDto(catalogPrice.getCatalogPrice());
+		if (responseDto != null) {
+			responseDto.setProductLevelPricing(Objects.equals(catalogPrice.getProductLevelPricing(), "Y"));
 		}
 
 		return responseDto;
