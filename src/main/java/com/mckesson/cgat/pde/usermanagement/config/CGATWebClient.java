@@ -161,7 +161,8 @@ public class CGATWebClient {
 		try {
 			String requestBody = new ObjectMapper().writeValueAsString(body);
 			log.debug("Request [Method: {}, URL: {}] Body: {}", "POST", uri, requestBody);
-		} catch (JsonProcessingException e) {
+		}
+		catch (JsonProcessingException e) {
 			log.debug("Failed to log request body: {}", e.getMessage());
 		}
 	}
