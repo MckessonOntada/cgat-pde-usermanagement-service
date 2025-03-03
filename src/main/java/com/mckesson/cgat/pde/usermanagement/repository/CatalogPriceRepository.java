@@ -33,7 +33,6 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 			@Param("soldToAccountId") String soldToAccountId, @Param("shipToAccountId") String shipToAccountId,
 			@Param("therapyId") String therapyId, Pageable paging);
 
-
 	@Query("""
 			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponse(cp, m.productLevelPricing)
 				 FROM CatalogPrice cp
@@ -44,7 +43,7 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 					 cp.shipToCustomer = :shipToAccountId
 				AND
 					cp.sapMaterial = :therapyId
-        AND
+			     AND
 				  cp.deleted = false
 				AND
 					(
