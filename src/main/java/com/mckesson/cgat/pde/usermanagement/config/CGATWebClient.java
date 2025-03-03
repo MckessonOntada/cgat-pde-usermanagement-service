@@ -24,8 +24,11 @@ public class CGATWebClient {
 
 	private final WebClient webClient;
 
-	private CGATWebClient(WebClient webClient) {
+	private final String baseURL;
+
+	private CGATWebClient(WebClient webClient, String baseURL) {
 		this.webClient = webClient;
+		this.baseURL = baseURL;
 	}
 
 	public static class CGATWebClientBuilder {
@@ -76,7 +79,7 @@ public class CGATWebClient {
 			WebClient.Builder builder = WebClient.builder();
 			builder.baseUrl(baseURL)
 				.defaultHeader("Content-Type", "application/json")
-				.filter(logRequest())
+				// .filter(logRequest())
 				.filter(logResponse())
 				.filter((request, next) -> next.exchange(request)
 					.retryWhen(Retry.backoff(maxAttempt, backoff)
@@ -96,7 +99,7 @@ public class CGATWebClient {
 			if (customizer != null) {
 				customizer.accept(builder);
 			}
-			return new CGATWebClient(builder.build());
+			return new CGATWebClient(builder.build(), baseURL);
 		}
 
 	}
@@ -107,6 +110,7 @@ public class CGATWebClient {
 	}
 
 	public <T> T get(String uri, Class<T> responseType) {
+		logRequestBody(baseURL + uri, null);
 		return webClient.get()
 			.uri(uri)
 			.retrieve()
@@ -116,7 +120,7 @@ public class CGATWebClient {
 	}
 
 	public <T> T post(String uri, Object body, Class<T> responseType) {
-		logRequestBody(uri, body);
+		logRequestBody(baseURL + uri, body);
 		return webClient.post()
 			.uri(uri)
 			.bodyValue(body)
@@ -159,7 +163,7 @@ public class CGATWebClient {
 
 	private void logRequestBody(String uri, Object body) {
 		try {
-			String requestBody = new ObjectMapper().writeValueAsString(body);
+			String requestBody = (body != null) ? new ObjectMapper().writeValueAsString(body) : "null";
 			log.debug("Request [Method: {}, URL: {}] Body: {}", "POST", uri, requestBody);
 		}
 		catch (JsonProcessingException e) {
