@@ -37,7 +37,7 @@ public interface TherapyService {
 			String shipToAccountId, String therapyId, Pageable paging);
 
 	CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForTherapy(String soldToAccountId,
-			String shipToAccountId, String variantType, String therapyId) throws ResourceNotFoundException;
+			String shipToAccountId, String variantType, String therapyId);
 
 	Page<Therapy> findAllGlobalTherapies(String query, Pageable paging);
 

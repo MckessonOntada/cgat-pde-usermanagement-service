@@ -201,44 +201,46 @@ public class TherapyServiceImplTest {
 
 	@DisplayName("Test : Find Price of Variant linked to soldToAccount, ShipToAccounts and TherapyId")
 	@Test
-	public void findPriceOfVariantLinkedToShipToAccountsForTherapyTest() throws ResourceNotFoundException {
+	public void findPriceOfVariantLinkedToShipToAccountsForTherapyTest() {
 		String soldToAccount = "4";
 		String shipToAccount = "103";
 		String therapyId = "18";
 		String variantType = "Type B";
 		Mockito
 			.when(catalogPriceRepository.findPriceOfVariantLinkedToShipToAccountsForTherapy(anyString(), anyString(),
-					anyString(), anyString()))
-			.thenReturn(Optional.of(getCatalogPriceResponse()));
+					anyString(), anyString(), any(Pageable.class)))
+			.thenReturn(getCatalogPriceResponse());
 		therapyService.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccount, shipToAccount, variantType,
 				therapyId);
 		verify(catalogPriceRepository, times(1)).findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccount,
-				shipToAccount, therapyId, variantType);
+				shipToAccount, therapyId, variantType, PageRequest.of(0, 1));
 	}
 
 	@DisplayName("Test : Find Price of therapy with no variant linked to soldToAccount, ShipToAccounts and TherapyId")
 	@Test
-	public void findPriceOfVariantNotLinkedToShipToAccountsForTherapyTest() throws ResourceNotFoundException {
+	public void findPriceOfVariantNotLinkedToShipToAccountsForTherapyTest() {
 		String soldToAccount = "4";
 		String shipToAccount = "103";
 		String therapyId = "18";
 		String variantType = "";
 		Mockito
 			.when(catalogPriceRepository.findPriceOfVariantLinkedToShipToAccountsForTherapy(anyString(), anyString(),
-					anyString(), anyString()))
-			.thenReturn(Optional.of(getCatalogPriceResponseWithEmptyVariant()));
+					anyString(), anyString(), any(Pageable.class)))
+			.thenReturn(getCatalogPriceResponseWithEmptyVariant());
 		therapyService.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccount, shipToAccount, variantType,
 				therapyId);
 		verify(catalogPriceRepository, times(1)).findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccount,
-				shipToAccount, therapyId, variantType);
+				shipToAccount, therapyId, variantType, PageRequest.of(0, 1));
 	}
 
-	private CatalogPriceResponse getCatalogPriceResponseWithEmptyVariant() {
+	private Page<CatalogPriceResponse> getCatalogPriceResponseWithEmptyVariant() {
+		List<CatalogPriceResponse> responses = new ArrayList<>();
 		CatalogPrice catalogPrice = getCatalogPriceWithEmptyVariant();
 		CatalogPriceResponse response = new CatalogPriceResponse();
 		response.setCatalogPrice(catalogPrice);
 		response.setProductLevelPricing("Y");
-		return response;
+		responses.add(response);
+		return new PageImpl<>(responses, paging, responses.size());
 
 	}
 
@@ -276,12 +278,14 @@ public class TherapyServiceImplTest {
 
 	}
 
-	private CatalogPriceResponse getCatalogPriceResponse() {
+	private Page<CatalogPriceResponse> getCatalogPriceResponse() {
+		List<CatalogPriceResponse> responses = new ArrayList<>();
 		CatalogPrice catalogPrice = getCatalogPrice();
 		CatalogPriceResponse response = new CatalogPriceResponse();
 		response.setCatalogPrice(catalogPrice);
 		response.setProductLevelPricing("Y");
-		return response;
+		responses.add(response);
+		return new PageImpl<>(responses, paging, responses.size());
 	}
 
 	private CatalogPrice getCatalogPrice() {

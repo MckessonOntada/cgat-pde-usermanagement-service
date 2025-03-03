@@ -51,9 +51,9 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 					 OR cp.variant = :variantType
 					)
 			""")
-	Optional<CatalogPriceResponse> findPriceOfVariantLinkedToShipToAccountsForTherapy(
+	Page<CatalogPriceResponse> findPriceOfVariantLinkedToShipToAccountsForTherapy(
 			@Param("soldToAccountId") String soldToAccountId, @Param("shipToAccountId") String shipToAccountId,
-			@Param("therapyId") String therapyId, @Param("variantType") String variantType);
+			@Param("therapyId") String therapyId, @Param("variantType") String variantType, Pageable pageable);
 
 	@Query(value = """
 			SELECT DISTINCT cp.*

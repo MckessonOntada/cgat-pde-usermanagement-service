@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -100,20 +101,32 @@ public class TherapyServiceImpl implements TherapyService {
 
 	@Override
 	public CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForTherapy(String soldToAccountId,
-			String shipToAccountId, String variantType, String therapyId) throws ResourceNotFoundException {
-		log.info(" Inside method - findPriceOfVariantLinkedToShipToAccountsForTherapy..");
-		log.info("soldToAccountId: {} , shipToAccountId: {} , variantType: {} and therapyId: {}", soldToAccountId,
-				shipToAccountId, variantType, therapyId);
-		CatalogPriceResponse catalogPrice = catalogPriceRepository
-			.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccountId, shipToAccountId, therapyId,
-					variantType)
-			.orElseThrow(() -> new ResourceNotFoundException("Catalog price not found"));
-		CatalogPriceResponseDto responseDto = catalogPriceMapper.toResponseDto(catalogPrice.getCatalogPrice());
-		if (responseDto != null) {
-			responseDto.setProductLevelPricing(Objects.equals(catalogPrice.getProductLevelPricing(), "Y"));
-		}
+			String shipToAccountId, String variantType, String therapyId) {
+		try {
+			log.info(" Inside method - findPriceOfVariantLinkedToShipToAccountsForTherapy..");
+			log.info("soldToAccountId: {} , shipToAccountId: {} , variantType: {} and therapyId: {}", soldToAccountId,
+					shipToAccountId, variantType, therapyId);
+			Page<CatalogPriceResponse> catalogPriceResponsePage = catalogPriceRepository
+				.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccountId, shipToAccountId, therapyId,
+						variantType, PageRequest.of(0, 1));
+			CatalogPriceResponse catalogPrice = catalogPriceResponsePage.getContent().stream().findFirst().orElse(null);
+			CatalogPriceResponseDto responseDto = null;
+			if (catalogPrice != null) {
+				responseDto = catalogPriceMapper.toResponseDto(catalogPrice.getCatalogPrice());
+				if (responseDto != null) {
+					responseDto.setProductLevelPricing(Objects.equals(catalogPrice.getProductLevelPricing(), "Y"));
 
-		return responseDto;
+				}
+			}
+
+			return responseDto;
+		}
+		catch (Exception e) {
+			log.error(
+					"Exception occurred in fetching Price of variant linked to soldToAccountId, shipToAccountId and therapyId and exception details",
+					e);
+			throw e;
+		}
 	}
 
 	@Override
