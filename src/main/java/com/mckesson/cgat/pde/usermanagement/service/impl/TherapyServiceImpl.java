@@ -1,10 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -104,21 +100,20 @@ public class TherapyServiceImpl implements TherapyService {
 
 	@Override
 	public CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForTherapy(String soldToAccountId,
-			String shipToAccountId, String variantType, String therapyId) {
-		try {
-			log.info(" Inside method - findPriceOfVariantLinkedToShipToAccountsForTherapy..");
-			log.info("soldToAccountId: {} , shipToAccountId: {} , variantType: {} and therapyId: {}", soldToAccountId,
-					shipToAccountId, variantType, therapyId);
-			CatalogPrice catalogPrice = catalogPriceRepository.findPriceOfVariantLinkedToShipToAccountsForTherapy(
-					soldToAccountId, shipToAccountId, therapyId, variantType);
-			return catalogPriceMapper.toResponseDto(catalogPrice);
+			String shipToAccountId, String variantType, String therapyId) throws ResourceNotFoundException {
+		log.info(" Inside method - findPriceOfVariantLinkedToShipToAccountsForTherapy..");
+		log.info("soldToAccountId: {} , shipToAccountId: {} , variantType: {} and therapyId: {}", soldToAccountId,
+				shipToAccountId, variantType, therapyId);
+		CatalogPriceResponse catalogPrice = catalogPriceRepository
+			.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccountId, shipToAccountId, therapyId,
+					variantType)
+			.orElseThrow(() -> new ResourceNotFoundException("Catalog price not found"));
+		CatalogPriceResponseDto responseDto = catalogPriceMapper.toResponseDto(catalogPrice.getCatalogPrice());
+		if (responseDto != null) {
+			responseDto.setProductLevelPricing(Objects.equals(catalogPrice.getProductLevelPricing(), "Y"));
 		}
-		catch (Exception e) {
-			log.error(
-					"Exception occurred in fetching Price of variant linked to soldToAccountId, shipToAccountId and therapyId and exception details",
-					e);
-			throw e;
-		}
+
+		return responseDto;
 	}
 
 	@Override

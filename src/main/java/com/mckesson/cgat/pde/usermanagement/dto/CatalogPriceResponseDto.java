@@ -94,4 +94,6 @@ public class CatalogPriceResponseDto {
 
 	private String minimumOrderQuantity;
 
+	private boolean productLevelPricing;
+
 }
