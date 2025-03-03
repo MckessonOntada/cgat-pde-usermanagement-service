@@ -129,8 +129,7 @@ public class TherapyController {
 			@PathVariable @NotNull(message = "'shipToAccountId' cannot be null") @NotEmpty(
 					message = "'shipToAccountId' cannot be empty") String shipToAccountId,
 			@RequestParam(required = false) String variantType,
-			@PathVariable @NotNull(message = "'therapyId' cannot be null") String therapyId)
-			throws ResourceNotFoundException {
+			@PathVariable @NotNull(message = "'therapyId' cannot be null") String therapyId) {
 		return therapyService.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccountId, shipToAccountId,
 				variantType, therapyId);
 	}
