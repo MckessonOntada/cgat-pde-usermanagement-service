@@ -144,6 +144,7 @@ public class AccountServiceImpl implements AccountService {
 				StringUtils.toRootLowerCase(query), paging, AccountPartnerFunction.PAYER.getPartnerFunctionType());
 		allAccounts.addAll(allPayToAccounts.getContent());
 
+		if(StringUtils.isEmpty(query)) {
 		AccountsResponseDTO preferencedPaytoAccount = userPreferenceRepository.findByUserIdAndType(userId,
 				UserPreferenceType.DEFAULT_PAY_TO_ACCOUNT.name(),
 				AccountPartnerFunction.PAYER.getPartnerFunctionType());
@@ -151,6 +152,7 @@ public class AccountServiceImpl implements AccountService {
 			allAccounts.removeIf(a -> a.getAccountNumber().equals(preferencedPaytoAccount.getAccountNumber()));
 			allAccounts.add(preferencedPaytoAccount);
 		}
+	}
 		return new PageImpl<>(allAccounts, paging, allAccounts.size());
 	}
 
