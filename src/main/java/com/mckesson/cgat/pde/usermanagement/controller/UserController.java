@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
-import org.apache.coyote.BadRequestException;
+import com.mckesson.jbat.auth.module.exception.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
