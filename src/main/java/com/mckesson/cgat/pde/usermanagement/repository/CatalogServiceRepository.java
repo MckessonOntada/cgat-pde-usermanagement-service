@@ -27,6 +27,7 @@ public interface CatalogServiceRepository extends JpaRepository<CatalogConfigura
 			    AND p.soldToCustomer = :#{#id.soldToAccount}
 			    AND p.shipToCustomer = :#{#id.shipToAccount}
 			    AND (p.variant = :#{#id.variant} OR (p.variant IS NULL AND :#{#id.variant} = 'unknown'))
+			    AND p.deleted = false
 			""")
 	Optional<CatalogResponseDTO> findCatalogDetailsById(@Param("id") CatalogConfigId id);
 
