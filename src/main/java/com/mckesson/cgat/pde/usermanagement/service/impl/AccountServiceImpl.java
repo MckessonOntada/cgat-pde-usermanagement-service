@@ -1,7 +1,9 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -23,6 +25,7 @@ import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.UserPreferenceRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
+import com.mckesson.cgat.pde.usermanagement.service.QuestionnaireService;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
@@ -139,21 +142,21 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public Page<AccountsResponseDTO> findAllPayToAccounts(Long userId, String query, Pageable paging) {
 
-		List<AccountsResponseDTO> allAccounts = new ArrayList<>();
+		Map<String, AccountsResponseDTO> allAccounts = new HashMap<>();
 		Page<AccountsResponseDTO> allPayToAccounts = accountRepository.findAllPayToAccounts(userId,
 				StringUtils.toRootLowerCase(query), paging, AccountPartnerFunction.PAYER.getPartnerFunctionType());
-		allAccounts.addAll(allPayToAccounts.getContent());
+		allPayToAccounts.getContent().forEach(a -> allAccounts.put(a.getAccountNumber(), a));
 
 		if (StringUtils.isEmpty(query)) {
 			AccountsResponseDTO preferencedPaytoAccount = userPreferenceRepository.findByUserIdAndType(userId,
 					UserPreferenceType.DEFAULT_PAY_TO_ACCOUNT.name(),
 					AccountPartnerFunction.PAYER.getPartnerFunctionType());
 			if (preferencedPaytoAccount != null) {
-				allAccounts.removeIf(a -> a.getAccountNumber().equals(preferencedPaytoAccount.getAccountNumber()));
-				allAccounts.add(preferencedPaytoAccount);
+				allAccounts.remove(preferencedPaytoAccount.getAccountNumber());
+				allAccounts.put(preferencedPaytoAccount.getAccountNumber(), preferencedPaytoAccount);
 			}
 		}
-		return new PageImpl<>(allAccounts, paging, allAccounts.size());
+		return new PageImpl<>(new ArrayList<>(allAccounts.values()), paging, allAccounts.size());
 	}
 
 	@Override
