@@ -22,7 +22,6 @@ public interface UserPreferenceRepository extends JpaRepository<UserPreference, 
 				up.type = :type
 			AND
 				ac.partner_function = :partnerFunction
-			ORDER BY ac.sap_partner, ac.id
 			""",
 			nativeQuery = true)
 	public AccountsResponseDTO findByUserIdAndType(@Param("userId") Long userId, @Param("type") String type,

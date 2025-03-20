@@ -119,7 +119,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 					AND
 					ac1.partner_function = :partnerFunction
 				)
-			ORDER BY ac1.sap_partner, ac1.id;
 			""",
 			nativeQuery = true)
 	public Page<AccountsResponseDTO> findAllPayToAccounts(@Param("userId") Long userId, @Param("query") String query,
