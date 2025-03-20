@@ -103,7 +103,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	Set<Account> findByAccountNumber(String accountNumber, AccountPartnerFunction partnerFunction);
 
 	@Query(value = """
-			SELECT DISTINCT ac1.id, ac1.sap_partner as AccountNumber, ac1.name_1 as AccountName, ac1.house_number, ac1.street, ac1.street_2, ac1.street_3,
+			SELECT DISTINCT ON (ac1.sap_partner) ac1.id, ac1.sap_partner as AccountNumber, ac1.name_1 as AccountName, ac1.house_number, ac1.street, ac1.street_2, ac1.street_3,
 			ac1.telephone, ac1.city, ac1.district, ac1.state, ac1.country, ac1.zip_code, false as isDefault, ac1.sales_org, ac1.company_code
 			FROM usermanagement.account ac1
 			JOIN usermanagement.account ac2 ON ac1.sap_customer = ac2.sap_customer
@@ -119,6 +119,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 					AND
 					ac1.partner_function = :partnerFunction
 				)
+			ORDER BY ac1.sap_partner, ac1.id;
 			""",
 			nativeQuery = true)
 	public Page<AccountsResponseDTO> findAllPayToAccounts(@Param("userId") Long userId, @Param("query") String query,

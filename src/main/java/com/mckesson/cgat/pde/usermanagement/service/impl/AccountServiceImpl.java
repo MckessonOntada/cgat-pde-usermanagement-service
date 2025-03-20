@@ -142,21 +142,21 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public Page<AccountsResponseDTO> findAllPayToAccounts(Long userId, String query, Pageable paging) {
 
-		Map<String, AccountsResponseDTO> allAccounts = new HashMap<>();
+		List<AccountsResponseDTO> allAccounts = new ArrayList<>();
 		Page<AccountsResponseDTO> allPayToAccounts = accountRepository.findAllPayToAccounts(userId,
 				StringUtils.toRootLowerCase(query), paging, AccountPartnerFunction.PAYER.getPartnerFunctionType());
-		allPayToAccounts.getContent().forEach(a -> allAccounts.put(a.getAccountNumber(), a));
+		allAccounts.addAll(allPayToAccounts.getContent());
 
 		if (StringUtils.isEmpty(query)) {
 			AccountsResponseDTO preferencedPaytoAccount = userPreferenceRepository.findByUserIdAndType(userId,
 					UserPreferenceType.DEFAULT_PAY_TO_ACCOUNT.name(),
 					AccountPartnerFunction.PAYER.getPartnerFunctionType());
 			if (preferencedPaytoAccount != null) {
-				allAccounts.remove(preferencedPaytoAccount.getAccountNumber());
-				allAccounts.put(preferencedPaytoAccount.getAccountNumber(), preferencedPaytoAccount);
+				allAccounts.removeIf(a -> a.getAccountNumber().equals(preferencedPaytoAccount.getAccountNumber()));
+				allAccounts.add(preferencedPaytoAccount);
 			}
 		}
-		return new PageImpl<>(new ArrayList<>(allAccounts.values()), paging, allAccounts.size());
+		return new PageImpl<>(allAccounts, paging, allAccounts.size());
 	}
 
 	@Override
