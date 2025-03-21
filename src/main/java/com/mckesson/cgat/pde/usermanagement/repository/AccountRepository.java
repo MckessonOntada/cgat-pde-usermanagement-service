@@ -100,10 +100,10 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 			@Param("distChannels") List<String> distChannels);
 
 	@Query("select a FROM Account a WHERE a.accountNumber = :accountNumber AND a.partnerFunction = :partnerFunction")
-	Account findByAccountNumber(String accountNumber, AccountPartnerFunction partnerFunction);
+	Set<Account> findByAccountNumber(String accountNumber, AccountPartnerFunction partnerFunction);
 
 	@Query(value = """
-			SELECT DISTINCT ac1.id, ac1.sap_partner as AccountNumber, ac1.name_1 as AccountName, ac1.house_number, ac1.street, ac1.street_2, ac1.street_3,
+			SELECT DISTINCT ON (ac1.sap_partner) ac1.id, ac1.sap_partner as AccountNumber, ac1.name_1 as AccountName, ac1.house_number, ac1.street, ac1.street_2, ac1.street_3,
 			ac1.telephone, ac1.city, ac1.district, ac1.state, ac1.country, ac1.zip_code, false as isDefault, ac1.sales_org, ac1.company_code
 			FROM usermanagement.account ac1
 			JOIN usermanagement.account ac2 ON ac1.sap_customer = ac2.sap_customer
