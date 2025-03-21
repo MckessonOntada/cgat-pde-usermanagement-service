@@ -45,11 +45,11 @@ public class UserProvisioningRequestServiceImpl implements UserProvisioningReque
 	}
 
 	@Override
-	public Page<UserProvisioningRequest> findAll(Pageable paging, String query, UserProvisioningStaus status,
+	public Page<UserProvisioningRequest> findAll(Pageable paging, String query, List<UserProvisioningStaus> status,
 			Long praticeId, LocalDate startDate, LocalDate endDate) {
 		query = StringUtils.toRootLowerCase(query);
-		return userProvisioningRequestRepo.findAllByQueryText(query, status.name(), paging, praticeId, startDate,
-				endDate);
+		return userProvisioningRequestRepo.findAllByQueryText(query, status.stream().map(Enum::name).toList(), paging,
+				praticeId, startDate, endDate);
 	}
 
 	@Override

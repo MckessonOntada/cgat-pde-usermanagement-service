@@ -30,8 +30,8 @@ public interface UserProvisioningRequestRepo extends JpaRepository<UserProvision
 						practice_id =:practiceId
 					AND
 						(
-						 	cast(:requestStatus as varchar) IS NULL
-							OR status =:requestStatus
+						 	COALESCE(:requestStatus) is null
+							OR status IN :requestStatus
 						)
 
 					AND
@@ -45,7 +45,7 @@ public interface UserProvisioningRequestRepo extends JpaRepository<UserProvision
 			""")
 
 	Page<UserProvisioningRequest> findAllByQueryText(@Param("query") String query,
-			@Param("requestStatus") String requestStatus, Pageable paging, @Param("practiceId") long practiceId,
+			@Param("requestStatus") List<String> requestStatus, Pageable paging, @Param("practiceId") long practiceId,
 			@Param("from") LocalDate from, @Param("to") LocalDate to);
 
 	List<UserProvisioningRequest> findAllByPracticeId(Long id);

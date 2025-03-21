@@ -69,7 +69,7 @@ public class UserProvisioningRequestController {
 			@RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(defaultValue = "first_name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
-			@RequestParam(defaultValue = "PENDING") UserProvisioningStaus status,
+			@RequestParam(defaultValue = "PENDING") List<UserProvisioningStaus> status,
 			@RequestParam(required = false) @DateTimeFormat(pattern = CustomUtils.API_DATE_FORMAT) LocalDate startDate,
 			@RequestParam(required = false) @DateTimeFormat(pattern = CustomUtils.API_DATE_FORMAT) LocalDate endDate)
 			throws BadRequestException {
