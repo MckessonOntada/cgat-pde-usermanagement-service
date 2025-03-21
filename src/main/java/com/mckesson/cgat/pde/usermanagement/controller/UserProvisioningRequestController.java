@@ -81,7 +81,6 @@ public class UserProvisioningRequestController {
 			throw new BadRequestException("Either enter both dates or none for the filter as its a part of date range");
 		return userProvisioningRequestService.findAll(paging, query, status, OrganizationContext.getCurrentOrgId(),
 				startDate, endDate);
-
 	}
 
 }
