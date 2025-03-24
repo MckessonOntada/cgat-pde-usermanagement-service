@@ -64,20 +64,11 @@ public class OktaUserManagementServiceImpl implements OktaUserManagementService 
 			 * Checking is user exists on okta, if yes -> assign the user to associated
 			 * group if not -> create the okta user in the associated group
 			 */
-			String existingUser = checkIfUserExistsInOkta(oktaUser.getEmail());
+			String oktaUserId = findOktaUserIdByEmail(oktaUser.getEmail());
 
-			if (StringUtils.isNotEmpty(existingUser)) {
-				List<Map<String, Object>> usersList = mapper.readValue(existingUser,
-						new TypeReference<List<Map<String, Object>>>() {
-						});
-
-				if (!usersList.isEmpty()) {
-					Map<String, Object> oktaExistingUserData = usersList.get(0);
-					String oktaUserId = (String) oktaExistingUserData.get("id");
-					assignUserToOktaGroup(oktaUserId);
-					return;
-				}
-
+			if (StringUtils.isNotEmpty(oktaUserId)) {
+				assignUserToOktaGroup(oktaUserId);
+				return;
 			}
 			createOktaUser(oktaUser);
 
@@ -88,16 +79,27 @@ public class OktaUserManagementServiceImpl implements OktaUserManagementService 
 		}
 	}
 
-	private String checkIfUserExistsInOkta(String email) {
+	@Override
+	public String findOktaUserIdByEmail(String email) throws CGATHttpException {
 		HashMap<String, String> payload = new HashMap<>();
 		payload.put("q", email);
-		// params.put("after", "string");
-		// params.put("limit", "200");
-		// params.put("filter", "string");
-		// params.put("search", "string");
-		// params.put("sortBy", "string");
-		// params.put("sortOrder", "string");
-		return cgatHttpClient.sendGetRequest(OKTA_USER_PATH, payload, "SSWS " + oktaApiToken);
+		String response = cgatHttpClient.sendGetRequest(OKTA_USER_PATH, payload, "SSWS " + oktaApiToken);
+
+		if (StringUtils.isNotEmpty(response)) {
+			try {
+				List<Map<String, Object>> usersList = mapper.readValue(response,
+						new TypeReference<List<Map<String, Object>>>() {
+						});
+				if (!usersList.isEmpty()) {
+					return (String) usersList.get(0).get("id");
+				}
+			}
+			catch (Exception e) {
+				log.error("Error parsing Okta user response: {}", e.getMessage(), e);
+				throw new CGATHttpException("Error parsing Okta user response: " + e.getMessage());
+			}
+		}
+		return null; // Return null if no user found or response is empty
 	}
 
 	private void assignUserToOktaGroup(String oktaUserId) {
@@ -131,6 +133,32 @@ public class OktaUserManagementServiceImpl implements OktaUserManagementService 
 			.login(user.getContact().getEmail())
 			.build();
 		return oktaUser;
+	}
+
+	@Override
+	public void triggerPasswordResetEmail(String oktaUserId) throws CGATHttpException {
+		log.debug("Triggering reset password email for Okta ID: {}", oktaUserId);
+
+		// Prepare the URL and query parameters
+		String url = String.format("%s/%s/lifecycle/reset_password", OKTA_USER_PATH, oktaUserId);
+		HashMap<String, String> queryParams = new HashMap<>();
+		queryParams.put("sendEmail", "true");
+
+		// Empty payload
+		String payload = "";
+
+		try {
+			// Send POST request to trigger password reset email
+			String response = cgatHttpClient.sendPostRequest(url, queryParams, payload, "SSWS " + oktaApiToken);
+
+			log.info("Password reset email triggered successfully for Okta ID: {}. Response: {}", oktaUserId, response);
+
+		}
+		catch (CGATHttpException e) {
+			log.error("Failed to trigger password reset email for Okta ID: {}. Error: {}", oktaUserId, e.getMessage(),
+					e);
+			throw e;
+		}
 	}
 
 }

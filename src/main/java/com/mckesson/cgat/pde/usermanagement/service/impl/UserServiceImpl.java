@@ -2,9 +2,11 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import java.io.*;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
+
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -413,6 +415,28 @@ public class UserServiceImpl implements UserService {
 		catch (IOException e) {
 			log.error("Unable to process output csv file, error message: {}", e.getMessage());
 			throw new RuntimeException("Failed to generate output csv file");
+		}
+	}
+
+	@Override
+	public void resetPasswordByEmail(String email) throws CGATHttpException {
+		log.debug("Initiating password reset process for email: {}", email);
+
+		try {
+			String oktaUserId = oktaUserManagementService.findOktaUserIdByEmail(email);
+
+			if (oktaUserId == null) {
+				log.warn("No Okta user found with email: {}", email);
+				throw new CGATHttpException("No Okta user found with email: " + email);
+			}
+			oktaUserManagementService.triggerPasswordResetEmail(oktaUserId);
+
+			log.info("Password reset email triggered successfully for email: {}", email);
+
+		}
+		catch (CGATHttpException e) {
+			log.error("Exception occurred while resetting password for email: {}. Error: {}", email, e.getMessage(), e);
+			throw e;
 		}
 	}
 
