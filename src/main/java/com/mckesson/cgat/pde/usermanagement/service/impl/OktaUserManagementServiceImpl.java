@@ -64,11 +64,9 @@ public class OktaUserManagementServiceImpl implements OktaUserManagementService 
 			 * Checking is user exists on okta, if yes -> assign the user to associated
 			 * group if not -> create the okta user in the associated group
 			 */
-			List<Map<String, Object>> usersList = findOktaUserByEmail(oktaUser.getEmail());
+			String oktaUserId = findOktaUserByEmail(oktaUser.getEmail());
 
-			if (!usersList.isEmpty()) {
-				Map<String, Object> oktaExistingUserData = usersList.get(0);
-				String oktaUserId = (String) oktaExistingUserData.get("id");
+			if (StringUtils.isNotEmpty(oktaUserId)) {
 				assignUserToOktaGroup(oktaUserId);
 				return;
 			}
@@ -82,22 +80,26 @@ public class OktaUserManagementServiceImpl implements OktaUserManagementService 
 	}
 
 	@Override
-	public List<Map<String, Object>> findOktaUserByEmail(String email) throws CGATHttpException {
+	public String findOktaUserByEmail(String email) throws CGATHttpException {
 		HashMap<String, String> payload = new HashMap<>();
 		payload.put("q", email);
 		String response = cgatHttpClient.sendGetRequest(OKTA_USER_PATH, payload, "SSWS " + oktaApiToken);
 
 		if (StringUtils.isNotEmpty(response)) {
 			try {
-				return mapper.readValue(response, new TypeReference<List<Map<String, Object>>>() {
-				});
+				List<Map<String, Object>> usersList = mapper.readValue(response,
+						new TypeReference<List<Map<String, Object>>>() {
+						});
+				if (!usersList.isEmpty()) {
+					return (String) usersList.get(0).get("id");
+				}
 			}
 			catch (Exception e) {
 				log.error("Error parsing Okta user response: {}", e.getMessage(), e);
 				throw new CGATHttpException("Error parsing Okta user response: " + e.getMessage());
 			}
 		}
-		return List.of(); // Return empty list if no user found or response is empty
+		return null; // Return null if no user found or response is empty
 	}
 
 	private void assignUserToOktaGroup(String oktaUserId) {
@@ -152,7 +154,7 @@ public class OktaUserManagementServiceImpl implements OktaUserManagementService 
 			log.info("Password reset email triggered successfully for Okta ID: {}. Response: {}", oktaUserId, response);
 
 		}
-		catch (Exception e) {
+		catch (CGATHttpException e) {
 			log.error("Failed to trigger password reset email for Okta ID: {}. Error: {}", oktaUserId, e.getMessage(),
 					e);
 			throw new CGATHttpException("Failed to trigger password reset email: " + e.getMessage());
