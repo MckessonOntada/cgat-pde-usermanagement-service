@@ -255,7 +255,6 @@ public class UserController {
 				paging);
 	}
 
-	@RequirePermissions({ Permission.EDIT_USERS })
 	@PostMapping("/reset-password")
 	@Operation(summary = "Reset Okta password by email")
 	public ResponseEntity<Void> resetPasswordByEmail() throws CGATHttpException {

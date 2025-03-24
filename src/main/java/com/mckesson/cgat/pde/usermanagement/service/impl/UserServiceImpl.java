@@ -423,21 +423,21 @@ public class UserServiceImpl implements UserService {
 		log.debug("Initiating password reset process for email: {}", email);
 
 		try {
-			// Step 1: Find the Okta user ID by email
-			String oktaUserId = oktaUserManagementService.findOktaUserIdByEmail(email);
-			if (StringUtils.isBlank(oktaUserId)) {
+			List<Map<String, Object>> usersList = oktaUserManagementService.findOktaUserByEmail(email);
+
+			if (usersList.isEmpty()) {
 				log.warn("No Okta user found with email: {}", email);
 				throw new CGATHttpException("No Okta user found with email: " + email);
 			}
 
-			// Step 2: Trigger the password reset email
+			String oktaUserId = (String) usersList.get(0).get("id");
 			oktaUserManagementService.triggerPasswordResetEmail(oktaUserId);
 
 			log.info("Password reset email triggered successfully for email: {}", email);
 
 		}
 		catch (Exception e) {
-			log.error("Exception occurred while resetting password for email: {}. Error: {}", email, e.getMessage());
+			log.error("Exception occurred while resetting password for email: {}. Error: {}", email, e.getMessage(), e);
 			throw e;
 		}
 	}
