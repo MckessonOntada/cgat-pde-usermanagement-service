@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CGATHttpException;
 import com.mckesson.cgat.pde.usermanagement.http.CGATHttpClient;
@@ -17,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -131,6 +134,65 @@ public class OktaUserManagementServiceImpl implements OktaUserManagementService 
 			.login(user.getContact().getEmail())
 			.build();
 		return oktaUser;
+	}
+
+	@Override
+	public String findOktaUserIdByEmail(String email) throws CGATHttpException {
+		log.debug("Searching Okta ID for email: {}", email);
+
+		try {
+			// Prepare query parameters
+			HashMap<String, String> queryParams = new HashMap<>();
+			queryParams.put("q", email);
+
+			// Send GET request to Okta
+			String response = cgatHttpClient.sendGetRequest(OKTA_USER_PATH, queryParams, "SSWS " + oktaApiToken);
+			log.info("Response from Okta: {}", response);
+
+			// Parse the JSON response
+			JsonNode jsonResponse = mapper.readTree(response);
+
+			// Validate response and extract the user ID
+			if (jsonResponse.isArray() && jsonResponse.size() > 0) {
+				JsonNode user = jsonResponse.get(0);
+				String oktaUserId = user.get("id").asText();
+				log.info("Found Okta ID for email {}: {}", email, oktaUserId);
+				return oktaUserId;
+			}
+
+			// If no user found
+			throw new CGATHttpException("No Okta user found with email: " + email);
+
+		}
+		catch (Exception e) {
+			log.error("Error fetching Okta ID for email: {}. Error: {}", email, e.getMessage());
+			throw new CGATHttpException("Failed to find Okta user by email: " + e.getMessage());
+		}
+	}
+
+	@Override
+	public void triggerPasswordResetEmail(String oktaUserId) throws CGATHttpException {
+		log.debug("Triggering reset password email for Okta ID: {}", oktaUserId);
+
+		// Prepare the URL and query parameters
+		String url = String.format("%s/%s/lifecycle/reset_password", OKTA_USER_PATH, oktaUserId);
+		HashMap<String, String> queryParams = new HashMap<>();
+		queryParams.put("sendEmail", "true");
+
+		// Empty payload
+		String payload = "";
+
+		try {
+			// Send POST request to trigger password reset email
+			String response = cgatHttpClient.sendPostRequest(url, queryParams, payload, "SSWS " + oktaApiToken);
+
+			log.info("Password reset email triggered successfully for Okta ID: {}. Response: {}", oktaUserId, response);
+
+		}
+		catch (Exception e) {
+			log.error("Failed to trigger password reset email for Okta ID: {}. Error: {}", oktaUserId, e.getMessage());
+			throw new CGATHttpException("Failed to trigger password reset email: " + e.getMessage());
+		}
 	}
 
 }

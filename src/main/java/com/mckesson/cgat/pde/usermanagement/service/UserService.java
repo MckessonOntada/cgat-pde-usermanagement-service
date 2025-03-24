@@ -4,6 +4,8 @@ import java.io.OutputStream;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.mckesson.cgat.pde.usermanagement.exception.custom.CGATHttpException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,5 +46,7 @@ public interface UserService {
 	User setDefaultPayToAccount(Long userId, String payToAccount) throws ResourceNotFoundException;
 
 	User retryOktaProvisioning(Long userId) throws ResourceNotFoundException;
+
+	void resetPasswordByEmail(String email);
 
 }

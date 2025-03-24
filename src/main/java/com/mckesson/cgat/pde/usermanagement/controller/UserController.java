@@ -3,7 +3,9 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
+import com.mckesson.cgat.pde.usermanagement.exception.custom.CGATHttpException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import com.mckesson.jbat.auth.module.exception.BadRequestException;
 import org.springframework.data.domain.Page;
@@ -251,6 +253,15 @@ public class UserController {
 		Pageable paging = PageRequest.of(pageNo, pageSize);
 		return accountService.findAllPayToAccounts(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), query,
 				paging);
+	}
+
+	@RequirePermissions({ Permission.EDIT_USERS })
+	@PostMapping("/reset-password")
+	@Operation(summary = "Reset Okta password by email")
+	public ResponseEntity<Void> resetPasswordByEmail() throws CGATHttpException {
+		String email = Objects.requireNonNull(UserSecurityUtils.getLoggedInUser()).getUserName();
+		userService.resetPasswordByEmail(email);
+		return ResponseEntity.ok().build();
 	}
 
 }
