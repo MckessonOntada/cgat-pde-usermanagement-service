@@ -7,7 +7,7 @@ public interface OktaUserManagementService {
 
 	void updateOrCreateOktaUser(User user) throws CGATHttpException;
 
-	String findOktaUserByEmail(String email) throws CGATHttpException;
+	String findOktaUserIdByEmail(String email) throws CGATHttpException;
 
 	void triggerPasswordResetEmail(String oktaUserId);
 

@@ -64,7 +64,7 @@ public class OktaUserManagementServiceImpl implements OktaUserManagementService 
 			 * Checking is user exists on okta, if yes -> assign the user to associated
 			 * group if not -> create the okta user in the associated group
 			 */
-			String oktaUserId = findOktaUserByEmail(oktaUser.getEmail());
+			String oktaUserId = findOktaUserIdByEmail(oktaUser.getEmail());
 
 			if (StringUtils.isNotEmpty(oktaUserId)) {
 				assignUserToOktaGroup(oktaUserId);
@@ -80,7 +80,7 @@ public class OktaUserManagementServiceImpl implements OktaUserManagementService 
 	}
 
 	@Override
-	public String findOktaUserByEmail(String email) throws CGATHttpException {
+	public String findOktaUserIdByEmail(String email) throws CGATHttpException {
 		HashMap<String, String> payload = new HashMap<>();
 		payload.put("q", email);
 		String response = cgatHttpClient.sendGetRequest(OKTA_USER_PATH, payload, "SSWS " + oktaApiToken);
@@ -157,7 +157,7 @@ public class OktaUserManagementServiceImpl implements OktaUserManagementService 
 		catch (CGATHttpException e) {
 			log.error("Failed to trigger password reset email for Okta ID: {}. Error: {}", oktaUserId, e.getMessage(),
 					e);
-			throw new CGATHttpException("Failed to trigger password reset email: " + e.getMessage());
+			throw e;
 		}
 	}
 

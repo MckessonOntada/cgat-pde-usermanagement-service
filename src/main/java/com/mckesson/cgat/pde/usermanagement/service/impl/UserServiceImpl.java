@@ -423,7 +423,7 @@ public class UserServiceImpl implements UserService {
 		log.debug("Initiating password reset process for email: {}", email);
 
 		try {
-			String oktaUserId = oktaUserManagementService.findOktaUserByEmail(email);
+			String oktaUserId = oktaUserManagementService.findOktaUserIdByEmail(email);
 
 			if (oktaUserId == null) {
 				log.warn("No Okta user found with email: {}", email);
