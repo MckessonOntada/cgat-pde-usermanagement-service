@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.mckesson.cgat.pde.usermanagement.model.UserProvisioningRequest;
-import com.mckesson.cgat.pde.usermanagement.model.UserProvisioningStaus;
+import com.mckesson.cgat.pde.usermanagement.model.UserProvisioningStatus;
 
 @Repository
 public interface UserProvisioningRequestRepo extends JpaRepository<UserProvisioningRequest, Long> {
@@ -30,8 +30,8 @@ public interface UserProvisioningRequestRepo extends JpaRepository<UserProvision
 						practice_id =:practiceId
 					AND
 						(
-						 	cast(:requestStatus as varchar) IS NULL
-							OR status =:requestStatus
+						 	COALESCE(:requestStatuses) is null
+							OR status IN :requestStatuses
 						)
 
 					AND
@@ -45,8 +45,8 @@ public interface UserProvisioningRequestRepo extends JpaRepository<UserProvision
 			""")
 
 	Page<UserProvisioningRequest> findAllByQueryText(@Param("query") String query,
-			@Param("requestStatus") String requestStatus, Pageable paging, @Param("practiceId") long practiceId,
-			@Param("from") LocalDate from, @Param("to") LocalDate to);
+			@Param("requestStatuses") List<String> requestStatuses, Pageable paging,
+			@Param("practiceId") long practiceId, @Param("from") LocalDate from, @Param("to") LocalDate to);
 
 	List<UserProvisioningRequest> findAllByPracticeId(Long id);
 

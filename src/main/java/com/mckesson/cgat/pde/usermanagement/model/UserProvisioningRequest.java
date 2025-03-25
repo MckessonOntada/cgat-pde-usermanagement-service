@@ -62,6 +62,6 @@ public class UserProvisioningRequest extends AuditColumns implements Serializabl
 	private Boolean isActive = false;
 
 	@Enumerated(EnumType.STRING)
-	private UserProvisioningStaus status = UserProvisioningStaus.PENDING;
+	private UserProvisioningStatus status = UserProvisioningStatus.PENDING;
 
 }
