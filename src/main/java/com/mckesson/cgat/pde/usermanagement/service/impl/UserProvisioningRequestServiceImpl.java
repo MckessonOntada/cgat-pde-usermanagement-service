@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.mckesson.cgat.pde.usermanagement.exception.custom.ForbiddenActionException;
 import com.mckesson.cgat.pde.usermanagement.model.UserProvisioningRequest;
-import com.mckesson.cgat.pde.usermanagement.model.UserProvisioningStaus;
+import com.mckesson.cgat.pde.usermanagement.model.UserProvisioningStatus;
 import com.mckesson.cgat.pde.usermanagement.repository.UserProvisioningRequestRepo;
 import com.mckesson.cgat.pde.usermanagement.service.UserProvisioningRequestService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -28,14 +28,14 @@ public class UserProvisioningRequestServiceImpl implements UserProvisioningReque
 	}
 
 	@Override
-	public UserProvisioningRequest updateUserProvisioningStatus(Long requestId, UserProvisioningStaus statusToBeUpdated)
-			throws ResourceNotFoundException {
+	public UserProvisioningRequest updateUserProvisioningStatus(Long requestId,
+			UserProvisioningStatus statusToBeUpdated) throws ResourceNotFoundException {
 		UserProvisioningRequest userRequest = userProvisioningRequestRepo.findById(requestId)
 			.orElseThrow(
 					() -> new ResourceNotFoundException("User provisoning request not found for id: " + requestId));
 		// First clause is to make request Idempotent. Second clause is to make sure
 		// Approved or Rejected request cant be updated.
-		if (userRequest.getStatus() == statusToBeUpdated || userRequest.getStatus() == UserProvisioningStaus.PENDING)
+		if (userRequest.getStatus() == statusToBeUpdated || userRequest.getStatus() == UserProvisioningStatus.PENDING)
 			userRequest.setStatus(statusToBeUpdated);
 		else
 			throw new ForbiddenActionException(
@@ -45,11 +45,11 @@ public class UserProvisioningRequestServiceImpl implements UserProvisioningReque
 	}
 
 	@Override
-	public Page<UserProvisioningRequest> findAll(Pageable paging, String query, List<UserProvisioningStaus> status,
-			Long praticeId, LocalDate startDate, LocalDate endDate) {
+	public Page<UserProvisioningRequest> findAll(Pageable paging, String query,
+			List<UserProvisioningStatus> provisioningStatuses, Long praticeId, LocalDate startDate, LocalDate endDate) {
 		query = StringUtils.toRootLowerCase(query);
-		return userProvisioningRequestRepo.findAllByQueryText(query, status.stream().map(Enum::name).toList(), paging,
-				praticeId, startDate, endDate);
+		return userProvisioningRequestRepo.findAllByQueryText(query,
+				provisioningStatuses.stream().map(Enum::name).toList(), paging, praticeId, startDate, endDate);
 	}
 
 	@Override

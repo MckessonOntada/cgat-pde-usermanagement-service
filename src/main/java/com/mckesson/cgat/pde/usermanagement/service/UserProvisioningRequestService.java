@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.model.UserProvisioningRequest;
-import com.mckesson.cgat.pde.usermanagement.model.UserProvisioningStaus;
+import com.mckesson.cgat.pde.usermanagement.model.UserProvisioningStatus;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import jakarta.validation.Valid;
@@ -21,10 +21,10 @@ public interface UserProvisioningRequestService {
 	UserProvisioningRequest createUserProvisioning(UserProvisioningRequest request);
 
 	UserProvisioningRequest updateUserProvisioningStatus(Long userProvisioningReqId,
-			UserProvisioningStaus statusToBeUpdated) throws ResourceNotFoundException;
+			UserProvisioningStatus statusToBeUpdated) throws ResourceNotFoundException;
 
-	Page<UserProvisioningRequest> findAll(Pageable paging, String query, List<UserProvisioningStaus> status,
-			Long praticeId, LocalDate startDate, LocalDate endDate);
+	Page<UserProvisioningRequest> findAll(Pageable paging, String query,
+			List<UserProvisioningStatus> provisioningStatuses, Long praticeId, LocalDate startDate, LocalDate endDate);
 
 	UserProvisioningRequest getUserProvisioningRequest(Long requestId) throws ResourceNotFoundException;
 

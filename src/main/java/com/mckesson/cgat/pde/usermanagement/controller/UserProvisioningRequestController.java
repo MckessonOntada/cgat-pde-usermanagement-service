@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.UserProvisioningRequest;
-import com.mckesson.cgat.pde.usermanagement.model.UserProvisioningStaus;
+import com.mckesson.cgat.pde.usermanagement.model.UserProvisioningStatus;
 import com.mckesson.cgat.pde.usermanagement.service.UserProvisioningRequestService;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.cgat.pde.usermanagement.utils.OrganizationContext;
@@ -47,7 +47,7 @@ public class UserProvisioningRequestController {
 
 	@PatchMapping("/{userProvisioningReqId}/status")
 	@Operation(summary = "Update user provisioning status")
-	public ResponseEntity<Object> updateUserProvisioningStatus(@RequestParam UserProvisioningStaus status,
+	public ResponseEntity<Object> updateUserProvisioningStatus(@RequestParam UserProvisioningStatus status,
 			@PathVariable Long userProvisioningReqId) throws ResourceNotFoundException {
 		return new ResponseEntity<>(
 				userProvisioningRequestService.updateUserProvisioningStatus(userProvisioningReqId, status),
@@ -69,7 +69,7 @@ public class UserProvisioningRequestController {
 			@RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(defaultValue = "first_name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
-			@RequestParam(defaultValue = "PENDING") List<UserProvisioningStaus> status,
+			@RequestParam(defaultValue = "PENDING") List<UserProvisioningStatus> provisioningStatuses,
 			@RequestParam(required = false) @DateTimeFormat(pattern = CustomUtils.API_DATE_FORMAT) LocalDate startDate,
 			@RequestParam(required = false) @DateTimeFormat(pattern = CustomUtils.API_DATE_FORMAT) LocalDate endDate)
 			throws BadRequestException {
@@ -79,8 +79,8 @@ public class UserProvisioningRequestController {
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 		if (!((null == startDate && null == endDate) || (null != startDate && null != endDate)))
 			throw new BadRequestException("Either enter both dates or none for the filter as its a part of date range");
-		return userProvisioningRequestService.findAll(paging, query, status, OrganizationContext.getCurrentOrgId(),
-				startDate, endDate);
+		return userProvisioningRequestService.findAll(paging, query, provisioningStatuses,
+				OrganizationContext.getCurrentOrgId(), startDate, endDate);
 	}
 
 }
