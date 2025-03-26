@@ -255,7 +255,7 @@ public class UserController {
 				paging);
 	}
 
-	@PostMapping("/reset-password")
+	@PostMapping("/current/reset-password")
 	@Operation(summary = "Reset Okta password by email")
 	public ResponseEntity<Void> resetPasswordByEmail() throws CGATHttpException {
 		String email = Objects.requireNonNull(UserSecurityUtils.getLoggedInUser()).getUserName();
