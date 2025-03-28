@@ -70,7 +70,8 @@ public class AccountController {
 
 	}
 
-	@RequirePermissions({ Permission.VIEW_ORGANIZATION, Permission.VIEW_USERS })
+	@RequirePermissions({ Permission.VIEW_ORGANIZATION, Permission.VIEW_USERS, Permission.ADD_ORDERS,
+			Permission.EDIT_ORDERS })
 	@GetMapping("/{accountId}")
 	@Operation(summary = "Get account details by accountId ")
 	public ResponseEntity<Account> getAccount(@PathVariable Long accountId)
