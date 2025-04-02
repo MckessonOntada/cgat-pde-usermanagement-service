@@ -25,6 +25,7 @@ import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
+import com.mckesson.cgat.pde.usermanagement.model.AccountType;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
 import com.mckesson.cgat.pde.usermanagement.model.User;
@@ -219,12 +220,13 @@ public class UserController {
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
 			@PathVariable(required = false) String practiceId, @PathVariable(required = false) Long userId,
 			@RequestParam(required = false) List<String> status, @RequestParam(required = false) List<String> salesOrg,
-			@RequestParam(required = false) List<String> distributionChannel) throws ResourceNotFoundException {
+			@RequestParam(required = false) List<String> distributionChannel,
+			@RequestParam(defaultValue = "BnB") AccountType accountType) throws ResourceNotFoundException {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 		return accountService.findAll(paging, query, status, userId, OrganizationContext.getCurrentOrgId(),
-				AccountPartnerFunction.SOLD_TO, salesOrg, distributionChannel);
+				AccountPartnerFunction.SOLD_TO, salesOrg, distributionChannel, accountType);
 
 	}
 
