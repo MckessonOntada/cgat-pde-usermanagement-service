@@ -150,7 +150,7 @@ public class TherapyServiceImpl implements TherapyService {
 				? programAndChannels.stream().map(ProgramChannelProjectionDTO::getChannel).map(channel -> {
 					if ("8545".equals(channel))
 						return "MPB";
-					if ("1000".equals(channel))
+					if ("1010".equals(channel))
 						return "Speciality";
 					if ("1100".equals(channel) || channel.startsWith("2"))
 						return "3PL";
