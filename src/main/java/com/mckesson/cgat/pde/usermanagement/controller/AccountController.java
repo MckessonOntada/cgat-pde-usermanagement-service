@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
+import com.mckesson.cgat.pde.usermanagement.model.AccountType;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
@@ -52,7 +53,7 @@ public class AccountController {
 		this.accountService = accountService;
 	}
 
-	@RequirePermissions({ Permission.ADD_ORGANIZATION })
+	@RequirePermissions({ Permission.ADD_ORGANIZATION, Permission.ADD_SP_ACCOUNT })
 	@PostMapping(consumes = "application/json")
 	@Operation(summary = "Create new account")
 	public ResponseEntity<Account> createAccount(@Valid @RequestBody Account account)
@@ -71,7 +72,7 @@ public class AccountController {
 	}
 
 	@RequirePermissions({ Permission.VIEW_ORGANIZATION, Permission.VIEW_USERS, Permission.ADD_ORDERS,
-			Permission.EDIT_ORDERS })
+			Permission.EDIT_ORDERS, Permission.VIEW_SP_ACCOUNT, Permission.EDIT_SP_ACCOUNT })
 	@GetMapping("/{accountId}")
 	@Operation(summary = "Get account details by accountId ")
 	public ResponseEntity<Account> getAccount(@PathVariable Long accountId)
@@ -101,7 +102,8 @@ public class AccountController {
 
 	}
 
-	@RequirePermissions({ Permission.MANAGE_ORGANIZATION_SCREEN, Permission.MANAGE_USERS_SCREEN })
+	@RequirePermissions({ Permission.MANAGE_ORGANIZATION_SCREEN, Permission.MANAGE_USERS_SCREEN,
+			Permission.MANAGE_SP_ACCOUNT })
 	@GetMapping
 	@Operation(summary = "Fetch all Accounts based on filter provided with pagination capabilities.")
 	Page<Account> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
@@ -110,13 +112,14 @@ public class AccountController {
 			@PathVariable String practiceId, @RequestParam(required = false) List<String> status,
 			@RequestParam(required = false) List<String> salesOrg,
 			@RequestParam(required = false) List<String> distChannels,
-			@RequestParam AccountPartnerFunction partnerFunction)
+			@RequestParam AccountPartnerFunction partnerFunction,
+			@RequestParam(defaultValue = "BnB") AccountType accountType)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 		return accountService.findAll(paging, query, status, null, Long.valueOf(practiceId), partnerFunction, salesOrg,
-				distChannels);
+				distChannels, accountType);
 	}
 
 	@RequirePermissions({ Permission.EDIT_ORGANIZATION, Permission.ADD_ORGANIZATION })

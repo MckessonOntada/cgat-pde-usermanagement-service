@@ -4,6 +4,10 @@ import java.util.List;
 import java.util.Set;
 
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
+import com.mckesson.cgat.pde.usermanagement.model.AccountType;
+
+import io.swagger.v3.oas.annotations.Parameter;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -49,10 +53,11 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 					distribution_channel IN (:distChannels)
 				)
 				and partner_function = :partnerFunction
+				and account_type = :accountType
 			)""")
 	Page<Account> findAllByQueryText(@Param("query") String query, @Param("status") String status, Pageable paging,
 			@Param("practiceId") Long practiceId, String partnerFunction, @Param("salesOrg") List<String> salesOrg,
-			@Param("distChannels") List<String> distChannels);
+			@Param("distChannels") List<String> distChannels, @Param("accountType") String accountType);
 
 	Set<Account> findByPracticeId(Long practiceId);
 
@@ -93,11 +98,12 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 					ua.distribution_channel IN (:distChannels)
 				)
 			    AND ua.partner_function = :partnerFunction
+			    AND ua.account_type = :accountType
 			)""")
 	Page<Account> findAccountsByUser(@Param("userId") Long userId, @Param("query") String query,
 			@Param("status") String status, Pageable pageable, @Param("practiceId") Long practiceId,
 			String partnerFunction, @Param("salesOrg") List<String> salesOrg,
-			@Param("distChannels") List<String> distChannels);
+			@Param("distChannels") List<String> distChannels, @Param("accountType") String accountType);
 
 	@Query("select a FROM Account a WHERE a.accountNumber = :accountNumber AND a.partnerFunction = :partnerFunction")
 	Set<Account> findByAccountNumber(String accountNumber, AccountPartnerFunction partnerFunction);

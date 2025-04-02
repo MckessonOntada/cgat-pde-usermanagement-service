@@ -12,6 +12,7 @@ import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
+import com.mckesson.cgat.pde.usermanagement.model.AccountType;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 @Service
@@ -22,8 +23,8 @@ public interface AccountService {
 	void delinkAccountFromPractice(Long practiceId, Long accountId) throws ResourceNotFoundException;
 
 	Page<Account> findAll(Pageable paging, String query, List<String> status, Long userId, Long practiceId,
-			AccountPartnerFunction partnerFunction, List<String> salesOrg, List<String> distChannels)
-			throws ResourceNotFoundException;
+			AccountPartnerFunction partnerFunction, List<String> salesOrg, List<String> distChannels,
+			AccountType accountType) throws ResourceNotFoundException;
 
 	Account createAccount(Account account);
 
