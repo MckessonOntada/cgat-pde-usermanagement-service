@@ -3,12 +3,12 @@ package com.mckesson.cgat.pde.usermanagement.service;
 import java.util.List;
 
 import com.mckesson.cgat.pde.usermanagement.dto.*;
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
-import com.mckesson.cgat.pde.usermanagement.model.DistributionChannel;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
@@ -46,9 +46,9 @@ public interface TherapyService {
 	Therapy findByMaterialNumber(String materialNumber) throws ResourceNotFoundException;
 
 	void updateTherapyConfigs(List<String> materialNumbers, boolean isPatientInformationRequired,
-			boolean isCoiIdRequired);
+			boolean isCoiIdRequired, ChannelType channelType);
 
-	MaterialDetailsResponseDTO findTherapyDetailsByMaterialNumber(String materialNumber)
+	MaterialDetailsResponseDTO findTherapyDetailsByMaterialNumber(String materialNumber, ChannelType channelType)
 			throws ResourceNotFoundException;
 
 	void deleteConfigByMaterialNumber(String materialNumber) throws ResourceNotFoundException;

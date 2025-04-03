@@ -4,6 +4,7 @@ import com.mckesson.cgat.pde.usermanagement.dto.MaterialDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyConfigRequestDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
 import jakarta.validation.Valid;
@@ -70,7 +71,7 @@ public class GlobalTherapyController {
 	public ResponseEntity<String> updateTherapyConfigs(@Valid @RequestBody TherapyConfigRequestDTO request) {
 		log.debug("Updating therapy configs for materialNumbers: {}", request.getMaterialNumbers());
 		therapyService.updateTherapyConfigs(request.getMaterialNumbers(), request.getIsPatientInformationRequired(),
-				request.getIsCoiIdRequired());
+				request.getIsCoiIdRequired(), request.getChannelType());
 		return new ResponseEntity<>("Therapy configurations updated successfully", HttpStatus.OK);
 	}
 
@@ -78,9 +79,11 @@ public class GlobalTherapyController {
 	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.EDIT_ORDERS })
 	@Operation(summary = "Find Therapy details by Material Number")
 	public ResponseEntity<MaterialDetailsResponseDTO> findTherapyDetailsByMaterialNumber(
-			@PathVariable String materialNumber) throws ResourceNotFoundException {
+			@PathVariable String materialNumber, @RequestParam(required = false) ChannelType channelType)
+			throws ResourceNotFoundException {
 		log.debug("Fetching therapy details with materialNumber: {}", materialNumber);
-		return new ResponseEntity<>(therapyService.findTherapyDetailsByMaterialNumber(materialNumber), HttpStatus.OK);
+		return new ResponseEntity<>(therapyService.findTherapyDetailsByMaterialNumber(materialNumber, channelType),
+				HttpStatus.OK);
 
 	}
 

@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.Questionnaire;
 import com.mckesson.cgat.pde.usermanagement.model.QuestionnaireConfigurationType;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
@@ -60,12 +61,13 @@ public class CacheServiceImpl implements CacheService {
 	@Cacheable(value = "singleMaterialCache", key = "#materialNumber")
 	public MaterialDetailsResponseDTO findTherapyDetailsByMaterialNumber(String materialNumber)
 			throws ResourceNotFoundException {
-		MaterialResponseDTO responseDTO = therapyConfigRepository.findDetailedByMaterialNumber(materialNumber)
+		MaterialResponseDTO responseDTO = therapyConfigRepository
+			.findDetailedByMaterialNumber(materialNumber, ChannelType.BUY_AND_BILL)
 			.orElseThrow(() -> new ResourceNotFoundException(
 					"Therapy config not found with materialNumber: " + materialNumber));
 
 		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
-				QuestionnaireConfigurationType.Material, materialNumber, "", "", "");
+				QuestionnaireConfigurationType.Material, materialNumber, "", "", "", ChannelType.BUY_AND_BILL);
 
 		MaterialDetailsResponseDTO materialDetailsResponseDTO = MaterialDetailsResponseDTO.builder()
 			.questionnaires(questionnaires)

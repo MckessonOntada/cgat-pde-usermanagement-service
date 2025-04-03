@@ -3,10 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogConfigurationDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.model.CatalogConfigId;
-import com.mckesson.cgat.pde.usermanagement.model.CatalogConfiguration;
-import com.mckesson.cgat.pde.usermanagement.model.Questionnaire;
-import com.mckesson.cgat.pde.usermanagement.model.QuestionnaireConfigurationType;
+import com.mckesson.cgat.pde.usermanagement.model.*;
 import com.mckesson.cgat.pde.usermanagement.repository.CatalogServiceRepository;
 import com.mckesson.cgat.pde.usermanagement.service.CatalogService;
 import com.mckesson.cgat.pde.usermanagement.service.QuestionnaireService;
@@ -68,7 +65,8 @@ public class CatalogServiceImpl implements CatalogService {
 			.orElseThrow(() -> new ResourceNotFoundException(CATALOG_CONFIGURATION_NOT_FOUND));
 
 		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
-				QuestionnaireConfigurationType.Catalog, materialId, soldToAccount, shipToAccount, variant);
+				QuestionnaireConfigurationType.Catalog, materialId, soldToAccount, shipToAccount, variant,
+				ChannelType.BUY_AND_BILL);
 
 		CatalogDetailsResponseDTO catalogDetailsResponseDTO = CatalogDetailsResponseDTO.builder()
 			.questionnaires(questionnaires)

@@ -204,9 +204,10 @@ public class TherapyServiceImpl implements TherapyService {
 	@Override
 	@Transactional
 	public void updateTherapyConfigs(List<String> materialNumbers, boolean isPatientInformationRequired,
-			boolean isCoiIdRequired) {
+			boolean isCoiIdRequired, ChannelType channelType) {
 
-		List<TherapyConfig> existingConfigs = therapyConfigRepository.findByMaterialNumberIn(materialNumbers);
+		List<TherapyConfig> existingConfigs = therapyConfigRepository
+			.findByMaterialNumberInAndChannelType(materialNumbers, channelType);
 
 		Map<String, TherapyConfig> existingConfigMap = existingConfigs.stream()
 			.collect(Collectors.toMap(TherapyConfig::getMaterialNumber, Function.identity()));
@@ -224,6 +225,7 @@ public class TherapyServiceImpl implements TherapyService {
 					.materialNumber(materialNumber)
 					.isPatientInformationRequired(isPatientInformationRequired)
 					.isCoiIdRequired(isCoiIdRequired)
+					.channelType(channelType)
 					.build();
 			}
 		}).collect(Collectors.toList());
@@ -232,14 +234,16 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	@Override
-	public MaterialDetailsResponseDTO findTherapyDetailsByMaterialNumber(String materialNumber)
+	public MaterialDetailsResponseDTO findTherapyDetailsByMaterialNumber(String materialNumber, ChannelType channelType)
 			throws ResourceNotFoundException {
-		MaterialResponseDTO responseDTO = therapyConfigRepository.findDetailedByMaterialNumber(materialNumber)
+		channelType = channelType == null ? ChannelType.BUY_AND_BILL : channelType;
+		MaterialResponseDTO responseDTO = therapyConfigRepository
+			.findDetailedByMaterialNumber(materialNumber, channelType)
 			.orElseThrow(() -> new ResourceNotFoundException(
 					"Therapy config not found with materialNumber: " + materialNumber));
 
 		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
-				QuestionnaireConfigurationType.Material, materialNumber, "", "", "");
+				QuestionnaireConfigurationType.Material, materialNumber, "", "", "", channelType);
 
 		MaterialDetailsResponseDTO materialDetailsResponseDTO = MaterialDetailsResponseDTO.builder()
 			.questionnaires(questionnaires)
