@@ -63,7 +63,7 @@ public class AccountController {
 	}
 
 	@RequirePermissions({ Permission.EDIT_ORGANIZATION, Permission.ADD_ORGANIZATION, Permission.VIEW_SP_ACCOUNT,
-		Permission.EDIT_SP_ACCOUNT})
+			Permission.EDIT_SP_ACCOUNT })
 	@PutMapping("/{accountId}")
 	@Operation(summary = "Update existing account")
 	public Account updateAccount(@PathVariable Long accountId, @RequestBody Account account)
