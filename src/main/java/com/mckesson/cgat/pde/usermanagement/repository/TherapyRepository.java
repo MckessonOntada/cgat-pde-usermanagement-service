@@ -241,11 +241,11 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			)
 			AND
 			(
-			    :materialType = 'ALL'
-			    OR m.material_type = :materialType
+			    :channelTypes = 'ALL'
+			    OR m.channel_type = :channelTypes
 			)
 			""", nativeQuery = true)
-	Page<Therapy> findAllGlobalTherapies(@Param("query") String query, String statusActive, String materialType,
+	Page<Therapy> findAllGlobalTherapies(@Param("query") String query, String statusActive, String channelTypes,
 			Pageable paging);
 
 	Optional<Therapy> findByMaterialNumber(String materialNumber);

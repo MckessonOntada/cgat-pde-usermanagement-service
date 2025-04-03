@@ -1,6 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.utils;
 
-import com.mckesson.cgat.pde.usermanagement.model.MaterialType;
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.Name;
 import org.springframework.util.CollectionUtils;
 
@@ -48,7 +48,7 @@ public class CustomUtils {
 
 	private static final String TRUE_DROPSHIP = "T";
 
-	private static final String ALL = "ALL";
+	public static final String ALL = "ALL";
 
 	private static final Set<String> INVENTORY_CATEGORIES = Set.of("NORM", "ZNRM", "ZFBC");
 
@@ -105,7 +105,7 @@ public class CustomUtils {
 		return null;
 	}
 
-	public static String determineStatusActive(List<String> status) {
+	public static String getConsolidatedStatus(List<String> status) {
 		if (CollectionUtils.isEmpty(status))
 			return object_status.ALL.name();
 
@@ -119,18 +119,18 @@ public class CustomUtils {
 		return object_status.INACTIVE.name();
 	}
 
-	public static String determineMaterialType(List<MaterialType> materialTypes) {
-		if (CollectionUtils.isEmpty(materialTypes))
-			return MaterialType.BUY_BILL.name();
+	public static String getConsolidatedChannelType(List<ChannelType> channelTypes) {
+		if (CollectionUtils.isEmpty(channelTypes))
+			return ChannelType.BUY_AND_BILL.name();
 
-		boolean containsBNB = materialTypes.contains(MaterialType.BUY_BILL);
-		boolean containsSP = materialTypes.contains(MaterialType.SPECIALITY_PHARMA);
+		boolean containsBNB = channelTypes.contains(ChannelType.BUY_AND_BILL);
+		boolean containsSP = channelTypes.contains(ChannelType.SPECIALITY_PHARMA);
 
 		if (containsBNB && containsSP)
 			return ALL;
 		if (containsSP)
-			return MaterialType.SPECIALITY_PHARMA.name();
-		return MaterialType.BUY_BILL.name();
+			return ChannelType.SPECIALITY_PHARMA.name();
+		return ChannelType.BUY_AND_BILL.name();
 	}
 
 }

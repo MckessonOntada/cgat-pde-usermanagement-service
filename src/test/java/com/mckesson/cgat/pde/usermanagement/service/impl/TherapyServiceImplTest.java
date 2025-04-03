@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
+import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.ALL;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponse;
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -169,7 +171,7 @@ public class TherapyServiceImplTest {
 			.when(therapyRepository.findAllGlobalTherapies(anyString(), anyString(), anyString(), any(Pageable.class)))
 			.thenReturn(getAllGlobalTherapies());
 		therapyService.findAllGlobalTherapies(query, paging, Collections.emptyList(), Collections.emptyList());
-		verify(therapyRepository).findAllGlobalTherapies(query, "ALL", "BNB", paging);
+		verify(therapyRepository).findAllGlobalTherapies(query, ALL, ChannelType.BUY_AND_BILL.name(), paging);
 	}
 
 	@DisplayName("Test : FindAll Global Therapies")

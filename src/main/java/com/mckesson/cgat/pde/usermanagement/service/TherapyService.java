@@ -3,7 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.service;
 import java.util.List;
 
 import com.mckesson.cgat.pde.usermanagement.dto.*;
-import com.mckesson.cgat.pde.usermanagement.model.MaterialType;
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -39,7 +39,7 @@ public interface TherapyService {
 	CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForTherapy(String soldToAccountId,
 			String shipToAccountId, String variantType, String therapyId);
 
-	Page<Therapy> findAllGlobalTherapies(String query, Pageable paging, List<MaterialType> materialTypes,
+	Page<Therapy> findAllGlobalTherapies(String query, Pageable paging, List<ChannelType> channelTypes,
 			List<String> status);
 
 	Page<CatalogPrice> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging);
@@ -49,7 +49,7 @@ public interface TherapyService {
 	void updateTherapyConfigs(List<String> materialNumbers, boolean isPatientInformationRequired,
 			boolean isCoiIdRequired);
 
-	MaterialDetailsResponseDTO findTherapyDetailsByMaterialNumber(String materialNumber, MaterialType materialType)
+	MaterialDetailsResponseDTO findTherapyDetailsByMaterialNumber(String materialNumber, ChannelType channelType)
 			throws ResourceNotFoundException;
 
 	void deleteConfigByMaterialNumber(String materialNumber) throws ResourceNotFoundException;

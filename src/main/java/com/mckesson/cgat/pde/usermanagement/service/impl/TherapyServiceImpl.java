@@ -24,8 +24,7 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import lombok.extern.slf4j.Slf4j;
 
-import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.determineMaterialType;
-import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.determineStatusActive;
+import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.*;
 
 @Service
 @Slf4j
@@ -176,13 +175,13 @@ public class TherapyServiceImpl implements TherapyService {
 				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 	}
 
-	public Page<Therapy> findAllGlobalTherapies(String query, Pageable paging, List<MaterialType> materialTypes,
+	public Page<Therapy> findAllGlobalTherapies(String query, Pageable paging, List<ChannelType> channelTypes,
 			List<String> status) {
 		try {
 			log.info(" Inside method - findAllGlobalTherapies");
 			log.info("query: {}", StringUtils.toRootLowerCase(query));
 			return therapyRepository.findAllGlobalTherapies(StringUtils.toRootLowerCase(query),
-					determineStatusActive(status), determineMaterialType(materialTypes), paging);
+					getConsolidatedStatus(status), getConsolidatedChannelType(channelTypes), paging);
 		}
 		catch (Exception e) {
 			log.error("Exception occurred in findAllGlobalTherapies and exception details", e);
@@ -237,10 +236,10 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	@Override
-	public MaterialDetailsResponseDTO findTherapyDetailsByMaterialNumber(String materialNumber,
-			MaterialType materialType) throws ResourceNotFoundException {
+	public MaterialDetailsResponseDTO findTherapyDetailsByMaterialNumber(String materialNumber, ChannelType channelType)
+			throws ResourceNotFoundException {
 		MaterialResponseDTO responseDTO = therapyConfigRepository
-			.findDetailedByMaterialNumber(materialNumber, materialType)
+			.findDetailedByMaterialNumber(materialNumber, channelType)
 			.orElseThrow(() -> new ResourceNotFoundException(
 					"Therapy config not found with materialNumber: " + materialNumber));
 

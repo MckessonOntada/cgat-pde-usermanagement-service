@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.determineStatusActive;
+import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.getConsolidatedStatus;
 
 @Service
 @Slf4j
@@ -167,7 +167,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 	@Override
 	public Page<Questionnaire> findAll(Pageable paging, String query, List<String> status) {
 
-		return questionnaireRepository.findAllByQueryText(query, determineStatusActive(status), paging);
+		return questionnaireRepository.findAllByQueryText(query, getConsolidatedStatus(status), paging);
 	}
 
 	@Override

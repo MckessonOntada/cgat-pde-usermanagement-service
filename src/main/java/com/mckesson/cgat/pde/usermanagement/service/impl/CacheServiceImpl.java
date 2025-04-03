@@ -2,7 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.model.MaterialType;
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.Questionnaire;
 import com.mckesson.cgat.pde.usermanagement.model.QuestionnaireConfigurationType;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 import javax.cache.Cache;
 import javax.cache.CacheManager;
 import java.util.List;
+
+import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.ALL;
 
 @Service
 @Slf4j
@@ -49,7 +51,8 @@ public class CacheServiceImpl implements CacheService {
 		try {
 			log.info(" Inside method - findAllGlobalTherapies");
 			log.info("query: {}", StringUtils.toRootLowerCase(query));
-			return therapyRepository.findAllGlobalTherapies(StringUtils.toRootLowerCase(query), "ALL", "BNB", paging);
+			return therapyRepository.findAllGlobalTherapies(StringUtils.toRootLowerCase(query), ALL,
+					ChannelType.BUY_AND_BILL.name(), paging);
 		}
 		catch (Exception e) {
 			log.error("Exception occurred in findAllGlobalTherapies and exception details", e);
@@ -62,7 +65,7 @@ public class CacheServiceImpl implements CacheService {
 	public MaterialDetailsResponseDTO findTherapyDetailsByMaterialNumber(String materialNumber)
 			throws ResourceNotFoundException {
 		MaterialResponseDTO responseDTO = therapyConfigRepository
-			.findDetailedByMaterialNumber(materialNumber, MaterialType.BUY_BILL)
+			.findDetailedByMaterialNumber(materialNumber, ChannelType.BUY_AND_BILL)
 			.orElseThrow(() -> new ResourceNotFoundException(
 					"Therapy config not found with materialNumber: " + materialNumber));
 

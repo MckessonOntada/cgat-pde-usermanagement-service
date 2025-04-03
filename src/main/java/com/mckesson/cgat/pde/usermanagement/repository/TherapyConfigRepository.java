@@ -1,7 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.repository;
 
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.model.MaterialType;
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.TherapyConfig;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -22,10 +22,10 @@ public interface TherapyConfigRepository extends JpaRepository<TherapyConfig, Lo
 			    LEFT JOIN TherapyConfig tc
 			    ON m.materialNumber = tc.materialNumber
 			    WHERE m.materialNumber = :materialNumber
-			    AND m.materialType = :materialType
+			    AND m.channelType = :channelType
 			""")
 	Optional<MaterialResponseDTO> findDetailedByMaterialNumber(@Param("materialNumber") String materialNumber,
-			MaterialType materialType);
+			ChannelType channelType);
 
 	int removeTherapyConfigByMaterialNumber(String materialNumber);
 

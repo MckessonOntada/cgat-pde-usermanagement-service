@@ -3,7 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyConfigRequestDTO;
-import com.mckesson.cgat.pde.usermanagement.model.MaterialType;
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
 import jakarta.validation.Valid;
@@ -51,18 +51,18 @@ public class GlobalTherapyController {
 	}
 
 	@GetMapping
-	@RequirePermissions({ Permission.VIEW_MATERIAL })
+	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.VIEW_SP_MATERIAL })
 	@Operation(summary = "Fetch all therapies.")
 	public ResponseEntity<Page<Therapy>> findAllTherapies(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
 			@RequestParam(defaultValue = "material_number") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder,
-			@RequestParam(required = false) List<MaterialType> materialTypes,
+			@RequestParam(required = false) List<ChannelType> channelTypes,
 			@RequestParam(required = false) List<String> status) {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-		return new ResponseEntity<>(therapyService.findAllGlobalTherapies(query, paging, materialTypes, status),
+		return new ResponseEntity<>(therapyService.findAllGlobalTherapies(query, paging, channelTypes, status),
 				HttpStatus.OK);
 	}
 
@@ -86,13 +86,13 @@ public class GlobalTherapyController {
 	}
 
 	@GetMapping("/config/{materialNumber}")
-	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.EDIT_ORDERS })
+	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.EDIT_ORDERS, Permission.VIEW_SP_MATERIAL })
 	@Operation(summary = "Find Therapy details by Material Number")
 	public ResponseEntity<MaterialDetailsResponseDTO> findTherapyDetailsByMaterialNumber(
-			@PathVariable String materialNumber, @RequestParam(defaultValue = "BUY_BILL") MaterialType materialType)
+			@PathVariable String materialNumber, @RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType)
 			throws ResourceNotFoundException {
 		log.debug("Fetching therapy details with materialNumber: {}", materialNumber);
-		return new ResponseEntity<>(therapyService.findTherapyDetailsByMaterialNumber(materialNumber, materialType),
+		return new ResponseEntity<>(therapyService.findTherapyDetailsByMaterialNumber(materialNumber, channelType),
 				HttpStatus.OK);
 
 	}

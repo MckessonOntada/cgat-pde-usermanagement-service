@@ -134,9 +134,9 @@ public class Therapy implements Serializable {
 	private String siteName;
 
 	@Size(max = 20)
-	@Column(name = "material_type")
+	@Column(name = "channel_type")
 	@Enumerated(EnumType.STRING)
-	private MaterialType materialType;
+	private ChannelType channelType;
 
 	@Size(max = 18)
 	@Column(name = "ndc_number")
@@ -373,7 +373,7 @@ public class Therapy implements Serializable {
 	private String manufacturerPartNumber;
 
 	@Size(max = 10)
-	@Column(name = "cgat_identifier")
+	@Column(name = "cgat_therapy_type")
 	private String cgatIdentifier;
 
 	@Size(max = 4)
