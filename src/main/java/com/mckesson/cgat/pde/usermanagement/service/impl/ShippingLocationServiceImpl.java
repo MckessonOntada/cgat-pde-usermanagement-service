@@ -1,0 +1,59 @@
+package com.mckesson.cgat.pde.usermanagement.service.impl;
+
+import com.mckesson.cgat.pde.usermanagement.model.Account;
+import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
+import com.mckesson.cgat.pde.usermanagement.model.User;
+import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
+import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
+import com.mckesson.cgat.pde.usermanagement.model.ShippingLocation;
+import com.mckesson.cgat.pde.usermanagement.repository.ShippingLocationRepository;
+import com.mckesson.cgat.pde.usermanagement.service.ShippingLocationService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class ShippingLocationServiceImpl implements ShippingLocationService {
+
+	private final ShippingLocationRepository shippingLocationRepository;
+
+	public ShippingLocationServiceImpl(ShippingLocationRepository shippingLocationRepository) {
+		this.shippingLocationRepository = shippingLocationRepository;
+	}
+
+	@Override
+	public Page<ShippingLocation> findAll(Pageable paging, String query, Long practiceId, Long accountId)
+			throws ResourceNotFoundException {
+		query = StringUtils.toRootLowerCase(query);
+		return shippingLocationRepository.findAllByQueryText(query, paging, practiceId, accountId);
+	}
+
+	@Override
+	public ShippingLocation createShippingLocation(ShippingLocation shippingLocation) {
+		return shippingLocationRepository.save(shippingLocation);
+	}
+
+	@Override
+	public ShippingLocation updateShippingLocation(Long shippingAccountNumber, ShippingLocation shippingLocation)
+			throws ResourceNotFoundException {
+		ShippingLocation existingLocation = shippingLocationRepository.findById(shippingAccountNumber)
+			.orElseThrow(() -> new ResourceNotFoundException(shippingAccountNumber.toString()));
+
+		shippingLocation.setShippingAccountNumber(shippingAccountNumber);
+		return shippingLocationRepository.save(shippingLocation);
+	}
+
+	@Override
+	public void removeShippingLocation(Long shippingAccountNumber) throws ResourceNotFoundException {
+		if (!shippingLocationRepository.existsById(shippingAccountNumber)) {
+			throw new ResourceNotFoundException(shippingAccountNumber.toString());
+		}
+		shippingLocationRepository.deleteById(shippingAccountNumber);
+	}
+
+}
