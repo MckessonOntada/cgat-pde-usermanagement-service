@@ -10,8 +10,8 @@ import lombok.Getter;
 @Getter
 public enum Permission {
 
-	MANAGE_SP_ACCOUNT(true, false), ADD_SP_ACCOUNT(true, false), MANAGE_USERS_SCREEN(true, true),
-	ADD_USERS(true, true), VIEW_USERS(true, true), EDIT_USERS(true, true), UPLOAD_USERS(true, true),
+	MANAGE_SP_ACCOUNT(true, false), ADD_SP_ACCOUNT(true, false), MANAGE_USERS_SCREEN(true, true), ADD_USERS(true, true),
+	VIEW_USERS(true, true), EDIT_USERS(true, true), UPLOAD_USERS(true, true),
 	CREATE_USER_FOR_PENDING_USER_REQUEST(true, true), MANAGE_SYSTEM_ADMINISTRATOR_SCREEN(true, false),
 	ADD_SYSTEM_ADMINISTRATOR(true, false), VIEW_SYSTEM_ADMINISTRATOR(true, false),
 	EDIT_SYSTEM_ADMINISTRATOR(true, false), MANAGE_ROLES_SCREEN(true, true), VIEW_ROLES(true, true),
