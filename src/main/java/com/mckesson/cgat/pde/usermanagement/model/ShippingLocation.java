@@ -2,8 +2,11 @@ package com.mckesson.cgat.pde.usermanagement.model;
 
 import java.io.Serializable;
 
+import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.type.NumericBooleanConverter;
@@ -36,27 +39,12 @@ public class ShippingLocation implements Serializable {
 	@Column(name = "shipping_location_name")
 	private String shippingLocationName;
 
-	@NotEmpty(message = "Address is required.")
-	@Column(name = "address_1")
-	private String address1;
-
-	@Column(name = "address_2")
-	private String address2;
-
-	@NotEmpty(message = "City is required.")
-	@Column(name = "city")
-	private String city;
+	@Valid
+	@Embedded
+	private Address address;
 
 	@Convert(converter = NumericBooleanConverter.class)
 	private Boolean isActive = true;
-
-	@NotEmpty(message = "Zip is required.")
-	@Column(name = "zip")
-	private String zip;
-
-	@NotEmpty(message = "State is required.")
-	@Column(name = "state")
-	private String state;
 
 	@Column(name = "account_id")
 	private Long accountId;
