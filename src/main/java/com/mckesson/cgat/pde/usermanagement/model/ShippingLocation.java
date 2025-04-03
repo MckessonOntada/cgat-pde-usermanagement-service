@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.type.NumericBooleanConverter;
 
 @Entity
 @Setter
@@ -45,6 +46,9 @@ public class ShippingLocation implements Serializable {
 	@NotEmpty(message = "City is required.")
 	@Column(name = "city")
 	private String city;
+
+	@Convert(converter = NumericBooleanConverter.class)
+	private Boolean isActive = true;
 
 	@NotEmpty(message = "Zip is required.")
 	@Column(name = "zip")

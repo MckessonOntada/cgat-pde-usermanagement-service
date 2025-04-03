@@ -50,10 +50,10 @@ public class ShippingLocationServiceImpl implements ShippingLocationService {
 
 	@Override
 	public void removeShippingLocation(Long shippingAccountNumber) throws ResourceNotFoundException {
-		if (!shippingLocationRepository.existsById(shippingAccountNumber)) {
-			throw new ResourceNotFoundException(shippingAccountNumber.toString());
-		}
-		shippingLocationRepository.deleteById(shippingAccountNumber);
+		ShippingLocation location = shippingLocationRepository.findById(shippingAccountNumber)
+			.orElseThrow(() -> new ResourceNotFoundException(shippingAccountNumber.toString()));
+		location.setIsActive(false);
+		shippingLocationRepository.save(location);
 	}
 
 }
