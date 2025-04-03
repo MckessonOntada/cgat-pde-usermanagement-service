@@ -3,14 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
-import jakarta.persistence.PostLoad;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -132,9 +125,18 @@ public class Therapy implements Serializable {
 	@Column(name = "tenant_id")
 	public String tenantId;
 
-	@Size(max = 18)
+	@Size(max = 50)
 	@Column(name = "material_number")
 	private String materialNumber;
+
+	@Size(max = 50)
+	@Column(name = "site_name")
+	private String siteName;
+
+	@Size(max = 20)
+	@Column(name = "material_type")
+	@Enumerated(EnumType.STRING)
+	private MaterialType materialType;
 
 	@Size(max = 18)
 	@Column(name = "ndc_number")
@@ -148,7 +150,7 @@ public class Therapy implements Serializable {
 	@Column(name = "dosage")
 	private String dosage;
 
-	@Size(max = 40)
+	@Size(max = 100)
 	@Column(name = "material_description")
 	private String materialDescription;
 
@@ -371,7 +373,7 @@ public class Therapy implements Serializable {
 	private String manufacturerPartNumber;
 
 	@Size(max = 10)
-	@Column(name = "cgat_therapy_type")
+	@Column(name = "cgat_identifier")
 	private String cgatIdentifier;
 
 	@Size(max = 4)

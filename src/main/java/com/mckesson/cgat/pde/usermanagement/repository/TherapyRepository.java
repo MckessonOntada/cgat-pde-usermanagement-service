@@ -226,14 +226,27 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			FROM catalog.material m
 			WHERE
 			(
-					:query is null
-					or LOWER(m.material_number) like %:query%
-					or LOWER(m.ndc_number) like %:query%
-					or LOWER(m.material_description) like %:query%
-					or LOWER(m.generic_name) like %:query%
+			    :query IS NULL
+			    OR LOWER(m.material_number) LIKE %:query%
+			    OR LOWER(m.ndc_number) LIKE %:query%
+			    OR LOWER(m.material_description) LIKE %:query%
+			    OR LOWER(m.generic_name) LIKE %:query%
+			    OR LOWER(m.site_name) LIKE %:query%
+			)
+			AND
+			(
+			    :statusActive = 'ALL'
+			    OR (:statusActive = 'ACTIVE' AND m.item_status = '1')
+			    OR (:statusActive = 'INACTIVE' AND m.item_status = '0')
+			)
+			AND
+			(
+			    :materialType = 'ALL'
+			    OR m.material_type = :materialType
 			)
 			""", nativeQuery = true)
-	public Page<Therapy> findAllGlobalTherapies(@Param("query") String query, Pageable paging);
+	Page<Therapy> findAllGlobalTherapies(@Param("query") String query, String statusActive, String materialType,
+			Pageable paging);
 
 	Optional<Therapy> findByMaterialNumber(String materialNumber);
 

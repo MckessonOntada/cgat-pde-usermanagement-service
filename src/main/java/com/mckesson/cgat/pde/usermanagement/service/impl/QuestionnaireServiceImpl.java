@@ -9,7 +9,6 @@ import com.mckesson.cgat.pde.usermanagement.model.QuestionnaireConfigurationType
 import com.mckesson.cgat.pde.usermanagement.repository.QuestionnaireConfigurationRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.QuestionnaireRepository;
 import com.mckesson.cgat.pde.usermanagement.service.QuestionnaireService;
-import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.auth.module.exception.BadRequestException;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -18,10 +17,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.determineStatusActive;
 
 @Service
 @Slf4j
@@ -167,18 +167,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 	@Override
 	public Page<Questionnaire> findAll(Pageable paging, String query, List<String> status) {
 
-		String statusActive = CustomUtils.object_status.ALL.name();
-		if (!CollectionUtils.isEmpty(status)) {
-			if (status.stream().anyMatch(i -> i.equalsIgnoreCase(CustomUtils.object_status.ACTIVE.name()))) {
-				statusActive = CustomUtils.object_status.ACTIVE.name();
-			}
-			if (status.stream().anyMatch(i -> i.equalsIgnoreCase(CustomUtils.object_status.INACTIVE.name()))) {
-				statusActive = CustomUtils.object_status.ACTIVE.name().equals(statusActive)
-						? CustomUtils.object_status.ALL.name() : CustomUtils.object_status.INACTIVE.name();
-			}
-		}
-
-		return questionnaireRepository.findAllByQueryText(query, statusActive, paging);
+		return questionnaireRepository.findAllByQueryText(query, determineStatusActive(status), paging);
 	}
 
 	@Override

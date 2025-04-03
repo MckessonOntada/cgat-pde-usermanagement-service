@@ -1,10 +1,13 @@
 package com.mckesson.cgat.pde.usermanagement.utils;
 
+import com.mckesson.cgat.pde.usermanagement.model.MaterialType;
 import com.mckesson.cgat.pde.usermanagement.model.Name;
+import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -44,6 +47,8 @@ public class CustomUtils {
 	private static final String INVENTORY = "I";
 
 	private static final String TRUE_DROPSHIP = "T";
+
+	private static final String ALL = "ALL";
 
 	private static final Set<String> INVENTORY_CATEGORIES = Set.of("NORM", "ZNRM", "ZFBC");
 
@@ -98,6 +103,34 @@ public class CustomUtils {
 			return TRUE_DROPSHIP;
 		}
 		return null;
+	}
+
+	public static String determineStatusActive(List<String> status) {
+		if (CollectionUtils.isEmpty(status))
+			return object_status.ALL.name();
+
+		boolean hasActive = status.stream().anyMatch(i -> i.equalsIgnoreCase(object_status.ACTIVE.name()));
+		boolean hasInactive = status.stream().anyMatch(i -> i.equalsIgnoreCase(object_status.INACTIVE.name()));
+
+		if (hasActive && hasInactive)
+			return object_status.ALL.name();
+		if (hasActive)
+			return object_status.ACTIVE.name();
+		return object_status.INACTIVE.name();
+	}
+
+	public static String determineMaterialType(List<MaterialType> materialTypes) {
+		if (CollectionUtils.isEmpty(materialTypes))
+			return MaterialType.BUY_BILL.name();
+
+		boolean containsBNB = materialTypes.contains(MaterialType.BUY_BILL);
+		boolean containsSP = materialTypes.contains(MaterialType.SPECIALITY_PHARMA);
+
+		if (containsBNB && containsSP)
+			return ALL;
+		if (containsSP)
+			return MaterialType.SPECIALITY_PHARMA.name();
+		return MaterialType.BUY_BILL.name();
 	}
 
 }

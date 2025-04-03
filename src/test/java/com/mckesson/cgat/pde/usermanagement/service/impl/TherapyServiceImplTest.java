@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -164,10 +165,11 @@ public class TherapyServiceImplTest {
 	@Test
 	public void findAllGlobalTherapiesTest() {
 		String query = "";
-		Mockito.when(therapyRepository.findAllGlobalTherapies(anyString(), any(Pageable.class)))
+		Mockito
+			.when(therapyRepository.findAllGlobalTherapies(anyString(), anyString(), anyString(), any(Pageable.class)))
 			.thenReturn(getAllGlobalTherapies());
-		therapyService.findAllGlobalTherapies(query, paging);
-		verify(therapyRepository).findAllGlobalTherapies(query, paging);
+		therapyService.findAllGlobalTherapies(query, paging, Collections.emptyList(), Collections.emptyList());
+		verify(therapyRepository).findAllGlobalTherapies(query, "ALL", "BNB", paging);
 	}
 
 	@DisplayName("Test : FindAll Global Therapies")
