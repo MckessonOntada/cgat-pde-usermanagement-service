@@ -1,7 +1,5 @@
 package com.mckesson.cgat.pde.usermanagement.service;
 
-import com.mckesson.cgat.pde.usermanagement.model.Account;
-import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import com.mckesson.cgat.pde.usermanagement.model.ShippingLocation;
 import org.springframework.data.domain.Page;

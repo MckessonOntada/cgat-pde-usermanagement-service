@@ -35,7 +35,7 @@ public class ShippingLocationController {
 		this.shippingLocationService = shippingLocationService;
 	}
 
-	@RequirePermissions({ Permission.ADD_SHIPPING_LOCATION })
+	@RequirePermissions({ Permission.ADD_SP_ACCOUNT })
 	@PostMapping(consumes = "application/json")
 	@Operation(summary = "Create new shipping location")
 	public ResponseEntity<ShippingLocation> createShippingLocation(
@@ -44,7 +44,7 @@ public class ShippingLocationController {
 		return new ResponseEntity<>(createdShippingLocation, HttpStatus.CREATED);
 	}
 
-	@RequirePermissions({ Permission.ADD_SHIPPING_LOCATION, Permission.EDIT_SHIPPING_LOCATION })
+	@RequirePermissions({ Permission.ADD_SP_ACCOUNT })
 	@PutMapping("/{shippingAccountNumber}")
 	@Operation(summary = "Update existing shipping location")
 	public ResponseEntity<ShippingLocation> updateShippingLocation(@PathVariable Long shippingAccountNumber,
@@ -54,7 +54,7 @@ public class ShippingLocationController {
 		return ResponseEntity.ok(updatedShippingLocation);
 	}
 
-	@RequirePermissions({ Permission.EDIT_SHIPPING_LOCATION })
+	@RequirePermissions({ Permission.ADD_SP_ACCOUNT })
 	@DeleteMapping("/{shippingAccountNumber}")
 	@Operation(summary = "Delete existing shipping location")
 	public ResponseEntity<Void> removeShippingLocation(@PathVariable Long shippingAccountNumber)
@@ -63,7 +63,7 @@ public class ShippingLocationController {
 		return ResponseEntity.noContent().build();
 	}
 
-	@RequirePermissions({ Permission.EDIT_SHIPPING_LOCATION })
+	@RequirePermissions({ Permission.ADD_SP_ACCOUNT })
 	@DeleteMapping("/remove-multiple")
 	@Operation(summary = "Delete multiple shipping locations")
 	public ResponseEntity<Void> removeMultipleShippingLocations(@RequestBody List<ShippingLocation> shippingLocations)
@@ -72,7 +72,7 @@ public class ShippingLocationController {
 		return ResponseEntity.noContent().build();
 	}
 
-	@RequirePermissions({ Permission.ADD_SHIPPING_LOCATION, Permission.EDIT_SHIPPING_LOCATION })
+	@RequirePermissions({ Permission.ADD_SP_ACCOUNT, Permission.MANAGE_SP_ACCOUNT })
 	@GetMapping
 	@Operation(summary = "Fetch all Shipping Locations based on filter provided with pagination capabilities.")
 	Page<ShippingLocation> findAll(@RequestParam(defaultValue = "0") Integer pageNo,

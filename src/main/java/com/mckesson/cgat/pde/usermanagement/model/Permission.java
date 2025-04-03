@@ -10,7 +10,7 @@ import lombok.Getter;
 @Getter
 public enum Permission {
 
-	ADD_SHIPPING_LOCATION(true, false), EDIT_SHIPPING_LOCATION(true, false), MANAGE_USERS_SCREEN(true, true),
+	MANAGE_SP_ACCOUNT(true, false), ADD_SP_ACCOUNT(true, false), MANAGE_USERS_SCREEN(true, true),
 	ADD_USERS(true, true), VIEW_USERS(true, true), EDIT_USERS(true, true), UPLOAD_USERS(true, true),
 	CREATE_USER_FOR_PENDING_USER_REQUEST(true, true), MANAGE_SYSTEM_ADMINISTRATOR_SCREEN(true, false),
 	ADD_SYSTEM_ADMINISTRATOR(true, false), VIEW_SYSTEM_ADMINISTRATOR(true, false),
