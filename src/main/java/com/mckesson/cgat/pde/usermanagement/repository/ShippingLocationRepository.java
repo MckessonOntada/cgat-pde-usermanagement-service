@@ -37,6 +37,7 @@ public interface ShippingLocationRepository extends JpaRepository<ShippingLocati
 			            (CAST(:accountId AS varchar) IS NULL AND a.account_id IS NULL)
 			            OR (a.account_id = :accountId)
 			        )
+			        AND a.is_active = 1
 			    )
 			""")
 	Page<ShippingLocation> findAllByQueryText(@Param("query") String query, Pageable paging,
