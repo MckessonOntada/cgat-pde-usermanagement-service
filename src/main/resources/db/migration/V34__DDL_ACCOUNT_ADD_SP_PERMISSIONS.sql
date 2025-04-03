@@ -1,8 +1,8 @@
 ALTER TABLE usermanagement.account
-ADD COLUMN IF NOT EXISTS account_type VARCHAR(255) DEFAULT 'BnB';
+ADD COLUMN IF NOT EXISTS channel_type VARCHAR(100) DEFAULT 'BUY_AND_BILL';
 
 UPDATE usermanagement.account 
-SET account_type = 'BnB';
+SET channel_type = 'BUY_AND_BILL';
 
 -- Insert SP Account related pemissions to system admin
 INSERT INTO usermanagement.role_permissions_mapping(role_id, permission) VALUES

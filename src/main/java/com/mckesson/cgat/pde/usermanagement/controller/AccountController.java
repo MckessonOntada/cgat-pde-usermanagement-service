@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
-import com.mckesson.cgat.pde.usermanagement.model.AccountType;
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
@@ -62,7 +62,8 @@ public class AccountController {
 
 	}
 
-	@RequirePermissions({ Permission.EDIT_ORGANIZATION, Permission.ADD_ORGANIZATION })
+	@RequirePermissions({ Permission.EDIT_ORGANIZATION, Permission.ADD_ORGANIZATION, Permission.VIEW_SP_ACCOUNT,
+		Permission.EDIT_SP_ACCOUNT})
 	@PutMapping("/{accountId}")
 	@Operation(summary = "Update existing account")
 	public Account updateAccount(@PathVariable Long accountId, @RequestBody Account account)
@@ -113,13 +114,13 @@ public class AccountController {
 			@RequestParam(required = false) List<String> salesOrg,
 			@RequestParam(required = false) List<String> distChannels,
 			@RequestParam AccountPartnerFunction partnerFunction,
-			@RequestParam(defaultValue = "BnB") AccountType accountType)
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 		return accountService.findAll(paging, query, status, null, Long.valueOf(practiceId), partnerFunction, salesOrg,
-				distChannels, accountType);
+				distChannels, channelType);
 	}
 
 	@RequirePermissions({ Permission.EDIT_ORGANIZATION, Permission.ADD_ORGANIZATION })

@@ -31,9 +31,8 @@ public interface CatalogPriceMapper {
 			return null;
 		}
 		// Use the toResponseDtoVariant method for each element of the list
-		return catalogPriceList.stream()
-			.map(this::toResponseDtoVariant) // Call the specific single item mapper
-			.toList();
+		return catalogPriceList.stream().map(this::toResponseDtoVariant) // Call the specific single item mapper
+				.toList();
 	}
 
 }

@@ -61,7 +61,7 @@ public class Account implements Serializable {
 	private String accountName;
 
 	@Enumerated(EnumType.STRING)
-	private AccountType accountType;
+	private ChannelType channelType;
 
 	@Column(name = "sap_partner")
 	private String accountNumber;
@@ -71,7 +71,7 @@ public class Account implements Serializable {
 
 	@PrePersist
 	public void setAccountNumber() {
-		if (this.accountType.equals(AccountType.SP)) {
+		if (this.channelType.equals(ChannelType.SPECIALITY_PHARMA)) {
 			this.accountNumber = String.valueOf(this.id);
 			this.sapCustomer = String.valueOf(this.id);
 		}
