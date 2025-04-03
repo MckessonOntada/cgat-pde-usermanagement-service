@@ -13,6 +13,8 @@ import java.util.List;
 @Service
 public interface ShippingLocationService {
 
+	void removeMultipleShippingLocations(List<ShippingLocation> shippingLocations) throws ResourceNotFoundException;
+
 	Page<ShippingLocation> findAll(Pageable paging, String query, Long practiceId, Long accountId)
 			throws ResourceNotFoundException;
 

@@ -56,4 +56,30 @@ public class ShippingLocationServiceImpl implements ShippingLocationService {
 		shippingLocationRepository.save(location);
 	}
 
+	@Override
+	public void removeMultipleShippingLocations(List<ShippingLocation> shippingLocations)
+			throws ResourceNotFoundException {
+		if (shippingLocations == null || shippingLocations.isEmpty()) {
+			return;
+		}
+		List<Long> shippingAccountNumbers = shippingLocations.stream()
+			.map(ShippingLocation::getShippingAccountNumber)
+			.toList();
+		List<ShippingLocation> locationsToDeactivate = shippingLocationRepository.findAllById(shippingAccountNumbers);
+
+		if (locationsToDeactivate.size() != shippingAccountNumbers.size()) {
+			List<Long> foundIds = locationsToDeactivate.stream()
+				.map(ShippingLocation::getShippingAccountNumber)
+				.toList();
+
+			for (Long id : shippingAccountNumbers) {
+				if (!foundIds.contains(id)) {
+					throw new ResourceNotFoundException(id.toString());
+				}
+			}
+		}
+		locationsToDeactivate.forEach(location -> location.setIsActive(false));
+		shippingLocationRepository.saveAll(locationsToDeactivate);
+	}
+
 }

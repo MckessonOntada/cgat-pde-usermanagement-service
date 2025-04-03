@@ -63,6 +63,15 @@ public class ShippingLocationController {
 		return ResponseEntity.noContent().build();
 	}
 
+	@RequirePermissions({ Permission.EDIT_SHIPPING_LOCATION })
+	@DeleteMapping("/remove-multiple")
+	@Operation(summary = "Delete multiple shipping locations")
+	public ResponseEntity<Void> removeMultipleShippingLocations(@RequestBody List<ShippingLocation> shippingLocations)
+			throws ResourceNotFoundException {
+		shippingLocationService.removeMultipleShippingLocations(shippingLocations);
+		return ResponseEntity.noContent().build();
+	}
+
 	@RequirePermissions({ Permission.ADD_SHIPPING_LOCATION, Permission.EDIT_SHIPPING_LOCATION })
 	@GetMapping
 	@Operation(summary = "Fetch all Shipping Locations based on filter provided with pagination capabilities.")
