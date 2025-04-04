@@ -29,7 +29,7 @@ public class AccountDTO {
 	@Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters")
 	@Column(name = "name_1")
 	private String accountName;
-	
+
 	@Enumerated(EnumType.STRING)
 	private ChannelType channelType;
 
