@@ -58,15 +58,14 @@ public class CatalogServiceImpl implements CatalogService {
 
 	@Override
 	public CatalogDetailsResponseDTO findCatalogConfiguration(String materialId, String variant, String shipToAccount,
-			String soldToAccount) throws ResourceNotFoundException {
+			String soldToAccount, ChannelType channelType) throws ResourceNotFoundException {
 		logSearchDetails(materialId, variant, shipToAccount, soldToAccount);
 		CatalogConfigId id = buildCatalogConfigId(materialId, variant, shipToAccount, soldToAccount);
 		CatalogResponseDTO catalogResponseDTO = catalogServiceRepository.findCatalogDetailsById(id)
 			.orElseThrow(() -> new ResourceNotFoundException(CATALOG_CONFIGURATION_NOT_FOUND));
 
 		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
-				QuestionnaireConfigurationType.Catalog, materialId, soldToAccount, shipToAccount, variant,
-				ChannelType.BUY_AND_BILL);
+				QuestionnaireConfigurationType.Catalog, materialId, soldToAccount, shipToAccount, variant, channelType);
 
 		CatalogDetailsResponseDTO catalogDetailsResponseDTO = CatalogDetailsResponseDTO.builder()
 			.questionnaires(questionnaires)

@@ -162,7 +162,7 @@ public class AccountServiceImpl implements AccountService {
 
 		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
 				QuestionnaireConfigurationType.Account, "", account.getAccountNumber(), "", "",
-				ChannelType.BUY_AND_BILL);
+				account.getChannelType());
 
 		AccountDetailsResponseDTO detailsResponseDTO = AccountDetailsResponseDTO.builder()
 			.account(account)

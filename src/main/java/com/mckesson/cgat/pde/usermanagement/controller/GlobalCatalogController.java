@@ -4,9 +4,7 @@ import java.util.List;
 
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogConfigurationDTO;
-import com.mckesson.cgat.pde.usermanagement.model.CatalogConfiguration;
-import com.mckesson.cgat.pde.usermanagement.model.Permission;
-import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
+import com.mckesson.cgat.pde.usermanagement.model.*;
 import com.mckesson.cgat.pde.usermanagement.service.CatalogService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import jakarta.validation.Valid;
@@ -20,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -68,9 +65,10 @@ public class GlobalCatalogController {
 			summary = "Get catalog configuration with catalog price according to materialId, variant, soldTo account and shipTo account")
 	public ResponseEntity<CatalogDetailsResponseDTO> findCatalogConfiguration(@RequestParam String materialId,
 			@RequestParam(required = false) String variant, @RequestParam String shipToAccount,
-			@RequestParam String soldToAccount) throws ResourceNotFoundException {
+			@RequestParam String soldToAccount, @RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType)
+			throws ResourceNotFoundException {
 		CatalogDetailsResponseDTO catalogConfiguration = catalogService.findCatalogConfiguration(materialId, variant,
-				shipToAccount, soldToAccount);
+				shipToAccount, soldToAccount, channelType);
 		return ResponseEntity.ok(catalogConfiguration);
 	}
 
