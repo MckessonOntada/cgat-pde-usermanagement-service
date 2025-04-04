@@ -20,40 +20,40 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AccountDTO {
 
-	 private Long practiceId;
+	private Long practiceId;
 
-	    @NotBlank(message = "Name is required.")
-	    @Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters.")
-	    private String accountName;
+	@NotBlank(message = "Name is required.")
+	@Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters.")
+	private String accountName;
 
-	    @NotNull(message = "Valid channel type is required.")
-	    @Enumerated(EnumType.STRING)
-	    private ChannelType channelType;
+	@NotNull(message = "Valid channel type is required.")
+	@Enumerated(EnumType.STRING)
+	private ChannelType channelType;
 
-	    @NotBlank(message = "Sales Org is required (Enter NA for SP account).")
-	    private String salesOrg;
+	@NotBlank(message = "Sales Org is required (Enter NA for SP account).")
+	private String salesOrg;
 
-	    @NotBlank(message = "Distribution channel is required.")
-	    private String distributionChannel;
+	@NotBlank(message = "Distribution channel is required.")
+	private String distributionChannel;
 
-	    @NotBlank(message = "Vistex customer is required (Enter NA for SP account).")
-	    private String vistexCustomer;
+	@NotBlank(message = "Vistex customer is required (Enter NA for SP account).")
+	private String vistexCustomer;
 
-	    @NotBlank(message = "Division is required (Enter NA for SP account).")
-	    private String division;
+	@NotBlank(message = "Division is required (Enter NA for SP account).")
+	private String division;
 
-	    @NotBlank(message = "Company code is required (Enter NA for SP account).")
-	    private String companyCode;
+	@NotBlank(message = "Company code is required (Enter NA for SP account).")
+	private String companyCode;
 
-	    @Valid
-	    private Name name;
+	@Valid
+	private Name name;
 
-	    @Valid
-	    private Contact contact;
+	@Valid
+	private Contact contact;
 
-	    @Valid
-	    private Address address;
+	@Valid
+	private Address address;
 
-	    private Boolean isActive = true;
+	private Boolean isActive = true;
 
 }
