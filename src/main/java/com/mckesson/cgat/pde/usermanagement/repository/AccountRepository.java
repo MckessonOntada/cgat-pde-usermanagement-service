@@ -27,7 +27,10 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 				(
 					:query IS NULL
 				 	OR LOWER(a.name_1) LIKE %:query%
-				 	OR LOWER(a.sap_customer) LIKE %:query%
+				 	OR LOWER(a.sap_partner) LIKE %:query%
+				 	OR LOWER(a.city) LIKE %:query%
+				 	OR LOWER(a.state) LIKE %:query%
+				 	OR LOWER(a.country) LIKE %:query%
 				)
 				AND
 				(
@@ -70,7 +73,10 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 				(
 					:query IS NULL
 				 	OR LOWER(ua.name_1) LIKE %:query%
-				 	OR LOWER(ua.sap_customer) LIKE %:query%
+				 	OR LOWER(ua.sap_partner) LIKE %:query%
+				 	OR LOWER(a.city) LIKE %:query%
+				 	OR LOWER(a.state) LIKE %:query%
+				 	OR LOWER(a.country) LIKE %:query%
 				)
 				AND
 				(
