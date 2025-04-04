@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.service;
 
+import com.mckesson.cgat.pde.usermanagement.dto.ProviderDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.model.Provider;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -20,11 +21,11 @@ public interface ProviderService {
 
 	Page<Provider> findAllProviders(Pageable paging, String query, List<String> status);
 
-	Provider updateProverDetailsById(Long providerId, Provider provider) throws ResourceNotFoundException;
-
 	void deactivateProvider(Long providerId) throws ResourceNotFoundException;
 
 	void activateProvider(Long providerId) throws ResourceNotFoundException;
+
+	Provider updateProverDetailsById(Long providerId, ProviderDTO model) throws ResourceNotFoundException;
 
 	Provider getProvider(Long providerId) throws ResourceNotFoundException;
 

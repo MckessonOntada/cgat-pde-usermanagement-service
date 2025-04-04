@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
+import com.mckesson.cgat.pde.usermanagement.dto.ProviderDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.model.Address;
 import com.mckesson.cgat.pde.usermanagement.model.Name;
@@ -77,6 +78,10 @@ public class ProviderServiceImpl implements ProviderService {
 				log.error(e.getMessage());
 				failedProviders.put(provider, e.getCause().getCause().getMessage());
 			}
+			catch (Exception e) {
+				log.error("Exception occured in validation of provider", e);
+				failedProviders.put(provider, e.getCause().getCause().getMessage());
+			}
 		}
 		// Create output csv
 		createOutputCSV(outputStream, failedProviders);
@@ -113,12 +118,7 @@ public class ProviderServiceImpl implements ProviderService {
 
 				List<String> providerData = record.toList();
 				Provider provider = createProviderFromCSVRecord(providerData, practiceId);
-				try {
-					providers.add(provider);
-				}
-				catch (IllegalArgumentException e) {
-					failedProvider.put(provider, e.getMessage());
-				}
+				providers.add(provider);
 
 			}
 		}
@@ -129,6 +129,10 @@ public class ProviderServiceImpl implements ProviderService {
 		catch (IndexOutOfBoundsException e) {
 			log.error("Invalid provider Data file, some columns are missing");
 			throw new FileNotValidException("Invalid provider Data file, some columns are missing");
+		}
+		catch (Exception e) {
+			log.error("Exception occured in parsing data ", e);
+			throw e;
 		}
 	}
 
@@ -182,8 +186,8 @@ public class ProviderServiceImpl implements ProviderService {
 			}
 		}
 		catch (IOException e) {
-			log.error("Unable to process output csv file, error message: {}", e.getMessage());
-			throw new RuntimeException("Failed to generate output csv file");
+			log.error("Unable to process output csv file, error message: ", e);
+			throw new RuntimeException("Failed to generate output csv file", e);
 		}
 	}
 
@@ -206,9 +210,8 @@ public class ProviderServiceImpl implements ProviderService {
 			if (status.contains(CustomUtils.object_status.ACTIVE.name())) {
 				statusFilter = CustomUtils.object_status.ACTIVE.name();
 			}
-			if (status.contains(CustomUtils.object_status.INACTIVE.name())) {
-				statusFilter = statusFilter.equals(CustomUtils.object_status.ACTIVE.name())
-						? CustomUtils.object_status.ALL.name() : CustomUtils.object_status.INACTIVE.name();
+			else if (status.contains(CustomUtils.object_status.INACTIVE.name())) {
+				statusFilter = CustomUtils.object_status.INACTIVE.name();
 			}
 		}
 
@@ -216,7 +219,7 @@ public class ProviderServiceImpl implements ProviderService {
 	}
 
 	@Override
-	public Provider updateProverDetailsById(Long providerId, Provider model) throws ResourceNotFoundException {
+	public Provider updateProverDetailsById(Long providerId, ProviderDTO model) throws ResourceNotFoundException {
 		Provider provider = getProvider(providerId);
 		provider.setAddress(model.getAddress());
 		provider.setPhone(model.getPhone());
@@ -250,13 +253,26 @@ public class ProviderServiceImpl implements ProviderService {
 	}
 
 	private void validateUniqueConstraints(Provider provider) {
+		StringBuilder errorMessage = new StringBuilder();
+
 		if (providerRepository.existsByPracticeIdAndDea(provider.getPracticeId(), provider.getDea())) {
-			throw new IllegalArgumentException("Provider with DEA " + provider.getDea() + " already exists in practice "
-					+ provider.getPracticeId());
+			errorMessage.append("Provider with DEA ")
+				.append(provider.getDea())
+				.append(" already exists in practice ")
+				.append(provider.getPracticeId())
+				.append(". ");
 		}
+
 		if (providerRepository.existsByPracticeIdAndNpi(provider.getPracticeId(), provider.getNpi())) {
-			throw new IllegalArgumentException("Provider with NPI " + provider.getNpi() + " already exists in practice "
-					+ provider.getPracticeId());
+			errorMessage.append("Provider with NPI ")
+				.append(provider.getNpi())
+				.append(" already exists in practice ")
+				.append(provider.getPracticeId())
+				.append(". ");
+		}
+
+		if (!errorMessage.isEmpty()) {
+			throw new IllegalArgumentException(errorMessage.toString().trim());
 		}
 	}
 

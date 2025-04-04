@@ -53,6 +53,7 @@ public class Provider extends AuditColumns implements Serializable {
 	@Column(name = "dea", length = 9, nullable = false)
 	private String dea;
 
+	@NotBlank(message = "NPI Number is required")
 	@Size(min = 10, max = 10, message = "NPI must be exactly 10 digits")
 	@Pattern(regexp = "\\d{10}", message = "NPI must contain only numeric digits")
 	@Column(name = "npi", length = 10, nullable = false)

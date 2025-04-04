@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
+import com.mckesson.cgat.pde.usermanagement.dto.ProviderDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
@@ -21,7 +22,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,7 +55,6 @@ public class ProviderController {
 	public ResponseEntity<byte[]> uploadProviders(@RequestPart("providerData") MultipartFile providerData,
 			@NotNull(message = "Practice Id is Required") @PathVariable Long practiceId)
 			throws FileNotValidException, UnauthorizedAccessException {
-
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		Boolean uploadStatus = providerService.uploadProviders(providerData, practiceId, outputStream);
 		HttpStatus status = uploadStatus ? HttpStatus.OK : HttpStatus.PARTIAL_CONTENT;
@@ -95,7 +94,7 @@ public class ProviderController {
 	@PatchMapping("/{providerId}")
 	@Operation(summary = "Update existing provider details by Id")
 	public Provider updateProviderDetails(@PathVariable Long providerId,
-			@Validated(BasicInfo.class) @RequestBody Provider provider)
+			@Validated(BasicInfo.class) @RequestBody ProviderDTO provider)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 
 		return providerService.updateProverDetailsById(providerId, provider);
