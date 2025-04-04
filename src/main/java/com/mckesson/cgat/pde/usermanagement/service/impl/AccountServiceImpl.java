@@ -66,8 +66,6 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public Account createAccount(AccountDTO accountDto) {
 		Account account = accountMapper.mapToModel(accountDto);
-		account.setPartnerFunction(AccountPartnerFunction.SOLD_TO);
-		account.setChannelType(ChannelType.SPECIALITY_PHARMA);
 		account.getAddress().setStreet(accountDto.getAddress().getAddress1());
 		account.getAddress().setStreet2(accountDto.getAddress().getAddress2());
 		account.getAddress().setCountry(accountDto.getAddress().getState());

@@ -74,6 +74,7 @@ public class Account implements Serializable {
 		if (this.channelType.equals(ChannelType.SPECIALITY_PHARMA)) {
 			this.accountNumber = String.valueOf(this.id);
 			this.sapCustomer = String.valueOf(this.id);
+			this.partnerFunction = AccountPartnerFunction.SOLD_TO;
 		}
 	}
 

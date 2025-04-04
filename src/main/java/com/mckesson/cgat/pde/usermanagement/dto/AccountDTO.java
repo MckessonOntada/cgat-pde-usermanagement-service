@@ -3,12 +3,15 @@ package com.mckesson.cgat.pde.usermanagement.dto;
 import org.hibernate.type.NumericBooleanConverter;
 
 import com.mckesson.cgat.pde.usermanagement.model.Address;
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.Contact;
 import com.mckesson.cgat.pde.usermanagement.model.Name;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -26,6 +29,9 @@ public class AccountDTO {
 	@Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters")
 	@Column(name = "name_1")
 	private String accountName;
+	
+	@Enumerated(EnumType.STRING)
+	private ChannelType channelType;
 
 	@Column(name = "sap_partner")
 	private String accountNumber;
