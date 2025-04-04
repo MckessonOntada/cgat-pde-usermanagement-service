@@ -133,6 +133,14 @@ public class ProviderServiceImpl implements ProviderService {
 	}
 
 	private Provider createProviderFromCSVRecord(List<String> providerData, Long practiceId) {
+		String statusValue = providerData.get(11).trim().toUpperCase();
+
+		boolean isActive = switch (statusValue) {
+			case "ACTIVE" -> true;
+			case "INACTIVE" -> false;
+			default -> throw new IllegalArgumentException(
+					"Invalid Status value: " + statusValue + ". Expected ACTIVE or INACTIVE.");
+		};
 
 		return Provider.builder()
 			.practiceId(practiceId)
@@ -152,7 +160,7 @@ public class ProviderServiceImpl implements ProviderService {
 				.state(providerData.get(9))
 				.build())
 			.phone(providerData.get(10))
-			.isActive(true)
+			.isActive(isActive)
 			.build();
 	}
 
@@ -161,7 +169,7 @@ public class ProviderServiceImpl implements ProviderService {
 				CSVPrinter csvPrinter = new CSVPrinter(writer,
 						CSVFormat.DEFAULT.withHeader("First Name", "Middle Name", "Last Name", "DEA Number",
 								"NPI Number", "Address 1", "Address 2", "City", "Zip", "State", "Phone Number",
-								"Message"))) {
+								"Status", "Message"))) {
 
 			for (Map.Entry<Provider, String> e : failedProvider.entrySet()) {
 				Provider provider = e.getKey();
@@ -169,7 +177,8 @@ public class ProviderServiceImpl implements ProviderService {
 						provider.getName().getLastName(), provider.getDea(), provider.getNpi(),
 						provider.getAddress().getAddress1(), provider.getAddress().getAddress2(),
 						provider.getAddress().getCity(), provider.getAddress().getZip(),
-						provider.getAddress().getState(), provider.getPhone(), e.getValue());
+						provider.getAddress().getState(), provider.getPhone(),
+						provider.getIsActive() ? "ACTIVE" : "INACTIVE", e.getValue());
 			}
 		}
 		catch (IOException e) {
