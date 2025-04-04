@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.*;
 import com.mckesson.cgat.pde.usermanagement.service.ShippingLocationService;
+import com.mckesson.cgat.pde.usermanagement.utils.OrganizationContext;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -55,20 +56,11 @@ public class ShippingLocationController {
 	}
 
 	@RequirePermissions({ Permission.ADD_SP_ACCOUNT })
-	@DeleteMapping("/{shippingAccountNumber}")
-	@Operation(summary = "Delete existing shipping location")
-	public ResponseEntity<Void> removeShippingLocation(@PathVariable Long shippingAccountNumber)
+	@DeleteMapping
+	@Operation(summary = "Delete shipping locations by IDs")
+	public ResponseEntity<Void> removeShippingLocations(@RequestBody List<Long> shippingLocationIds)
 			throws ResourceNotFoundException {
-		shippingLocationService.removeShippingLocation(shippingAccountNumber);
-		return ResponseEntity.noContent().build();
-	}
-
-	@RequirePermissions({ Permission.ADD_SP_ACCOUNT })
-	@DeleteMapping("/remove-multiple")
-	@Operation(summary = "Delete multiple shipping locations")
-	public ResponseEntity<Void> removeMultipleShippingLocations(@RequestBody List<ShippingLocation> shippingLocations)
-			throws ResourceNotFoundException {
-		shippingLocationService.removeMultipleShippingLocations(shippingLocations);
+		shippingLocationService.removeShippingLocations(shippingLocationIds);
 		return ResponseEntity.noContent().build();
 	}
 
@@ -76,15 +68,14 @@ public class ShippingLocationController {
 	@GetMapping
 	@Operation(summary = "Fetch all Shipping Locations based on filter provided with pagination capabilities.")
 	Page<ShippingLocation> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
-			@RequestParam(defaultValue = "20") Integer pageSize,
-			@RequestParam(defaultValue = "shipping_account_number") String sortBy,
+			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "id") String sortBy,
 			@RequestParam(defaultValue = "desc") String sortOrder, @RequestParam(required = false) String query,
-			@PathVariable String practiceId, @PathVariable String accountId)
-			throws ResourceNotFoundException, UnauthorizedAccessException {
+			@PathVariable String accountId) throws ResourceNotFoundException, UnauthorizedAccessException {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-		return shippingLocationService.findAll(paging, query, Long.valueOf(practiceId), Long.valueOf(accountId));
+		return shippingLocationService.findAll(paging, query, OrganizationContext.getCurrentOrgId(),
+				Long.valueOf(accountId));
 	}
 
 }

@@ -19,25 +19,20 @@ public interface ShippingLocationRepository extends JpaRepository<ShippingLocati
 			    (
 			        (
 			            :query IS NULL
-			            OR LOWER(CAST(a.shipping_account_number AS VARCHAR)) LIKE %:query%
-			            OR LOWER(a.shipping_location_name) LIKE %:query%
-			            OR LOWER(a.address_1) LIKE %:query%  -- Fixed column name
-			            OR LOWER(a.address_2) LIKE %:query%  -- Fixed column name
+			            OR LOWER(CAST(a.id AS VARCHAR)) LIKE %:query%
+			            OR LOWER(a.name) LIKE %:query%
+			            OR LOWER(a.address1) LIKE %:query%
+			            OR LOWER(a.address2) LIKE %:query%
 			            OR LOWER(a.city) LIKE %:query%
 			            OR LOWER(a.state) LIKE %:query%
-			            OR LOWER(CAST(a.zip AS VARCHAR)) LIKE %:query%  -- Fixed column name (zip instead of zip_code)
+			            OR LOWER(CAST(a.zip AS VARCHAR)) LIKE %:query%
 			        )
 			        AND
-			        (
-			            (CAST(:practiceId AS varchar) IS NULL AND a.tenant_id IS NULL)
-			            OR (a.tenant_id = :practiceId)
-			        )
+			        a.practice_id = :practiceId
 			        AND
-			        (
-			            (CAST(:accountId AS varchar) IS NULL AND a.account_id IS NULL)
-			            OR (a.account_id = :accountId)
-			        )
-			        AND a.is_active = 1
+			        a.account_id = :accountId
+			        AND
+			        a.is_active = 1
 			    )
 			""")
 	Page<ShippingLocation> findAllByQueryText(@Param("query") String query, Pageable paging,

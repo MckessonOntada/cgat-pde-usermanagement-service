@@ -1,17 +1,18 @@
+-- Create the table
 CREATE TABLE IF NOT EXISTS shipping_location
 (
-    shipping_account_number  BIGINT PRIMARY KEY,
-    tenant_id                BIGINT NOT NULL,
-    shipping_location_name   VARCHAR(100) NOT NULL,
+    id                      BIGINT PRIMARY KEY,
+    practice_id             BIGINT NOT NULL,
+    name                    VARCHAR(100) NOT NULL,
     address1                VARCHAR(255) NOT NULL,
     address2                VARCHAR(255),
-    city                     VARCHAR(255) NOT NULL,
-    zip                      VARCHAR(50) NOT NULL,
-    state                    VARCHAR(255) NOT NULL,
-    account_id               BIGINT NOT NULL,
-    is_active                INTEGER DEFAULT 1 NOT NULL,
+    city                    VARCHAR(255) NOT NULL,
+    zip                     VARCHAR(50) NOT NULL,
+    state                   VARCHAR(255) NOT NULL,
+    account_id              BIGINT NOT NULL,
+    is_active               INTEGER DEFAULT 1 NOT NULL,
 
-    CONSTRAINT fk_tenant FOREIGN KEY (tenant_id) REFERENCES practice(id),
+    CONSTRAINT fk_tenant FOREIGN KEY (practice_id) REFERENCES practice(id),
     CONSTRAINT fk_account FOREIGN KEY (account_id) REFERENCES account(id)
 );
 
@@ -22,3 +23,42 @@ CREATE SEQUENCE IF NOT EXISTS SHIPPING_ACCOUNT_NUMBER_SEQUENCE
     MINVALUE 1
     NO MAXVALUE
     CACHE 20;
+
+-- Required extension for trigram-based text search
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
+-- B-tree indexes for fields used in equality and foreign key operations
+CREATE INDEX idx_shipping_location_practice_id ON shipping_location USING btree (practice_id);
+CREATE INDEX idx_shipping_location_account_id ON shipping_location USING btree (account_id);
+CREATE INDEX idx_shipping_location_is_active ON shipping_location USING btree (is_active);
+
+-- B-tree index on ID for standard operations (not LIKE searches)
+CREATE INDEX idx_shipping_location_id ON shipping_location USING btree (id);
+
+-- GIN index for ID when cast to VARCHAR and used with LIKE %query%
+CREATE INDEX idx_shipping_location_id_text_gin ON shipping_location
+USING gin ((CAST(id AS VARCHAR)) gin_trgm_ops);
+
+-- GIN indexes for text fields used with LIKE %query% searches
+CREATE INDEX idx_shipping_location_name_gin ON shipping_location
+USING gin (name gin_trgm_ops);
+
+CREATE INDEX idx_shipping_location_address1_gin ON shipping_location
+USING gin (address1 gin_trgm_ops);
+
+CREATE INDEX idx_shipping_location_address2_gin ON shipping_location
+USING gin (address2 gin_trgm_ops);
+
+CREATE INDEX idx_shipping_location_city_gin ON shipping_location
+USING gin (city gin_trgm_ops);
+
+CREATE INDEX idx_shipping_location_state_gin ON shipping_location
+USING gin (state gin_trgm_ops);
+
+-- GIN index for zip field when cast to VARCHAR and used with LIKE %query%
+CREATE INDEX idx_shipping_location_zip_text_gin ON shipping_location
+USING gin ((CAST(zip AS VARCHAR)) gin_trgm_ops);
+
+-- Create a combined index for common query filters
+CREATE INDEX idx_shipping_location_filters ON shipping_location
+USING btree (practice_id, account_id, is_active);

@@ -28,16 +28,16 @@ public class ShippingLocation implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = SEQUENCE_GENERATOR_NAME)
 	@SequenceGenerator(name = SEQUENCE_GENERATOR_NAME, sequenceName = SEQUENCE_GENERATOR_NAME, allocationSize = 1)
-	@Column(name = "shipping_account_number")
-	private Long shippingAccountNumber;
+	@Column(name = "id")
+	private Long id;
 
-	@Column(name = "tenant_id")
+	@Column(name = "practice_id")
 	private Long practiceId;
 
 	@NotEmpty(message = "Location Name is required.")
 	@Size(min = 2, max = 100, message = "Location Name must be between 2 and 100 characters")
-	@Column(name = "shipping_location_name")
-	private String shippingLocationName;
+	@Column(name = "name")
+	private String name;
 
 	@Valid
 	@Embedded

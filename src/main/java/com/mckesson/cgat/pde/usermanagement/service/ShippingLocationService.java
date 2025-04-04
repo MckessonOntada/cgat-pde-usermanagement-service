@@ -11,7 +11,7 @@ import java.util.List;
 @Service
 public interface ShippingLocationService {
 
-	void removeMultipleShippingLocations(List<ShippingLocation> shippingLocations) throws ResourceNotFoundException;
+	void removeShippingLocations(List<Long> shippingLocationIds) throws ResourceNotFoundException;
 
 	Page<ShippingLocation> findAll(Pageable paging, String query, Long practiceId, Long accountId)
 			throws ResourceNotFoundException;
@@ -20,7 +20,5 @@ public interface ShippingLocationService {
 
 	ShippingLocation updateShippingLocation(Long shippingAccountNumber, ShippingLocation shippingLocation)
 			throws ResourceNotFoundException;
-
-	void removeShippingLocation(Long shippingAccountNumber) throws ResourceNotFoundException;
 
 }

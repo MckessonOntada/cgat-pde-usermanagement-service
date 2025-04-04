@@ -36,44 +36,31 @@ public class ShippingLocationServiceImpl implements ShippingLocationService {
 	public ShippingLocation updateShippingLocation(Long shippingAccountNumber, ShippingLocation shippingLocation)
 			throws ResourceNotFoundException {
 		ShippingLocation existingLocation = shippingLocationRepository.findById(shippingAccountNumber)
-			.orElseThrow(() -> new ResourceNotFoundException(shippingAccountNumber.toString()));
+			.orElseThrow(() -> new ResourceNotFoundException(
+					"Shipping Location with ID " + shippingAccountNumber.toString() + " not found."));
 
-		shippingLocation.setShippingAccountNumber(shippingAccountNumber);
+		shippingLocation.setId(existingLocation.getId());
 		return shippingLocationRepository.save(shippingLocation);
 	}
 
 	@Override
-	public void removeShippingLocation(Long shippingAccountNumber) throws ResourceNotFoundException {
-		ShippingLocation location = shippingLocationRepository.findById(shippingAccountNumber)
-			.orElseThrow(() -> new ResourceNotFoundException(
-					"An error occurred while removing the Shipping Location. Please try again later."));
-		location.setIsActive(false);
-		shippingLocationRepository.save(location);
-	}
-
-	@Override
-	public void removeMultipleShippingLocations(List<ShippingLocation> shippingLocations)
-			throws ResourceNotFoundException {
-		if (shippingLocations == null || shippingLocations.isEmpty()) {
+	public void removeShippingLocations(List<Long> shippingLocationIds) throws ResourceNotFoundException {
+		if (shippingLocationIds == null || shippingLocationIds.isEmpty()) {
 			return;
 		}
-		List<Long> shippingAccountNumbers = shippingLocations.stream()
-			.map(ShippingLocation::getShippingAccountNumber)
-			.toList();
-		List<ShippingLocation> locationsToDeactivate = shippingLocationRepository.findAllById(shippingAccountNumbers);
 
-		if (locationsToDeactivate.size() != shippingAccountNumbers.size()) {
-			List<Long> foundIds = locationsToDeactivate.stream()
-				.map(ShippingLocation::getShippingAccountNumber)
-				.toList();
+		List<ShippingLocation> locationsToDeactivate = shippingLocationRepository.findAllById(shippingLocationIds);
 
-			for (Long id : shippingAccountNumbers) {
+		if (locationsToDeactivate.size() != shippingLocationIds.size()) {
+			List<Long> foundIds = locationsToDeactivate.stream().map(ShippingLocation::getId).toList();
+
+			for (Long id : shippingLocationIds) {
 				if (!foundIds.contains(id)) {
-					throw new ResourceNotFoundException(
-							"An error occurred while removing the Shipping Location. Please try again later.");
+					throw new ResourceNotFoundException("Shipping Location with ID " + id + " not found.");
 				}
 			}
 		}
+
 		locationsToDeactivate.forEach(location -> location.setIsActive(false));
 		shippingLocationRepository.saveAll(locationsToDeactivate);
 	}
