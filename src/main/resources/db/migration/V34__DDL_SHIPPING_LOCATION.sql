@@ -1,4 +1,3 @@
--- Create the table
 CREATE TABLE IF NOT EXISTS shipping_location
 (
     id                      BIGINT PRIMARY KEY,
@@ -16,7 +15,6 @@ CREATE TABLE IF NOT EXISTS shipping_location
     CONSTRAINT fk_account FOREIGN KEY (account_id) REFERENCES account(id)
 );
 
--- Sequence for Generating Shipping Account Numbers
 CREATE SEQUENCE IF NOT EXISTS SHIPPING_ACCOUNT_NUMBER_SEQUENCE
     START WITH 1
     INCREMENT BY 1
@@ -24,22 +22,15 @@ CREATE SEQUENCE IF NOT EXISTS SHIPPING_ACCOUNT_NUMBER_SEQUENCE
     NO MAXVALUE
     CACHE 20;
 
--- Required extension for trigram-based text search
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
--- B-tree indexes for fields used in equality and foreign key operations
 CREATE INDEX idx_shipping_location_practice_id ON shipping_location USING btree (practice_id);
 CREATE INDEX idx_shipping_location_account_id ON shipping_location USING btree (account_id);
 CREATE INDEX idx_shipping_location_is_active ON shipping_location USING btree (is_active);
 
--- B-tree index on ID for standard operations (not LIKE searches)
-CREATE INDEX idx_shipping_location_id ON shipping_location USING btree (id);
-
--- GIN index for ID when cast to VARCHAR and used with LIKE %query%
 CREATE INDEX idx_shipping_location_id_text_gin ON shipping_location
 USING gin ((CAST(id AS VARCHAR)) gin_trgm_ops);
 
--- GIN indexes for text fields used with LIKE %query% searches
 CREATE INDEX idx_shipping_location_name_gin ON shipping_location
 USING gin (name gin_trgm_ops);
 
@@ -55,10 +46,5 @@ USING gin (city gin_trgm_ops);
 CREATE INDEX idx_shipping_location_state_gin ON shipping_location
 USING gin (state gin_trgm_ops);
 
--- GIN index for zip field when cast to VARCHAR and used with LIKE %query%
 CREATE INDEX idx_shipping_location_zip_text_gin ON shipping_location
 USING gin ((CAST(zip AS VARCHAR)) gin_trgm_ops);
-
--- Create a combined index for common query filters
-CREATE INDEX idx_shipping_location_filters ON shipping_location
-USING btree (practice_id, account_id, is_active);

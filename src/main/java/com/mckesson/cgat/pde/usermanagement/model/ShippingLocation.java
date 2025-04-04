@@ -2,12 +2,9 @@ package com.mckesson.cgat.pde.usermanagement.model;
 
 import java.io.Serializable;
 
-import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.type.NumericBooleanConverter;
 
@@ -35,7 +32,6 @@ public class ShippingLocation implements Serializable {
 	private Long practiceId;
 
 	@NotEmpty(message = "Location Name is required.")
-	@Size(min = 2, max = 100, message = "Location Name must be between 2 and 100 characters")
 	@Column(name = "name")
 	private String name;
 
