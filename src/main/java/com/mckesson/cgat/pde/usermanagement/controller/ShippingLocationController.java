@@ -40,17 +40,18 @@ public class ShippingLocationController {
 	@PostMapping(consumes = "application/json")
 	@Operation(summary = "Create new shipping location")
 	public ResponseEntity<ShippingLocation> createShippingLocation(
-			@Valid @RequestBody ShippingLocation shippingLocation) {
+			@Valid @RequestBody ShippingLocation shippingLocation) throws UnauthorizedAccessException {
 		ShippingLocation createdShippingLocation = shippingLocationService.createShippingLocation(shippingLocation);
 		return new ResponseEntity<>(createdShippingLocation, HttpStatus.CREATED);
 	}
 
 	@RequirePermissions({ Permission.ADD_SP_ACCOUNT })
-	@PutMapping("/{shippingAccountNumber}")
+	@PutMapping("/{shippingLocationId}")
 	@Operation(summary = "Update existing shipping location")
-	public ResponseEntity<ShippingLocation> updateShippingLocation(@PathVariable Long shippingAccountNumber,
-			@Valid @RequestBody ShippingLocation shippingLocation) throws ResourceNotFoundException {
-		ShippingLocation updatedShippingLocation = shippingLocationService.updateShippingLocation(shippingAccountNumber,
+	public ResponseEntity<ShippingLocation> updateShippingLocation(@PathVariable Long shippingLocationId,
+			@Valid @RequestBody ShippingLocation shippingLocation)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
+		ShippingLocation updatedShippingLocation = shippingLocationService.updateShippingLocation(shippingLocationId,
 				shippingLocation);
 		return ResponseEntity.ok(updatedShippingLocation);
 	}
@@ -59,7 +60,7 @@ public class ShippingLocationController {
 	@DeleteMapping
 	@Operation(summary = "Delete shipping locations by IDs")
 	public ResponseEntity<Void> removeShippingLocations(@RequestBody List<Long> shippingLocationIds)
-			throws ResourceNotFoundException {
+			throws ResourceNotFoundException, UnauthorizedAccessException {
 		shippingLocationService.removeShippingLocations(shippingLocationIds);
 		return ResponseEntity.noContent().build();
 	}

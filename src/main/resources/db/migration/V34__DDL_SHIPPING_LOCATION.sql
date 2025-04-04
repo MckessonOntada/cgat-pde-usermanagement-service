@@ -29,6 +29,7 @@ CREATE INDEX idx_shipping_location_account_id ON shipping_location USING btree (
 CREATE INDEX idx_shipping_location_is_active ON shipping_location USING btree (is_active);
 
 CREATE INDEX idx_shipping_location_id_text_gin ON shipping_location
+
 USING gin ((CAST(id AS VARCHAR)) gin_trgm_ops);
 
 CREATE INDEX idx_shipping_location_name_gin ON shipping_location
