@@ -44,13 +44,12 @@ public class GlobalAccountController {
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "name_1") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
 			@RequestParam(required = false) List<String> salesOrg,
-			@RequestParam(required = false) List<String> distChannels,
-			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) throws ResourceNotFoundException {
+			@RequestParam(required = false) List<String> distChannels) throws ResourceNotFoundException {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 		Page<Account> accounts = accountService.findAll(paging, query, null, null, null, AccountPartnerFunction.SOLD_TO,
-				salesOrg, distChannels, channelType);
+				salesOrg, distChannels, ChannelType.BUY_AND_BILL);
 
 		return new ResponseEntity<>(accounts, HttpStatus.OK);
 	}

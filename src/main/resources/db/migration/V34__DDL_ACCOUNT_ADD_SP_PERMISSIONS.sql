@@ -1,5 +1,9 @@
 ALTER TABLE usermanagement.account
-ADD COLUMN IF NOT EXISTS channel_type VARCHAR(100) DEFAULT 'BUY_AND_BILL';
+ADD COLUMN IF NOT EXISTS channel_type VARCHAR(100),
+ADD COLUMN IF NOT EXISTS first_name VARCHAR(255),
+ADD COLUMN IF NOT EXISTS middle_name VARCHAR(255),
+ADD COLUMN IF NOT EXISTS last_name VARCHAR(255),
+ADD COLUMN IF NOT EXISTS fax VARCHAR(50);
 
 UPDATE usermanagement.account 
 SET channel_type = 'BUY_AND_BILL';
@@ -12,3 +16,9 @@ INSERT INTO usermanagement.role_permissions_mapping(role_id, permission) VALUES
 INSERT into usermanagement.user_permission_mapping(user_id, permission) VALUES
 (1, 'MANAGE_SP_ACCOUNT'),
 (1, 'ADD_SP_ACCOUNT');
+
+CREATE INDEX IF NOT EXISTS account_address_index ON usermanagement.account 
+USING GIN (LOWER(street) gin_trgm_ops, LOWER(street_2) gin_trgm_ops, LOWER(city) gin_trgm_ops, LOWER(zip_code) gin_trgm_ops, LOWER(state) gin_trgm_ops);
+
+CREATE INDEX account_channel_type_index  ON usermanagement.account
+USING btree(channel_type);

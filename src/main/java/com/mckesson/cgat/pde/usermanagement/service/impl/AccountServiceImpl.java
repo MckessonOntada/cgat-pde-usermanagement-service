@@ -1,15 +1,10 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import com.mckesson.cgat.pde.usermanagement.dto.AccountDetailsResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.model.*;
-import com.mckesson.cgat.pde.usermanagement.service.QuestionnaireService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -17,9 +12,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import com.mckesson.cgat.pde.usermanagement.dto.AccountDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.AccountDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.ForbiddenActionException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
+import com.mckesson.cgat.pde.usermanagement.mapper.AccountMapper;
+import com.mckesson.cgat.pde.usermanagement.model.Account;
+import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
+import com.mckesson.cgat.pde.usermanagement.model.Practice;
+import com.mckesson.cgat.pde.usermanagement.model.Questionnaire;
+import com.mckesson.cgat.pde.usermanagement.model.QuestionnaireConfigurationType;
+import com.mckesson.cgat.pde.usermanagement.model.User;
+import com.mckesson.cgat.pde.usermanagement.model.UserPreferenceType;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.UserPreferenceRepository;
@@ -44,27 +50,42 @@ public class AccountServiceImpl implements AccountService {
 
 	private final QuestionnaireService questionnaireService;
 
+	private final AccountMapper accountMapper;
+
 	public AccountServiceImpl(AccountRepository accountRepository, PracticeRepository practiceRepository,
 			UserRepository userRepository, UserPreferenceRepository userPreferenceRepository,
-			QuestionnaireService questionnaireService) {
+			QuestionnaireService questionnaireService, AccountMapper accountMapper) {
 		this.accountRepository = accountRepository;
 		this.practiceRepository = practiceRepository;
 		this.userRepository = userRepository;
 		this.userPreferenceRepository = userPreferenceRepository;
 		this.questionnaireService = questionnaireService;
+		this.accountMapper = accountMapper;
 	}
 
 	@Override
-	public Account createAccount(Account account) {
+	public Account createAccount(AccountDTO accountDto) {
+		Account account = accountMapper.mapToModel(accountDto);
+		account.setPartnerFunction(AccountPartnerFunction.SOLD_TO);
+		account.setChannelType(ChannelType.SPECIALITY_PHARMA);
+		account.getAddress().setStreet(accountDto.getAddress().getAddress1());
+		account.getAddress().setStreet2(accountDto.getAddress().getAddress2());
+		account.getAddress().setCountry(accountDto.getAddress().getState());
 		return accountRepository.save(account);
 	}
 
 	@Override
-	public Account updateAccount(Long accountId, Account obj) throws ResourceNotFoundException {
+	public Account updateAccount(Long accountId, AccountDTO accountDto) throws ResourceNotFoundException {
 		Account account = getAccount(accountId);
-		if (account != null)
-			obj.setId(accountId);
-		return accountRepository.save(obj);
+		if (account == null)
+			throw new ResourceNotFoundException("Account not found with id: " + accountId);
+
+		account.setAccountName(accountDto.getAccountName());
+		account.setName(accountDto.getName());
+		account.getAddress().setEmail(accountDto.getContact().getEmail());
+		account.getAddress().setTelephone(accountDto.getContact().getPhone());
+		account.setFax(accountDto.getContact().getFax());
+		return accountRepository.save(account);
 	}
 
 	@Override
@@ -107,7 +128,7 @@ public class AccountServiceImpl implements AccountService {
 			if (!user.isPresent())
 				throw new ResourceNotFoundException("User not found with id: " + userId);
 			return accountRepository.findAccountsByUser(userId, query, statusActive, paging, practiceId,
-					partnerFunction.getPartnerFunctionType(), salesOrg, distChannels, channelType.name());
+					partnerFunction.getPartnerFunctionType(), salesOrg, distChannels);
 		}
 		return accountRepository.findAllByQueryText(query, statusActive, paging, practiceId,
 				partnerFunction.getPartnerFunctionType(), salesOrg, distChannels, channelType.name());

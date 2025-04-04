@@ -100,7 +100,12 @@ public class Account implements Serializable {
 	private String searchTerm1;
 
 	@Embedded
+	private Name name;
+
+	@Embedded
 	private AccountAddress address;
+
+	private String fax;
 
 	@Column(name = "cgat_identifier")
 	private String cgatIdentifier;

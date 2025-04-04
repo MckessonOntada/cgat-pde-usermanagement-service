@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.service;
 import java.util.List;
 import java.util.Set;
 
+import com.mckesson.cgat.pde.usermanagement.dto.AccountDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.AccountDetailsResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,9 +27,9 @@ public interface AccountService {
 			AccountPartnerFunction partnerFunction, List<String> salesOrg, List<String> distChannels,
 			ChannelType channelType) throws ResourceNotFoundException;
 
-	Account createAccount(Account account);
+	Account createAccount(AccountDTO account);
 
-	Account updateAccount(Long accountId, Account account) throws ResourceNotFoundException;
+	Account updateAccount(Long accountId, AccountDTO accountDto) throws ResourceNotFoundException;
 
 	void linkAccountsToPractice(Long practiceId, Set<Long> accountIds)
 			throws ResourceNotFoundException, UnauthorizedAccessException;

@@ -28,9 +28,11 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 					:query IS NULL
 				 	OR LOWER(a.name_1) LIKE %:query%
 				 	OR LOWER(a.sap_partner) LIKE %:query%
+				 	OR LOWER(a.street) LIKE %:query%
+				 	OR LOWER(a.street_2) LIKE %:query%
 				 	OR LOWER(a.city) LIKE %:query%
+				 	OR LOWER(a.zip_code) LIKE %:query%
 				 	OR LOWER(a.state) LIKE %:query%
-				 	OR LOWER(a.country) LIKE %:query%
 				)
 				AND
 				(
@@ -74,9 +76,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 					:query IS NULL
 				 	OR LOWER(ua.name_1) LIKE %:query%
 				 	OR LOWER(ua.sap_partner) LIKE %:query%
-				 	OR LOWER(a.city) LIKE %:query%
-				 	OR LOWER(a.state) LIKE %:query%
-				 	OR LOWER(a.country) LIKE %:query%
 				)
 				AND
 				(
@@ -104,12 +103,11 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 					ua.distribution_channel IN (:distChannels)
 				)
 			    AND ua.partner_function = :partnerFunction
-			    AND ua.channel_type = :channelType
 			)""")
 	Page<Account> findAccountsByUser(@Param("userId") Long userId, @Param("query") String query,
 			@Param("status") String status, Pageable pageable, @Param("practiceId") Long practiceId,
 			String partnerFunction, @Param("salesOrg") List<String> salesOrg,
-			@Param("distChannels") List<String> distChannels, @Param("channelType") String channelType);
+			@Param("distChannels") List<String> distChannels);
 
 	@Query("select a FROM Account a WHERE a.accountNumber = :accountNumber AND a.partnerFunction = :partnerFunction")
 	Set<Account> findByAccountNumber(String accountNumber, AccountPartnerFunction partnerFunction);

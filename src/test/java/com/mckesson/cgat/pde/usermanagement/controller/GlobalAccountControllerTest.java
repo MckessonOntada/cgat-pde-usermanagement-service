@@ -72,10 +72,10 @@ public class GlobalAccountControllerTest {
 		Page<Account> mockResponse = new PageImpl<>(accounts, paging, accounts.size());
 
 		when(accountService.findAll(any(PageRequest.class), anyString(), anyList(), anyLong(), anyLong(), any(),
-				anyList(), anyList()))
+				anyList(), anyList(), any(ChannelType.class)))
 			.thenReturn(mockResponse);
 		when(accountService.findAll(any(PageRequest.class), anyString(), anyList(), anyLong(), anyLong(), any(),
-				anyList(), anyList()))
+				anyList(), anyList(), any(ChannelType.class)))
 			.thenReturn(mockResponse);
 
 		mockMvc

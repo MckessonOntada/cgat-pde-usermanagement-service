@@ -220,13 +220,12 @@ public class UserController {
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
 			@PathVariable(required = false) String practiceId, @PathVariable(required = false) Long userId,
 			@RequestParam(required = false) List<String> status, @RequestParam(required = false) List<String> salesOrg,
-			@RequestParam(required = false) List<String> distributionChannel,
-			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) throws ResourceNotFoundException {
+			@RequestParam(required = false) List<String> distributionChannel) throws ResourceNotFoundException {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 		return accountService.findAll(paging, query, status, userId, OrganizationContext.getCurrentOrgId(),
-				AccountPartnerFunction.SOLD_TO, salesOrg, distributionChannel, channelType);
+				AccountPartnerFunction.SOLD_TO, salesOrg, distributionChannel, null);
 
 	}
 

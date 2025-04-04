@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -42,6 +43,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.DistributionChannel;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -215,7 +217,7 @@ class AccountControllerTest {
 		List<Account> accounts = getAccountList();
 		PageImpl<Account> accountPage = new PageImpl<>(accounts, pageable, accounts.size());
 		when(accountService.findAll(any(PageRequest.class), Mockito.anyString(), Mockito.anyList(), Mockito.anyLong(),
-				Mockito.anyLong(), Mockito.any(), anyList(), anyList()))
+				Mockito.anyLong(), Mockito.any(), anyList(), anyList(), any(ChannelType.class)))
 			.thenReturn(accountPage);
 
 		ResultActions result = mockMvc
@@ -230,7 +232,7 @@ class AccountControllerTest {
 			.andExpect(status().isOk());
 		assertNotNull(result);
 		verify(accountService).findAll(pageable, null, null, null, 100L, AccountPartnerFunction.SOLD_TO,
-				new ArrayList<>(), new ArrayList<>());
+				new ArrayList<>(), new ArrayList<>(), ChannelType.BUY_AND_BILL);
 	}
 
 	@DisplayName("FindAllTestForDesc")
@@ -245,7 +247,7 @@ class AccountControllerTest {
 		List<Account> accounts = getAccountList();
 		PageImpl<Account> accountPage = new PageImpl<>(accounts, pageable, accounts.size());
 		when(accountService.findAll(any(PageRequest.class), Mockito.anyString(), Mockito.anyList(), Mockito.anyLong(),
-				Mockito.anyLong(), Mockito.any(), anyList(), anyList()))
+				Mockito.anyLong(), Mockito.any(), anyList(), anyList(), any(ChannelType.class)))
 			.thenReturn(accountPage);
 
 		ResultActions result = mockMvc
@@ -260,7 +262,7 @@ class AccountControllerTest {
 			.andExpect(status().isOk());
 		assertNotNull(result);
 		verify(accountService).findAll(pageable, null, null, null, 100L, AccountPartnerFunction.SOLD_TO,
-				new ArrayList<>(), new ArrayList<>());
+				new ArrayList<>(), new ArrayList<>(), ChannelType.BUY_AND_BILL);
 	}
 
 	@DisplayName("LinkAccountToPracticeTest")

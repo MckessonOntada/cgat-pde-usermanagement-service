@@ -3,7 +3,6 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import java.util.List;
 import java.util.Set;
 
-import com.mckesson.cgat.pde.usermanagement.dto.AccountDetailsResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mckesson.cgat.pde.usermanagement.dto.AccountDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.AccountDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
@@ -56,18 +57,18 @@ public class AccountController {
 	@RequirePermissions({ Permission.ADD_ORGANIZATION, Permission.ADD_SP_ACCOUNT })
 	@PostMapping(consumes = "application/json")
 	@Operation(summary = "Create new account")
-	public ResponseEntity<Account> createAccount(@Valid @RequestBody Account account)
+	public ResponseEntity<Account> createAccount(@Valid @RequestBody AccountDTO accountDto)
 			throws UnauthorizedAccessException {
-		return new ResponseEntity<>(accountService.createAccount(account), HttpStatus.OK);
+		return new ResponseEntity<>(accountService.createAccount(accountDto), HttpStatus.OK);
 
 	}
 
 	@RequirePermissions({ Permission.EDIT_ORGANIZATION, Permission.ADD_ORGANIZATION, Permission.ADD_SP_ACCOUNT })
 	@PutMapping("/{accountId}")
 	@Operation(summary = "Update existing account")
-	public Account updateAccount(@PathVariable Long accountId, @RequestBody Account account)
+	public Account updateAccount(@PathVariable Long accountId, @RequestBody AccountDTO accountDto)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
-		return accountService.updateAccount(accountId, account);
+		return accountService.updateAccount(accountId, accountDto);
 
 	}
 
@@ -112,8 +113,7 @@ public class AccountController {
 			@PathVariable String practiceId, @RequestParam(required = false) List<String> status,
 			@RequestParam(required = false) List<String> salesOrg,
 			@RequestParam(required = false) List<String> distChannels,
-			@RequestParam AccountPartnerFunction partnerFunction,
-			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType)
+			@RequestParam AccountPartnerFunction partnerFunction, @RequestParam ChannelType channelType)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
