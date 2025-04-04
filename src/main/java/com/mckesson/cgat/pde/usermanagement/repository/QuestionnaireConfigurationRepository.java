@@ -49,7 +49,7 @@ public interface QuestionnaireConfigurationRepository extends JpaRepository<Ques
 			   	  AND qc.channel_type = :channelType;
 			""")
 	List<QuestionnaireConfiguration> getAllConfiguredQuestionnairesForSpecificType(String entityId,
-			String configuredType, ChannelType channelType);
+			String configuredType, String channelType);
 
 	List<QuestionnaireConfiguration> findByEntityIdInAndConfiguredType(List<String> entityIds,
 			QuestionnaireConfigurationType type);

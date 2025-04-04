@@ -155,7 +155,6 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 	@Override
 	public List<Questionnaire> getAllConfiguredQuestionnaires(String sapMaterial, String soldToCustomer,
 			String shipToCustomer, String variant, ChannelType channelType) {
-		channelType = channelType == null ? ChannelType.BUY_AND_BILL : channelType;
 		String catalogId = getCatalogId(sapMaterial, soldToCustomer, shipToCustomer, variant);
 		List<QuestionnaireConfiguration> allConfiguredQuestionnaires = questionnaireConfigurationRepository
 			.getAllConfiguredQuestionnaires(sapMaterial, soldToCustomer, catalogId, channelType.name());
@@ -210,7 +209,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 		String entityId = getEntityId(sapMaterial, soldToCustomer, catalogConfigurationAttributes, type);
 
 		List<QuestionnaireConfiguration> allConfiguredQuestionnaires = questionnaireConfigurationRepository
-			.getAllConfiguredQuestionnairesForSpecificType(entityId, type.name(), channelType);
+			.getAllConfiguredQuestionnairesForSpecificType(entityId, type.name(), channelType.name());
 		List<Questionnaire> questionnaires = allConfiguredQuestionnaires.stream()
 			.map(QuestionnaireConfiguration::getQuestionnaireId)
 			.distinct()

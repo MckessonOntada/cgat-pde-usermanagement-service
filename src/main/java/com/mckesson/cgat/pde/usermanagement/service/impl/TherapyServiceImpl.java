@@ -236,7 +236,6 @@ public class TherapyServiceImpl implements TherapyService {
 	@Override
 	public MaterialDetailsResponseDTO findTherapyDetailsByMaterialNumber(String materialNumber, ChannelType channelType)
 			throws ResourceNotFoundException {
-		channelType = channelType == null ? ChannelType.BUY_AND_BILL : channelType;
 		MaterialResponseDTO responseDTO = therapyConfigRepository
 			.findDetailedByMaterialNumber(materialNumber, channelType)
 			.orElseThrow(() -> new ResourceNotFoundException(
@@ -255,8 +254,10 @@ public class TherapyServiceImpl implements TherapyService {
 
 	@Override
 	@Transactional
-	public void deleteConfigByMaterialNumber(String materialNumber) throws ResourceNotFoundException {
-		int deletedCount = therapyConfigRepository.removeTherapyConfigByMaterialNumber(materialNumber);
+	public void deleteConfigByMaterialNumber(String materialNumber, ChannelType channelType)
+			throws ResourceNotFoundException {
+		int deletedCount = therapyConfigRepository.removeTherapyConfigByMaterialNumberAndChannelType(materialNumber,
+				channelType);
 
 		if (deletedCount == 0) {
 			throw new ResourceNotFoundException(

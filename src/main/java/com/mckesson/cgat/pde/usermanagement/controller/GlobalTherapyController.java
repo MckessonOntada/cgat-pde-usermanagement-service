@@ -79,7 +79,7 @@ public class GlobalTherapyController {
 	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.EDIT_ORDERS })
 	@Operation(summary = "Find Therapy details by Material Number")
 	public ResponseEntity<MaterialDetailsResponseDTO> findTherapyDetailsByMaterialNumber(
-			@PathVariable String materialNumber, @RequestParam(required = false) ChannelType channelType)
+			@PathVariable String materialNumber, @RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType)
 			throws ResourceNotFoundException {
 		log.debug("Fetching therapy details with materialNumber: {}", materialNumber);
 		return new ResponseEntity<>(therapyService.findTherapyDetailsByMaterialNumber(materialNumber, channelType),
@@ -92,10 +92,10 @@ public class GlobalTherapyController {
 	@Operation(summary = "Delete Configuration by Material Number")
 	public ResponseEntity<String> deleteConfigByMaterialNumber(
 			@PathVariable @NotNull(message = "Material number cannot be null ") @NotEmpty(
-					message = "Material number cannot be empty") String materialNumber)
-			throws ResourceNotFoundException {
+					message = "Material number cannot be empty") String materialNumber,
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) throws ResourceNotFoundException {
 
-		therapyService.deleteConfigByMaterialNumber(materialNumber);
+		therapyService.deleteConfigByMaterialNumber(materialNumber, channelType);
 		return new ResponseEntity<>(materialNumber, HttpStatus.OK);
 	}
 
