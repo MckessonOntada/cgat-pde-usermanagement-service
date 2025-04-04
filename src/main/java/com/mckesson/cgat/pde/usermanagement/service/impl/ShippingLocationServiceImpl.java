@@ -37,7 +37,7 @@ public class ShippingLocationServiceImpl implements ShippingLocationService {
 			throws ResourceNotFoundException {
 		ShippingLocation existingLocation = shippingLocationRepository.findById(shippingAccountNumber)
 			.orElseThrow(() -> new ResourceNotFoundException(
-					"Shipping Location with ID " + shippingAccountNumber.toString() + " not found."));
+					"Shipping Location with ID " + shippingAccountNumber + " not found."));
 
 		shippingLocation.setId(existingLocation.getId());
 		return shippingLocationRepository.save(shippingLocation);
