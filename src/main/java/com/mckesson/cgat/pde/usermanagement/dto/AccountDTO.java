@@ -1,18 +1,15 @@
 package com.mckesson.cgat.pde.usermanagement.dto;
 
-import org.hibernate.type.NumericBooleanConverter;
-
 import com.mckesson.cgat.pde.usermanagement.model.Address;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.Contact;
 import com.mckesson.cgat.pde.usermanagement.model.Name;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,47 +20,40 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AccountDTO {
 
-	private Long practiceId;
+	 private Long practiceId;
 
-	@NotEmpty(message = "Name is required.")
-	@Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters")
-	@Column(name = "name_1")
-	private String accountName;
+	    @NotBlank(message = "Name is required.")
+	    @Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters.")
+	    private String accountName;
 
-	@Enumerated(EnumType.STRING)
-	private ChannelType channelType;
+	    @NotNull(message = "Valid channel type is required.")
+	    @Enumerated(EnumType.STRING)
+	    private ChannelType channelType;
 
-	@Column(name = "sap_partner")
-	private String accountNumber;
+	    @NotBlank(message = "Sales Org is required (Enter NA for SP account).")
+	    private String salesOrg;
 
-	@Column(name = "sap_customer")
-	private String sapCustomer;
+	    @NotBlank(message = "Distribution channel is required.")
+	    private String distributionChannel;
 
-	@Column(name = "sales_org")
-	private String salesOrg;
+	    @NotBlank(message = "Vistex customer is required (Enter NA for SP account).")
+	    private String vistexCustomer;
 
-	@Column(name = "distribution_channel")
-	private String distributionChannel;
+	    @NotBlank(message = "Division is required (Enter NA for SP account).")
+	    private String division;
 
-	@Column(name = "vistex_customer")
-	private String vistexCustomer;
+	    @NotBlank(message = "Company code is required (Enter NA for SP account).")
+	    private String companyCode;
 
-	@Column(name = "division")
-	private String division;
+	    @Valid
+	    private Name name;
 
-	@Column(name = "company_code")
-	private String companyCode;
+	    @Valid
+	    private Contact contact;
 
-	@Embedded
-	private Name name;
+	    @Valid
+	    private Address address;
 
-	@Embedded
-	private Contact contact;
-
-	@Embedded
-	private Address address;
-
-	@Convert(converter = NumericBooleanConverter.class)
-	private Boolean isActive = true;
+	    private Boolean isActive = true;
 
 }
