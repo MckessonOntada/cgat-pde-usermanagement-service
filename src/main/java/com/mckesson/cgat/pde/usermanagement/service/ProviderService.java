@@ -1,14 +1,31 @@
 package com.mckesson.cgat.pde.usermanagement.service;
 
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
-import com.mckesson.cgat.pde.usermanagement.model.UserType;
+import com.mckesson.cgat.pde.usermanagement.model.Provider;
+import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
+import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
+import org.springframework.data.domain.Pageable;
+
 import java.io.OutputStream;
+import java.util.List;
 
 public interface ProviderService {
 
-	Boolean uploadUsers(MultipartFile userDataFile, Long practiceId, OutputStream outputStream)
+	Boolean uploadProviders(MultipartFile providerDataFile, Long practiceId, OutputStream outputStream)
 			throws FileNotValidException;
+
+	Provider createProvider(Provider provider);
+
+	Page<Provider> findAllProviders(Pageable paging, String query, List<String> status);
+
+	Provider updateProverDetailsById(Long providerId, Provider provider) throws ResourceNotFoundException;
+
+	void deactivateProvider(Long providerId) throws ResourceNotFoundException;
+
+	void activateProvider(Long providerId) throws ResourceNotFoundException;
+
+	Provider getProvider(Long providerId) throws ResourceNotFoundException;
 
 }

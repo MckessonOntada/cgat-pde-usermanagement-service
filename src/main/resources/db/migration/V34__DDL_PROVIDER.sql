@@ -24,7 +24,8 @@ CREATE TABLE IF NOT EXISTS "provider"
     CREATED_BY_USER_NAME        VARCHAR(255),
 
     CONSTRAINT provider_pk	    PRIMARY KEY (id),
-    CONSTRAINT unique_practice_dea UNIQUE (practice_id, dea)
+    CONSTRAINT unique_practice_dea UNIQUE (practice_id, dea),
+    CONSTRAINT unique_practice_npi UNIQUE (practice_id, npi)
 );
 
 CREATE SEQUENCE IF NOT EXISTS PROVIDER_SEQUENCE
