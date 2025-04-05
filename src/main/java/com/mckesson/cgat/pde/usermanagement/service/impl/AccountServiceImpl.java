@@ -66,16 +66,15 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public Account createAccount(AccountDTO accountDto) {
 		Account account = accountMapper.mapToModel(accountDto);
-		account.getAddress().setStreet(accountDto.getAddress().getAddress1());
-		account.getAddress().setStreet2(accountDto.getAddress().getAddress2());
-		account.getAddress().setCountry(accountDto.getAddress().getState());
-		account.getAddress().setCity(accountDto.getAddress().getCity());
+		account.setChannelType(ChannelType.SPECIALITY_PHARMA);
+		populateAddress(account, accountDto);
+		return accountRepository.save(account);
+	}
+
+	private void populateAddress(Account account, AccountDTO accountDto) {
 		account.getAddress().setEmail(accountDto.getContact().getEmail());
 		account.getAddress().setTelephone(accountDto.getContact().getPhone());
-		account.getAddress().setState(accountDto.getAddress().getState());
-		account.getAddress().setZipCode(accountDto.getAddress().getZip());
-		account.setFax(accountDto.getContact().getFax());
-		return accountRepository.save(account);
+		account.getAddress().setFax(accountDto.getContact().getFax());
 	}
 
 	@Override
@@ -88,7 +87,7 @@ public class AccountServiceImpl implements AccountService {
 		account.setName(accountDto.getName());
 		account.getAddress().setEmail(accountDto.getContact().getEmail());
 		account.getAddress().setTelephone(accountDto.getContact().getPhone());
-		account.setFax(accountDto.getContact().getFax());
+		account.getAddress().setFax(accountDto.getContact().getFax());
 		return accountRepository.save(account);
 	}
 

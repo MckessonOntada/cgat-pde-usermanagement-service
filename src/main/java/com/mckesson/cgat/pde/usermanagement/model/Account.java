@@ -75,6 +75,10 @@ public class Account implements Serializable {
 			this.accountNumber = String.valueOf(this.id);
 			this.sapCustomer = String.valueOf(this.id);
 			this.partnerFunction = AccountPartnerFunction.SOLD_TO;
+			this.salesOrg = "NA";
+			this.vistexCustomer = "NA";
+			this.division = "NA";
+			this.companyCode = "NA";
 		}
 	}
 
@@ -105,8 +109,6 @@ public class Account implements Serializable {
 
 	@Embedded
 	private AccountAddress address;
-
-	private String fax;
 
 	@Column(name = "cgat_identifier")
 	private String cgatIdentifier;

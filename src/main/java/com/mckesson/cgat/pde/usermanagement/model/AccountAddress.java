@@ -47,4 +47,7 @@ public class AccountAddress implements Serializable {
 	@Column(name = "zip_code")
 	private String zipCode;
 
+	@Column(name = "fax")
+	private String fax;
+
 }
