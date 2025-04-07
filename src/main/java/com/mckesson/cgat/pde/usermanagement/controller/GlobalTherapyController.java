@@ -103,8 +103,7 @@ public class GlobalTherapyController {
 	public ResponseEntity<String> deleteConfigByMaterialNumber(
 			@PathVariable @NotNull(message = "Material number cannot be null ") @NotEmpty(
 					message = "Material number cannot be empty") String materialNumber,
-			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType)
-			throws ResourceNotFoundException {
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) throws ResourceNotFoundException {
 
 		therapyService.deleteConfigByMaterialNumber(materialNumber, channelType);
 		return new ResponseEntity<>(materialNumber, HttpStatus.OK);
