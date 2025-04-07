@@ -29,9 +29,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 				 	OR LOWER(a.name_1) LIKE %:query%
 				 	OR LOWER(a.sap_partner) LIKE %:query%
 				 	OR LOWER(a.full_address) LIKE %:query%
-				 	OR LOWER(a.city) LIKE %:query%
-				 	OR LOWER(a.zip_code) LIKE %:query%
-				 	OR LOWER(a.state) LIKE %:query%
 				)
 				AND
 				(
