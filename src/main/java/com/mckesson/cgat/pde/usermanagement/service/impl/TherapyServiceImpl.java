@@ -132,10 +132,11 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	@Override
-	public Therapy findByMaterialNumber(String materialNumber) throws ResourceNotFoundException {
-		return therapyRepository.findByMaterialNumber(materialNumber)
-			.orElseThrow(
-					() -> new ResourceNotFoundException("Therapy not found with materialNumber: " + materialNumber));
+	public Therapy findByMaterialNumber(String materialNumber, ChannelType channelType)
+			throws ResourceNotFoundException {
+		return therapyRepository.findByMaterialNumberAndChannelType(materialNumber, channelType)
+			.orElseThrow(() -> new ResourceNotFoundException(
+					"Therapy not found with materialNumber: " + materialNumber + " and channelType: " + channelType));
 	}
 
 	public ProgramChannelResponseDTO findAllProgramAndChannels(Long userId, String therapyId) {
