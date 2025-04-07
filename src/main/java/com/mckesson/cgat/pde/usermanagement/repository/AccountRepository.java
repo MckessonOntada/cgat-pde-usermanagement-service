@@ -4,6 +4,10 @@ import java.util.List;
 import java.util.Set;
 
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
+
+import io.swagger.v3.oas.annotations.Parameter;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,7 +27,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 				(
 					:query IS NULL
 				 	OR LOWER(a.name_1) LIKE %:query%
-				 	OR LOWER(a.sap_customer) LIKE %:query%
+				 	OR LOWER(a.sap_partner) LIKE %:query%
+				 	OR LOWER(a.full_address) LIKE %:query%
 				)
 				AND
 				(
@@ -49,10 +54,16 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 					distribution_channel IN (:distChannels)
 				)
 				and partner_function = :partnerFunction
+				and
+				(
+					(:channelType = 'ALL')
+					OR ('BUY_AND_BILL' = :channelType and channel_type = 'BUY_AND_BILL' )
+					OR ('SPECIALITY_PHARMA' = :channelType and channel_type = 'SPECIALITY_PHARMA' )
+				)
 			)""")
 	Page<Account> findAllByQueryText(@Param("query") String query, @Param("status") String status, Pageable paging,
 			@Param("practiceId") Long practiceId, String partnerFunction, @Param("salesOrg") List<String> salesOrg,
-			@Param("distChannels") List<String> distChannels);
+			@Param("distChannels") List<String> distChannels, @Param("channelType") String channelType);
 
 	Set<Account> findByPracticeId(Long practiceId);
 
@@ -65,7 +76,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 				(
 					:query IS NULL
 				 	OR LOWER(ua.name_1) LIKE %:query%
-				 	OR LOWER(ua.sap_customer) LIKE %:query%
+				 	OR LOWER(ua.sap_partner) LIKE %:query%
 				)
 				AND
 				(
@@ -93,11 +104,17 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 					ua.distribution_channel IN (:distChannels)
 				)
 			    AND ua.partner_function = :partnerFunction
+			    AND
+				(
+					(:channelType = 'ALL')
+					OR ('BUY_AND_BILL' = :channelType and channel_type = 'BUY_AND_BILL' )
+					OR ('SPECIALITY_PHARMA' = :channelType and channel_type = 'SPECIALITY_PHARMA' )
+				)
 			)""")
 	Page<Account> findAccountsByUser(@Param("userId") Long userId, @Param("query") String query,
 			@Param("status") String status, Pageable pageable, @Param("practiceId") Long practiceId,
 			String partnerFunction, @Param("salesOrg") List<String> salesOrg,
-			@Param("distChannels") List<String> distChannels);
+			@Param("distChannels") List<String> distChannels, @Param("channelType") String channelType);
 
 	@Query("select a FROM Account a WHERE a.accountNumber = :accountNumber AND a.partnerFunction = :partnerFunction")
 	Set<Account> findByAccountNumber(String accountNumber, AccountPartnerFunction partnerFunction);
