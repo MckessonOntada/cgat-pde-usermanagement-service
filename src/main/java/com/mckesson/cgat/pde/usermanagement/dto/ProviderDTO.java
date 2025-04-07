@@ -33,6 +33,4 @@ public class ProviderDTO {
 	@Valid
 	private Address address;
 
-	private Boolean isActive;
-
 }
