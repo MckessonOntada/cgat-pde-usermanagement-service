@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.repository;
 import java.util.List;
 import java.util.Optional;
 
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -248,6 +249,6 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 	Page<Therapy> findAllGlobalTherapies(@Param("query") String query, String statusActive, String channelTypes,
 			Pageable paging);
 
-	Optional<Therapy> findByMaterialNumber(String materialNumber);
+	Optional<Therapy> findByMaterialNumberAndChannelType(String materialNumber, ChannelType channelType);
 
 }

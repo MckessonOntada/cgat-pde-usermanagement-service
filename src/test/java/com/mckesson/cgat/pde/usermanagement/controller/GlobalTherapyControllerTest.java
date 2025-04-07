@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -117,20 +118,21 @@ public class GlobalTherapyControllerTest {
 		String materialNumber = "12345";
 		Therapy mockTherapy = new Therapy();
 		mockTherapy.setMaterialNumber(materialNumber);
-		when(therapyService.findByMaterialNumber(materialNumber)).thenReturn(mockTherapy);
+		when(therapyService.findByMaterialNumber(materialNumber, ChannelType.BUY_AND_BILL)).thenReturn(mockTherapy);
 		mockMvc.perform(get("/therapies/{materialNumber}", materialNumber).contentType(MediaType.APPLICATION_JSON))
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(MockMvcResultMatchers.jsonPath("$.materialNumber").value(materialNumber));
-		verify(therapyService, times(1)).findByMaterialNumber(materialNumber);
+		verify(therapyService, times(1)).findByMaterialNumber(materialNumber, ChannelType.BUY_AND_BILL);
 	}
 
 	@Test
 	void testFindByMaterialNumber_NotFound() throws Exception {
 		String materialNumber = "12345";
-		when(therapyService.findByMaterialNumber(materialNumber)).thenThrow(ResourceNotFoundException.class);
+		when(therapyService.findByMaterialNumber(materialNumber, ChannelType.BUY_AND_BILL))
+			.thenThrow(ResourceNotFoundException.class);
 		mockMvc.perform(get("/therapies/{materialNumber}", materialNumber).contentType(MediaType.APPLICATION_JSON))
 			.andExpect(MockMvcResultMatchers.status().isNotFound());
-		verify(therapyService, times(1)).findByMaterialNumber(materialNumber);
+		verify(therapyService, times(1)).findByMaterialNumber(materialNumber, ChannelType.BUY_AND_BILL);
 	}
 
 }
