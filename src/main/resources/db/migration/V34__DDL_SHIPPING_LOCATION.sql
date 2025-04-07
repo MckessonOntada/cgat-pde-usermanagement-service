@@ -40,3 +40,11 @@ USING gin (name gin_trgm_ops);
 
 CREATE INDEX idx_shipping_location_address_combined_gin ON shipping_location
 USING gin (address_combined gin_trgm_ops);
+
+INSERT INTO usermanagement.role_permissions_mapping(role_id, permission) VALUES
+(1, 'ADD_SP_ACCOUNT'),
+(1, 'MANAGE_SP_ACCOUNT');
+
+INSERT INTO usermanagement.user_permission_mapping(user_id, permission) VALUES
+(1, 'ADD_SP_ACCOUNT'),
+(1, 'MANAGE_SP_ACCOUNT');
