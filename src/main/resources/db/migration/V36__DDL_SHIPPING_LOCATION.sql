@@ -29,7 +29,7 @@ CREATE SEQUENCE IF NOT EXISTS SHIPPING_ACCOUNT_NUMBER_SEQUENCE
     NO MAXVALUE
     CACHE 20;
 
-CREATE EXTENSION IF NOT EXISTS pg_trgm;
+-- CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
 CREATE INDEX idx_shipping_location_practice_id ON shipping_location USING btree (practice_id);
 CREATE INDEX idx_shipping_location_account_id ON shipping_location USING btree (account_id);
