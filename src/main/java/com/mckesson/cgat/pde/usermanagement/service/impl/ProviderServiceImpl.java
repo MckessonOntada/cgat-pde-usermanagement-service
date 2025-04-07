@@ -65,8 +65,19 @@ public class ProviderServiceImpl implements ProviderService {
 			try {
 
 				validateProvider(provider);
-				validateUniqueConstraints(provider);
-				providerRepository.save(provider);
+				Provider existingProvider = providerRepository.findByPracticeIdAndNpi(practiceId, provider.getNpi());
+
+				if (existingProvider != null) {
+					updateExistingProvider(existingProvider, provider);
+					providerRepository.save(existingProvider);
+					log.info("Updated provider with NPI: {} for Practice ID: {}", provider.getNpi(), practiceId);
+				}
+				else {
+					provider.setPracticeId(practiceId);
+					validateUniqueConstraints(provider);
+					providerRepository.save(provider);
+					log.info("Saved new provider with NPI: {} for Practice ID: {}", provider.getNpi(), practiceId);
+				}
 			}
 			catch (IllegalArgumentException e) {
 				log.error("Validation failed for provider {}", provider.getName().getFirstName());
@@ -87,6 +98,24 @@ public class ProviderServiceImpl implements ProviderService {
 		createOutputCSV(outputStream, failedProviders);
 
 		return failedProviders.isEmpty();
+	}
+
+	private void updateExistingProvider(Provider existingProvider, Provider newProvider) {
+		if (newProvider.getName() != null) {
+			existingProvider.getName().setFirstName(newProvider.getName().getFirstName());
+			existingProvider.getName().setMiddleName(newProvider.getName().getMiddleName());
+			existingProvider.getName().setLastName(newProvider.getName().getLastName());
+		}
+		existingProvider.setDea(newProvider.getDea());
+		if (newProvider.getAddress() != null) {
+			existingProvider.getAddress().setAddress1(newProvider.getAddress().getAddress1());
+			existingProvider.getAddress().setAddress2(newProvider.getAddress().getAddress2());
+			existingProvider.getAddress().setCity(newProvider.getAddress().getCity());
+			existingProvider.getAddress().setZip(newProvider.getAddress().getZip());
+			existingProvider.getAddress().setState(newProvider.getAddress().getState());
+		}
+		existingProvider.setPhone(newProvider.getPhone());
+		existingProvider.setIsActive(newProvider.getIsActive());
 	}
 
 	private void validateProvider(Provider provider) {

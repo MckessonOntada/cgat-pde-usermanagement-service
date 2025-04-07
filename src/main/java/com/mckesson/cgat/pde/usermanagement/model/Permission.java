@@ -31,7 +31,7 @@ public enum Permission {
 	MANAGE_PAYMENT_METHOD_BANK(false, true), DELETE_PAYMENT_METHOD_BANK(false, true), CANCEL_PAYMENT(false, true),
 	VIEW_CREDIT_LISTING(false, true), MANAGE_SYSTEM_CONFIGURATIONS(true, false), VIEW_ACCOUNTS(true, true),
 	ADD_PROVIDER(false, true), EDIT_PROVIDER(false, true), VIEW_PROVIDER(false, true),
-	MANAGE_PROVIDERS_SCREEN(false, true),VIEW_SP_MATERIAL(true, false);
+	MANAGE_PROVIDERS_SCREEN(false, true), VIEW_SP_MATERIAL(true, false);
 
 	boolean isActiveForSystemAdmin;
 

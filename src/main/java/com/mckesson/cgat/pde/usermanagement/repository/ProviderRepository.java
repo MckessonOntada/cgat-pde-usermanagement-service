@@ -35,4 +35,6 @@ public interface ProviderRepository extends JpaRepository<Provider, Long> {
 			    )""", nativeQuery = true)
 	Page<Provider> findAllByQueryText(@Param("query") String query, @Param("status") String status, Pageable paging);
 
+	Provider findByPracticeIdAndNpi(Long practiceId, String npi);
+
 }
