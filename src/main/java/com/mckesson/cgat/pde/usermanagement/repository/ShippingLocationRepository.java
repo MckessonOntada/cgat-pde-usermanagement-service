@@ -19,13 +19,9 @@ public interface ShippingLocationRepository extends JpaRepository<ShippingLocati
 			    (
 			        (
 			            :query IS NULL
-			            OR LOWER(CAST(a.id AS VARCHAR)) LIKE %:query%
-			            OR LOWER(a.name) LIKE %:query%
-			            OR LOWER(a.address1) LIKE %:query%
-			            OR LOWER(a.address2) LIKE %:query%
-			            OR LOWER(a.city) LIKE %:query%
-			            OR LOWER(a.state) LIKE %:query%
-			            OR LOWER(CAST(a.zip AS VARCHAR)) LIKE %:query%
+			            OR CAST(a.id AS VARCHAR) ILIKE %:query%
+			            OR a.name ILIKE %:query%
+			            OR a.address_combined ILIKE %:query%
 			        )
 			        AND
 			        a.practice_id = :practiceId

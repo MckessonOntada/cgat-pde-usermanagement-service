@@ -10,6 +10,13 @@ CREATE TABLE IF NOT EXISTS shipping_location
     state                   VARCHAR(255) NOT NULL,
     account_id              BIGINT NOT NULL,
     is_active               INTEGER DEFAULT 1 NOT NULL,
+    address_combined        TEXT GENERATED ALWAYS AS (
+        COALESCE(address1, '') || ' ' ||
+        COALESCE(address2, '') || ' ' ||
+        COALESCE(city, '') || ' ' ||
+        COALESCE(state, '') || ' ' ||
+        COALESCE(zip, '')
+    ) STORED,
 
     CONSTRAINT fk_tenant FOREIGN KEY (practice_id) REFERENCES practice(id),
     CONSTRAINT fk_account FOREIGN KEY (account_id) REFERENCES account(id)
@@ -28,24 +35,8 @@ CREATE INDEX idx_shipping_location_practice_id ON shipping_location USING btree 
 CREATE INDEX idx_shipping_location_account_id ON shipping_location USING btree (account_id);
 CREATE INDEX idx_shipping_location_is_active ON shipping_location USING btree (is_active);
 
-CREATE INDEX idx_shipping_location_id_text_gin ON shipping_location
-
-USING gin ((CAST(id AS VARCHAR)) gin_trgm_ops);
-
 CREATE INDEX idx_shipping_location_name_gin ON shipping_location
 USING gin (name gin_trgm_ops);
 
-CREATE INDEX idx_shipping_location_address1_gin ON shipping_location
-USING gin (address1 gin_trgm_ops);
-
-CREATE INDEX idx_shipping_location_address2_gin ON shipping_location
-USING gin (address2 gin_trgm_ops);
-
-CREATE INDEX idx_shipping_location_city_gin ON shipping_location
-USING gin (city gin_trgm_ops);
-
-CREATE INDEX idx_shipping_location_state_gin ON shipping_location
-USING gin (state gin_trgm_ops);
-
-CREATE INDEX idx_shipping_location_zip_text_gin ON shipping_location
-USING gin ((CAST(zip AS VARCHAR)) gin_trgm_ops);
+CREATE INDEX idx_shipping_location_address_combined_gin ON shipping_location
+USING gin (address_combined gin_trgm_ops);

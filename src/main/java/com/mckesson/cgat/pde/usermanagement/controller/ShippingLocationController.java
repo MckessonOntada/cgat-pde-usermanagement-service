@@ -42,6 +42,7 @@ public class ShippingLocationController {
 	public ResponseEntity<ShippingLocation> createShippingLocation(
 			@Valid @RequestBody ShippingLocation shippingLocation) throws UnauthorizedAccessException {
 		ShippingLocation createdShippingLocation = shippingLocationService.createShippingLocation(shippingLocation);
+		log.info("Created new shipping location with ID: {}", createdShippingLocation.getId());
 		return new ResponseEntity<>(createdShippingLocation, HttpStatus.CREATED);
 	}
 
@@ -53,6 +54,7 @@ public class ShippingLocationController {
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		ShippingLocation updatedShippingLocation = shippingLocationService.updateShippingLocation(shippingLocationId,
 				shippingLocation);
+		log.info("Updated shipping location with ID: {}", updatedShippingLocation.getId());
 		return ResponseEntity.ok(updatedShippingLocation);
 	}
 
@@ -62,6 +64,7 @@ public class ShippingLocationController {
 	public ResponseEntity<Void> removeShippingLocations(@RequestBody List<Long> shippingLocationIds)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		shippingLocationService.removeShippingLocations(shippingLocationIds);
+		log.info("Deleted {} shipping locations", shippingLocationIds.size());
 		return ResponseEntity.noContent().build();
 	}
 
