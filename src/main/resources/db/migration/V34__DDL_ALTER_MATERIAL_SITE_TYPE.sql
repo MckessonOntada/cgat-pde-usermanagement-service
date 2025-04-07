@@ -14,5 +14,6 @@ UPDATE catalog.material SET channel_type = 'BUY_AND_BILL' WHERE channel_type IS 
 
 ALTER TABLE catalog.material ALTER COLUMN channel_type SET NOT NULL;
 
-CREATE INDEX IF NOT EXISTS material_site_name_index  ON catalog.material
-USING GIN (site_name gin_trgm_ops);
+CREATE INDEX material_site_name_gin_lower_idx
+ON catalog.material
+USING GIN (LOWER(site_name) gin_trgm_ops);
