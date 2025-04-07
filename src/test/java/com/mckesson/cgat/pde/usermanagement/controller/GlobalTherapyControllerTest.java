@@ -1,7 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -63,7 +62,8 @@ public class GlobalTherapyControllerTest {
 
 		Page<Therapy> mockResponse = getTherapies();
 
-		when(therapyService.findAllGlobalTherapies(anyString(), any(PageRequest.class))).thenReturn(mockResponse);
+		when(therapyService.findAllGlobalTherapies(anyString(), any(PageRequest.class), anyList(), anyList()))
+			.thenReturn(mockResponse);
 
 		mockMvc
 			.perform(get("/therapies").param("pageNo", pageNo)
