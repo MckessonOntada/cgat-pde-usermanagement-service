@@ -104,11 +104,17 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 					ua.distribution_channel IN (:distChannels)
 				)
 			    AND ua.partner_function = :partnerFunction
+			    AND
+				(
+					(:channelType = 'ALL')
+					OR ('BUY_AND_BILL' = :channelType and channel_type = 'BUY_AND_BILL' )
+					OR ('SPECIALITY_PHARMA' = :channelType and channel_type = 'SPECIALITY_PHARMA' )
+				)
 			)""")
 	Page<Account> findAccountsByUser(@Param("userId") Long userId, @Param("query") String query,
 			@Param("status") String status, Pageable pageable, @Param("practiceId") Long practiceId,
 			String partnerFunction, @Param("salesOrg") List<String> salesOrg,
-			@Param("distChannels") List<String> distChannels);
+			@Param("distChannels") List<String> distChannels, @Param("channelType") String channelType);
 
 	@Query("select a FROM Account a WHERE a.accountNumber = :accountNumber AND a.partnerFunction = :partnerFunction")
 	Set<Account> findByAccountNumber(String accountNumber, AccountPartnerFunction partnerFunction);

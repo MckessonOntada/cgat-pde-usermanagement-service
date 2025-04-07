@@ -131,7 +131,7 @@ public class AccountServiceImpl implements AccountService {
 			if (!user.isPresent())
 				throw new ResourceNotFoundException("User not found with id: " + userId);
 			return accountRepository.findAccountsByUser(userId, query, statusActive, paging, practiceId,
-					partnerFunction.getPartnerFunctionType(), salesOrg, distChannels);
+					partnerFunction.getPartnerFunctionType(), salesOrg, distChannels, channelType.name());
 		}
 		return accountRepository.findAllByQueryText(query, statusActive, paging, practiceId,
 				partnerFunction.getPartnerFunctionType(), salesOrg, distChannels, channelType.name());
