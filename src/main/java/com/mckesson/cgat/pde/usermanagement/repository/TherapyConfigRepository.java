@@ -14,7 +14,8 @@ import java.util.Optional;
 @Repository
 public interface TherapyConfigRepository extends JpaRepository<TherapyConfig, Long> {
 
-	List<TherapyConfig> findByMaterialNumberIn(@Param("materialNumbers") List<String> materialNumbers);
+	List<TherapyConfig> findByMaterialNumberInAndChannelType(@Param("materialNumbers") List<String> materialNumbers,
+			ChannelType channelType);
 
 	@Query("""
 			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,tc)
@@ -27,7 +28,7 @@ public interface TherapyConfigRepository extends JpaRepository<TherapyConfig, Lo
 	Optional<MaterialResponseDTO> findDetailedByMaterialNumber(@Param("materialNumber") String materialNumber,
 			ChannelType channelType);
 
-	int removeTherapyConfigByMaterialNumber(String materialNumber);
+	int removeTherapyConfigByMaterialNumberAndChannelType(String materialNumber, ChannelType channelType);
 
 	@Query("""
 			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,tc)

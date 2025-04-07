@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import com.mckesson.cgat.pde.usermanagement.dto.DeLinkQuestionnaireConfigurationDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.QuestionnaireConfigurationDTO;
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.Questionnaire;
 import com.mckesson.cgat.pde.usermanagement.model.QuestionnaireConfigurationType;
 import com.mckesson.cgat.pde.usermanagement.service.QuestionnaireService;
@@ -84,10 +85,10 @@ public class QuestionnaireController {
 	@Operation(summary = "Fetch all configured questionnaire for the data")
 	public ResponseEntity<List<Questionnaire>> getAllConfiguredQuestionnaires(@RequestParam String soldToCustomer,
 			@RequestParam String shipToCustomer, @RequestParam String sapMaterial,
-			@RequestParam(required = false) String variant) throws ResourceNotFoundException {
-
+			@RequestParam(required = false) String variant,
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) throws ResourceNotFoundException {
 		return new ResponseEntity<>(questionnaireService.getAllConfiguredQuestionnaires(sapMaterial, soldToCustomer,
-				shipToCustomer, variant), HttpStatus.OK);
+				shipToCustomer, variant, channelType), HttpStatus.OK);
 	}
 
 	@PatchMapping("/{questionnaireId}/deactivate")

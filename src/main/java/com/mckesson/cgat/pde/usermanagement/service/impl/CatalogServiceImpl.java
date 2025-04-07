@@ -3,10 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogConfigurationDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.model.CatalogConfigId;
-import com.mckesson.cgat.pde.usermanagement.model.CatalogConfiguration;
-import com.mckesson.cgat.pde.usermanagement.model.Questionnaire;
-import com.mckesson.cgat.pde.usermanagement.model.QuestionnaireConfigurationType;
+import com.mckesson.cgat.pde.usermanagement.model.*;
 import com.mckesson.cgat.pde.usermanagement.repository.CatalogServiceRepository;
 import com.mckesson.cgat.pde.usermanagement.service.CatalogService;
 import com.mckesson.cgat.pde.usermanagement.service.QuestionnaireService;
@@ -61,14 +58,14 @@ public class CatalogServiceImpl implements CatalogService {
 
 	@Override
 	public CatalogDetailsResponseDTO findCatalogConfiguration(String materialId, String variant, String shipToAccount,
-			String soldToAccount) throws ResourceNotFoundException {
+			String soldToAccount, ChannelType channelType) throws ResourceNotFoundException {
 		logSearchDetails(materialId, variant, shipToAccount, soldToAccount);
 		CatalogConfigId id = buildCatalogConfigId(materialId, variant, shipToAccount, soldToAccount);
 		CatalogResponseDTO catalogResponseDTO = catalogServiceRepository.findCatalogDetailsById(id)
 			.orElseThrow(() -> new ResourceNotFoundException(CATALOG_CONFIGURATION_NOT_FOUND));
 
 		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
-				QuestionnaireConfigurationType.Catalog, materialId, soldToAccount, shipToAccount, variant);
+				QuestionnaireConfigurationType.Catalog, materialId, soldToAccount, shipToAccount, variant, channelType);
 
 		CatalogDetailsResponseDTO catalogDetailsResponseDTO = CatalogDetailsResponseDTO.builder()
 			.questionnaires(questionnaires)

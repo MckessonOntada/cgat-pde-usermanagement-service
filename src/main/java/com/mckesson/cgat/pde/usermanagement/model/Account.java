@@ -3,9 +3,11 @@ package com.mckesson.cgat.pde.usermanagement.model;
 import java.io.Serializable;
 import java.util.Set;
 
+import jakarta.persistence.*;
 import org.hibernate.type.NumericBooleanConverter;
 
 import com.mckesson.cgat.pde.usermanagement.model.converters.AccountPartnerFunctionConverter;
+
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -22,6 +24,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.SequenceGenerator;
+
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -120,5 +123,8 @@ public class Account implements Serializable {
 
 	@Convert(converter = NumericBooleanConverter.class)
 	private Boolean isActive = true;
+
+	@Enumerated(EnumType.STRING)
+	private ChannelType channelType;
 
 }
