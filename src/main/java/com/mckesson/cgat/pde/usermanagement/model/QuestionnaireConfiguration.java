@@ -33,4 +33,7 @@ public class QuestionnaireConfiguration extends AuditColumns implements Serializ
 	@Column(nullable = false, name = "entity_id")
 	private String entityId;
 
+	@Enumerated(EnumType.STRING)
+	private ChannelType channelType = ChannelType.BUY_AND_BILL;
+
 }
