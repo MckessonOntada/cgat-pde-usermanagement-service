@@ -24,6 +24,8 @@ import javax.cache.Cache;
 import javax.cache.CacheManager;
 import java.util.List;
 
+import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.ALL;
+
 @Service
 @Slf4j
 public class CacheServiceImpl implements CacheService {
@@ -49,7 +51,8 @@ public class CacheServiceImpl implements CacheService {
 		try {
 			log.info(" Inside method - findAllGlobalTherapies");
 			log.info("query: {}", StringUtils.toRootLowerCase(query));
-			return therapyRepository.findAllGlobalTherapies(StringUtils.toRootLowerCase(query), paging);
+			return therapyRepository.findAllGlobalTherapies(StringUtils.toRootLowerCase(query), ALL,
+					ChannelType.BUY_AND_BILL.name(), paging);
 		}
 		catch (Exception e) {
 			log.error("Exception occurred in findAllGlobalTherapies and exception details", e);

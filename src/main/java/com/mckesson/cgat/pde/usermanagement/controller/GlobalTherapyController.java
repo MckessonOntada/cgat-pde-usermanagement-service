@@ -3,17 +3,16 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyConfigRequestDTO;
-import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +33,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
+
+import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.SORT_ORDER_ASC;
+
 @RestController
 @Tag(name = "Therapies", description = "Controller for getting all therapies.")
 @RequestMapping(path = "/therapies", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -48,12 +51,19 @@ public class GlobalTherapyController {
 	}
 
 	@GetMapping
-	@RequirePermissions({ Permission.VIEW_MATERIAL })
+	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.VIEW_SP_MATERIAL })
 	@Operation(summary = "Fetch all therapies.")
-	public ResponseEntity<Page<Therapy>> findAllThreapies(@RequestParam(defaultValue = "0") Integer pageNo,
-			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query) {
-		Pageable paging = PageRequest.of(pageNo, pageSize);
-		return new ResponseEntity<>(therapyService.findAllGlobalTherapies(query, paging), HttpStatus.OK);
+	public ResponseEntity<Page<Therapy>> findAllTherapies(@RequestParam(defaultValue = "0") Integer pageNo,
+			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
+			@RequestParam(defaultValue = "material_number") String sortBy,
+			@RequestParam(defaultValue = "asc") String sortOrder,
+			@RequestParam(required = false) List<ChannelType> channelTypes,
+			@RequestParam(required = false) List<String> status) {
+		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
+				: Sort.by(sortBy).descending();
+		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
+		return new ResponseEntity<>(therapyService.findAllGlobalTherapies(query, paging, channelTypes, status),
+				HttpStatus.OK);
 	}
 
 	@GetMapping("/{materialNumber}")
@@ -76,7 +86,7 @@ public class GlobalTherapyController {
 	}
 
 	@GetMapping("/config/{materialNumber}")
-	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.EDIT_ORDERS })
+	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.EDIT_ORDERS, Permission.VIEW_SP_MATERIAL })
 	@Operation(summary = "Find Therapy details by Material Number")
 	public ResponseEntity<MaterialDetailsResponseDTO> findTherapyDetailsByMaterialNumber(
 			@PathVariable String materialNumber, @RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType)
@@ -93,7 +103,8 @@ public class GlobalTherapyController {
 	public ResponseEntity<String> deleteConfigByMaterialNumber(
 			@PathVariable @NotNull(message = "Material number cannot be null ") @NotEmpty(
 					message = "Material number cannot be empty") String materialNumber,
-			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) throws ResourceNotFoundException {
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType)
+			throws ResourceNotFoundException {
 
 		therapyService.deleteConfigByMaterialNumber(materialNumber, channelType);
 		return new ResponseEntity<>(materialNumber, HttpStatus.OK);
