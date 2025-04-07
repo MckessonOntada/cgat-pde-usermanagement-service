@@ -10,11 +10,12 @@ import lombok.Getter;
 @Getter
 public enum Permission {
 
-	MANAGE_USERS_SCREEN(true, true), ADD_USERS(true, true), VIEW_USERS(true, true), EDIT_USERS(true, true),
-	UPLOAD_USERS(true, true), CREATE_USER_FOR_PENDING_USER_REQUEST(true, true),
-	MANAGE_SYSTEM_ADMINISTRATOR_SCREEN(true, false), ADD_SYSTEM_ADMINISTRATOR(true, false),
-	VIEW_SYSTEM_ADMINISTRATOR(true, false), EDIT_SYSTEM_ADMINISTRATOR(true, false), MANAGE_ROLES_SCREEN(true, true),
-	VIEW_ROLES(true, true), ADD_ROLES(true, true), EDIT_ROLES(true, true), ON_BEHALF_OF_USER(true, true),
+	MANAGE_SP_ACCOUNT(true, false), ADD_SP_ACCOUNT(true, false), MANAGE_USERS_SCREEN(true, true), ADD_USERS(true, true),
+	VIEW_USERS(true, true), EDIT_USERS(true, true), UPLOAD_USERS(true, true),
+	CREATE_USER_FOR_PENDING_USER_REQUEST(true, true), MANAGE_SYSTEM_ADMINISTRATOR_SCREEN(true, false),
+	ADD_SYSTEM_ADMINISTRATOR(true, false), VIEW_SYSTEM_ADMINISTRATOR(true, false),
+	EDIT_SYSTEM_ADMINISTRATOR(true, false), MANAGE_ROLES_SCREEN(true, true), VIEW_ROLES(true, true),
+	ADD_ROLES(true, true), EDIT_ROLES(true, true), ON_BEHALF_OF_USER(true, true),
 	MANAGE_ORGANIZATION_SCREEN(true, false), VIEW_ORGANIZATION(true, false), ADD_ORGANIZATION(true, false),
 	EDIT_ORGANIZATION(true, false), MANAGE_ORDERS(false, true), VIEW_ORDERS(false, true),
 	VIEW_PENDING_ORDERS(false, true), ADD_ORDERS(false, true), EDIT_ORDERS(false, true), APPROVE_ORDERS(false, true),
