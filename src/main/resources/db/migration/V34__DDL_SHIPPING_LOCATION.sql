@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS shipping_location
     address2                VARCHAR(255),
     city                    VARCHAR(255) NOT NULL,
     zip                     VARCHAR(50) NOT NULL,
-    state                   VARCHAR(255) NOT NULL,
+    state                   VARCHAR(255),
     account_id              BIGINT NOT NULL,
     is_active               INTEGER DEFAULT 1 NOT NULL,
     address_combined        TEXT GENERATED ALWAYS AS (
@@ -36,10 +36,10 @@ CREATE INDEX idx_shipping_location_account_id ON shipping_location USING btree (
 CREATE INDEX idx_shipping_location_is_active ON shipping_location USING btree (is_active);
 
 CREATE INDEX idx_shipping_location_name_gin ON shipping_location
-USING gin (name gin_trgm_ops);
+USING gin (lower(name) gin_trgm_ops);
 
 CREATE INDEX idx_shipping_location_address_combined_gin ON shipping_location
-USING gin (address_combined gin_trgm_ops);
+USING gin (lower(address_combined) gin_trgm_ops);
 
 INSERT INTO usermanagement.role_permissions_mapping(role_id, permission) VALUES
 (1, 'ADD_SP_ACCOUNT'),
