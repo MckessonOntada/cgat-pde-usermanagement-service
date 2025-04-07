@@ -31,15 +31,17 @@ CREATE TABLE IF NOT EXISTS "provider"
         END ||
         ' ' || last_name
     ) STORED,
-    full_address                            TEXT GENERATED ALWAYS AS (
+    full_address TEXT GENERATED ALWAYS AS (
         address1 ||
         CASE
             WHEN address2 IS NOT NULL AND address2 <> ''
             THEN ' ' || address2
             ELSE ''
-        END
+        END ||
+        ' ' || city ||
+        ' ' || state ||
+        ' ' || zip
     ) STORED,
-
     CONSTRAINT provider_pk PRIMARY KEY (id),
     CONSTRAINT unique_practice_dea UNIQUE (practice_id, dea),
     CONSTRAINT unique_practice_npi UNIQUE (practice_id, npi)
@@ -55,14 +57,6 @@ CACHE 20;
 CREATE INDEX IF NOT EXISTS provider_full_name_gin_trgm_ops
 ON usermanagement.provider
 USING GIN (LOWER(full_name) gin_trgm_ops);
-
-CREATE INDEX IF NOT EXISTS provider_city_gin_trgm_ops
-ON usermanagement.provider
-USING GIN (LOWER(city) gin_trgm_ops);
-
-CREATE INDEX IF NOT EXISTS provider_state_gin_trgm_ops
-ON usermanagement.provider
-USING GIN (LOWER(state) gin_trgm_ops);
 
 CREATE INDEX IF NOT EXISTS provider_full_address_gin_trgm_ops
 ON usermanagement.provider

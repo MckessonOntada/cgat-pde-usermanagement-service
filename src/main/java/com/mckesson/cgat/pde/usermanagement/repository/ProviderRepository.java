@@ -23,8 +23,6 @@ public interface ProviderRepository extends JpaRepository<Provider, Long> {
 			        (:query IS NULL OR
 			         LOWER(full_name) LIKE CONCAT('%', :query, '%') OR
 			         LOWER(full_address) LIKE CONCAT('%', :query, '%') OR
-			         LOWER(city) LIKE CONCAT('%', :query, '%') OR
-			         LOWER(state) LIKE CONCAT('%', :query, '%') OR
 			         Lower(dea) LIKE CONCAT('%', :query, '%') OR
 			         npi LIKE CONCAT('%', :query, '%')
 			        )
