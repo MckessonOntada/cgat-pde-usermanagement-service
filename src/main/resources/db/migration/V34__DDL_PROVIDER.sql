@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS "provider"
         address1 ||
         CASE
             WHEN address2 IS NOT NULL AND address2 <> ''
-            THEN ', ' || address2
+            THEN ' ' || address2
             ELSE ''
         END
     ) STORED,
@@ -67,3 +67,11 @@ USING GIN (LOWER(state) gin_trgm_ops);
 CREATE INDEX IF NOT EXISTS provider_full_address_gin_trgm_ops
 ON usermanagement.provider
 USING GIN (LOWER(full_address) gin_trgm_ops);
+
+CREATE INDEX IF NOT EXISTS provider_dea_gin_trgm_ops
+ON usermanagement.provider
+USING GIN (LOWER(dea) gin_trgm_ops);
+
+CREATE INDEX IF NOT EXISTS provider_npi_gin_trgm_ops
+ON usermanagement.provider
+USING GIN (npi gin_trgm_ops);
