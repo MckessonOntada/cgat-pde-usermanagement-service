@@ -54,7 +54,12 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 					distribution_channel IN (:distChannels)
 				)
 				and partner_function = :partnerFunction
-				and channel_type = :channelType
+				and
+				(
+					(:channelType = 'ALL')
+					OR ('BUY_AND_BILL' = :channelType and channel_type = 'BUY_AND_BILL' )
+					OR ('SPECIALITY_PHARMA' = :channelType and channel_type = 'SPECIALITY_PHARMA' )
+				)
 			)""")
 	Page<Account> findAllByQueryText(@Param("query") String query, @Param("status") String status, Pageable paging,
 			@Param("practiceId") Long practiceId, String partnerFunction, @Param("salesOrg") List<String> salesOrg,
