@@ -11,11 +11,13 @@ CREATE TABLE IF NOT EXISTS shipping_location
     account_id              BIGINT NOT NULL,
     is_active               INTEGER DEFAULT 1 NOT NULL,
     address_combined        TEXT GENERATED ALWAYS AS (
-        COALESCE(address1, '') || ' ' ||
-        COALESCE(address2, '') || ' ' ||
-        COALESCE(city, '') || ' ' ||
-        COALESCE(state, '') || ' ' ||
-        COALESCE(zip, '')
+        concat_ws(' ',
+            nullif(trim(address1), ''),
+            nullif(trim(address2), ''),
+            nullif(trim(city), ''),
+            nullif(trim(state), ''),
+            nullif(trim(zip), '')
+        )
     ) STORED,
 
     CONSTRAINT fk_tenant FOREIGN KEY (practice_id) REFERENCES practice(id),
