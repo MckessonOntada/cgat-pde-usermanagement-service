@@ -7,7 +7,22 @@ import jakarta.persistence.*;
 import org.hibernate.type.NumericBooleanConverter;
 
 import com.mckesson.cgat.pde.usermanagement.model.converters.AccountPartnerFunctionConverter;
-import com.mckesson.cgat.pde.usermanagement.model.converters.DistributionChannelConverter;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.SequenceGenerator;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
@@ -47,8 +62,27 @@ public class Account implements Serializable {
 	@Column(name = "name_1")
 	private String accountName;
 
+	@Enumerated(EnumType.STRING)
+	private ChannelType channelType;
+
 	@Column(name = "sap_partner")
 	private String accountNumber;
+
+	@Column(name = "sap_customer")
+	private String sapCustomer;
+
+	@PrePersist
+	public void setAccountNumber() {
+		if (this.channelType.equals(ChannelType.SPECIALITY_PHARMA)) {
+			this.accountNumber = String.valueOf(this.id);
+			this.sapCustomer = String.valueOf(this.id);
+			this.partnerFunction = AccountPartnerFunction.SOLD_TO;
+			this.salesOrg = "NA";
+			this.vistexCustomer = "NA";
+			this.division = "NA";
+			this.companyCode = "NA";
+		}
+	}
 
 	@Column(name = "partner_function")
 	@Convert(converter = AccountPartnerFunctionConverter.class)
@@ -73,6 +107,9 @@ public class Account implements Serializable {
 	private String searchTerm1;
 
 	@Embedded
+	private Name name;
+
+	@Embedded
 	private AccountAddress address;
 
 	@Column(name = "cgat_identifier")
@@ -85,8 +122,5 @@ public class Account implements Serializable {
 
 	@Convert(converter = NumericBooleanConverter.class)
 	private Boolean isActive = true;
-
-	@Enumerated(EnumType.STRING)
-	private ChannelType channelType;
 
 }
