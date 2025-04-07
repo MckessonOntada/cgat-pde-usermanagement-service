@@ -31,6 +31,7 @@ import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.UserPreferenceRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
+import com.mckesson.cgat.pde.usermanagement.service.QuestionnaireService;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 

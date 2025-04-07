@@ -123,7 +123,4 @@ public class Account implements Serializable {
 	@Convert(converter = NumericBooleanConverter.class)
 	private Boolean isActive = true;
 
-	@Enumerated(EnumType.STRING)
-	private ChannelType channelType;
-
 }
