@@ -97,7 +97,7 @@ public class ProviderController {
 			@Validated(BasicInfo.class) @RequestBody ProviderDTO provider)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 
-		return providerService.updateProverDetailsById(providerId, provider);
+		return providerService.updateProviderDetailsById(providerId, provider);
 	}
 
 	@RequirePermissions({ Permission.EDIT_PROVIDER })

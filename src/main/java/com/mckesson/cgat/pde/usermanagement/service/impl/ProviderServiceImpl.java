@@ -248,7 +248,7 @@ public class ProviderServiceImpl implements ProviderService {
 	}
 
 	@Override
-	public Provider updateProverDetailsById(Long providerId, ProviderDTO model) throws ResourceNotFoundException {
+	public Provider updateProviderDetailsById(Long providerId, ProviderDTO model) throws ResourceNotFoundException {
 		Provider provider = getProvider(providerId);
 		provider.setAddress(model.getAddress());
 		provider.setPhone(model.getPhone());

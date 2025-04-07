@@ -25,7 +25,7 @@ public interface ProviderService {
 
 	void activateProvider(Long providerId) throws ResourceNotFoundException;
 
-	Provider updateProverDetailsById(Long providerId, ProviderDTO model) throws ResourceNotFoundException;
+	Provider updateProviderDetailsById(Long providerId, ProviderDTO model) throws ResourceNotFoundException;
 
 	Provider getProvider(Long providerId) throws ResourceNotFoundException;
 
