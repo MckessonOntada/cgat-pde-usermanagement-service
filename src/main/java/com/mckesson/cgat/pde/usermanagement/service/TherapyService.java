@@ -47,12 +47,12 @@ public interface TherapyService {
 	Therapy findByMaterialNumber(String materialNumber) throws ResourceNotFoundException;
 
 	void updateTherapyConfigs(List<String> materialNumbers, boolean isPatientInformationRequired,
-			boolean isCoiIdRequired);
+			boolean isCoiIdRequired, ChannelType channelType);
 
 	MaterialDetailsResponseDTO findTherapyDetailsByMaterialNumber(String materialNumber, ChannelType channelType)
 			throws ResourceNotFoundException;
 
-	void deleteConfigByMaterialNumber(String materialNumber) throws ResourceNotFoundException;
+	void deleteConfigByMaterialNumber(String materialNumber, ChannelType channelType) throws ResourceNotFoundException;
 
 	MaterialResponseDTO findTherapyDetailsById(Long id) throws ResourceNotFoundException;
 

@@ -70,7 +70,7 @@ public class CacheServiceImpl implements CacheService {
 					"Therapy config not found with materialNumber: " + materialNumber));
 
 		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
-				QuestionnaireConfigurationType.Material, materialNumber, "", "", "");
+				QuestionnaireConfigurationType.Material, materialNumber, "", "", "", ChannelType.BUY_AND_BILL);
 
 		MaterialDetailsResponseDTO materialDetailsResponseDTO = MaterialDetailsResponseDTO.builder()
 			.questionnaires(questionnaires)
@@ -84,7 +84,8 @@ public class CacheServiceImpl implements CacheService {
 	@Transactional
 	@CacheEvict(value = "singleMaterialCache", key = "#materialNumber")
 	public void deleteConfigByMaterialNumber(String materialNumber) throws ResourceNotFoundException {
-		int deletedCount = therapyConfigRepository.removeTherapyConfigByMaterialNumber(materialNumber);
+		int deletedCount = therapyConfigRepository.removeTherapyConfigByMaterialNumberAndChannelType(materialNumber,
+				ChannelType.BUY_AND_BILL);
 
 		if (deletedCount == 0) {
 			throw new ResourceNotFoundException(

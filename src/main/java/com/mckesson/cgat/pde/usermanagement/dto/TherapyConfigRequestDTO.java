@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.dto;
 
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -16,6 +17,8 @@ public class TherapyConfigRequestDTO {
 	private boolean isPatientInformationRequired;
 
 	private boolean isCoiIdRequired;
+
+	private ChannelType channelType = ChannelType.BUY_AND_BILL;
 
 	public boolean getIsPatientInformationRequired() {
 		return isPatientInformationRequired;
