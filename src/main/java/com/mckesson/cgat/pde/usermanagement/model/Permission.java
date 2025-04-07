@@ -31,7 +31,7 @@ public enum Permission {
 	MANAGE_PAYMENT_METHOD_BANK(false, true), DELETE_PAYMENT_METHOD_BANK(false, true), CANCEL_PAYMENT(false, true),
 	VIEW_CREDIT_LISTING(false, true), MANAGE_SYSTEM_CONFIGURATIONS(true, false), VIEW_ACCOUNTS(true, true),
 	CREATE_INVOICES(false, true), APPROVE_PENDING_USER_REQUEST(true, true), MANAGE_PAYMENT_HISTORY(false, true),
-	VIEW_SP_MATERIAL(true,false);
+	VIEW_SP_MATERIAL(true, false);
 
 	boolean isActiveForSystemAdmin;
 
