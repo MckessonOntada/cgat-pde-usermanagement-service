@@ -56,7 +56,7 @@ public class AccountController {
 
 	@RequirePermissions({ Permission.ADD_ORGANIZATION, Permission.ADD_SP_ACCOUNT })
 	@PostMapping(consumes = "application/json")
-	@Operation(summary = "Create new account")
+	@Operation(summary = "Create new SP Account")
 	public ResponseEntity<Account> createAccount(@Valid @RequestBody AccountDTO accountDto)
 			throws UnauthorizedAccessException {
 		return new ResponseEntity<>(accountService.createAccount(accountDto), HttpStatus.OK);
@@ -65,7 +65,7 @@ public class AccountController {
 
 	@RequirePermissions({ Permission.EDIT_ORGANIZATION, Permission.ADD_ORGANIZATION, Permission.ADD_SP_ACCOUNT })
 	@PutMapping("/{accountId}")
-	@Operation(summary = "Update existing account")
+	@Operation(summary = "Update existing SP Account")
 	public Account updateAccount(@PathVariable Long accountId, @RequestBody AccountDTO accountDto)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		return accountService.updateAccount(accountId, accountDto);
@@ -108,12 +108,14 @@ public class AccountController {
 	@GetMapping
 	@Operation(summary = "Fetch all Accounts based on filter provided with pagination capabilities.")
 	Page<Account> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
-			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "name_1") String sortBy,
+			@RequestParam(defaultValue = "20") Integer pageSize,
+			@RequestParam(defaultValue = "sap_partner") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
 			@PathVariable String practiceId, @RequestParam(required = false) List<String> status,
 			@RequestParam(required = false) List<String> salesOrg,
 			@RequestParam(required = false) List<String> distChannels,
-			@RequestParam AccountPartnerFunction partnerFunction, @RequestParam ChannelType channelType)
+			@RequestParam AccountPartnerFunction partnerFunction,
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
