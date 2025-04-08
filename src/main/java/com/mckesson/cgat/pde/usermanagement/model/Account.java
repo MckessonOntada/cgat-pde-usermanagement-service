@@ -77,10 +77,12 @@ public class Account implements Serializable {
 			this.accountNumber = String.valueOf(this.id);
 			this.sapCustomer = String.valueOf(this.id);
 			this.partnerFunction = AccountPartnerFunction.SOLD_TO;
+			this.distributionChannel = "SP";
 			this.salesOrg = "NA";
 			this.vistexCustomer = "NA";
 			this.division = "NA";
 			this.companyCode = "NA";
+			this.isActive = true;
 		}
 	}
 

@@ -33,6 +33,7 @@ import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.cgat.pde.usermanagement.service.QuestionnaireService;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
+import com.mckesson.cgat.pde.usermanagement.utils.OrganizationContext;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import jakarta.transaction.Transactional;
@@ -66,6 +67,7 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public Account createAccount(AccountDTO accountDto) {
 		Account account = accountMapper.mapToModel(accountDto);
+		account.setPracticeId(OrganizationContext.getCurrentOrgId());
 		account.setChannelType(ChannelType.SPECIALITY_PHARMA);
 		populateAddress(account, accountDto);
 		return accountRepository.save(account);
@@ -84,7 +86,9 @@ public class AccountServiceImpl implements AccountService {
 			throw new ResourceNotFoundException("Account not found with id: " + accountId);
 
 		account.setAccountName(accountDto.getAccountName());
-		account.setName(accountDto.getName());
+		account.getName().setFirstName(accountDto.getFirstName());
+		account.getName().setMiddleName(accountDto.getMiddleName());
+		account.getName().setLastName(accountDto.getLastName());
 		account.getAddress().setEmail(accountDto.getContact().getEmail());
 		account.getAddress().setTelephone(accountDto.getContact().getPhone());
 		account.getAddress().setFax(accountDto.getContact().getFax());
