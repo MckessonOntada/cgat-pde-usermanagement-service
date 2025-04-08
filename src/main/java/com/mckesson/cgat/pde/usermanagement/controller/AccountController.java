@@ -66,7 +66,7 @@ public class AccountController {
 	@RequirePermissions({ Permission.EDIT_ORGANIZATION, Permission.ADD_ORGANIZATION, Permission.ADD_SP_ACCOUNT })
 	@PutMapping("/{accountId}")
 	@Operation(summary = "Update existing SP Account")
-	public Account updateAccount(@PathVariable Long accountId, @RequestBody AccountDTO accountDto)
+	public Account updateAccount(@PathVariable Long accountId, @Valid @RequestBody AccountDTO accountDto)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		return accountService.updateAccount(accountId, accountDto);
 
