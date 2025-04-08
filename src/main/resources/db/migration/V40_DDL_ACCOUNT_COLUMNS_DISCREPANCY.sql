@@ -1,4 +1,4 @@
-ALTER TABLE account DROP COLUMN full_address;
+ALTER TABLE usermanagement.account DROP COLUMN full_address;
 
 ALTER TABLE usermanagement.account
 ALTER COLUMN created_at SET DEFAULT now(),
