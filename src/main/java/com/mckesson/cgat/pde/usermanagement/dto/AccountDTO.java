@@ -20,7 +20,7 @@ public class AccountDTO {
 
 	@Size(min = 1, max = 100, message = "Account name must not exceed 100 characters.")
 	@Pattern(regexp = "^(?![&\\-])[A-Za-z0-9 &\\-]*(?<![&\\-])$",
-			message = "Only letters, numbers, spaces, '&', and '-' are allowed, and the name cannot start or end with '&' or '-'")
+			message = "Account Name: Alpha-numerics, spaces, '&', and '-' are allowed, and no starts/ending with '&' or '-'")
 	private String accountName;
 
 	@NotEmpty(message = "First Name is required.")
@@ -31,7 +31,7 @@ public class AccountDTO {
 	private String firstName;
 
 	@Size(max = 50, message = "Must only contain alphabets.")
-	@Pattern(regexp = "^(?! )[A-Za-zÀ-ÖØ-öø-ÿ.]+$",
+	@Pattern(regexp = "^(?! )[A-Za-zÀ-ÖØ-öø-ÿ.]*$",
 			message = "Middle Name must contain alphabetic and Dot characters only," + " no starting/ending space")
 	private String middleName;
 
