@@ -67,12 +67,12 @@ public class GlobalTherapyController {
 	}
 
 	@GetMapping("/{materialNumber}")
+	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.VIEW_SP_MATERIAL })
 	@Operation(summary = "Find Therapy by Material Number")
-	public ResponseEntity<Therapy> findByMaterialNumber(@PathVariable String materialNumber)
-			throws ResourceNotFoundException {
+	public ResponseEntity<Therapy> findByMaterialNumber(@PathVariable String materialNumber,
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) throws ResourceNotFoundException {
 		log.debug("Fetching therapy with materialNumber: {}", materialNumber);
-		return new ResponseEntity<>(therapyService.findByMaterialNumber(materialNumber), HttpStatus.OK);
-
+		return new ResponseEntity<>(therapyService.findByMaterialNumber(materialNumber, channelType), HttpStatus.OK);
 	}
 
 	@PostMapping("/config/update")

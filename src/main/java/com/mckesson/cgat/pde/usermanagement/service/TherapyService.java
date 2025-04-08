@@ -44,7 +44,7 @@ public interface TherapyService {
 
 	Page<CatalogPrice> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging);
 
-	Therapy findByMaterialNumber(String materialNumber) throws ResourceNotFoundException;
+	Therapy findByMaterialNumber(String materialNumber, ChannelType channelType) throws ResourceNotFoundException;
 
 	void updateTherapyConfigs(List<String> materialNumbers, boolean isPatientInformationRequired,
 			boolean isCoiIdRequired, ChannelType channelType);
