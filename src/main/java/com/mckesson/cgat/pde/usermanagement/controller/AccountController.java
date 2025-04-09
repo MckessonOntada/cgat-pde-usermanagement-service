@@ -162,6 +162,7 @@ public class AccountController {
 	@Operation(summary = "Fetch all providers not linked to a specific Account with pagination.")
 	public Page<Provider> findNonLinkedAccountsByProviderId(
 			@PathVariable @NotNull(message = "Account ID cannot be null") Long accountId,
+			@PathVariable @NotNull(message = "Practice ID cannot be null") Long practiceId,
 			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(defaultValue = "first_name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query)
@@ -170,7 +171,7 @@ public class AccountController {
 		Sort sort = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 
-		return accountService.findNonLinkedProvidersByAccountId(query, accountId, paging);
+		return accountService.findNonLinkedProvidersByAccountId(query, accountId, paging, practiceId);
 	}
 
 }

@@ -20,7 +20,8 @@ public interface ProviderService {
 
 	Provider createProvider(Provider provider);
 
-	Page<Provider> findAllProviders(Pageable paging, String query, List<String> status, Long accountId);
+	Page<Provider> findAllProviders(Pageable paging, String query, List<String> status, Long accountId,
+			Long practiceId);
 
 	void deactivateProvider(Long providerId) throws ResourceNotFoundException;
 

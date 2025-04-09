@@ -82,12 +82,13 @@ public class ProviderController {
 			@RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(defaultValue = "first_name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
+			@PathVariable @NotNull(message = "Practice ID cannot be null") Long practiceId,
 			@RequestParam(required = false) List<String> status, @RequestParam(required = false) Long accountId) {
 
 		Sort sort = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 
-		return providerService.findAllProviders(paging, query, status, accountId);
+		return providerService.findAllProviders(paging, query, status, accountId, practiceId);
 	}
 
 	@RequirePermissions({ Permission.EDIT_PROVIDER, Permission.ADD_PROVIDER })

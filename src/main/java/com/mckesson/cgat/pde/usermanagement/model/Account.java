@@ -128,6 +128,6 @@ public class Account implements Serializable {
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "account_provider_mapping", joinColumns = @JoinColumn(name = "account_id"),
 			inverseJoinColumns = @JoinColumn(name = "provider_id"))
-	private Set<Provider> provider;
+	private Set<Provider> providers;
 
 }

@@ -223,7 +223,7 @@ public class AccountServiceImpl implements AccountService {
 			throw new ResourceNotFoundException("Some of the provided provider IDs do not exist.");
 		}
 
-		account.getProvider().addAll(providers);
+		account.getProviders().addAll(providers);
 		return accountRepository.save(account);
 	}
 
@@ -235,18 +235,18 @@ public class AccountServiceImpl implements AccountService {
 		Provider provider = providerRepository.findById(providerId)
 			.orElseThrow(() -> new ResourceNotFoundException("Provider not found with ID: " + providerId));
 
-		account.getProvider().remove(provider);
+		account.getProviders().remove(provider);
 		accountRepository.save(account);
 	}
 
 	@Override
-	public Page<Provider> findNonLinkedProvidersByAccountId(String query, Long accountId, Pageable paging)
-			throws ResourceNotFoundException {
+	public Page<Provider> findNonLinkedProvidersByAccountId(String query, Long accountId, Pageable paging,
+			Long practiceId) throws ResourceNotFoundException {
 		log.debug("Fetching non-linked accounts for Account ID: {}", accountId);
 		if (!accountRepository.existsById(accountId)) {
 			throw new ResourceNotFoundException("Account not found with ID: " + accountId);
 		}
-		return providerRepository.findNonLinkedProvidersByAccountId(query, accountId, paging);
+		return providerRepository.findNonLinkedProvidersByAccountId(query, accountId, paging, practiceId);
 	}
 
 }
