@@ -239,8 +239,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			AND
 			(
 			    :statusActive = 'ALL'
-			    OR (:statusActive = 'ACTIVE' AND m.item_status = '1')
-			    OR (:statusActive = 'INACTIVE' AND m.item_status = '0')
+			    OR (:statusActive = 'ACTIVE' AND m.item_status = 'A')
+			    OR (:statusActive = 'INACTIVE' AND m.item_status = 'V')
 			)
 			AND
 			(
