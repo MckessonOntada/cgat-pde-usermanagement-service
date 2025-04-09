@@ -75,19 +75,19 @@ public class ProviderController {
 		return new ResponseEntity<>(providerService.createProvider(provider), HttpStatus.OK);
 	}
 
-	@RequirePermissions({ Permission.MANAGE_PROVIDERS_SCREEN })
+	@RequirePermissions({ Permission.MANAGE_PROVIDERS_SCREEN, Permission.ADD_SP_ACCOUNT })
 	@GetMapping
 	@Operation(summary = "Fetch all Providers based on filter provided with pagination capabilities.")
 	public Page<Provider> findAllProviders(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(defaultValue = "first_name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
-			@RequestParam(required = false) List<String> status) {
+			@RequestParam(required = false) List<String> status, @RequestParam(required = false) Long accountId) {
 
 		Sort sort = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 
-		return providerService.findAllProviders(paging, query, status);
+		return providerService.findAllProviders(paging, query, status, accountId);
 	}
 
 	@RequirePermissions({ Permission.EDIT_PROVIDER, Permission.ADD_PROVIDER })

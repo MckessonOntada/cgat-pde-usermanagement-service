@@ -230,7 +230,7 @@ public class ProviderServiceImpl implements ProviderService {
 	}
 
 	@Override
-	public Page<Provider> findAllProviders(Pageable paging, String query, List<String> status) {
+	public Page<Provider> findAllProviders(Pageable paging, String query, List<String> status, Long accountId) {
 		log.debug("Searching providers based on filter query:{}, status: {}", query, status);
 		query = StringUtils.toRootLowerCase(query);
 
@@ -244,7 +244,7 @@ public class ProviderServiceImpl implements ProviderService {
 			}
 		}
 
-		return providerRepository.findAllByQueryText(query, statusFilter, paging);
+		return providerRepository.findAllByQueryText(query, statusFilter, paging, accountId);
 	}
 
 	@Override

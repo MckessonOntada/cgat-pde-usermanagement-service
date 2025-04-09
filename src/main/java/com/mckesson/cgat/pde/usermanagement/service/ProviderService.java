@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.service;
 
 import com.mckesson.cgat.pde.usermanagement.dto.ProviderDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
+import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.model.Provider;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
@@ -19,7 +20,7 @@ public interface ProviderService {
 
 	Provider createProvider(Provider provider);
 
-	Page<Provider> findAllProviders(Pageable paging, String query, List<String> status);
+	Page<Provider> findAllProviders(Pageable paging, String query, List<String> status, Long accountId);
 
 	void deactivateProvider(Long providerId) throws ResourceNotFoundException;
 
