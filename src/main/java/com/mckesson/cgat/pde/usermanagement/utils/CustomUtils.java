@@ -107,7 +107,7 @@ public class CustomUtils {
 
 	public static String getConsolidatedStatus(List<String> status) {
 		if (CollectionUtils.isEmpty(status))
-			return object_status.ALL.name();
+			return object_status.ACTIVE.name();
 
 		boolean hasActive = status.stream().anyMatch(i -> i.equalsIgnoreCase(object_status.ACTIVE.name()));
 		boolean hasInactive = status.stream().anyMatch(i -> i.equalsIgnoreCase(object_status.INACTIVE.name()));
