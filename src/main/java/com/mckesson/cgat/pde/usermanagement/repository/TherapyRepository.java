@@ -196,6 +196,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					cp.sap_material = :therapyId
 				AND
 					ac.partner_function = :partnerFunction
+				AND
+					cp.deleted = false
 			)
 			""", nativeQuery = true)
 	public List<ProgramChannelProjectionDTO> findAllProgramAndChannels(@Param("userId") Long userId,
