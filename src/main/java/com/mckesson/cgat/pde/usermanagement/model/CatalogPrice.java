@@ -6,13 +6,7 @@ import java.time.format.DateTimeFormatter;
 
 import com.mckesson.cgat.pde.usermanagement.model.converters.DistributionChannelConverter;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -288,5 +282,8 @@ public class CatalogPrice {
 
 	@Column(name = "deleted")
 	private boolean deleted;
+
+	@Enumerated(EnumType.STRING)
+	private ChannelType channelType;
 
 }

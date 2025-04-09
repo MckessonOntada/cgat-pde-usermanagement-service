@@ -32,7 +32,8 @@ public enum Permission {
 	VIEW_CREDIT_LISTING(false, true), MANAGE_SYSTEM_CONFIGURATIONS(true, false), VIEW_ACCOUNTS(true, true),
 	CREATE_INVOICES(false, true), APPROVE_PENDING_USER_REQUEST(true, true), MANAGE_PAYMENT_HISTORY(false, true),
 	VIEW_SP_MATERIAL(true, false), ADD_PROVIDER(false, true), EDIT_PROVIDER(false, true), VIEW_PROVIDER(true, true),
-	MANAGE_PROVIDERS_SCREEN(false, true), UPLOAD_PROVIDER(false, true);
+	MANAGE_PROVIDERS_SCREEN(false, true), UPLOAD_PROVIDER(false, true), MANAGE_SP_CATALOG(true, false),
+	VIEW_SP_CATALOG(true, false);
 
 	boolean isActiveForSystemAdmin;
 
