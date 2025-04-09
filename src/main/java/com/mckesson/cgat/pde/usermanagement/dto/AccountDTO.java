@@ -31,13 +31,13 @@ public class AccountDTO {
 	private String firstName;
 
 	@Size(max = 50, message = "Must only contain alphabets.")
-	@Pattern(regexp = "^(?! )[A-Za-zÀ-ÖØ-öø-ÿ.]*$",
-			message = "Middle Name must contain alphabetic and Dot characters only," + " no starting/ending space")
+	@Pattern(regexp = "^(?! )[A-Za-zÀ-ÖØ-öø-ÿ. ]*(?<! )$",
+			message = "Middle Name must contain alphabetic and Dot characters only, no starting/ending space")
 	private String middleName;
 
 	@NotEmpty(message = "Last Name is required")
 	@Size(min = 1, max = 50, message = "Last name must be between 2 and 50 characters")
-	@Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ](?:[A-Za-zÀ-ÖØ-öø-ÿ]*[A-Za-zÀ-ÖØ-öø-ÿ])?$",
+	@Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ]+(?: [A-Za-zÀ-ÖØ-öø-ÿ]+)*$",
 			message = "Last Name must only contain alphabets, no starting/ending space")
 	private String lastName;
 
