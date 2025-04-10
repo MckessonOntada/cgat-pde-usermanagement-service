@@ -1,0 +1,41 @@
+package com.mckesson.cgat.pde.usermanagement.repository;
+
+import com.mckesson.cgat.pde.usermanagement.model.MaterialCrossWalkConfig;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+@Repository
+public interface MaterialCrossWalkConfigRepository extends JpaRepository<MaterialCrossWalkConfig, Long> {
+
+	Optional<MaterialCrossWalkConfig> findMaterialCrossWalkConfigBySpProductIdAndIsActiveTrue(String spProductId);
+
+	Optional<MaterialCrossWalkConfig> findMaterialCrossWalkConfigByBnbMaterialNumberAndSpProductId(String bnbMaterialNumber, String spProductId);
+
+//	List<TherapyConfig> findByMaterialNumberInAndChannelType(@Param("materialNumbers") List<String> materialNumbers,
+//			ChannelType channelType);
+//
+//	@Query("""
+//			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,tc)
+//			    FROM Therapy m
+//			    LEFT JOIN TherapyConfig tc
+//			    ON m.materialNumber = tc.materialNumber
+//			    WHERE m.materialNumber = :materialNumber
+//			    AND m.channelType = :channelType
+//			""")
+//	Optional<MaterialResponseDTO> findDetailedByMaterialNumber(@Param("materialNumber") String materialNumber,
+//			ChannelType channelType);
+//
+//	int removeTherapyConfigByMaterialNumberAndChannelType(String materialNumber, ChannelType channelType);
+//
+//	@Query("""
+//			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,tc)
+//			    FROM Therapy m
+//			    LEFT JOIN TherapyConfig tc
+//			    ON m.materialNumber = tc.materialNumber
+//			    WHERE m.id = :id
+//			""")
+//	Optional<MaterialResponseDTO> findTherapyDetailsById(@Param("id") Long id);
+
+}
