@@ -49,7 +49,7 @@ public class ProviderController {
 		this.providerService = providerService;
 	}
 
-	@RequirePermissions({ Permission.ADD_PROVIDER })
+	@RequirePermissions({ Permission.UPLOAD_PROVIDER })
 	@PostMapping(value = "/upload", consumes = { "multipart/form-data" })
 	@Operation(summary = "Upload bulk providers")
 	public ResponseEntity<byte[]> uploadProviders(@RequestPart("providerData") MultipartFile providerData,
