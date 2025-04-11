@@ -3,7 +3,9 @@ package com.mckesson.cgat.pde.usermanagement.repository;
 import java.util.List;
 import java.util.Optional;
 
+import com.mckesson.cgat.pde.usermanagement.dto.CatalogDeLinkRequestDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponse;
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -67,13 +69,20 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 						or LOWER(cp.udi) like %:query%
 						or LOWER(cp.dist_channel) like %:query%
 						or LOWER(cp.sap_material) like %:query%
+						or LOWER(cp.sold_to_customer) like %:query%
+						or LOWER(cp.material_description_in_language_en) like %:query%
 					)
 					AND cp.sold_to_customer IN :accountIds
 					AND ac.partner_function = :partnerFunction
 					AND cp.deleted = false
+					AND cp.channel_type = :channelType
 				)
 			""", nativeQuery = true)
 	Page<CatalogPrice> findAllGlobalCatalogs(@Param("accountIds") List<String> accountIds,
-			@Param("partnerFunction") String partnerFunction, @Param("query") String query, Pageable paging);
+			@Param("partnerFunction") String partnerFunction, @Param("query") String query, Pageable paging,
+			@Param("channelType") String channelType);
+
+	Optional<CatalogPrice> findBySapMaterialAndSoldToCustomerAndChannelType(String sapMaterial, String soldToCustomer,
+			ChannelType channelType);
 
 }

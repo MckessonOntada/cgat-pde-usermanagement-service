@@ -112,9 +112,9 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public Page<Account> findAll(Pageable paging, String query, List<String> status, Long userId, Long practiceId,
-			AccountPartnerFunction partnerFunction, List<String> salesOrg, List<String> distChannels,
-			ChannelType channelType) throws ResourceNotFoundException {
+	public Page<Account> findAll(Pageable paging, String query, List<String> status, Long userId,
+			List<Long> practiceIdList, AccountPartnerFunction partnerFunction, List<String> salesOrg,
+			List<String> distChannels, ChannelType channelType) throws ResourceNotFoundException {
 		query = StringUtils.toRootLowerCase(query);
 		String statusActive = CustomUtils.object_status.ALL.name();
 		if (!CollectionUtils.isEmpty(status)) {
@@ -134,10 +134,10 @@ public class AccountServiceImpl implements AccountService {
 			Optional<User> user = userRepository.findById(userId);
 			if (!user.isPresent())
 				throw new ResourceNotFoundException("User not found with id: " + userId);
-			return accountRepository.findAccountsByUser(userId, query, statusActive, paging, practiceId,
+			return accountRepository.findAccountsByUser(userId, query, statusActive, paging, practiceIdList.get(0),
 					partnerFunction.getPartnerFunctionType(), salesOrg, distChannels, channelType.name());
 		}
-		return accountRepository.findAllByQueryText(query, statusActive, paging, practiceId,
+		return accountRepository.findAllByQueryText(query, statusActive, paging, practiceIdList,
 				partnerFunction.getPartnerFunctionType(), salesOrg, distChannels, channelType.name());
 	}
 

@@ -11,11 +11,7 @@ import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 /**
  *
@@ -100,6 +96,7 @@ import lombok.ToString;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Setter
 @Table(name = "catalog_price", schema = "catalog")
 public class CatalogPrice {
 
@@ -112,7 +109,7 @@ public class CatalogPrice {
 	private Long id;
 
 	@Column(name = "tenant_id")
-	public String tenantId;
+	public Integer tenantId;
 
 	@Size(max = 10)
 	@NotBlank

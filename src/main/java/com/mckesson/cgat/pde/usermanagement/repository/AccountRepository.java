@@ -32,9 +32,9 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 				)
 				AND
 				(
-					(CAST(:practiceId AS varchar) is NULL and (tenant_id is null))
-					OR (tenant_id =:practiceId )
-				)
+			      COALESCE(:practiceId) IS NULL
+			      OR tenant_id IN (:practiceId)
+			  	)
 				AND
 				(
 					(:status = 'ALL' and (is_active = 1 or is_active = 0))
@@ -62,8 +62,9 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 				)
 			)""")
 	Page<Account> findAllByQueryText(@Param("query") String query, @Param("status") String status, Pageable paging,
-			@Param("practiceId") Long practiceId, String partnerFunction, @Param("salesOrg") List<String> salesOrg,
-			@Param("distChannels") List<String> distChannels, @Param("channelType") String channelType);
+			@Param("practiceId") List<Long> practiceId, String partnerFunction,
+			@Param("salesOrg") List<String> salesOrg, @Param("distChannels") List<String> distChannels,
+			@Param("channelType") String channelType);
 
 	Set<Account> findByPracticeId(Long practiceId);
 
@@ -81,7 +82,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 				AND
 				(
 					(CAST(:practiceId AS varchar) is NULL and (tenant_id is null))
-					OR (ua.tenant_id =:practiceId )
+					OR (ua.tenant_id = :practiceId )
 				)
 				AND
 					uam.user_id =:userId
