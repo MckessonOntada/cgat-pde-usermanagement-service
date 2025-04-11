@@ -253,4 +253,6 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 
 	Optional<Therapy> findByMaterialNumberAndChannelType(String materialNumber, ChannelType channelType);
 
+	List<Therapy> findByMaterialNumberInAndChannelType(List<String> materialNumbers, ChannelType channelType);
+
 }

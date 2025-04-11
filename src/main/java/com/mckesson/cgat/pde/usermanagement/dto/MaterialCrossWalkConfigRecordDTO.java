@@ -10,12 +10,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class MaterialCrossWalkConfigRecordDTO {
-    private String bnbMaterialNumber;
-    private String bnbDescription;
-    private String bnbNDC;
 
-    private String spProductId;
-    private String spProductName;
-    private String spNDC;
+	private String bnbMaterialNumber;
+
+	private String bnbDescription;
+
+	private String bnbNDC;
+
+	private String spProductId;
+
+	private String spProductName;
+
+	private String spNDC;
 
 }

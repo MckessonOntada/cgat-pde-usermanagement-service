@@ -9,6 +9,6 @@ import java.io.ByteArrayOutputStream;
 @Service
 public interface MaterialCrossWalkService {
 
+	Boolean uploadCrossWalks(MultipartFile crossWalkData, ByteArrayOutputStream outputStream);
 
-    Boolean uploadCrossWalks(MultipartFile crossWalkData, Long practiceId, ByteArrayOutputStream outputStream);
 }

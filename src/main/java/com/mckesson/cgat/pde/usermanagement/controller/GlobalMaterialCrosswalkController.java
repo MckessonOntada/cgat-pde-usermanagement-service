@@ -30,24 +30,19 @@ public class GlobalMaterialCrosswalkController {
 		this.materialCrossWalkService = materialCrossWalkService;
 	}
 
-
 	@PostMapping(value = "/upload", consumes = { "multipart/form-data" })
 	@Operation(summary = "Upload bulk cross walks data")
-	public ResponseEntity<byte[]> uploadCrossWalks(@RequestPart("crossWalkData") MultipartFile crossWalkData,
-											  @NotNull(message = "Practice Id is Required") @PathVariable Long practiceId)
+	public ResponseEntity<byte[]> uploadCrossWalks(@RequestPart("crossWalkData") MultipartFile crossWalkData)
 			throws FileNotValidException, UnauthorizedAccessException {
 
-
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		Boolean uploadStatus = materialCrossWalkService.uploadCrossWalks(crossWalkData, practiceId, outputStream);
+		Boolean uploadStatus = materialCrossWalkService.uploadCrossWalks(crossWalkData, outputStream);
 		HttpStatus status = uploadStatus ? HttpStatus.OK : HttpStatus.PARTIAL_CONTENT;
 
 		return ResponseEntity.status(status)
-				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=FailedUsers.csv")
-				.contentType(MediaType.parseMediaType("text/csv"))
-				.body(outputStream.toByteArray());
+			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=FailedCrossWalk.csv")
+			.contentType(MediaType.parseMediaType("text/csv"))
+			.body(outputStream.toByteArray());
 	}
-
-
 
 }
