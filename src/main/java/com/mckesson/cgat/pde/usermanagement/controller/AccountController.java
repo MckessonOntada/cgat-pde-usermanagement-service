@@ -158,12 +158,13 @@ public class AccountController {
 	}
 
 	@RequirePermissions({ Permission.ADD_SP_ACCOUNT })
-	@GetMapping("/{accountId}/non-linked-providers")
+	@GetMapping("/{accountId}/providers")
 	@Operation(summary = "Fetch all providers not linked to a specific Account with pagination.")
 	public Page<Provider> findNonLinkedAccountsByProviderId(
 			@PathVariable @NotNull(message = "Account ID cannot be null") Long accountId,
 			@PathVariable @NotNull(message = "Practice ID cannot be null") Long practiceId,
-			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize,
+			@RequestParam(defaultValue = "true") Boolean unlink, @RequestParam(defaultValue = "0") Integer pageNo,
+			@RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(defaultValue = "first_name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query)
 			throws ResourceNotFoundException {
