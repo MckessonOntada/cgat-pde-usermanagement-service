@@ -120,6 +120,7 @@ public class GlobalTherapyController {
 	}
 
 	@GetMapping(value = "spMaterials/download", produces = "text/csv")
+	@Operation(summary = "Download csv file contains all speciality pharma active materials")
 	public void downloadSPMaterialsCsvFile(HttpServletResponse response) throws IOException {
 		response.setContentType("text/csv");
 		response.setHeader("Content-Disposition", "attachment; filename=\"SPMaterials.csv\"");

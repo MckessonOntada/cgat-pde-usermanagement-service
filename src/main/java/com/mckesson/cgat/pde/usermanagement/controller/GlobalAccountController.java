@@ -58,6 +58,7 @@ public class GlobalAccountController {
 	}
 
 	@GetMapping(value = "spAccounts/download", produces = "text/csv")
+	@Operation(summary = "Download csv file contains all speciality pharma active accounts")
 	public void downloadSPAccountsCsvFile(HttpServletResponse response) throws IOException {
 		response.setContentType("text/csv");
 		response.setHeader("Content-Disposition", "attachment; filename=\"SPAccounts.csv\"");
