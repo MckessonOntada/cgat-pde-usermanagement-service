@@ -159,4 +159,12 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	List<Account> findAllByAccountNumberInAndPartnerFunction(List<String> accountNumberList,
 			AccountPartnerFunction accountPartnerFunction);
 
+	@Query(value = "SELECT account_number, account_name FROM usermanagement.account WHERE channel_type = :channelType AND is_active = 1",
+			nativeQuery = true)
+	List<Account> findByChannelTypeAndIsActive(String channelType);
+
+	@Query(value = "SELECT * FROM usermanagement.account WHERE sap_partner IN (:accountNumbers) AND channel_type = :channelType AND is_active = 1",
+			nativeQuery = true)
+	List<Account> findByAccountNumberAndChaneelTypeIn(Set<String> accountNumbers, String channelType);
+
 }

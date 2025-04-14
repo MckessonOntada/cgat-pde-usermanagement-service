@@ -1,7 +1,10 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -52,6 +55,20 @@ public class GlobalAccountController {
 				salesOrg, distChannels, ChannelType.BUY_AND_BILL);
 
 		return new ResponseEntity<>(accounts, HttpStatus.OK);
+	}
+
+	@GetMapping(value = "spAccounts/download", produces = "text/csv")
+	public void downloadSPAccountsCsvFile(HttpServletResponse response) throws IOException {
+		response.setContentType("text/csv");
+		response.setHeader("Content-Disposition", "attachment; filename=\"SPAccounts.csv\"");
+		response.setCharacterEncoding("UTF-8");
+
+		try (PrintWriter writer = response.getWriter()) {
+			writer.println("Account Number, Account Name");
+			for (Account account : accountService.getSPAccounts()) {
+				writer.printf("\"%s\",\"%s\"%n", account.getAccountNumber(), account.getAccountName());
+			}
+		}
 	}
 
 }

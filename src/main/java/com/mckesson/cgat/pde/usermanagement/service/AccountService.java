@@ -38,4 +38,6 @@ public interface AccountService {
 
 	AccountDetailsResponseDTO getAccountDetails(Long accountId) throws ResourceNotFoundException;
 
+	List<Account> getSPAccounts();
+
 }

@@ -276,4 +276,9 @@ public class TherapyServiceImpl implements TherapyService {
 			.orElseThrow(() -> new ResourceNotFoundException("Therapy not found with id: " + id));
 	}
 
+	@Override
+	public List<Therapy> getSPTherapies() {
+		return therapyRepository.findByChannelTypeAndItemStatus(ChannelType.SPECIALITY_PHARMA.name());
+	}
+
 }

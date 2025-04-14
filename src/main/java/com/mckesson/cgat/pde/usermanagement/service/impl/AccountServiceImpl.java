@@ -203,4 +203,9 @@ public class AccountServiceImpl implements AccountService {
 		return detailsResponseDTO;
 	}
 
+	@Override
+	public List<Account> getSPAccounts() {
+		return accountRepository.findByChannelTypeAndIsActive(ChannelType.SPECIALITY_PHARMA.name());
+	}
+
 }

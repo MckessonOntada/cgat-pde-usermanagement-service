@@ -1,7 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponse;
 import org.springframework.data.domain.Page;
@@ -75,5 +74,10 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 			""", nativeQuery = true)
 	Page<CatalogPrice> findAllGlobalCatalogs(@Param("accountIds") List<String> accountIds,
 			@Param("partnerFunction") String partnerFunction, @Param("query") String query, Pageable paging);
+
+	@Query(value = "SELECT * FROM catalog.catalog_price WHERE sold_to_customer IN :accountNumbers AND sap_material IN :productIds AND channel_type = :channelType",
+			nativeQuery = true)
+	List<CatalogPrice> findByAccountNumbersAndProductIdsAndChannelType(List<String> accountNumbers,
+			List<String> productIds, String channelType);
 
 }

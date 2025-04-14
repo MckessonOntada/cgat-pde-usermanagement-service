@@ -3,9 +3,8 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyConfigRequestDTO;
-import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
-import com.mckesson.cgat.pde.usermanagement.model.Permission;
-import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
+import com.mckesson.cgat.pde.usermanagement.model.*;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -25,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
@@ -33,6 +31,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.SORT_ORDER_ASC;
@@ -117,6 +117,21 @@ public class GlobalTherapyController {
 		log.debug("Fetching therapy details with materialNumber: {}", id);
 		return new ResponseEntity<>(therapyService.findTherapyDetailsById(id), HttpStatus.OK);
 
+	}
+
+	@GetMapping(value = "spMaterials/download", produces = "text/csv")
+	public void downloadSPMaterialsCsvFile(HttpServletResponse response) throws IOException {
+		response.setContentType("text/csv");
+		response.setHeader("Content-Disposition", "attachment; filename=\"SPMaterials.csv\"");
+		response.setCharacterEncoding("UTF-8");
+
+		try (PrintWriter writer = response.getWriter()) {
+			writer.println("Product ID, Product Name, Product NDC");
+			for (Therapy therapy : therapyService.getSPTherapies()) {
+				writer.printf("\"%s\",\"%s\",\"%s\"%n", therapy.getMaterialNumber(), therapy.getMaterialDescription(),
+						therapy.getNdcNumber());
+			}
+		}
 	}
 
 }
