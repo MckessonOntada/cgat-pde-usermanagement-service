@@ -341,7 +341,7 @@ public class CatalogServiceImpl implements CatalogService {
 			.currency("NA")
 			.inventoryType("1")
 			.deleted(false)
-				.tenantId(Math.toIntExact(account.getPracticeId()))
+			.tenantId(Math.toIntExact(account.getPracticeId()))
 			.build();
 	}
 
