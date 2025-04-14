@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
+import com.mckesson.cgat.pde.usermanagement.model.*;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,9 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mckesson.cgat.pde.usermanagement.model.Account;
-import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
-import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
@@ -58,6 +56,7 @@ public class GlobalAccountController {
 	}
 
 	@GetMapping(value = "spAccounts/download", produces = "text/csv")
+	@RequirePermissions({ Permission.MANAGE_SP_CATALOG })
 	@Operation(summary = "Download csv file contains all speciality pharma active accounts")
 	public void downloadSPAccountsCsvFile(HttpServletResponse response) throws IOException {
 		response.setContentType("text/csv");

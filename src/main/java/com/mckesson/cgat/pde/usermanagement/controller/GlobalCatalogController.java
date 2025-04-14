@@ -104,6 +104,7 @@ public class GlobalCatalogController {
 	}
 
 	@PostMapping(value = "/upload-sp-catalogs", consumes = { "multipart/form-data" })
+	@RequirePermissions({ Permission.MANAGE_SP_CATALOG })
 	@Operation(summary = "Upload bulk SP catalogs")
 	public ResponseEntity<?> uploadSPCatalogCsv(@RequestPart("catalogsData") MultipartFile catalogsData) {
 		CSVProcessingResult result = catalogService.uploadSPCatalog(catalogsData);
