@@ -75,9 +75,10 @@ public class CrosswalkServiceImpl implements CrosswalkService {
 
 	private CrosswalkResponseDTO mapToDto(Crosswalk crosswalk, Map<String, Therapy> therapyMap) {
 		Therapy bnbTherapy = therapyMap.get(crosswalk.getBnbMaterialNumber() + "_" + ChannelType.BUY_AND_BILL);
-		Therapy spTherapy = therapyMap.get(crosswalk.getBnbMaterialNumber() + "_" + ChannelType.SPECIALITY_PHARMA);
+		Therapy spTherapy = therapyMap.get(crosswalk.getSpProductId() + "_" + ChannelType.SPECIALITY_PHARMA);
 
 		return CrosswalkResponseDTO.builder()
+			.id(crosswalk.getId())
 			.bnbMaterialDescription(bnbTherapy.getMaterialDescription())
 			.bnbMaterialNumber(bnbTherapy.getMaterialNumber())
 			.bnbNdc(bnbTherapy.getNdcNumber())

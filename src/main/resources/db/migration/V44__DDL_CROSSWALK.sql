@@ -23,6 +23,12 @@ MINVALUE 1
 NO MAXVALUE
 CACHE 20;
 
+INSERT INTO usermanagement.role_permissions_mapping(role_id, permission) VALUES
+(1, 'VIEW_MATERIAL_CROSSWALK');
+
+INSERT INTO usermanagement.user_permission_mapping(user_id, permission) VALUES
+(1, 'VIEW_MATERIAL_CROSSWALK');
+
 --CREATE INDEX IF NOT EXISTS provider_full_name_gin_trgm_ops
 --ON usermanagement.provider
 --USING GIN (LOWER(full_name) gin_trgm_ops);
