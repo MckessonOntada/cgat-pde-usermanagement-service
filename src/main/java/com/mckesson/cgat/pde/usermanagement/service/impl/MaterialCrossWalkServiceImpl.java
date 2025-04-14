@@ -9,14 +9,13 @@ import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.cgat.pde.usermanagement.repository.MaterialCrossWalkConfigRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.TherapyRepository;
 import com.mckesson.cgat.pde.usermanagement.service.MaterialCrossWalkService;
-import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -42,6 +41,7 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 	}
 
 	@Override
+	@Transactional
 	public Boolean uploadCrossWalks(MultipartFile crossWalkDataFile, ByteArrayOutputStream outputStream) {
 		List<MaterialCrossWalkConfigRecordDTO> crossWalkConfigsToAdd = new ArrayList<>();
 		List<MaterialCrossWalkConfigRecordDTO> crossWalkConfigsToDelete = new ArrayList<>();
@@ -72,7 +72,10 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 				failedCrossWalks, existingBnbMaterialNumbers, existingSPProductIds, spProductIdToConfigMap);
 
 		removeConfigsFromDB(entitiesToDelete);
+
 		saveOrUpdateInBatches(entitiesToAdd, BATCH_SIZE);
+
+		updateCrossWalkFlagForMaterials(entitiesToDelete, entitiesToAdd);
 
 		createOutputCSV(outputStream, failedCrossWalks);
 
@@ -130,6 +133,7 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 			MaterialCrossWalkAction crossWalkAction = MaterialCrossWalkAction.fromString(rowAction);
 			if (MaterialCrossWalkAction.LINK.equals(crossWalkAction)) {
 				validateForDuplicateSPRows(crossWalkConfig.getSpProductId(), crossWalkConfigsToAdd);
+				crossWalkConfigsToAdd.add(crossWalkConfig);
 			}
 			else {
 				crossWalkConfigsToDelete.add(crossWalkConfig);
@@ -137,6 +141,9 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 		}
 		catch (IllegalArgumentException e) {
 			log.error("Error occurred while reading row data: {} ", e.getMessage(), e);
+			failedCrossWalks.put(crossWalkConfig, e.getMessage());
+		}
+		catch (Exception e) {
 			failedCrossWalks.put(crossWalkConfig, e.getMessage());
 		}
 	}
@@ -234,6 +241,7 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 		return crossWalkConfigList;
 	}
 
+	@Transactional
 	private void removeConfigsFromDB(List<MaterialCrossWalkConfig> entitiesToDelete) {
 		List<String> spProductIds = entitiesToDelete.stream()
 			.map(MaterialCrossWalkConfig::getSpProductId)
@@ -256,7 +264,39 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 
 	private void updateCrossWalkFlagForMaterials(List<MaterialCrossWalkConfig> deletedEntities,
 			List<MaterialCrossWalkConfig> addedEntities) {
+		Set<String> spProductIdsToUpdate = new HashSet<>();
+		Set<String> bnbMaterialNumbersToUpdate = new HashSet<>();
 
+		// Collect SP Product IDs from deleted and added entities
+		spProductIdsToUpdate
+			.addAll(deletedEntities.stream().map(MaterialCrossWalkConfig::getSpProductId).collect(Collectors.toSet()));
+		spProductIdsToUpdate
+			.addAll(addedEntities.stream().map(MaterialCrossWalkConfig::getSpProductId).collect(Collectors.toSet()));
+
+		// Collect BnB Material Numbers from deleted and added entities
+		bnbMaterialNumbersToUpdate.addAll(deletedEntities.stream()
+			.map(MaterialCrossWalkConfig::getBnbMaterialNumber)
+			.collect(Collectors.toSet()));
+		bnbMaterialNumbersToUpdate.addAll(
+				addedEntities.stream().map(MaterialCrossWalkConfig::getBnbMaterialNumber).collect(Collectors.toSet()));
+
+		// Update isCrossWalked flag for SP Product IDs
+		if (!CollectionUtils.isEmpty(spProductIdsToUpdate)) {
+			for (String spProductId : spProductIdsToUpdate) {
+				boolean exists = materialCrossWalkConfigRepository.existsBySpProductId(spProductId);
+				therapyRepository.updateIsCrossWalkedByMaterialNumberAndChannelType(exists, spProductId,
+						String.valueOf(ChannelType.SPECIALITY_PHARMA));
+			}
+		}
+
+		// Update isCrossWalked flag for BnB Material Numbers
+		if (!CollectionUtils.isEmpty(bnbMaterialNumbersToUpdate)) {
+			for (String bnbMaterialNumber : bnbMaterialNumbersToUpdate) {
+				boolean exists = materialCrossWalkConfigRepository.existsByBnbMaterialNumber(bnbMaterialNumber);
+				therapyRepository.updateIsCrossWalkedByMaterialNumberAndChannelType(exists, bnbMaterialNumber,
+						String.valueOf(ChannelType.BUY_AND_BILL));
+			}
+		}
 	}
 
 	private void createOutputCSV(OutputStream outputStream,

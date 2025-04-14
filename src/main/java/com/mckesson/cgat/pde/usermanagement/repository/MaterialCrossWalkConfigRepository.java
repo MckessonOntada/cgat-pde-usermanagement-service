@@ -13,4 +13,8 @@ public interface MaterialCrossWalkConfigRepository extends JpaRepository<Materia
 
 	void deleteBySpProductIdIn(List<String> spProductIds);
 
+	boolean existsBySpProductId(String spProductId);
+
+	boolean existsByBnbMaterialNumber(String bnbMaterialNumber);
+
 }
