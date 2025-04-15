@@ -28,242 +28,242 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TherapyServiceImpl implements TherapyService {
 
-	private final TherapyRepository therapyRepository;
+    private final TherapyRepository therapyRepository;
 
-	private final CatalogPriceRepository catalogPriceRepository;
+    private final CatalogPriceRepository catalogPriceRepository;
 
-	private final CatalogPriceMapper catalogPriceMapper;
+    private final CatalogPriceMapper catalogPriceMapper;
 
-	private final TherapyConfigRepository therapyConfigRepository;
+    private final TherapyConfigRepository therapyConfigRepository;
 
-	private final QuestionnaireService questionnaireService;
+    private final QuestionnaireService questionnaireService;
 
-	public TherapyServiceImpl(TherapyRepository therapyRepository, CatalogPriceRepository catalogPriceRepository,
-			CatalogPriceMapper catalogPriceMapper, TherapyConfigRepository therapyConfigRepository,
-			QuestionnaireService questionnaireService) {
-		this.therapyRepository = therapyRepository;
-		this.catalogPriceRepository = catalogPriceRepository;
-		this.catalogPriceMapper = catalogPriceMapper;
-		this.therapyConfigRepository = therapyConfigRepository;
-		this.questionnaireService = questionnaireService;
-	}
+    public TherapyServiceImpl(TherapyRepository therapyRepository, CatalogPriceRepository catalogPriceRepository,
+                              CatalogPriceMapper catalogPriceMapper, TherapyConfigRepository therapyConfigRepository,
+                              QuestionnaireService questionnaireService) {
+        this.therapyRepository = therapyRepository;
+        this.catalogPriceRepository = catalogPriceRepository;
+        this.catalogPriceMapper = catalogPriceMapper;
+        this.therapyConfigRepository = therapyConfigRepository;
+        this.questionnaireService = questionnaireService;
+    }
 
-	public Page<TherapyCatalogResponseDTO> findAllTherapies(Long userId, String query, List<String> salesOrg,
-			Pageable paging, List<String> customerIdentifier) {
-		return therapyRepository.findAllTherapies(userId, StringUtils.toRootLowerCase(query), salesOrg, paging,
-				customerIdentifier, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
-	}
+    public Page<TherapyCatalogResponseDTO> findAllTherapies(Long userId, String query, List<String> salesOrg,
+                                                            Pageable paging, List<String> customerIdentifier) {
+        return therapyRepository.findAllTherapies(userId, StringUtils.toRootLowerCase(query), salesOrg, paging,
+                customerIdentifier, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
+    }
 
-	public Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, String therapyId, String query, Pageable paging,
-			String channel, String program) {
-		return therapyRepository.findAllSoldToAccounts(userId, therapyId, StringUtils.toRootLowerCase(query), paging,
-				channel, program, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
-	}
+    public Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, String therapyId, String query, Pageable paging,
+                                                           String channel, String program) {
+        return therapyRepository.findAllSoldToAccounts(userId, therapyId, StringUtils.toRootLowerCase(query), paging,
+                channel, program, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
+    }
 
-	public Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, String therapyId, String query, Pageable paging,
-			List<String> channels, String program) {
-		return therapyRepository.findAllSoldToAccounts(userId, therapyId, StringUtils.toRootLowerCase(query), paging,
-				channels, program, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
-	}
+    public Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, String therapyId, String query, Pageable paging,
+                                                           List<String> channels, String program) {
+        return therapyRepository.findAllSoldToAccounts(userId, therapyId, StringUtils.toRootLowerCase(query), paging,
+                channels, program, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
+    }
 
-	public Page<AccountsResponseDTO> findAllShipToAccounts(String soldToAccountId, String therapyId, Pageable paging,
-			String query) {
-		return therapyRepository.findAllShipToAccounts(soldToAccountId, therapyId, StringUtils.toRootLowerCase(query),
-				paging, AccountPartnerFunction.SHIP_TO.getPartnerFunctionType());
-	}
+    public Page<AccountsResponseDTO> findAllShipToAccounts(String soldToAccountId, String therapyId, Pageable paging,
+                                                           String query) {
+        return therapyRepository.findAllShipToAccounts(soldToAccountId, therapyId, StringUtils.toRootLowerCase(query),
+                paging, AccountPartnerFunction.SHIP_TO.getPartnerFunctionType());
+    }
 
-	public Therapy findById(Long id) throws ResourceNotFoundException {
-		return therapyRepository.findById(id)
-			.orElseThrow(() -> new ResourceNotFoundException("Therapy not found with id: " + id));
-	}
+    public Therapy findById(Long id) throws ResourceNotFoundException {
+        return therapyRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Therapy not found with id: " + id));
+    }
 
-	@Override
-	public Page<CatalogPriceResponseDto> findAllVariantsLinkedToShipToAccountsForTherapy(String soldToAccountId,
-			String shipToAccountId, String therapyId, Pageable paging) {
-		try {
-			log.info(" Inside method - findAllVariantsLinkedToShipToAccountsForTherapy..");
-			log.info("soldToAccountId: {} , shipToAccountId: {} and therapyId: {}", soldToAccountId, shipToAccountId,
-					therapyId);
-			Page<CatalogPrice> allVariants = catalogPriceRepository
-				.findAllCatalogPricesLinkedToShipToAccountsForTherapy(soldToAccountId, shipToAccountId, therapyId,
-						paging);
-			List<CatalogPriceResponseDto> allTherapyVariants = catalogPriceMapper
-				.toResponseDtoVariantsList(allVariants.getContent());
-			return new PageImpl<>(allTherapyVariants, paging, allVariants.getTotalElements());
-		}
-		catch (Exception ex) {
-			log.error(
-					"Exception occurred in fetching variants linked to soldToAccountId, shipToAccountId and therapyId",
-					ex);
-			throw ex;
-		}
-	}
+    @Override
+    public Page<CatalogPriceResponseDto> findAllVariantsLinkedToShipToAccountsForTherapy(String soldToAccountId,
+                                                                                         String shipToAccountId, String therapyId, Pageable paging) {
+        try {
+            log.info(" Inside method - findAllVariantsLinkedToShipToAccountsForTherapy..");
+            log.info("soldToAccountId: {} , shipToAccountId: {} and therapyId: {}", soldToAccountId, shipToAccountId,
+                    therapyId);
+            Page<CatalogPrice> allVariants = catalogPriceRepository
+                    .findAllCatalogPricesLinkedToShipToAccountsForTherapy(soldToAccountId, shipToAccountId, therapyId,
+                            paging);
+            List<CatalogPriceResponseDto> allTherapyVariants = catalogPriceMapper
+                    .toResponseDtoVariantsList(allVariants.getContent());
+            return new PageImpl<>(allTherapyVariants, paging, allVariants.getTotalElements());
+        } catch (Exception ex) {
+            log.error(
+                    "Exception occurred in fetching variants linked to soldToAccountId, shipToAccountId and therapyId",
+                    ex);
+            throw ex;
+        }
+    }
 
-	@Override
-	public CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForTherapy(String soldToAccountId,
-			String shipToAccountId, String variantType, String therapyId) {
-		try {
-			log.info(" Inside method - findPriceOfVariantLinkedToShipToAccountsForTherapy..");
-			log.info("soldToAccountId: {} , shipToAccountId: {} , variantType: {} and therapyId: {}", soldToAccountId,
-					shipToAccountId, variantType, therapyId);
-			Page<CatalogPriceResponse> catalogPriceResponsePage = catalogPriceRepository
-				.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccountId, shipToAccountId, therapyId,
-						variantType, PageRequest.of(0, 1));
-			CatalogPriceResponse catalogPrice = catalogPriceResponsePage.getContent().stream().findFirst().orElse(null);
-			CatalogPriceResponseDto responseDto = null;
-			if (catalogPrice != null) {
-				responseDto = catalogPriceMapper.toResponseDto(catalogPrice.getCatalogPrice());
-				if (responseDto != null) {
-					responseDto.setProductLevelPricing(Objects.equals(catalogPrice.getProductLevelPricing(), "Y"));
+    @Override
+    public CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForTherapy(String soldToAccountId,
+                                                                                      String shipToAccountId, String variantType, String therapyId) {
+        try {
+            log.info(" Inside method - findPriceOfVariantLinkedToShipToAccountsForTherapy..");
+            log.info("soldToAccountId: {} , shipToAccountId: {} , variantType: {} and therapyId: {}", soldToAccountId,
+                    shipToAccountId, variantType, therapyId);
+            Page<CatalogPriceResponse> catalogPriceResponsePage = catalogPriceRepository
+                    .findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccountId, shipToAccountId, therapyId,
+                            variantType, PageRequest.of(0, 1));
+            CatalogPriceResponse catalogPrice = catalogPriceResponsePage.getContent().stream().findFirst().orElse(null);
+            CatalogPriceResponseDto responseDto = null;
+            if (catalogPrice != null) {
+                responseDto = catalogPriceMapper.toResponseDto(catalogPrice.getCatalogPrice());
+                if (responseDto != null) {
+                    responseDto.setProductLevelPricing(Objects.equals(catalogPrice.getProductLevelPricing(), "Y"));
 
-				}
-			}
+                }
+            }
 
-			return responseDto;
-		}
-		catch (Exception e) {
-			log.error(
-					"Exception occurred in fetching Price of variant linked to soldToAccountId, shipToAccountId and therapyId and exception details",
-					e);
-			throw e;
-		}
-	}
+            return responseDto;
+        } catch (Exception e) {
+            log.error(
+                    "Exception occurred in fetching Price of variant linked to soldToAccountId, shipToAccountId and therapyId and exception details",
+                    e);
+            throw e;
+        }
+    }
 
-	@Override
-	public Therapy findByMaterialNumber(String materialNumber) throws ResourceNotFoundException {
-		return therapyRepository.findByMaterialNumber(materialNumber)
-			.orElseThrow(
-					() -> new ResourceNotFoundException("Therapy not found with materialNumber: " + materialNumber));
-	}
+    @Override
+    public Therapy findByMaterialNumber(String materialNumber) throws ResourceNotFoundException {
+        return therapyRepository.findByMaterialNumber(materialNumber)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Therapy not found with materialNumber: " + materialNumber));
+    }
 
-	public ProgramChannelResponseDTO findAllProgramAndChannels(Long userId, String therapyId) {
+    public ProgramChannelResponseDTO findAllProgramAndChannels(Long userId, String therapyId) {
 
-		List<ProgramChannelProjectionDTO> programAndChannels = therapyRepository.findAllProgramAndChannels(userId,
-				therapyId, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
+        List<ProgramChannelProjectionDTO> programAndChannels = therapyRepository.findAllProgramAndChannels(userId,
+                therapyId, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 
-		Set<String> uniquePrograms = null != programAndChannels ? (programAndChannels.stream()
-			.map(ProgramChannelProjectionDTO::getProgram)
-			.filter(Objects::nonNull)
-			.collect(Collectors.toSet())) : Collections.emptySet();
+        Set<String> uniquePrograms = null != programAndChannels ? (programAndChannels.stream()
+                .map(programChannelProjectionDTO -> {
+                    if ("340".equals(programChannelProjectionDTO.getProgram())) {
+                        return "340B";
+                    }
+                    return programChannelProjectionDTO.getProgram();
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet())) : Collections.emptySet();
 
-		Set<String> uniqueChannels = programAndChannels != null
-				? programAndChannels.stream().map(ProgramChannelProjectionDTO::getChannel).map(channel -> {
-					if ("8545".equals(channel))
-						return "MPB";
-					if ("1010".equals(channel))
-						return "Speciality";
-					if ("1100".equals(channel) || channel.startsWith("2"))
-						return "3PL";
-					return null; // Ignore other entries
-				})
-					.filter(Objects::nonNull) // Remove ignored entries
-					.collect(Collectors.toSet())
-				: Collections.emptySet();
+        Set<String> uniqueChannels = programAndChannels != null
+                ? programAndChannels.stream().map(ProgramChannelProjectionDTO::getChannel).map(channel -> {
+                    if ("8545".equals(channel))
+                        return "MPB";
+                    if ("1010".equals(channel))
+                        return "Speciality";
+                    if ("1100".equals(channel) || channel.startsWith("2"))
+                        return "3PL";
+                    return null; // Ignore other entries
+                })
+                .filter(Objects::nonNull) // Remove ignored entries
+                .collect(Collectors.toSet())
+                : Collections.emptySet();
 
-		if (uniqueChannels.size() > 1) {
-			// Add an option All
-			uniqueChannels.add("All");
-		}
+        if (uniqueChannels.size() > 1) {
+            // Add an option All
+            uniqueChannels.add("All");
+        }
 
-		return ProgramChannelResponseDTO.builder().channels(uniqueChannels).programs(uniquePrograms).build();
-	}
+        return ProgramChannelResponseDTO.builder().channels(uniqueChannels).programs(uniquePrograms).build();
+    }
 
-	public Page<AccountsResponseDTO> findAllCustomerIdentifiers(Long userId, String query, Pageable paging) {
-		return therapyRepository.findAllCustomerIdentifiers(userId, query, paging,
-				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
-	}
+    public Page<AccountsResponseDTO> findAllCustomerIdentifiers(Long userId, String query, Pageable paging) {
+        return therapyRepository.findAllCustomerIdentifiers(userId, query, paging,
+                AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
+    }
 
-	public Page<Therapy> findAllGlobalTherapies(String query, Pageable paging) {
-		try {
-			log.info(" Inside method - findAllGlobalTherapies");
-			log.info("query: {}", StringUtils.toRootLowerCase(query));
-			return therapyRepository.findAllGlobalTherapies(StringUtils.toRootLowerCase(query), paging);
-		}
-		catch (Exception e) {
-			log.error("Exception occurred in findAllGlobalTherapies and exception details", e);
-			throw e;
-		}
+    public Page<Therapy> findAllGlobalTherapies(String query, Pageable paging) {
+        try {
+            log.info(" Inside method - findAllGlobalTherapies");
+            log.info("query: {}", StringUtils.toRootLowerCase(query));
+            return therapyRepository.findAllGlobalTherapies(StringUtils.toRootLowerCase(query), paging);
+        } catch (Exception e) {
+            log.error("Exception occurred in findAllGlobalTherapies and exception details", e);
+            throw e;
+        }
 
-	}
+    }
 
-	public Page<CatalogPrice> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging) {
-		try {
-			log.info(" Inside method - findAllGlobalCatalogs");
-			log.info("accountIds : {}, query: {}", accountIds, StringUtils.toRootLowerCase(query));
-			return catalogPriceRepository.findAllGlobalCatalogs(accountIds,
-					AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), StringUtils.toRootLowerCase(query),
-					paging);
-		}
-		catch (Exception e) {
-			log.error("Exception occurred in findAllGlobalCatalogs and exception details", e);
-			throw e;
-		}
+    public Page<CatalogPrice> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging) {
+        try {
+            log.info(" Inside method - findAllGlobalCatalogs");
+            log.info("accountIds : {}, query: {}", accountIds, StringUtils.toRootLowerCase(query));
+            return catalogPriceRepository.findAllGlobalCatalogs(accountIds,
+                    AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), StringUtils.toRootLowerCase(query),
+                    paging);
+        } catch (Exception e) {
+            log.error("Exception occurred in findAllGlobalCatalogs and exception details", e);
+            throw e;
+        }
 
-	}
+    }
 
-	@Override
-	@Transactional
-	public void updateTherapyConfigs(List<String> materialNumbers, boolean isPatientInformationRequired,
-			boolean isCoiIdRequired) {
+    @Override
+    @Transactional
+    public void updateTherapyConfigs(List<String> materialNumbers, boolean isPatientInformationRequired,
+                                     boolean isCoiIdRequired) {
 
-		List<TherapyConfig> existingConfigs = therapyConfigRepository.findByMaterialNumberIn(materialNumbers);
+        List<TherapyConfig> existingConfigs = therapyConfigRepository.findByMaterialNumberIn(materialNumbers);
 
-		Map<String, TherapyConfig> existingConfigMap = existingConfigs.stream()
-			.collect(Collectors.toMap(TherapyConfig::getMaterialNumber, Function.identity()));
+        Map<String, TherapyConfig> existingConfigMap = existingConfigs.stream()
+                .collect(Collectors.toMap(TherapyConfig::getMaterialNumber, Function.identity()));
 
-		List<TherapyConfig> updatedConfigs = materialNumbers.stream().map(materialNumber -> {
-			TherapyConfig config = existingConfigMap.get(materialNumber);
+        List<TherapyConfig> updatedConfigs = materialNumbers.stream().map(materialNumber -> {
+            TherapyConfig config = existingConfigMap.get(materialNumber);
 
-			if (config != null) {
-				config.setIsPatientInformationRequired(isPatientInformationRequired);
-				config.setIsCoiIdRequired(isCoiIdRequired);
-				return config;
-			}
-			else {
-				return TherapyConfig.builder()
-					.materialNumber(materialNumber)
-					.isPatientInformationRequired(isPatientInformationRequired)
-					.isCoiIdRequired(isCoiIdRequired)
-					.build();
-			}
-		}).collect(Collectors.toList());
+            if (config != null) {
+                config.setIsPatientInformationRequired(isPatientInformationRequired);
+                config.setIsCoiIdRequired(isCoiIdRequired);
+                return config;
+            } else {
+                return TherapyConfig.builder()
+                        .materialNumber(materialNumber)
+                        .isPatientInformationRequired(isPatientInformationRequired)
+                        .isCoiIdRequired(isCoiIdRequired)
+                        .build();
+            }
+        }).collect(Collectors.toList());
 
-		therapyConfigRepository.saveAll(updatedConfigs);
-	}
+        therapyConfigRepository.saveAll(updatedConfigs);
+    }
 
-	@Override
-	public MaterialDetailsResponseDTO findTherapyDetailsByMaterialNumber(String materialNumber)
-			throws ResourceNotFoundException {
-		MaterialResponseDTO responseDTO = therapyConfigRepository.findDetailedByMaterialNumber(materialNumber)
-			.orElseThrow(() -> new ResourceNotFoundException(
-					"Therapy config not found with materialNumber: " + materialNumber));
+    @Override
+    public MaterialDetailsResponseDTO findTherapyDetailsByMaterialNumber(String materialNumber)
+            throws ResourceNotFoundException {
+        MaterialResponseDTO responseDTO = therapyConfigRepository.findDetailedByMaterialNumber(materialNumber)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Therapy config not found with materialNumber: " + materialNumber));
 
-		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
-				QuestionnaireConfigurationType.Material, materialNumber, "", "", "");
+        List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
+                QuestionnaireConfigurationType.Material, materialNumber, "", "", "");
 
-		MaterialDetailsResponseDTO materialDetailsResponseDTO = MaterialDetailsResponseDTO.builder()
-			.questionnaires(questionnaires)
-			.build();
-		materialDetailsResponseDTO.setTherapy(responseDTO.getTherapy());
-		materialDetailsResponseDTO.setMaterialConfig(responseDTO.getMaterialConfig());
-		return materialDetailsResponseDTO;
-	}
+        MaterialDetailsResponseDTO materialDetailsResponseDTO = MaterialDetailsResponseDTO.builder()
+                .questionnaires(questionnaires)
+                .build();
+        materialDetailsResponseDTO.setTherapy(responseDTO.getTherapy());
+        materialDetailsResponseDTO.setMaterialConfig(responseDTO.getMaterialConfig());
+        return materialDetailsResponseDTO;
+    }
 
-	@Override
-	@Transactional
-	public void deleteConfigByMaterialNumber(String materialNumber) throws ResourceNotFoundException {
-		int deletedCount = therapyConfigRepository.removeTherapyConfigByMaterialNumber(materialNumber);
+    @Override
+    @Transactional
+    public void deleteConfigByMaterialNumber(String materialNumber) throws ResourceNotFoundException {
+        int deletedCount = therapyConfigRepository.removeTherapyConfigByMaterialNumber(materialNumber);
 
-		if (deletedCount == 0) {
-			throw new ResourceNotFoundException(
-					String.format("Therapy config not found with materialNumber: %s", materialNumber));
-		}
-	}
+        if (deletedCount == 0) {
+            throw new ResourceNotFoundException(
+                    String.format("Therapy config not found with materialNumber: %s", materialNumber));
+        }
+    }
 
-	@Override
-	public MaterialResponseDTO findTherapyDetailsById(Long id) throws ResourceNotFoundException {
-		return therapyConfigRepository.findTherapyDetailsById(id)
-			.orElseThrow(() -> new ResourceNotFoundException("Therapy not found with id: " + id));
-	}
+    @Override
+    public MaterialResponseDTO findTherapyDetailsById(Long id) throws ResourceNotFoundException {
+        return therapyConfigRepository.findTherapyDetailsById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Therapy not found with id: " + id));
+    }
 
 }
