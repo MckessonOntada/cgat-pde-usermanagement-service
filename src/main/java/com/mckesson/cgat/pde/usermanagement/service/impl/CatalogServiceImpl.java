@@ -158,10 +158,11 @@ public class CatalogServiceImpl implements CatalogService {
 
 	@Override
 	public CSVProcessingResult uploadSPCatalog(MultipartFile catalogsData) {
+		validateCSVFile(catalogsData);
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(catalogsData.getInputStream()));
 				CSVParser csvParser = new CSVParser(reader,
 						CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build())) {
-			validateCSVFile(catalogsData, csvParser);
+			validateCSVFileData(csvParser);
 
 			List<String[]> errorRecords = new ArrayList<>();
 			Set<String> accountNumbers = new HashSet<>();
@@ -190,6 +191,25 @@ public class CatalogServiceImpl implements CatalogService {
 		catch (IOException e) {
 			log.error("Unable to process output CSV file. Error: {}", e.getMessage(), e);
 			throw new CSVGenerationException("Failed to generate output CSV file", e);
+		}
+	}
+
+	private void validateCSVFile(MultipartFile file) {
+		String contentType = file.getContentType();
+		String originalFilename = file.getOriginalFilename();
+
+		boolean isValidType = StringUtils.isNotEmpty(contentType)
+				&& (contentType.equals("text/csv") || contentType.equals("application/vnd.ms-excel"));
+
+		boolean isValidExtension = StringUtils.isNotEmpty(originalFilename)
+				&& originalFilename.toLowerCase().endsWith(".csv");
+
+		if (!isValidType || !isValidExtension) {
+			throw new FileNotValidException("Invalid file type. Please upload a valid .csv file.");
+		}
+
+		if (file.isEmpty()) {
+			throw new FileNotValidException("Error: The uploaded file is empty or contains no data.");
 		}
 	}
 
@@ -227,13 +247,15 @@ public class CatalogServiceImpl implements CatalogService {
 
 	private Map<String, Account> getAccountMap(Set<String> accountNumbers) {
 		return accountRepository
-			.findByAccountNumberAndChaneelTypeIn(accountNumbers, ChannelType.SPECIALITY_PHARMA.name())
+			.findByAccountNumberInAndChannelTypeAndIsActive(accountNumbers, ChannelType.SPECIALITY_PHARMA, true)
 			.stream()
 			.collect(Collectors.toMap(Account::getAccountNumber, Function.identity()));
 	}
 
 	private Map<String, Therapy> getTherapyMap(Set<String> productIds) {
-		return therapyRepository.findByMaterialNumberAndChanelTypeIn(productIds, ChannelType.SPECIALITY_PHARMA.name())
+		return therapyRepository
+			.findByMaterialNumberInAndChannelTypeAndItemStatus(productIds, ChannelType.SPECIALITY_PHARMA,
+					THERAPY_ITEM_STATUS_ACTIVE)
 			.stream()
 			.collect(Collectors.toMap(Therapy::getMaterialNumber, Function.identity()));
 	}
@@ -241,10 +263,12 @@ public class CatalogServiceImpl implements CatalogService {
 	private void processCatalogActions(Set<SPCatalogLinkDTO> catalogsDataList, Map<String, Account> accountMap,
 			Map<String, Therapy> materialMap, List<CatalogPrice> catalogsToUpdate, List<String[]> errorRecords) {
 
-		List<CatalogPrice> existingCatalogs = catalogPriceRepository.findByAccountNumbersAndProductIdsAndChannelType(
-				catalogsDataList.stream().map(SPCatalogLinkDTO::getAccountNumber).toList(),
-				catalogsDataList.stream().map(SPCatalogLinkDTO::getProductId).toList(),
-				ChannelType.SPECIALITY_PHARMA.name());
+		List<CatalogPrice> existingCatalogs = catalogsDataList.stream()
+			.map(dto -> catalogPriceRepository.findBySapMaterialAndSoldToCustomerAndChannelType(dto.getProductId(),
+					dto.getAccountNumber(), ChannelType.SPECIALITY_PHARMA))
+			.filter(Optional::isPresent)
+			.map(Optional::get)
+			.toList();
 
 		Map<Pair<String, String>, CatalogPrice> existingCatalogMap = existingCatalogs.stream()
 			.collect(Collectors.toMap(c -> Pair.of(c.getSoldToCustomer(), c.getSapMaterial()), Function.identity()));
@@ -345,24 +369,7 @@ public class CatalogServiceImpl implements CatalogService {
 			.build();
 	}
 
-	private void validateCSVFile(MultipartFile file, CSVParser csvParser) {
-		String contentType = file.getContentType();
-		String originalFilename = file.getOriginalFilename();
-
-		boolean isValidType = StringUtils.isNotEmpty(contentType)
-				&& (contentType.equals("text/csv") || contentType.equals("application/vnd.ms-excel"));
-
-		boolean isValidExtension = StringUtils.isNotEmpty(originalFilename)
-				&& originalFilename.toLowerCase().endsWith(".csv");
-
-		if (!isValidType || !isValidExtension) {
-			throw new FileNotValidException("Invalid file type. Please upload a valid .csv file.");
-		}
-
-		if (file.isEmpty()) {
-			throw new FileNotValidException("Error: The uploaded file is empty or contains no data.");
-		}
-
+	private void validateCSVFileData(CSVParser csvParser) {
 		if (!csvParser.getHeaderMap().keySet().containsAll(REQUIRED_HEADERS)) {
 			throw new FileNotValidException("Error: The uploaded file is missing required headers.");
 		}

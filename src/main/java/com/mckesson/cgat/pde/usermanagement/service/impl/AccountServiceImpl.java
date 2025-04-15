@@ -205,7 +205,7 @@ public class AccountServiceImpl implements AccountService {
 
 	@Override
 	public List<Account> getSPAccounts() {
-		return accountRepository.findByChannelTypeAndIsActive(ChannelType.SPECIALITY_PHARMA.name());
+		return accountRepository.findAllByChannelTypeAndIsActive(ChannelType.SPECIALITY_PHARMA, true);
 	}
 
 }

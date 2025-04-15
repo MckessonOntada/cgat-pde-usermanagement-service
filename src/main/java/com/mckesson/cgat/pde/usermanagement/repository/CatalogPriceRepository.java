@@ -1,8 +1,10 @@
 package com.mckesson.cgat.pde.usermanagement.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponse;
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
+import org.springframework.data.util.Pair;
 
 public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long> {
 
@@ -75,9 +78,7 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 	Page<CatalogPrice> findAllGlobalCatalogs(@Param("accountIds") List<String> accountIds,
 			@Param("partnerFunction") String partnerFunction, @Param("query") String query, Pageable paging);
 
-	@Query(value = "SELECT * FROM catalog.catalog_price WHERE sold_to_customer IN :accountNumbers AND sap_material IN :productIds AND channel_type = :channelType",
-			nativeQuery = true)
-	List<CatalogPrice> findByAccountNumbersAndProductIdsAndChannelType(List<String> accountNumbers,
-			List<String> productIds, String channelType);
+	Optional<CatalogPrice> findBySapMaterialAndSoldToCustomerAndChannelType(String sapMaterial, String soldToCustomer,
+			ChannelType channelType);
 
 }

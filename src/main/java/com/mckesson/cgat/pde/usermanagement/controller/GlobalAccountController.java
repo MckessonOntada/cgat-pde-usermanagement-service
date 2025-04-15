@@ -1,15 +1,14 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.OutputStreamWriter;
 import java.util.List;
 
 import com.mckesson.cgat.pde.usermanagement.model.*;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +23,7 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 @RestController
 @Tag(name = "Accounts", description = "Controller for getting all unlinked accounts.")
@@ -55,20 +55,24 @@ public class GlobalAccountController {
 		return new ResponseEntity<>(accounts, HttpStatus.OK);
 	}
 
-	@GetMapping(value = "spAccounts/download", produces = "text/csv")
+	@GetMapping(value = "/download", produces = "text/csv")
 	@RequirePermissions({ Permission.MANAGE_SP_CATALOG })
 	@Operation(summary = "Download csv file contains all speciality pharma active accounts")
-	public void downloadSPAccountsCsvFile(HttpServletResponse response) throws IOException {
-		response.setContentType("text/csv");
-		response.setHeader("Content-Disposition", "attachment; filename=\"SPAccounts.csv\"");
-		response.setCharacterEncoding("UTF-8");
+	public ResponseEntity<StreamingResponseBody> downloadSPAccountsCsvFile() {
+		StreamingResponseBody stream = outputStream -> {
+			OutputStreamWriter writer = new OutputStreamWriter(outputStream);
+			writer.write("Account Number,Account Name" + System.lineSeparator());
 
-		try (PrintWriter writer = response.getWriter()) {
-			writer.println("Account Number, Account Name");
 			for (Account account : accountService.getSPAccounts()) {
-				writer.printf("\"%s\",\"%s\"%n", account.getAccountNumber(), account.getAccountName());
+				writer.write(String.format("\"%s\",\"%s\"%n", account.getAccountNumber(), account.getAccountName()));
 			}
-		}
+			writer.flush();
+		};
+
+		return ResponseEntity.ok()
+			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "SPAccounts.csv")
+			.contentType(MediaType.parseMediaType("text/csv"))
+			.body(stream);
 	}
 
 }

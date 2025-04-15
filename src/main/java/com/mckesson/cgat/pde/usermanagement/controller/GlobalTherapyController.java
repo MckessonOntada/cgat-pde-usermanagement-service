@@ -4,7 +4,6 @@ import com.mckesson.cgat.pde.usermanagement.dto.MaterialDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyConfigRequestDTO;
 import com.mckesson.cgat.pde.usermanagement.model.*;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -12,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,9 +30,9 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.OutputStreamWriter;
 import java.util.List;
 
 import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.SORT_ORDER_ASC;
@@ -119,21 +119,25 @@ public class GlobalTherapyController {
 
 	}
 
-	@GetMapping(value = "spMaterials/download", produces = "text/csv")
+	@GetMapping(value = "/download", produces = "text/csv")
 	@RequirePermissions({ Permission.MANAGE_SP_CATALOG })
 	@Operation(summary = "Download csv file contains all speciality pharma active materials")
-	public void downloadSPMaterialsCsvFile(HttpServletResponse response) throws IOException {
-		response.setContentType("text/csv");
-		response.setHeader("Content-Disposition", "attachment; filename=\"SPMaterials.csv\"");
-		response.setCharacterEncoding("UTF-8");
+	public ResponseEntity<StreamingResponseBody> downloadSPMaterialsCsvFile() {
+		StreamingResponseBody stream = outputStream -> {
+			OutputStreamWriter writer = new OutputStreamWriter(outputStream);
+			writer.write("Product ID,Product Name,Product NDC" + System.lineSeparator());
 
-		try (PrintWriter writer = response.getWriter()) {
-			writer.println("Product ID, Product Name, Product NDC");
 			for (Therapy therapy : therapyService.getSPTherapies()) {
-				writer.printf("\"%s\",\"%s\",\"%s\"%n", therapy.getMaterialNumber(), therapy.getMaterialDescription(),
-						therapy.getNdcNumber());
+				writer.write(String.format("\"%s\",\"%s\",\"%s\"%n", therapy.getMaterialNumber(),
+						therapy.getMaterialDescription(), therapy.getNdcNumber()));
 			}
-		}
+			writer.flush();
+		};
+
+		return ResponseEntity.ok()
+			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "SPMaterials.csv")
+			.contentType(MediaType.parseMediaType("text/csv"))
+			.body(stream);
 	}
 
 }

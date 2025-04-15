@@ -75,6 +75,10 @@ public class CustomUtils {
 
 	public static final String CATALOG_ACTION_STATUS_UNLINK = "Unlink";
 
+	public static final String THERAPY_ITEM_STATUS_ACTIVE = "A";
+
+	public static final String THERAPY_ITEM_STATUS_INACTIVE = "V";
+
 	public static boolean validateEmail(String emailAddress) {
 		return Pattern.compile(regexPattern).matcher(emailAddress).matches();
 	}

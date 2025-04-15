@@ -254,12 +254,9 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 
 	Optional<Therapy> findByMaterialNumberAndChannelType(String materialNumber, ChannelType channelType);
 
-	@Query(value = "SELECT material_number, material_description, ndc_number FROM catalog.material WHERE channel_type = :channelType AND item_status = 'A'",
-			nativeQuery = true)
-	List<Therapy> findByChannelTypeAndItemStatus(String channelType);
+	List<Therapy> findByMaterialNumberInAndChannelTypeAndItemStatus(Set<String> productIds, ChannelType channelType,
+			String itemStatus);
 
-	@Query(value = "SELECT * FROM catalog.material WHERE material_number IN (:productIds) AND channel_type = :channelType AND item_status = 'A'",
-			nativeQuery = true)
-	List<Therapy> findByMaterialNumberAndChanelTypeIn(Set<String> productIds, String channelType);
+	List<Therapy> findAllByChannelTypeAndItemStatus(ChannelType channelType, String status);
 
 }

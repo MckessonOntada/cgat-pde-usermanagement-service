@@ -278,7 +278,8 @@ public class TherapyServiceImpl implements TherapyService {
 
 	@Override
 	public List<Therapy> getSPTherapies() {
-		return therapyRepository.findByChannelTypeAndItemStatus(ChannelType.SPECIALITY_PHARMA.name());
+		return therapyRepository.findAllByChannelTypeAndItemStatus(ChannelType.SPECIALITY_PHARMA,
+				THERAPY_ITEM_STATUS_ACTIVE);
 	}
 
 }
