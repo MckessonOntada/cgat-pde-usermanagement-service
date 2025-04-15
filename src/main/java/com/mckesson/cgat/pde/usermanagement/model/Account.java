@@ -125,7 +125,7 @@ public class Account implements Serializable {
 	@Convert(converter = NumericBooleanConverter.class)
 	private Boolean isActive = true;
 
-	@ManyToMany(fetch = FetchType.LAZY)
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "account_provider_mapping", joinColumns = @JoinColumn(name = "account_id"),
 			inverseJoinColumns = @JoinColumn(name = "provider_id"))
 	private Set<Provider> providers;
