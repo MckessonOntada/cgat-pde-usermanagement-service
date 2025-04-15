@@ -60,7 +60,7 @@ public class GlobalCrosswalkController {
 	@RequirePermissions({ Permission.VIEW_MATERIAL_CROSSWALK })
 	@GetMapping
 	@Operation(summary = "Fetch all CrossWalks based on filter provided with pagination capabilities.")
-	Page<CrosswalkResponseDTO> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
+	public ResponseEntity<Page<CrosswalkResponseDTO>> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(defaultValue = "bnbMaterialDesc") String sortBy,
 			@RequestParam(defaultValue = "desc") String sortOrder, @RequestParam(required = false) String query,
@@ -71,7 +71,7 @@ public class GlobalCrosswalkController {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(mappedSortBy).ascending()
 				: Sort.by(mappedSortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-		return crosswalkService.findAll(paging, query, status);
+		return new ResponseEntity<>(crosswalkService.findAll(paging, query, status), HttpStatus.OK);
 	}
 
 }
