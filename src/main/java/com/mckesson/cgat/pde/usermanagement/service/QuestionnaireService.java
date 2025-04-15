@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.service;
 
 import com.mckesson.cgat.pde.usermanagement.dto.DeLinkQuestionnaireConfigurationDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.QuestionnaireConfigurationDTO;
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.Questionnaire;
 import com.mckesson.cgat.pde.usermanagement.model.QuestionnaireConfigurationType;
 import com.mckesson.jbat.auth.module.exception.BadRequestException;
@@ -28,7 +29,7 @@ public interface QuestionnaireService {
 			throws ResourceNotFoundException;
 
 	List<Questionnaire> getAllConfiguredQuestionnaires(String sapMaterial, String soldToCustomer, String shipToCustomer,
-			String variant);
+			String variant, ChannelType channelType);
 
 	Page<Questionnaire> findAll(Pageable paging, String query, List<String> status);
 
@@ -37,6 +38,6 @@ public interface QuestionnaireService {
 	Questionnaire fetchQuestionnaireById(Long questionnaireId) throws ResourceNotFoundException;
 
 	List<Questionnaire> getAllConfiguredQuestionnairesForSpecificType(QuestionnaireConfigurationType type,
-			String sapMaterial, String soldToCustomer, String shipToCustomer, String variant);
+			String sapMaterial, String soldToCustomer, String shipToCustomer, String variant, ChannelType channelType);
 
 }

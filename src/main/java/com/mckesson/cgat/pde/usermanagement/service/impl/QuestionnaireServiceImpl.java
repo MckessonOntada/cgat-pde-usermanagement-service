@@ -3,13 +3,13 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogConfigurationAttributes;
 import com.mckesson.cgat.pde.usermanagement.dto.DeLinkQuestionnaireConfigurationDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.QuestionnaireConfigurationDTO;
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.Questionnaire;
 import com.mckesson.cgat.pde.usermanagement.model.QuestionnaireConfiguration;
 import com.mckesson.cgat.pde.usermanagement.model.QuestionnaireConfigurationType;
 import com.mckesson.cgat.pde.usermanagement.repository.QuestionnaireConfigurationRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.QuestionnaireRepository;
 import com.mckesson.cgat.pde.usermanagement.service.QuestionnaireService;
-import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.auth.module.exception.BadRequestException;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -18,10 +18,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.getConsolidatedStatus;
 
 @Service
 @Slf4j
@@ -90,6 +91,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 						.configuredType(type)
 						.questionnaireId(questionnaire)
 						.entityId(entityId)
+						.channelType(questionnaireConfigurationDTO.getChannelType())
 						.build())))
 			.collect(Collectors.toList());
 
@@ -152,10 +154,10 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 
 	@Override
 	public List<Questionnaire> getAllConfiguredQuestionnaires(String sapMaterial, String soldToCustomer,
-			String shipToCustomer, String variant) {
+			String shipToCustomer, String variant, ChannelType channelType) {
 		String catalogId = getCatalogId(sapMaterial, soldToCustomer, shipToCustomer, variant);
 		List<QuestionnaireConfiguration> allConfiguredQuestionnaires = questionnaireConfigurationRepository
-			.getAllConfiguredQuestionnaires(sapMaterial, soldToCustomer, catalogId);
+			.getAllConfiguredQuestionnaires(sapMaterial, soldToCustomer, catalogId, channelType.name());
 		List<Questionnaire> questionnaires = allConfiguredQuestionnaires.stream()
 			.map(QuestionnaireConfiguration::getQuestionnaireId)
 			.distinct()
@@ -167,18 +169,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 	@Override
 	public Page<Questionnaire> findAll(Pageable paging, String query, List<String> status) {
 
-		String statusActive = CustomUtils.object_status.ALL.name();
-		if (!CollectionUtils.isEmpty(status)) {
-			if (status.stream().anyMatch(i -> i.equalsIgnoreCase(CustomUtils.object_status.ACTIVE.name()))) {
-				statusActive = CustomUtils.object_status.ACTIVE.name();
-			}
-			if (status.stream().anyMatch(i -> i.equalsIgnoreCase(CustomUtils.object_status.INACTIVE.name()))) {
-				statusActive = CustomUtils.object_status.ACTIVE.name().equals(statusActive)
-						? CustomUtils.object_status.ALL.name() : CustomUtils.object_status.INACTIVE.name();
-			}
-		}
-
-		return questionnaireRepository.findAllByQueryText(query, statusActive, paging);
+		return questionnaireRepository.findAllByQueryText(query, getConsolidatedStatus(status), paging);
 	}
 
 	@Override
@@ -196,7 +187,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 
 	@Override
 	public List<Questionnaire> getAllConfiguredQuestionnairesForSpecificType(QuestionnaireConfigurationType type,
-			String sapMaterial, String soldToCustomer, String shipToCustomer, String variant) {
+			String sapMaterial, String soldToCustomer, String shipToCustomer, String variant, ChannelType channelType) {
 
 		CatalogConfigurationAttributes catalogConfigurationAttributes = CatalogConfigurationAttributes.builder()
 			.variant(variant)
@@ -207,7 +198,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 		String entityId = getEntityId(sapMaterial, soldToCustomer, catalogConfigurationAttributes, type);
 
 		List<QuestionnaireConfiguration> allConfiguredQuestionnaires = questionnaireConfigurationRepository
-			.getAllConfiguredQuestionnairesForSpecificType(entityId, type.name());
+			.getAllConfiguredQuestionnairesForSpecificType(entityId, type.name(), channelType.name());
 		List<Questionnaire> questionnaires = allConfiguredQuestionnaires.stream()
 			.map(QuestionnaireConfiguration::getQuestionnaireId)
 			.distinct()
