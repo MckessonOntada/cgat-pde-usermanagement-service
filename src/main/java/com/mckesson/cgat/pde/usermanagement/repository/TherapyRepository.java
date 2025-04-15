@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.repository;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import org.springframework.data.domain.Page;
@@ -262,10 +263,10 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 	@Query(value = """
 			UPDATE catalog.material
 			SET is_crosswalked = :isCrossWalked
-			WHERE material_number = :materialNumber
+			WHERE material_number IN (:materialNumbers)
 			AND channel_type = :channelType
 			""", nativeQuery = true)
-	void updateIsCrossWalkedByMaterialNumberAndChannelType(@Param("isCrossWalked") boolean isCrossWalked,
-			@Param("materialNumber") String materialNumber, @Param("channelType") String channelType);
+	void updateIsCrossWalkedForMaterialNumbersAndChannelType(@Param("isCrossWalked") boolean isCrossWalked,
+			@Param("materialNumbers") Set<String> materialNumbers, @Param("channelType") String channelType);
 
 }
