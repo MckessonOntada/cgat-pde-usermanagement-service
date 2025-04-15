@@ -1,9 +1,15 @@
 package com.mckesson.cgat.pde.usermanagement.model;
 
 import java.io.Serializable;
+import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
 import jakarta.persistence.Column;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
@@ -69,5 +75,11 @@ public class Provider extends AuditColumns implements Serializable {
 
 	@Convert(converter = NumericBooleanConverter.class)
 	private Boolean isActive = true;
+
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "account_provider_mapping", joinColumns = @JoinColumn(name = "provider_id"),
+			inverseJoinColumns = @JoinColumn(name = "account_id"))
+	@JsonIgnore
+	private Set<Account> accounts;
 
 }
