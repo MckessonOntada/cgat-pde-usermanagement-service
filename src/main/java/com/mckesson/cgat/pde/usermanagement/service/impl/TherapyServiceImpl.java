@@ -62,6 +62,9 @@ public class TherapyServiceImpl implements TherapyService {
 
 	public Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, String therapyId, String query, Pageable paging,
 			List<String> channels, String program) {
+		if("340B".equals(program)){
+			program = "340";
+		}
 		return therapyRepository.findAllSoldToAccounts(userId, therapyId, StringUtils.toRootLowerCase(query), paging,
 				channels, program, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 	}
