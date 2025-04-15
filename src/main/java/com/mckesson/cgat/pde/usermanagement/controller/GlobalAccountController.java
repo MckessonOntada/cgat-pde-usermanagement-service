@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
+import java.io.BufferedWriter;
 import java.io.OutputStreamWriter;
 import java.util.List;
 
@@ -60,13 +61,17 @@ public class GlobalAccountController {
 	@Operation(summary = "Download csv file contains all speciality pharma active accounts")
 	public ResponseEntity<StreamingResponseBody> downloadSPAccountsCsvFile() {
 		StreamingResponseBody stream = outputStream -> {
-			OutputStreamWriter writer = new OutputStreamWriter(outputStream);
-			writer.write("Account Number,Account Name" + System.lineSeparator());
+			try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
+				writer.write("Account Number,Account Name");
+				writer.newLine();
 
-			for (Account account : accountService.getSPAccounts()) {
-				writer.write(String.format("\"%s\",\"%s\"%n", account.getAccountNumber(), account.getAccountName()));
+				for (Account account : accountService.getSPAccounts()) {
+					writer.write(String.format("\"%s\",\"%s\"", account.getAccountNumber(), account.getAccountName()));
+					writer.newLine();
+				}
+
+				writer.flush();
 			}
-			writer.flush();
 		};
 
 		return ResponseEntity.ok()

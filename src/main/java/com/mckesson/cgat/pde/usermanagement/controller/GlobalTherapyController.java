@@ -32,6 +32,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import java.io.BufferedWriter;
 import java.io.OutputStreamWriter;
 import java.util.List;
 
@@ -124,14 +125,18 @@ public class GlobalTherapyController {
 	@Operation(summary = "Download csv file contains all speciality pharma active materials")
 	public ResponseEntity<StreamingResponseBody> downloadSPMaterialsCsvFile() {
 		StreamingResponseBody stream = outputStream -> {
-			OutputStreamWriter writer = new OutputStreamWriter(outputStream);
-			writer.write("Product ID,Product Name,Product NDC" + System.lineSeparator());
+			try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
+				writer.write("Product ID,Product Name,Product NDC");
+				writer.newLine();
 
-			for (Therapy therapy : therapyService.getSPTherapies()) {
-				writer.write(String.format("\"%s\",\"%s\",\"%s\"%n", therapy.getMaterialNumber(),
-						therapy.getMaterialDescription(), therapy.getNdcNumber()));
+				for (Therapy therapy : therapyService.getSPTherapies()) {
+					writer.write(String.format("\"%s\",\"%s\",\"%s\"", therapy.getMaterialNumber(),
+							therapy.getMaterialDescription(), therapy.getNdcNumber()));
+					writer.newLine();
+				}
+
+				writer.flush();
 			}
-			writer.flush();
 		};
 
 		return ResponseEntity.ok()
