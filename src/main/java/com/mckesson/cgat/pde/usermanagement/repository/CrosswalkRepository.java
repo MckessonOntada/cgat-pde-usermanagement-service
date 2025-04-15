@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.mckesson.cgat.pde.usermanagement.model.Crosswalk;
+import java.util.List;
 
 public interface CrosswalkRepository extends JpaRepository<Crosswalk, Long> {
 
@@ -38,5 +39,7 @@ public interface CrosswalkRepository extends JpaRepository<Crosswalk, Long> {
 			)
 			""", nativeQuery = true)
 	Page<Crosswalk> findAllCrosswalks(Pageable paging, String query, @Param("status") String status);
+
+	List<Crosswalk> findBySpProductId(String spProductId);
 
 }

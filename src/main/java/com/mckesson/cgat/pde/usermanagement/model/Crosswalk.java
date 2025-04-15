@@ -17,11 +17,13 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Table(name = "crosswalk", schema = "catalog",
 		indexes = { @Index(name = "idx_crosswalk_material_productid_composite_key",
 				columnList = "bnb_material_number, sp_product_id") })
