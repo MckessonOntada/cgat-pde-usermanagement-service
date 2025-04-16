@@ -269,4 +269,6 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 	void updateIsCrossWalkedForMaterialNumbersAndChannelType(@Param("isCrossWalked") boolean isCrossWalked,
 			@Param("materialNumbers") Set<String> materialNumbers, @Param("channelType") String channelType);
 
+	List<Therapy> findAllByChannelTypeAndItemStatus(ChannelType channelType, String itemStatus);
+
 }

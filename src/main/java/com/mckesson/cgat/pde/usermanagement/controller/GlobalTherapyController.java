@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +33,10 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import java.io.BufferedWriter;
+import java.io.OutputStreamWriter;
 import java.util.List;
 
 import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.SORT_ORDER_ASC;
@@ -117,6 +121,31 @@ public class GlobalTherapyController {
 		log.debug("Fetching therapy details with materialNumber: {}", id);
 		return new ResponseEntity<>(therapyService.findTherapyDetailsById(id), HttpStatus.OK);
 
+	}
+
+	@GetMapping(value = "/download", produces = "text/csv")
+	@Operation(summary = "Download csv file contains all Buy & Bill active materials")
+	public ResponseEntity<StreamingResponseBody> downloadBNBMaterialsCsvFile(
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) {
+		StreamingResponseBody stream = outputStream -> {
+			try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
+				writer.write("Buy & Bill Material Id,Buy & Bill Material description,Buy & Bill Material NDC");
+				writer.newLine();
+
+				for (Therapy therapy : therapyService.getBNBTherapies(channelType)) {
+					writer.write(String.format("\"%s\",\"%s\",\"%s\"", therapy.getMaterialNumber(),
+							therapy.getMaterialDescription(), therapy.getNdcNumber()));
+					writer.newLine();
+				}
+
+				writer.flush();
+			}
+		};
+
+		return ResponseEntity.ok()
+			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "Material_info.csv")
+			.contentType(MediaType.parseMediaType("text/csv"))
+			.body(stream);
 	}
 
 }

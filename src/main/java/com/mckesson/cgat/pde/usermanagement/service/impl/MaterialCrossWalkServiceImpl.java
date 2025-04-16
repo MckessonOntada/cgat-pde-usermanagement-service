@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialCrossWalkConfigRecordDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
+import com.mckesson.cgat.pde.usermanagement.exception.custom.SystemFailureException;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.MaterialCrossWalkAction;
 import com.mckesson.cgat.pde.usermanagement.model.MaterialCrossWalkConfig;
@@ -9,6 +10,9 @@ import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.cgat.pde.usermanagement.repository.MaterialCrossWalkConfigRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.TherapyRepository;
 import com.mckesson.cgat.pde.usermanagement.service.MaterialCrossWalkService;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -34,50 +38,61 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 
 	private final int BATCH_SIZE = 100;
 
+	private final Validator validator;
+
 	public MaterialCrossWalkServiceImpl(MaterialCrossWalkConfigRepository materialCrossWalkConfigRepository,
-			TherapyRepository therapyRepository) {
+			TherapyRepository therapyRepository, Validator validator) {
 		this.materialCrossWalkConfigRepository = materialCrossWalkConfigRepository;
 		this.therapyRepository = therapyRepository;
+		this.validator = validator;
 	}
 
 	@Override
 	@Transactional
-	public Boolean uploadCrossWalks(MultipartFile crossWalkDataFile, ByteArrayOutputStream outputStream) {
+	public Boolean uploadCrossWalks(MultipartFile crossWalkDataFile, ServletOutputStream outputStream) {
 		List<MaterialCrossWalkConfigRecordDTO> crossWalkConfigsToAdd = new ArrayList<>();
 		List<MaterialCrossWalkConfigRecordDTO> crossWalkConfigsToDelete = new ArrayList<>();
 
 		Map<MaterialCrossWalkConfigRecordDTO, String> failedCrossWalks = new LinkedHashMap<>();
 
-		parseCrossWalkDataFile(crossWalkDataFile, crossWalkConfigsToAdd, crossWalkConfigsToDelete, failedCrossWalks);
+		try {
+			// Parse the CSV file and perform the validation
+			parseCrossWalkDataFile(crossWalkDataFile, crossWalkConfigsToAdd, crossWalkConfigsToDelete,
+					failedCrossWalks);
 
-		/*
-		 * Steps: 1) Validation if provided Bnb material and sp material exists in db. 2)
-		 * fetch existing cross walk configs from DB to prevent the linking of existing SP
-		 * product id to different BnB material. 3) Remove configs from db for records
-		 * status = Unlink. 4) Add configs in db in batch for records status = Link 5)
-		 * Update crossWalk boolean for BnBMaterials and SpProductIds
-		 *
-		 */
-		List<String> existingBnbMaterialNumbers = fetchBnbTherapies(crossWalkConfigsToAdd, crossWalkConfigsToDelete);
-		List<String> existingSPProductIds = fetchSPTherapies(crossWalkConfigsToAdd, crossWalkConfigsToDelete);
+			List<String> existingBnbMaterialNumbers = fetchBnbTherapies(crossWalkConfigsToAdd,
+					crossWalkConfigsToDelete);
+			List<String> existingSPProductIds = fetchSPTherapies(crossWalkConfigsToAdd, crossWalkConfigsToDelete);
 
-		Map<String, MaterialCrossWalkConfig> spProductIdToConfigMap = fetchExistingCrossWalkConfigsForSPs(
-				existingSPProductIds);
+			Map<String, MaterialCrossWalkConfig> spProductIdToConfigMap = fetchExistingCrossWalkConfigsForSPs(
+					existingSPProductIds);
 
-		List<MaterialCrossWalkConfig> entitiesToDelete = validateCrossWalkConstraintsAndGetConfigs(
-				crossWalkConfigsToDelete, failedCrossWalks, existingBnbMaterialNumbers, existingSPProductIds,
-				spProductIdToConfigMap);
+			List<MaterialCrossWalkConfig> entitiesToDelete = validateCrossWalkConstraintsAndGetConfigs(
+					crossWalkConfigsToDelete, failedCrossWalks, existingBnbMaterialNumbers, existingSPProductIds,
+					spProductIdToConfigMap);
 
-		List<MaterialCrossWalkConfig> entitiesToAdd = validateCrossWalkConstraintsAndGetConfigs(crossWalkConfigsToAdd,
-				failedCrossWalks, existingBnbMaterialNumbers, existingSPProductIds, spProductIdToConfigMap);
+			List<MaterialCrossWalkConfig> entitiesToAdd = validateCrossWalkConstraintsAndGetConfigs(
+					crossWalkConfigsToAdd, failedCrossWalks, existingBnbMaterialNumbers, existingSPProductIds,
+					spProductIdToConfigMap);
 
-		removeConfigsFromDB(entitiesToDelete);
+			// Removing configurations and saving in batches
+			removeConfigsFromDB(entitiesToDelete);
 
-		saveOrUpdateInBatches(entitiesToAdd, BATCH_SIZE);
+			saveOrUpdateInBatches(entitiesToAdd, BATCH_SIZE);
 
-		updateCrossWalkFlagForMaterials(entitiesToDelete, entitiesToAdd);
+			// Update flags for materials
+			updateCrossWalkFlagForMaterials(entitiesToDelete, entitiesToAdd);
 
-		createOutputCSV(outputStream, failedCrossWalks);
+			// Generate output CSV for failed cross walks
+			createOutputCSV(outputStream, failedCrossWalks);
+		}
+		catch (FileNotValidException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			log.error("System failure occurred during upload: {}", e.getMessage(), e);
+			throw new SystemFailureException("An unexpected error occurred during the upload. Please try again later.");
+		}
 
 		return failedCrossWalks.isEmpty();
 	}
@@ -89,14 +104,20 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(crossWalkDataFile.getInputStream()));
 				CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
 
-			for (CSVRecord record : csvParser) {
-				if (record.stream().allMatch(String::isBlank)) {
-					break;
-				}
-				List<String> recordData = record.toList();
+			Map<String, Integer> headerMap = csvParser.getHeaderMap();
+			validateHeaders(headerMap);
 
-				createCrossWalkConfigFromRecord(recordData, crossWalkConfigsToAdd, crossWalkConfigsToDelete,
-						failedCrossWalks);
+			boolean isEmpty = true;
+			for (CSVRecord record : csvParser) {
+				if (record.stream().anyMatch(value -> !value.isBlank())) {
+					isEmpty = false;
+					List<String> recordData = record.toList();
+					createCrossWalkConfigFromRecord(recordData, crossWalkConfigsToAdd, crossWalkConfigsToDelete,
+							failedCrossWalks);
+				}
+			}
+			if (isEmpty) {
+				throw new FileNotValidException("The uploaded file is empty or contains no data.");
 			}
 
 		}
@@ -107,6 +128,16 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 		catch (IndexOutOfBoundsException e) {
 			log.error("Invalid Cross walk Data file, some columns are missing");
 			throw new FileNotValidException("Invalid Cross walk Data file, some columns are missing");
+		}
+	}
+
+	private void validateHeaders(Map<String, Integer> headerMap) {
+		List<String> expectedHeaders = List.of("Buy & Bill Material ID", "Buy & Bill Material Description",
+				"Buy & Bill NDC", "SP Product ID", "SP Product Name", "SP NDC", "Status");
+		for (String expected : expectedHeaders) {
+			if (!headerMap.containsKey(expected)) {
+				throw new FileNotValidException("The uploaded file is invalid. Please upload a valid file");
+			}
 		}
 	}
 
@@ -128,6 +159,16 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 			.spProductName(recordData.get(4))
 			.spNDC(recordData.get(5))
 			.build();
+
+		Set<ConstraintViolation<MaterialCrossWalkConfigRecordDTO>> violations = validator.validate(crossWalkConfig);
+		if (!violations.isEmpty()) {
+			String errorMessage = violations.stream()
+				.map(ConstraintViolation::getMessage)
+				.collect(Collectors.joining("; "));
+			failedCrossWalks.put(crossWalkConfig, errorMessage);
+			return;
+		}
+
 		try {
 			String rowAction = recordData.get(6);
 			MaterialCrossWalkAction crossWalkAction = MaterialCrossWalkAction.fromString(rowAction);

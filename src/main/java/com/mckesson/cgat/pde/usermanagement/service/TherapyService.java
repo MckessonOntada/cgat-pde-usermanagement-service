@@ -58,4 +58,6 @@ public interface TherapyService {
 
 	List<Therapy> findByMaterialNumbersAndChannelType(List<String> materialNumbers, ChannelType channelType);
 
+	List<Therapy> getBNBTherapies(ChannelType channelType);
+
 }
