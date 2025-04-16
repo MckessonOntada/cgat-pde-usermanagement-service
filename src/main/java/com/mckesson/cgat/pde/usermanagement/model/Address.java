@@ -24,7 +24,7 @@ public class Address implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@Size(min = 2, max = 100, groups = BasicInfo.class)
+	@Size(min = 1, max = 100, groups = BasicInfo.class)
 	@Pattern(regexp = "^[-0-9A-Za-z,./ ]+$",
 			message = "Alphanumeric, along with below chararcters allowed Space, hypen, comma, dot. slash.",
 			groups = BasicInfo.class)
@@ -42,8 +42,10 @@ public class Address implements Serializable {
 	@Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ ]+$", message = "City must only contain alphabets.", groups = BasicInfo.class)
 	private String city;
 
-	@Size(min = 2, max = 50, groups = BasicInfo.class)
+	@Size(min = 1, max = 50, groups = BasicInfo.class)
 	@NotEmpty(message = "State is required.")
+	@Pattern(regexp = "^(?! )[A-Za-z ]*(?<! )$",
+			message = "Only alphabets and spaces are allowed, but not start or end with a space")
 	private String state;
 
 	@NotEmpty(message = "ZIP code is required")

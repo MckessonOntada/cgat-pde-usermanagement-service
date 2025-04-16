@@ -10,6 +10,7 @@ on:
         - prod
         - qa
         - qa2
+        - stage
         - uat
         - prod-dr
         required: true

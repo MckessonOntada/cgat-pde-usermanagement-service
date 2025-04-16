@@ -1,15 +1,13 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import com.mckesson.cgat.pde.usermanagement.dto.AccountDetailsResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.model.*;
-import com.mckesson.cgat.pde.usermanagement.service.QuestionnaireService;
+import com.mckesson.cgat.pde.usermanagement.model.Provider;
+import com.mckesson.cgat.pde.usermanagement.repository.ProviderRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -17,9 +15,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import com.mckesson.cgat.pde.usermanagement.dto.AccountDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.AccountDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.ForbiddenActionException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
+import com.mckesson.cgat.pde.usermanagement.mapper.AccountMapper;
+import com.mckesson.cgat.pde.usermanagement.model.Account;
+import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
+import com.mckesson.cgat.pde.usermanagement.model.Practice;
+import com.mckesson.cgat.pde.usermanagement.model.Questionnaire;
+import com.mckesson.cgat.pde.usermanagement.model.QuestionnaireConfigurationType;
+import com.mckesson.cgat.pde.usermanagement.model.User;
+import com.mckesson.cgat.pde.usermanagement.model.UserPreferenceType;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.UserPreferenceRepository;
@@ -27,11 +36,13 @@ import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.cgat.pde.usermanagement.service.QuestionnaireService;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
+import com.mckesson.cgat.pde.usermanagement.utils.OrganizationContext;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import jakarta.transaction.Transactional;
 
 @Service
+@Slf4j
 public class AccountServiceImpl implements AccountService {
 
 	private final AccountRepository accountRepository;
@@ -44,27 +55,52 @@ public class AccountServiceImpl implements AccountService {
 
 	private final QuestionnaireService questionnaireService;
 
+	private final AccountMapper accountMapper;
+
+	private final ProviderRepository providerRepository;
+
 	public AccountServiceImpl(AccountRepository accountRepository, PracticeRepository practiceRepository,
 			UserRepository userRepository, UserPreferenceRepository userPreferenceRepository,
-			QuestionnaireService questionnaireService) {
+			QuestionnaireService questionnaireService, AccountMapper accountMapper,
+			ProviderRepository providerRepository) {
 		this.accountRepository = accountRepository;
 		this.practiceRepository = practiceRepository;
 		this.userRepository = userRepository;
 		this.userPreferenceRepository = userPreferenceRepository;
 		this.questionnaireService = questionnaireService;
+		this.accountMapper = accountMapper;
+		this.providerRepository = providerRepository;
 	}
 
 	@Override
-	public Account createAccount(Account account) {
+	public Account createAccount(AccountDTO accountDto) {
+		Account account = accountMapper.mapToModel(accountDto);
+		account.setPracticeId(OrganizationContext.getCurrentOrgId());
+		account.setChannelType(ChannelType.SPECIALITY_PHARMA);
+		populateAddress(account, accountDto);
 		return accountRepository.save(account);
 	}
 
+	private void populateAddress(Account account, AccountDTO accountDto) {
+		account.getAddress().setEmail(accountDto.getContact().getEmail());
+		account.getAddress().setTelephone(accountDto.getContact().getPhone());
+		account.getAddress().setFax(accountDto.getContact().getFax());
+	}
+
 	@Override
-	public Account updateAccount(Long accountId, Account obj) throws ResourceNotFoundException {
+	public Account updateAccount(Long accountId, AccountDTO accountDto) throws ResourceNotFoundException {
 		Account account = getAccount(accountId);
-		if (account != null)
-			obj.setId(accountId);
-		return accountRepository.save(obj);
+		if (account == null)
+			throw new ResourceNotFoundException("Account not found with id: " + accountId);
+
+		account.setAccountName(accountDto.getAccountName());
+		account.getName().setFirstName(accountDto.getFirstName());
+		account.getName().setMiddleName(accountDto.getMiddleName());
+		account.getName().setLastName(accountDto.getLastName());
+		account.getAddress().setEmail(accountDto.getContact().getEmail());
+		account.getAddress().setTelephone(accountDto.getContact().getPhone());
+		account.getAddress().setFax(accountDto.getContact().getFax());
+		return accountRepository.save(account);
 	}
 
 	@Override
@@ -85,8 +121,8 @@ public class AccountServiceImpl implements AccountService {
 
 	@Override
 	public Page<Account> findAll(Pageable paging, String query, List<String> status, Long userId, Long practiceId,
-			AccountPartnerFunction partnerFunction, List<String> salesOrg, List<String> distChannels)
-			throws ResourceNotFoundException {
+			AccountPartnerFunction partnerFunction, List<String> salesOrg, List<String> distChannels,
+			ChannelType channelType) throws ResourceNotFoundException {
 		query = StringUtils.toRootLowerCase(query);
 		String statusActive = CustomUtils.object_status.ALL.name();
 		if (!CollectionUtils.isEmpty(status)) {
@@ -107,10 +143,10 @@ public class AccountServiceImpl implements AccountService {
 			if (!user.isPresent())
 				throw new ResourceNotFoundException("User not found with id: " + userId);
 			return accountRepository.findAccountsByUser(userId, query, statusActive, paging, practiceId,
-					partnerFunction.getPartnerFunctionType(), salesOrg, distChannels);
+					partnerFunction.getPartnerFunctionType(), salesOrg, distChannels, channelType.name());
 		}
 		return accountRepository.findAllByQueryText(query, statusActive, paging, practiceId,
-				partnerFunction.getPartnerFunctionType(), salesOrg, distChannels);
+				partnerFunction.getPartnerFunctionType(), salesOrg, distChannels, channelType.name());
 	}
 
 	@Transactional
@@ -164,7 +200,8 @@ public class AccountServiceImpl implements AccountService {
 		Account account = getAccount(accountId);
 
 		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
-				QuestionnaireConfigurationType.Account, "", account.getAccountNumber(), "", "");
+				QuestionnaireConfigurationType.Account, "", account.getAccountNumber(), "", "",
+				account.getChannelType());
 
 		AccountDetailsResponseDTO detailsResponseDTO = AccountDetailsResponseDTO.builder()
 			.account(account)
@@ -172,6 +209,49 @@ public class AccountServiceImpl implements AccountService {
 			.build();
 
 		return detailsResponseDTO;
+	}
+
+	@Transactional
+	@Override
+	public Account linkAccountToProviders(Long accountId, List<Long> providerIds) throws ResourceNotFoundException {
+		Account account = accountRepository.findById(accountId)
+			.orElseThrow(() -> new ResourceNotFoundException("Account not found with ID: " + accountId));
+
+		List<Provider> providers = providerRepository.findAllById(providerIds);
+
+		if (providers.size() != providerIds.size()) {
+			throw new ResourceNotFoundException("Some of the provided provider IDs do not exist.");
+		}
+
+		account.getProviders().addAll(providers);
+		return accountRepository.save(account);
+	}
+
+	@Transactional
+	@Override
+	public void delinkAccountFromProvider(Long accountId, Long providerId) throws ResourceNotFoundException {
+		Account account = accountRepository.findById(accountId)
+			.orElseThrow(() -> new ResourceNotFoundException("Account not found with ID: " + accountId));
+		Provider provider = providerRepository.findById(providerId)
+			.orElseThrow(() -> new ResourceNotFoundException("Provider not found with ID: " + providerId));
+
+		account.getProviders().remove(provider);
+		accountRepository.save(account);
+	}
+
+	@Override
+	public Page<Provider> findNonLinkedProvidersByAccountId(String query, Long accountId, Pageable paging,
+			Long practiceId) throws ResourceNotFoundException {
+		log.debug("Fetching non-linked accounts for Account ID: {}", accountId);
+		if (!accountRepository.existsById(accountId)) {
+			throw new ResourceNotFoundException("Account not found with ID: " + accountId);
+		}
+		return providerRepository.findNonLinkedProvidersByAccountId(query, accountId, paging, practiceId);
+	}
+
+	@Override
+	public List<Account> getSPAccounts() {
+		return accountRepository.findAllByChannelTypeAndIsActive(ChannelType.SPECIALITY_PHARMA, true);
 	}
 
 }

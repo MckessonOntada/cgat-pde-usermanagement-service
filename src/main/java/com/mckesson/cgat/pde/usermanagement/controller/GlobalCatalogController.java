@@ -2,31 +2,33 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import java.util.List;
 
+import com.mckesson.cgat.pde.usermanagement.dto.CSVProcessingResult;
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogConfigurationDTO;
-import com.mckesson.cgat.pde.usermanagement.model.CatalogConfiguration;
-import com.mckesson.cgat.pde.usermanagement.model.Permission;
-import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
+import com.mckesson.cgat.pde.usermanagement.model.*;
 import com.mckesson.cgat.pde.usermanagement.service.CatalogService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.flywaydb.core.internal.util.CollectionsUtils;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @Tag(name = "Catalogs", description = "Controller for Managing all catalogs.")
@@ -68,9 +70,10 @@ public class GlobalCatalogController {
 			summary = "Get catalog configuration with catalog price according to materialId, variant, soldTo account and shipTo account")
 	public ResponseEntity<CatalogDetailsResponseDTO> findCatalogConfiguration(@RequestParam String materialId,
 			@RequestParam(required = false) String variant, @RequestParam String shipToAccount,
-			@RequestParam String soldToAccount) throws ResourceNotFoundException {
+			@RequestParam String soldToAccount, @RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType)
+			throws ResourceNotFoundException {
 		CatalogDetailsResponseDTO catalogConfiguration = catalogService.findCatalogConfiguration(materialId, variant,
-				shipToAccount, soldToAccount);
+				shipToAccount, soldToAccount, channelType);
 		return ResponseEntity.ok(catalogConfiguration);
 	}
 
@@ -98,6 +101,22 @@ public class GlobalCatalogController {
 		CatalogConfiguration configuration = catalogService.findCatalogConf(materialId, variant, shipToAccountId,
 				soldToAccountId);
 		return ResponseEntity.ok(configuration);
+	}
+
+	@PostMapping(value = "/upload", consumes = { "multipart/form-data" })
+	@RequirePermissions({ Permission.MANAGE_SP_CATALOG })
+	@Operation(summary = "Upload bulk SP catalogs")
+	public ResponseEntity<?> uploadSPCatalogCsv(@RequestPart("catalogsData") MultipartFile catalogsData) {
+		CSVProcessingResult result = catalogService.uploadSPCatalog(catalogsData);
+
+		if (CollectionsUtils.hasItems(result.getErrors())) {
+			ByteArrayResource resource = new ByteArrayResource(result.getErrorFileContent());
+			return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
+				.contentType(MediaType.parseMediaType("text/csv"))
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=error_report.csv")
+				.body(resource);
+		}
+		return ResponseEntity.ok("File processed successfully, No errors were found.");
 	}
 
 }

@@ -24,6 +24,8 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import lombok.extern.slf4j.Slf4j;
 
+import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.*;
+
 @Service
 @Slf4j
 public class TherapyServiceImpl implements TherapyService {
@@ -133,10 +135,11 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	@Override
-	public Therapy findByMaterialNumber(String materialNumber) throws ResourceNotFoundException {
-		return therapyRepository.findByMaterialNumber(materialNumber)
-			.orElseThrow(
-					() -> new ResourceNotFoundException("Therapy not found with materialNumber: " + materialNumber));
+	public Therapy findByMaterialNumber(String materialNumber, ChannelType channelType)
+			throws ResourceNotFoundException {
+		return therapyRepository.findByMaterialNumberAndChannelType(materialNumber, channelType)
+			.orElseThrow(() -> new ResourceNotFoundException(
+					"Therapy not found with materialNumber: " + materialNumber + " and channelType: " + channelType));
 	}
 
 	public ProgramChannelResponseDTO findAllProgramAndChannels(Long userId, String therapyId) {
@@ -181,11 +184,13 @@ public class TherapyServiceImpl implements TherapyService {
 				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 	}
 
-	public Page<Therapy> findAllGlobalTherapies(String query, Pageable paging) {
+	public Page<Therapy> findAllGlobalTherapies(String query, Pageable paging, List<ChannelType> channelTypes,
+			List<String> status) {
 		try {
 			log.info(" Inside method - findAllGlobalTherapies");
 			log.info("query: {}", StringUtils.toRootLowerCase(query));
-			return therapyRepository.findAllGlobalTherapies(StringUtils.toRootLowerCase(query), paging);
+			return therapyRepository.findAllGlobalTherapies(StringUtils.toRootLowerCase(query),
+					getConsolidatedStatus(status), getConsolidatedChannelType(channelTypes), paging);
 		}
 		catch (Exception e) {
 			log.error("Exception occurred in findAllGlobalTherapies and exception details", e);
@@ -212,9 +217,10 @@ public class TherapyServiceImpl implements TherapyService {
 	@Override
 	@Transactional
 	public void updateTherapyConfigs(List<String> materialNumbers, boolean isPatientInformationRequired,
-			boolean isCoiIdRequired) {
+			boolean isCoiIdRequired, ChannelType channelType) {
 
-		List<TherapyConfig> existingConfigs = therapyConfigRepository.findByMaterialNumberIn(materialNumbers);
+		List<TherapyConfig> existingConfigs = therapyConfigRepository
+			.findByMaterialNumberInAndChannelType(materialNumbers, channelType);
 
 		Map<String, TherapyConfig> existingConfigMap = existingConfigs.stream()
 			.collect(Collectors.toMap(TherapyConfig::getMaterialNumber, Function.identity()));
@@ -232,6 +238,7 @@ public class TherapyServiceImpl implements TherapyService {
 					.materialNumber(materialNumber)
 					.isPatientInformationRequired(isPatientInformationRequired)
 					.isCoiIdRequired(isCoiIdRequired)
+					.channelType(channelType)
 					.build();
 			}
 		}).collect(Collectors.toList());
@@ -240,14 +247,15 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	@Override
-	public MaterialDetailsResponseDTO findTherapyDetailsByMaterialNumber(String materialNumber)
+	public MaterialDetailsResponseDTO findTherapyDetailsByMaterialNumber(String materialNumber, ChannelType channelType)
 			throws ResourceNotFoundException {
-		MaterialResponseDTO responseDTO = therapyConfigRepository.findDetailedByMaterialNumber(materialNumber)
+		MaterialResponseDTO responseDTO = therapyConfigRepository
+			.findDetailedByMaterialNumber(materialNumber, channelType)
 			.orElseThrow(() -> new ResourceNotFoundException(
 					"Therapy config not found with materialNumber: " + materialNumber));
 
 		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
-				QuestionnaireConfigurationType.Material, materialNumber, "", "", "");
+				QuestionnaireConfigurationType.Material, materialNumber, "", "", "", channelType);
 
 		MaterialDetailsResponseDTO materialDetailsResponseDTO = MaterialDetailsResponseDTO.builder()
 			.questionnaires(questionnaires)
@@ -259,8 +267,10 @@ public class TherapyServiceImpl implements TherapyService {
 
 	@Override
 	@Transactional
-	public void deleteConfigByMaterialNumber(String materialNumber) throws ResourceNotFoundException {
-		int deletedCount = therapyConfigRepository.removeTherapyConfigByMaterialNumber(materialNumber);
+	public void deleteConfigByMaterialNumber(String materialNumber, ChannelType channelType)
+			throws ResourceNotFoundException {
+		int deletedCount = therapyConfigRepository.removeTherapyConfigByMaterialNumberAndChannelType(materialNumber,
+				channelType);
 
 		if (deletedCount == 0) {
 			throw new ResourceNotFoundException(
@@ -272,6 +282,12 @@ public class TherapyServiceImpl implements TherapyService {
 	public MaterialResponseDTO findTherapyDetailsById(Long id) throws ResourceNotFoundException {
 		return therapyConfigRepository.findTherapyDetailsById(id)
 			.orElseThrow(() -> new ResourceNotFoundException("Therapy not found with id: " + id));
+	}
+
+	@Override
+	public List<Therapy> getSPTherapies() {
+		return therapyRepository.findAllByChannelTypeAndItemStatus(ChannelType.SPECIALITY_PHARMA,
+				THERAPY_ITEM_STATUS_ACTIVE);
 	}
 
 }

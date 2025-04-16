@@ -6,13 +6,7 @@ import java.time.format.DateTimeFormatter;
 
 import com.mckesson.cgat.pde.usermanagement.model.converters.DistributionChannelConverter;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -107,18 +101,19 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "catalog_price", schema = "catalog")
-public class CatalogPrice {
+public class CatalogPrice extends Auditable {
 
 	public static final DateTimeFormatter DATE_FORMAT_1 = DateTimeFormatter
 		.ofPattern("[MM/dd/yyyy][MM/d/yyyy][M/dd/yyyy][M/d/yyyy]");
 
 	@Id
-	@GeneratedValue(generator = "catalog_price_id_seqkoi ")
-	@SequenceGenerator(name = "catalog_price_id_seq", sequenceName = "catalog_price_id_seq", allocationSize = 1)
+	@GeneratedValue(generator = "catalog_price_id_seq", strategy = GenerationType.SEQUENCE)
+	@SequenceGenerator(name = "catalog_price_id_seq", sequenceName = "catalog_price_id_seq", allocationSize = 1,
+			schema = "catalog")
 	private Long id;
 
 	@Column(name = "tenant_id")
-	public String tenantId;
+	public Integer tenantId;
 
 	@Size(max = 10)
 	@NotBlank
@@ -288,5 +283,9 @@ public class CatalogPrice {
 
 	@Column(name = "deleted")
 	private boolean deleted;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "channel_type")
+	private ChannelType channelType;
 
 }

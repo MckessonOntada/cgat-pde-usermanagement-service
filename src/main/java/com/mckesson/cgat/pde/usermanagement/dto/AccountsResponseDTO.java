@@ -15,9 +15,9 @@ public interface AccountsResponseDTO {
 
 	String getStreet();
 
-	String getStreet_2();
+	String getStreet2();
 
-	String getStreet_3();
+	String getStreet3();
 
 	String getTelephone();
 

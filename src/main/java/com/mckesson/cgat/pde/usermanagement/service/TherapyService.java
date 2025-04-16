@@ -3,12 +3,12 @@ package com.mckesson.cgat.pde.usermanagement.service;
 import java.util.List;
 
 import com.mckesson.cgat.pde.usermanagement.dto.*;
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
-import com.mckesson.cgat.pde.usermanagement.model.DistributionChannel;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
@@ -39,20 +39,23 @@ public interface TherapyService {
 	CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForTherapy(String soldToAccountId,
 			String shipToAccountId, String variantType, String therapyId);
 
-	Page<Therapy> findAllGlobalTherapies(String query, Pageable paging);
+	Page<Therapy> findAllGlobalTherapies(String query, Pageable paging, List<ChannelType> channelTypes,
+			List<String> status);
 
 	Page<CatalogPrice> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging);
 
-	Therapy findByMaterialNumber(String materialNumber) throws ResourceNotFoundException;
+	Therapy findByMaterialNumber(String materialNumber, ChannelType channelType) throws ResourceNotFoundException;
 
 	void updateTherapyConfigs(List<String> materialNumbers, boolean isPatientInformationRequired,
-			boolean isCoiIdRequired);
+			boolean isCoiIdRequired, ChannelType channelType);
 
-	MaterialDetailsResponseDTO findTherapyDetailsByMaterialNumber(String materialNumber)
+	MaterialDetailsResponseDTO findTherapyDetailsByMaterialNumber(String materialNumber, ChannelType channelType)
 			throws ResourceNotFoundException;
 
-	void deleteConfigByMaterialNumber(String materialNumber) throws ResourceNotFoundException;
+	void deleteConfigByMaterialNumber(String materialNumber, ChannelType channelType) throws ResourceNotFoundException;
 
 	MaterialResponseDTO findTherapyDetailsById(Long id) throws ResourceNotFoundException;
+
+	List<Therapy> getSPTherapies();
 
 }

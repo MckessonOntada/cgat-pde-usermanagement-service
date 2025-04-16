@@ -3,16 +3,15 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyConfigRequestDTO;
-import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
-import com.mckesson.cgat.pde.usermanagement.model.Permission;
-import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
+import com.mckesson.cgat.pde.usermanagement.model.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,13 +24,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+
+import java.io.BufferedWriter;
+import java.io.OutputStreamWriter;
+import java.util.List;
+
+import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.SORT_ORDER_ASC;
 
 @RestController
 @Tag(name = "Therapies", description = "Controller for getting all therapies.")
@@ -47,21 +52,28 @@ public class GlobalTherapyController {
 	}
 
 	@GetMapping
-	@RequirePermissions({ Permission.VIEW_MATERIAL })
+	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.VIEW_SP_MATERIAL })
 	@Operation(summary = "Fetch all therapies.")
-	public ResponseEntity<Page<Therapy>> findAllThreapies(@RequestParam(defaultValue = "0") Integer pageNo,
-			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query) {
-		Pageable paging = PageRequest.of(pageNo, pageSize);
-		return new ResponseEntity<>(therapyService.findAllGlobalTherapies(query, paging), HttpStatus.OK);
+	public ResponseEntity<Page<Therapy>> findAllTherapies(@RequestParam(defaultValue = "0") Integer pageNo,
+			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
+			@RequestParam(defaultValue = "material_number") String sortBy,
+			@RequestParam(defaultValue = "asc") String sortOrder,
+			@RequestParam(required = false) List<ChannelType> channelTypes,
+			@RequestParam(required = false) List<String> status) {
+		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
+				: Sort.by(sortBy).descending();
+		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
+		return new ResponseEntity<>(therapyService.findAllGlobalTherapies(query, paging, channelTypes, status),
+				HttpStatus.OK);
 	}
 
 	@GetMapping("/{materialNumber}")
+	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.VIEW_SP_MATERIAL })
 	@Operation(summary = "Find Therapy by Material Number")
-	public ResponseEntity<Therapy> findByMaterialNumber(@PathVariable String materialNumber)
-			throws ResourceNotFoundException {
+	public ResponseEntity<Therapy> findByMaterialNumber(@PathVariable String materialNumber,
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) throws ResourceNotFoundException {
 		log.debug("Fetching therapy with materialNumber: {}", materialNumber);
-		return new ResponseEntity<>(therapyService.findByMaterialNumber(materialNumber), HttpStatus.OK);
-
+		return new ResponseEntity<>(therapyService.findByMaterialNumber(materialNumber, channelType), HttpStatus.OK);
 	}
 
 	@PostMapping("/config/update")
@@ -70,17 +82,19 @@ public class GlobalTherapyController {
 	public ResponseEntity<String> updateTherapyConfigs(@Valid @RequestBody TherapyConfigRequestDTO request) {
 		log.debug("Updating therapy configs for materialNumbers: {}", request.getMaterialNumbers());
 		therapyService.updateTherapyConfigs(request.getMaterialNumbers(), request.getIsPatientInformationRequired(),
-				request.getIsCoiIdRequired());
+				request.getIsCoiIdRequired(), request.getChannelType());
 		return new ResponseEntity<>("Therapy configurations updated successfully", HttpStatus.OK);
 	}
 
 	@GetMapping("/config/{materialNumber}")
-	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.EDIT_ORDERS })
+	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.EDIT_ORDERS, Permission.VIEW_SP_MATERIAL })
 	@Operation(summary = "Find Therapy details by Material Number")
 	public ResponseEntity<MaterialDetailsResponseDTO> findTherapyDetailsByMaterialNumber(
-			@PathVariable String materialNumber) throws ResourceNotFoundException {
+			@PathVariable String materialNumber, @RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType)
+			throws ResourceNotFoundException {
 		log.debug("Fetching therapy details with materialNumber: {}", materialNumber);
-		return new ResponseEntity<>(therapyService.findTherapyDetailsByMaterialNumber(materialNumber), HttpStatus.OK);
+		return new ResponseEntity<>(therapyService.findTherapyDetailsByMaterialNumber(materialNumber, channelType),
+				HttpStatus.OK);
 
 	}
 
@@ -89,10 +103,10 @@ public class GlobalTherapyController {
 	@Operation(summary = "Delete Configuration by Material Number")
 	public ResponseEntity<String> deleteConfigByMaterialNumber(
 			@PathVariable @NotNull(message = "Material number cannot be null ") @NotEmpty(
-					message = "Material number cannot be empty") String materialNumber)
-			throws ResourceNotFoundException {
+					message = "Material number cannot be empty") String materialNumber,
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) throws ResourceNotFoundException {
 
-		therapyService.deleteConfigByMaterialNumber(materialNumber);
+		therapyService.deleteConfigByMaterialNumber(materialNumber, channelType);
 		return new ResponseEntity<>(materialNumber, HttpStatus.OK);
 	}
 
@@ -104,6 +118,31 @@ public class GlobalTherapyController {
 		log.debug("Fetching therapy details with materialNumber: {}", id);
 		return new ResponseEntity<>(therapyService.findTherapyDetailsById(id), HttpStatus.OK);
 
+	}
+
+	@GetMapping(value = "/download", produces = "text/csv")
+	@RequirePermissions({ Permission.MANAGE_SP_CATALOG })
+	@Operation(summary = "Download csv file contains all speciality pharma active materials")
+	public ResponseEntity<StreamingResponseBody> downloadSPMaterialsCsvFile() {
+		StreamingResponseBody stream = outputStream -> {
+			try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
+				writer.write("Product ID,Product Name,Product NDC");
+				writer.newLine();
+
+				for (Therapy therapy : therapyService.getSPTherapies()) {
+					writer.write(String.format("\"%s\",\"%s\",\"%s\"", therapy.getMaterialNumber(),
+							therapy.getMaterialDescription(), therapy.getNdcNumber()));
+					writer.newLine();
+				}
+
+				writer.flush();
+			}
+		};
+
+		return ResponseEntity.ok()
+			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "SPMaterials.csv")
+			.contentType(MediaType.parseMediaType("text/csv"))
+			.body(stream);
 	}
 
 }
