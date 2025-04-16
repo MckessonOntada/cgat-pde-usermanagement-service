@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import org.springframework.data.domain.Page;
@@ -252,5 +253,10 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			Pageable paging);
 
 	Optional<Therapy> findByMaterialNumberAndChannelType(String materialNumber, ChannelType channelType);
+
+	List<Therapy> findByMaterialNumberInAndChannelTypeAndItemStatus(Set<String> productIds, ChannelType channelType,
+			String itemStatus);
+
+	List<Therapy> findAllByChannelTypeAndItemStatus(ChannelType channelType, String status);
 
 }

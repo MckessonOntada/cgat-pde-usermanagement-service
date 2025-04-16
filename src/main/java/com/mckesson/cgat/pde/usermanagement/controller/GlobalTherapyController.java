@@ -3,9 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyConfigRequestDTO;
-import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
-import com.mckesson.cgat.pde.usermanagement.model.Permission;
-import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
+import com.mckesson.cgat.pde.usermanagement.model.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -13,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,14 +24,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import java.io.BufferedWriter;
+import java.io.OutputStreamWriter;
 import java.util.List;
 
 import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.SORT_ORDER_ASC;
@@ -117,6 +118,31 @@ public class GlobalTherapyController {
 		log.debug("Fetching therapy details with materialNumber: {}", id);
 		return new ResponseEntity<>(therapyService.findTherapyDetailsById(id), HttpStatus.OK);
 
+	}
+
+	@GetMapping(value = "/download", produces = "text/csv")
+	@RequirePermissions({ Permission.MANAGE_SP_CATALOG })
+	@Operation(summary = "Download csv file contains all speciality pharma active materials")
+	public ResponseEntity<StreamingResponseBody> downloadSPMaterialsCsvFile() {
+		StreamingResponseBody stream = outputStream -> {
+			try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
+				writer.write("Product ID,Product Name,Product NDC");
+				writer.newLine();
+
+				for (Therapy therapy : therapyService.getSPTherapies()) {
+					writer.write(String.format("\"%s\",\"%s\",\"%s\"", therapy.getMaterialNumber(),
+							therapy.getMaterialDescription(), therapy.getNdcNumber()));
+					writer.newLine();
+				}
+
+				writer.flush();
+			}
+		};
+
+		return ResponseEntity.ok()
+			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "SPMaterials.csv")
+			.contentType(MediaType.parseMediaType("text/csv"))
+			.body(stream);
 	}
 
 }

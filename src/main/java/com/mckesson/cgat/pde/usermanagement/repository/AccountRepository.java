@@ -6,8 +6,6 @@ import java.util.Set;
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 
-import io.swagger.v3.oas.annotations.Parameter;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -158,5 +156,10 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
 	List<Account> findAllByAccountNumberInAndPartnerFunction(List<String> accountNumberList,
 			AccountPartnerFunction accountPartnerFunction);
+
+	List<Account> findByAccountNumberInAndChannelTypeAndIsActive(Set<String> accountNumbers, ChannelType channelType,
+			boolean isActive);
+
+	List<Account> findAllByChannelTypeAndIsActive(ChannelType channelType, boolean status);
 
 }

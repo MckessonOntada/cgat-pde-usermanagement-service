@@ -46,4 +46,6 @@ public interface AccountService {
 	Page<Provider> findNonLinkedProvidersByAccountId(String query, Long accountId, Pageable paging, Long practiceId)
 			throws ResourceNotFoundException;
 
+	List<Account> getSPAccounts();
+
 }
