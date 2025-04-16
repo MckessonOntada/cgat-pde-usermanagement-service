@@ -256,7 +256,7 @@ public class ProviderServiceImpl implements ProviderService {
 		provider.setDea(model.getDea());
 		provider.setNpi(model.getNpi());
 		provider.setName(model.getName());
-		validateUniqueConstraints(provider);
+		validateProvider(provider);
 		return providerRepository.save(provider);
 	}
 
