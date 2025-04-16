@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import java.util.List;
 import java.util.Set;
 
+import com.mckesson.cgat.pde.usermanagement.model.Provider;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -134,6 +135,43 @@ public class AccountController {
 		accountService.linkAccountsToPractice(practiceId, accountIds);
 		return new ResponseEntity<>(HttpStatus.OK);
 
+	}
+
+	@RequirePermissions({ Permission.ADD_SP_ACCOUNT })
+	@PatchMapping("/{accountId}/providers")
+	@Operation(summary = "Link Account with multiple providers.")
+	public Account linkAccountToProviders(@PathVariable @NotNull(message = "Account ID cannot be null") Long accountId,
+			@NotEmpty(message = "Provider IDs cannot be empty") @RequestBody List<Long> providerIds)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
+		return accountService.linkAccountToProviders(accountId, providerIds);
+	}
+
+	@RequirePermissions({ Permission.ADD_SP_ACCOUNT })
+	@DeleteMapping("/{accountId}/providers/{providerId}")
+	@Operation(summary = "Delink account from provider.")
+	public ResponseEntity<Void> delinkAccountFromProvider(
+			@PathVariable @NotNull(message = "Account ID cannot be null") Long accountId,
+			@PathVariable @NotNull(message = "Provider ID cannot be null") Long providerId)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
+		accountService.delinkAccountFromProvider(accountId, providerId);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	@RequirePermissions({ Permission.ADD_SP_ACCOUNT })
+	@GetMapping("/{accountId}/non-linked-providers")
+	@Operation(summary = "Fetch all providers not linked to a specific Account with pagination.")
+	public Page<Provider> findNonLinkedAccountsByProviderId(
+			@PathVariable @NotNull(message = "Account ID cannot be null") Long accountId,
+			@PathVariable @NotNull(message = "Practice ID cannot be null") Long practiceId,
+			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize,
+			@RequestParam(defaultValue = "first_name") String sortBy,
+			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query)
+			throws ResourceNotFoundException {
+
+		Sort sort = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
+
+		return accountService.findNonLinkedProvidersByAccountId(query, accountId, paging, practiceId);
 	}
 
 }
