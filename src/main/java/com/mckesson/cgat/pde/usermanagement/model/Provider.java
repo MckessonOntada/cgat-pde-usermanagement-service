@@ -38,48 +38,53 @@ import lombok.Setter;
 @Builder
 public class Provider extends AuditColumns implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private static final String SEQUENCE_GENERATOR_NAME = "PROVIDER_SEQUENCE";
+    private static final String SEQUENCE_GENERATOR_NAME = "PROVIDER_SEQUENCE";
 
-	@Id
-	@GeneratedValue(generator = SEQUENCE_GENERATOR_NAME, strategy = GenerationType.SEQUENCE)
-	@SequenceGenerator(name = SEQUENCE_GENERATOR_NAME, sequenceName = SEQUENCE_GENERATOR_NAME, allocationSize = 1)
-	private Long id;
+    @Id
+    @GeneratedValue(generator = SEQUENCE_GENERATOR_NAME, strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = SEQUENCE_GENERATOR_NAME, sequenceName = SEQUENCE_GENERATOR_NAME, allocationSize = 1)
+    private Long id;
 
-	// @TenantId
-	private Long practiceId;
+    // @TenantId
+    private Long practiceId;
 
-	@Valid
-	@Embedded
-	private Name name;
+    @Valid
+    @Embedded
+    private Name name;
 
-	@NotBlank(message = "DEA Number is required", groups = BasicInfo.class)
-	@Size(min = 9, max = 9, message = "DEA Number must be exactly 9 characters", groups = BasicInfo.class)
-	@Column(name = "dea", length = 9, nullable = false)
-	private String dea;
+    @NotBlank(message = "DEA Number is required", groups = BasicInfo.class)
+    @Size(min = 9, max = 9, message = "DEA Number must be exactly 9 characters", groups = BasicInfo.class)
+    @Pattern(regexp = "^[A-Za-z]{2}\\d{7}$", message = "DEA Number must start with 2 letters followed by 7 digits (e.g., AB1234567)", groups = BasicInfo.class)
+    @Column(name = "dea", length = 9, nullable = false)
+    private String dea;
 
-	@NotBlank(message = "NPI Number is required")
-	@Size(min = 10, max = 10, message = "NPI must be exactly 10 digits")
-	@Pattern(regexp = "\\d{10}", message = "NPI must contain only numeric digits")
-	@Column(name = "npi", length = 10, nullable = false)
-	private String npi;
+    @NotBlank(message = "NPI Number is required", groups = BasicInfo.class)
+    @Size(min = 10, max = 10, message = "NPI must be exactly 10 digits", groups = BasicInfo.class)
+    @Pattern(regexp = "\\d{10}", message = "NPI must contain only numeric digits")
+    @Column(name = "npi", length = 10, nullable = false)
+    private String npi;
 
-	@NotEmpty(message = "Phone Number is required", groups = BasicInfo.class)
-	@Pattern(regexp = "\\d{10}", message = "Phone number must be 10 digits", groups = BasicInfo.class)
-	private String phone;
+    @NotEmpty(message = "Phone Number is required", groups = BasicInfo.class)
+    @Pattern(
+            regexp = "^[1-9][0-9]{9}$",
+            message = "Phone number must be exactly 10 digits, start with 1-9, and contain only numbers",
+            groups = BasicInfo.class
+    )
+    private String phone;
 
-	@Valid
-	@Embedded
-	private Address address;
+    @Valid
+    @Embedded
+    private Address address;
 
-	@Convert(converter = NumericBooleanConverter.class)
-	private Boolean isActive = true;
+    @Convert(converter = NumericBooleanConverter.class)
+    private Boolean isActive = true;
 
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "account_provider_mapping", joinColumns = @JoinColumn(name = "provider_id"),
-			inverseJoinColumns = @JoinColumn(name = "account_id"))
-	@JsonIgnore
-	private Set<Account> accounts;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "account_provider_mapping", joinColumns = @JoinColumn(name = "provider_id"),
+            inverseJoinColumns = @JoinColumn(name = "account_id"))
+    @JsonIgnore
+    private Set<Account> accounts;
 
 }
