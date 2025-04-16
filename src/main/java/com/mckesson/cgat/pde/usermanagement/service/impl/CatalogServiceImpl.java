@@ -226,8 +226,8 @@ public class CatalogServiceImpl implements CatalogService {
 			String spProductId = catalogRecord.get(HEADER_PRODUCT_ID).trim();
 			String status = catalogRecord.get(HEADER_STATUS).trim();
 
-			SPCatalogLinkDTO catalogs = new SPCatalogLinkDTO(accountNumber, spProductId, status);
-			Set<ConstraintViolation<SPCatalogLinkDTO>> violations = validator.validate(catalogs);
+			SPCatalogLinkDTO catalog = new SPCatalogLinkDTO(accountNumber, spProductId, status);
+			Set<ConstraintViolation<SPCatalogLinkDTO>> violations = validator.validate(catalog);
 
 			if (CollectionsUtils.hasItems(violations)) {
 				String errorMsg = violations.stream()
@@ -238,7 +238,7 @@ public class CatalogServiceImpl implements CatalogService {
 			else {
 				accountNumbers.add(accountNumber);
 				productIds.add(spProductId);
-				catalogsDataList.add(catalogs);
+				catalogsDataList.add(catalog);
 			}
 		}
 
@@ -310,8 +310,10 @@ public class CatalogServiceImpl implements CatalogService {
 			List<CatalogPrice> catalogsToUpdate, List<String[]> errorRecords) {
 
 		if (ObjectUtils.isNotEmpty(existing)) {
-			existing.setDeleted(true);
-			catalogsToUpdate.add(existing);
+			if (Boolean.FALSE.equals(existing.isDeleted())) {
+				existing.setDeleted(true);
+				catalogsToUpdate.add(existing);
+			}
 		}
 		else {
 			errorRecords.add(new String[] { accountNumber, productId, CATALOG_ACTION_STATUS_UNLINK,
@@ -335,8 +337,10 @@ public class CatalogServiceImpl implements CatalogService {
 			List<CatalogPrice> catalogsToUpdate) {
 
 		if (ObjectUtils.isNotEmpty(existing)) {
-			existing.setDeleted(false);
-			catalogsToUpdate.add(existing);
+			if (Boolean.TRUE.equals(existing.isDeleted())) {
+				existing.setDeleted(false);
+				catalogsToUpdate.add(existing);
+			}
 		}
 		else {
 			catalogsToUpdate.add(buildCatalogPrice(account, therapy));
