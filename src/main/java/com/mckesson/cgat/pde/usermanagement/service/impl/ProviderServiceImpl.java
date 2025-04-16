@@ -230,7 +230,8 @@ public class ProviderServiceImpl implements ProviderService {
 	}
 
 	@Override
-	public Page<Provider> findAllProviders(Pageable paging, String query, List<String> status) {
+	public Page<Provider> findAllProviders(Pageable paging, String query, List<String> status, Long accountId,
+			Long practiceId) {
 		log.debug("Searching providers based on filter query:{}, status: {}", query, status);
 		query = StringUtils.toRootLowerCase(query);
 
@@ -244,7 +245,7 @@ public class ProviderServiceImpl implements ProviderService {
 			}
 		}
 
-		return providerRepository.findAllByQueryText(query, statusFilter, paging);
+		return providerRepository.findAllByQueryText(query, statusFilter, paging, accountId, practiceId);
 	}
 
 	@Override
@@ -255,7 +256,7 @@ public class ProviderServiceImpl implements ProviderService {
 		provider.setDea(model.getDea());
 		provider.setNpi(model.getNpi());
 		provider.setName(model.getName());
-		validateUniqueConstraints(provider);
+		validateProvider(provider);
 		return providerRepository.save(provider);
 	}
 
