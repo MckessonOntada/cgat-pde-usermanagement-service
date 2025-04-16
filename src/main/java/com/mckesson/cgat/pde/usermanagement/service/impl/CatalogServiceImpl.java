@@ -184,8 +184,7 @@ public class CatalogServiceImpl implements CatalogService {
 
 			CSVProcessingResult result = new CSVProcessingResult();
 			result.setErrors(errorRecords);
-			result
-				.setErrorFileContent(generateErrorCSV(errorRecords, catalogsDataList.size(), catalogsToUpdate.size()));
+			result.setErrorFileContent(generateErrorCSV(errorRecords));
 			return result;
 		}
 		catch (IOException e) {
@@ -390,7 +389,7 @@ public class CatalogServiceImpl implements CatalogService {
 		}
 	}
 
-	private byte[] generateErrorCSV(List<String[]> errorRecords, int validCatalogs, int processedCatalogs) {
+	private byte[] generateErrorCSV(List<String[]> errorRecords) {
 		try (ByteArrayOutputStream out = new ByteArrayOutputStream();
 				OutputStreamWriter writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
 				CSVPrinter csvPrinter = new CSVPrinter(writer,
@@ -401,13 +400,6 @@ public class CatalogServiceImpl implements CatalogService {
 			for (String[] errors : errorRecords) {
 				csvPrinter.printRecord((Object[]) errors);
 			}
-
-			csvPrinter.println();
-
-			csvPrinter.printRecord("Summary", "", "", "");
-			csvPrinter.printRecord("Total Valid Rows Present", String.valueOf(validCatalogs), "", "");
-			csvPrinter.printRecord("Total Rows Processed Successfully", String.valueOf(processedCatalogs), "", "");
-			csvPrinter.printRecord("Total Rows With Errors", String.valueOf(errorRecords.size()), "", "");
 
 			csvPrinter.flush();
 			return out.toByteArray();
