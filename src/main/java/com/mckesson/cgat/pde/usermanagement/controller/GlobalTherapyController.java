@@ -6,6 +6,7 @@ import com.mckesson.cgat.pde.usermanagement.dto.TherapyConfigRequestDTO;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
+import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -26,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
@@ -121,6 +121,57 @@ public class GlobalTherapyController {
 		log.debug("Fetching therapy details with materialNumber: {}", id);
 		return new ResponseEntity<>(therapyService.findTherapyDetailsById(id), HttpStatus.OK);
 
+	}
+
+	@GetMapping(value = "/download", produces = "text/csv")
+	@RequirePermissions({ Permission.MANAGE_SP_CATALOG })
+	@Operation(summary = "Download csv file contains all speciality pharma active materials")
+	public ResponseEntity<StreamingResponseBody> downloadSPMaterialsCsvFile(
+			@RequestParam(defaultValue = "SPECIALITY_PHARMA") ChannelType channelType) {
+		StreamingResponseBody stream = outputStream -> {
+			try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
+				writer.write("Product ID,Product Name,Product NDC");
+				writer.newLine();
+
+				for (Therapy therapy : therapyService.getTherapiesByChannelType(channelType)) {
+					writer.write(String.format("\"%s\",\"%s\",\"%s\"", therapy.getMaterialNumber(),
+							therapy.getMaterialDescription(), therapy.getNdcNumber()));
+					writer.newLine();
+				}
+
+				writer.flush();
+			}
+		};
+
+		return ResponseEntity.ok()
+			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "SPMaterials.csv")
+			.contentType(MediaType.parseMediaType("text/csv"))
+			.body(stream);
+	}
+
+	@GetMapping(value = "/bnb/download", produces = "text/csv")
+	@Operation(summary = "Download csv file contains all Buy & Bill active materials")
+	public ResponseEntity<StreamingResponseBody> downloadBNBMaterialsCsvFile(
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) {
+		StreamingResponseBody stream = outputStream -> {
+			try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
+				writer.write("Buy & Bill Material Id,Buy & Bill Material description,Buy & Bill Material NDC");
+				writer.newLine();
+
+				for (Therapy therapy : therapyService.getTherapiesByChannelType(channelType)) {
+					writer.write(String.format("\"%s\",\"%s\",\"%s\"", therapy.getMaterialNumber(),
+							therapy.getMaterialDescription(), therapy.getNdcNumber()));
+					writer.newLine();
+				}
+
+				writer.flush();
+			}
+		};
+
+		return ResponseEntity.ok()
+			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "Material_info.csv")
+			.contentType(MediaType.parseMediaType("text/csv"))
+			.body(stream);
 	}
 
 }

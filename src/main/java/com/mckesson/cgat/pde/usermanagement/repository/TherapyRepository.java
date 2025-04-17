@@ -255,6 +255,9 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 	Page<Therapy> findAllGlobalTherapies(@Param("query") String query, String statusActive, String channelTypes,
 			Pageable paging);
 
+	List<Therapy> findByMaterialNumberInAndChannelTypeAndItemStatus(Set<String> productIds, ChannelType channelType,
+			String itemStatus);
+
 	Optional<Therapy> findByMaterialNumberAndChannelType(String materialNumber, ChannelType channelType);
 
 	List<Therapy> findByMaterialNumberInAndChannelType(List<String> materialNumbers, ChannelType channelType);

@@ -277,13 +277,8 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	@Override
-	public List<Therapy> findByMaterialNumbersAndChannelType(List<String> materialNumbers, ChannelType channelType) {
-		return therapyRepository.findByMaterialNumberInAndChannelType(materialNumbers, channelType);
-	}
-
-	@Override
-	public List<Therapy> getBNBTherapies(ChannelType channelType) {
-		return therapyRepository.findAllByChannelTypeAndItemStatus(ChannelType.BUY_AND_BILL, "A");
+	public List<Therapy> getTherapiesByChannelType(ChannelType channelType) {
+		return therapyRepository.findAllByChannelTypeAndItemStatus(channelType, THERAPY_ITEM_STATUS_ACTIVE);
 	}
 
 }
