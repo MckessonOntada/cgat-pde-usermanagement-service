@@ -240,7 +240,6 @@ public class AccountServiceImpl implements AccountService {
 		}
 
 		account.getProviders().removeAll(providers);
-		// Save only if needed, JPA may auto-flush due to @Transactional
 		accountRepository.save(account);
 	}
 
