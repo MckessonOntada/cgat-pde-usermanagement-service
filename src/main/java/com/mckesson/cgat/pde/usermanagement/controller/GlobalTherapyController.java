@@ -155,7 +155,7 @@ public class GlobalTherapyController {
 			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) {
 		StreamingResponseBody stream = outputStream -> {
 			try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
-				writer.write("Buy & Bill Material Id,Buy & Bill Material description,Buy & Bill Material NDC");
+				writer.write("Material Id,Material Description,Buy & Bill Material NDC");
 				writer.newLine();
 
 				for (Therapy therapy : therapyService.getTherapiesByChannelType(channelType)) {

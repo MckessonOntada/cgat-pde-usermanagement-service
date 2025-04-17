@@ -2,13 +2,10 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
-import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.cgat.pde.usermanagement.service.MaterialCrossWalkService;
-import com.mckesson.cgat.pde.usermanagement.utils.UserRequestAuthorizationValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -35,34 +32,32 @@ public class GlobalMaterialCrosswalkController {
 
 	@PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	@Operation(summary = "Upload bulk cross walks data")
-	public void uploadCrossWalks(@RequestPart("crossWalkData") MultipartFile crossWalkData,
-			HttpServletResponse response) throws FileNotValidException, UnauthorizedAccessException {
+	public ResponseEntity<byte[]> uploadCrossWalks(@RequestPart("crossWalkData") MultipartFile crossWalkData)
+			throws FileNotValidException, UnauthorizedAccessException {
 
 		if (crossWalkData == null
 				|| !StringUtils.getFilenameExtension(crossWalkData.getOriginalFilename()).equalsIgnoreCase("csv")) {
 			throw new FileNotValidException("Invalid file format. Please upload a CSV file.");
 		}
-		try {
-			response.setContentType("text/csv");
-			response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=FailedCrossWalk.csv");
 
-			boolean uploadStatus = materialCrossWalkService.uploadCrossWalks(crossWalkData, response.getOutputStream());
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		boolean uploadStatus = materialCrossWalkService.uploadCrossWalks(crossWalkData, outputStream);
+		HttpStatus status = uploadStatus ? HttpStatus.OK : HttpStatus.PARTIAL_CONTENT;
 
-			if (uploadStatus) {
-				response.reset(); // Clear any written CSV data
-				response.setStatus(HttpServletResponse.SC_OK); // 200
-				response.setContentType("application/json");
-				response.getWriter().write("Upload successful. No failed records.");
-			}
-			else {
-
-				response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT); // 206
-			}
-
+		if (uploadStatus) {
+			// Success: return simple message
+			return ResponseEntity.status(status)
+				.contentType(MediaType.APPLICATION_JSON)
+				.body("Upload successful. No failed records.".getBytes());
 		}
-		catch (IOException e) {
-			throw new RuntimeException("Error writing stream to response", e);
+		else {
+			// Partial success: return failed rows as CSV
+			return ResponseEntity.status(status)
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=FailedCrossWalk.csv")
+				.contentType(MediaType.parseMediaType("text/csv"))
+				.body(outputStream.toByteArray());
 		}
+
 	}
 
 }

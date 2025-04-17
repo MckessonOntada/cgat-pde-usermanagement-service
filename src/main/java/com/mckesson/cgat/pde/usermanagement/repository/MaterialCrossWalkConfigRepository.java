@@ -1,6 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.repository;
 
-import com.mckesson.cgat.pde.usermanagement.model.MaterialCrossWalkConfig;
+import com.mckesson.cgat.pde.usermanagement.model.Crosswalk;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,17 +10,17 @@ import java.util.List;
 import java.util.Set;
 
 @Repository
-public interface MaterialCrossWalkConfigRepository extends JpaRepository<MaterialCrossWalkConfig, Long> {
+public interface MaterialCrossWalkConfigRepository extends JpaRepository<Crosswalk, Long> {
 
-	List<MaterialCrossWalkConfig> findMaterialCrossWalkConfigBySpProductIdIn(List<String> spProductIds);
+	List<Crosswalk> findMaterialCrossWalkConfigBySpProductIdIn(List<String> spProductIds);
 
 	void deleteBySpProductIdIn(List<String> spProductIds);
 
-	@Query(value = "SELECT DISTINCT m.sp_product_id FROM catalog.material_cross_walk_config m WHERE m.sp_product_id IN :spProductIds",
+	@Query(value = "SELECT DISTINCT m.sp_product_id FROM catalog.crosswalk m WHERE m.sp_product_id IN :spProductIds",
 			nativeQuery = true)
 	List<String> findExistingSpProductIds(@Param("spProductIds") Set<String> spProductIds);
 
-	@Query(value = "SELECT DISTINCT m.bnb_material_number FROM catalog.material_cross_walk_config m WHERE m.bnb_material_number IN :bnbMaterialNumbers",
+	@Query(value = "SELECT DISTINCT m.bnb_material_number FROM catalog.crosswalk m WHERE m.bnb_material_number IN :bnbMaterialNumbers",
 			nativeQuery = true)
 	List<String> findExistingBnbMaterialNumbers(@Param("bnbMaterialNumbers") Set<String> bnbMaterialNumbers);
 

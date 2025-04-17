@@ -5,12 +5,11 @@ import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidExcepti
 import com.mckesson.cgat.pde.usermanagement.exception.custom.SystemFailureException;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.MaterialCrossWalkAction;
-import com.mckesson.cgat.pde.usermanagement.model.MaterialCrossWalkConfig;
+import com.mckesson.cgat.pde.usermanagement.model.Crosswalk;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.cgat.pde.usermanagement.repository.MaterialCrossWalkConfigRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.TherapyRepository;
 import com.mckesson.cgat.pde.usermanagement.service.MaterialCrossWalkService;
-import jakarta.servlet.ServletOutputStream;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +48,7 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 
 	@Override
 	@Transactional
-	public Boolean uploadCrossWalks(MultipartFile crossWalkDataFile, ServletOutputStream outputStream) {
+	public Boolean uploadCrossWalks(MultipartFile crossWalkDataFile, ByteArrayOutputStream outputStream) {
 		List<MaterialCrossWalkConfigRecordDTO> crossWalkConfigsToAdd = new ArrayList<>();
 		List<MaterialCrossWalkConfigRecordDTO> crossWalkConfigsToDelete = new ArrayList<>();
 
@@ -64,16 +63,13 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 					crossWalkConfigsToDelete);
 			List<String> existingSPProductIds = fetchSPTherapies(crossWalkConfigsToAdd, crossWalkConfigsToDelete);
 
-			Map<String, MaterialCrossWalkConfig> spProductIdToConfigMap = fetchExistingCrossWalkConfigsForSPs(
-					existingSPProductIds);
+			Map<String, Crosswalk> spProductIdToConfigMap = fetchExistingCrossWalkConfigsForSPs(existingSPProductIds);
 
-			List<MaterialCrossWalkConfig> entitiesToDelete = validateCrossWalkConstraintsAndGetConfigs(
-					crossWalkConfigsToDelete, failedCrossWalks, existingBnbMaterialNumbers, existingSPProductIds,
-					spProductIdToConfigMap);
+			List<Crosswalk> entitiesToDelete = validateCrossWalkConstraintsAndGetConfigs(crossWalkConfigsToDelete,
+					failedCrossWalks, existingBnbMaterialNumbers, existingSPProductIds, spProductIdToConfigMap);
 
-			List<MaterialCrossWalkConfig> entitiesToAdd = validateCrossWalkConstraintsAndGetConfigs(
-					crossWalkConfigsToAdd, failedCrossWalks, existingBnbMaterialNumbers, existingSPProductIds,
-					spProductIdToConfigMap);
+			List<Crosswalk> entitiesToAdd = validateCrossWalkConstraintsAndGetConfigs(crossWalkConfigsToAdd,
+					failedCrossWalks, existingBnbMaterialNumbers, existingSPProductIds, spProductIdToConfigMap);
 
 			// Removing configurations and saving in batches
 			removeConfigsFromDB(entitiesToDelete);
@@ -225,19 +221,17 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 
 	}
 
-	private Map<String, MaterialCrossWalkConfig> fetchExistingCrossWalkConfigsForSPs(
-			List<String> existingSPProductIds) {
-		List<MaterialCrossWalkConfig> existingCrossWalkConfigs = materialCrossWalkConfigRepository
+	private Map<String, Crosswalk> fetchExistingCrossWalkConfigsForSPs(List<String> existingSPProductIds) {
+		List<Crosswalk> existingCrossWalkConfigs = materialCrossWalkConfigRepository
 			.findMaterialCrossWalkConfigBySpProductIdIn(existingSPProductIds);
-		return existingCrossWalkConfigs.stream()
-			.collect(Collectors.toMap(MaterialCrossWalkConfig::getSpProductId, config -> config));
+		return existingCrossWalkConfigs.stream().collect(Collectors.toMap(Crosswalk::getSpProductId, config -> config));
 	}
 
-	private List<MaterialCrossWalkConfig> validateCrossWalkConstraintsAndGetConfigs(
+	private List<Crosswalk> validateCrossWalkConstraintsAndGetConfigs(
 			List<MaterialCrossWalkConfigRecordDTO> crossWalkConfigs,
 			Map<MaterialCrossWalkConfigRecordDTO, String> failedCrossWalks, List<String> existingBnbMaterialNumbers,
-			List<String> existingSPProductIds, Map<String, MaterialCrossWalkConfig> spProductIdToConfigMap) {
-		List<MaterialCrossWalkConfig> crossWalkConfigList = new ArrayList<>();
+			List<String> existingSPProductIds, Map<String, Crosswalk> spProductIdToConfigMap) {
+		List<Crosswalk> crossWalkConfigList = new ArrayList<>();
 
 		Iterator<MaterialCrossWalkConfigRecordDTO> iterator = crossWalkConfigs.iterator();
 		while (iterator.hasNext()) {
@@ -255,12 +249,12 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 				if (!existingSPProductIds.contains(spProductId)) {
 					throw new IllegalArgumentException("Invalid SP Product ID");
 				}
-				MaterialCrossWalkConfig config = MaterialCrossWalkConfig.builder()
+				Crosswalk config = Crosswalk.builder()
 					.bnbMaterialNumber(bnbMaterialNumber)
 					.spProductId(spProductId)
 					.build();
 
-				MaterialCrossWalkConfig existingConfig = spProductIdToConfigMap.get(spProductId);
+				Crosswalk existingConfig = spProductIdToConfigMap.get(spProductId);
 				if (existingConfig != null) {
 					if (!existingConfig.getBnbMaterialNumber().equals(bnbMaterialNumber)) {
 						throw new IllegalArgumentException(
@@ -283,43 +277,37 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 	}
 
 	@Transactional
-	private void removeConfigsFromDB(List<MaterialCrossWalkConfig> entitiesToDelete) {
-		List<String> spProductIds = entitiesToDelete.stream()
-			.map(MaterialCrossWalkConfig::getSpProductId)
-			.distinct()
-			.toList();
+	private void removeConfigsFromDB(List<Crosswalk> entitiesToDelete) {
+		List<String> spProductIds = entitiesToDelete.stream().map(Crosswalk::getSpProductId).distinct().toList();
 		if (!CollectionUtils.isEmpty(spProductIds)) {
 			materialCrossWalkConfigRepository.deleteBySpProductIdIn(spProductIds);
 		}
 
 	}
 
-	private void saveOrUpdateInBatches(List<MaterialCrossWalkConfig> configs, int batchSize) {
+	private void saveOrUpdateInBatches(List<Crosswalk> configs, int batchSize) {
 		for (int i = 0; i < configs.size(); i += batchSize) {
 			int end = Math.min(i + batchSize, configs.size());
-			List<MaterialCrossWalkConfig> batch = configs.subList(i, end);
+			List<Crosswalk> batch = configs.subList(i, end);
 			materialCrossWalkConfigRepository.saveAll(batch);
 			materialCrossWalkConfigRepository.flush();
 		}
 	}
 
-	private void updateCrossWalkFlagForMaterials(List<MaterialCrossWalkConfig> deletedEntities,
-			List<MaterialCrossWalkConfig> addedEntities) {
+	private void updateCrossWalkFlagForMaterials(List<Crosswalk> deletedEntities, List<Crosswalk> addedEntities) {
 		Set<String> spProductIdsToUpdate = new HashSet<>();
 		Set<String> bnbMaterialNumbersToUpdate = new HashSet<>();
 
 		// Collect SP Product IDs
 		spProductIdsToUpdate
-			.addAll(deletedEntities.stream().map(MaterialCrossWalkConfig::getSpProductId).collect(Collectors.toSet()));
-		spProductIdsToUpdate
-			.addAll(addedEntities.stream().map(MaterialCrossWalkConfig::getSpProductId).collect(Collectors.toSet()));
+			.addAll(deletedEntities.stream().map(Crosswalk::getSpProductId).collect(Collectors.toSet()));
+		spProductIdsToUpdate.addAll(addedEntities.stream().map(Crosswalk::getSpProductId).collect(Collectors.toSet()));
 
 		// Collect BnB Material Numbers
-		bnbMaterialNumbersToUpdate.addAll(deletedEntities.stream()
-			.map(MaterialCrossWalkConfig::getBnbMaterialNumber)
-			.collect(Collectors.toSet()));
-		bnbMaterialNumbersToUpdate.addAll(
-				addedEntities.stream().map(MaterialCrossWalkConfig::getBnbMaterialNumber).collect(Collectors.toSet()));
+		bnbMaterialNumbersToUpdate
+			.addAll(deletedEntities.stream().map(Crosswalk::getBnbMaterialNumber).collect(Collectors.toSet()));
+		bnbMaterialNumbersToUpdate
+			.addAll(addedEntities.stream().map(Crosswalk::getBnbMaterialNumber).collect(Collectors.toSet()));
 
 		// Fetch existing SP Product IDs and BnB Material Numbers in batch
 		Set<String> existingSpProductIds = new HashSet<>(
