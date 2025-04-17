@@ -48,80 +48,79 @@ import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.SORT_ORDER_
 
 public class GlobalTherapyController {
 
-    private final TherapyService therapyService;
+	private final TherapyService therapyService;
 
-    public GlobalTherapyController(TherapyService therapyService) {
-        this.therapyService = therapyService;
-    }
+	public GlobalTherapyController(TherapyService therapyService) {
+		this.therapyService = therapyService;
+	}
 
-    @GetMapping
-    @RequirePermissions({Permission.VIEW_MATERIAL, Permission.VIEW_SP_MATERIAL})
-    @Operation(summary = "Fetch all therapies.")
-    public ResponseEntity<Page<Therapy>> findAllTherapies(@RequestParam(defaultValue = "0") Integer pageNo,
-                                                          @RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
-                                                          @RequestParam(defaultValue = "material_number") String sortBy,
-                                                          @RequestParam(defaultValue = "asc") String sortOrder,
-                                                          @RequestParam(required = false) List<ChannelType> channelTypes,
-                                                          @RequestParam(required = false) List<String> status) {
-        Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
-                : Sort.by(sortBy).descending();
-        Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-        return new ResponseEntity<>(therapyService.findAllGlobalTherapies(query, paging, channelTypes, status),
-                HttpStatus.OK);
-    }
+	@GetMapping
+	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.VIEW_SP_MATERIAL })
+	@Operation(summary = "Fetch all therapies.")
+	public ResponseEntity<Page<Therapy>> findAllTherapies(@RequestParam(defaultValue = "0") Integer pageNo,
+			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
+			@RequestParam(defaultValue = "material_number") String sortBy,
+			@RequestParam(defaultValue = "asc") String sortOrder,
+			@RequestParam(required = false) List<ChannelType> channelTypes,
+			@RequestParam(required = false) List<String> status) {
+		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
+				: Sort.by(sortBy).descending();
+		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
+		return new ResponseEntity<>(therapyService.findAllGlobalTherapies(query, paging, channelTypes, status),
+				HttpStatus.OK);
+	}
 
-    @GetMapping("/{materialNumber}")
-    @RequirePermissions({Permission.VIEW_MATERIAL, Permission.VIEW_SP_MATERIAL})
-    @Operation(summary = "Find Therapy by Material Number")
-    public ResponseEntity<Therapy> findByMaterialNumber(@PathVariable String materialNumber,
-                                                        @RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) throws ResourceNotFoundException {
-        log.debug("Fetching therapy with materialNumber: {}", materialNumber);
-        return new ResponseEntity<>(therapyService.findByMaterialNumber(materialNumber, channelType), HttpStatus.OK);
-    }
+	@GetMapping("/{materialNumber}")
+	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.VIEW_SP_MATERIAL })
+	@Operation(summary = "Find Therapy by Material Number")
+	public ResponseEntity<Therapy> findByMaterialNumber(@PathVariable String materialNumber,
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) throws ResourceNotFoundException {
+		log.debug("Fetching therapy with materialNumber: {}", materialNumber);
+		return new ResponseEntity<>(therapyService.findByMaterialNumber(materialNumber, channelType), HttpStatus.OK);
+	}
 
-    @PostMapping("/config/update")
-    @RequirePermissions({Permission.MANAGE_MATERIAL})
-    @Operation(summary = "Update Therapy Configurations")
-    public ResponseEntity<String> updateTherapyConfigs(@Valid @RequestBody TherapyConfigRequestDTO request) {
-        log.debug("Updating therapy configs for materialNumbers: {}", request.getMaterialNumbers());
-        therapyService.updateTherapyConfigs(request.getMaterialNumbers(), request.getIsPatientInformationRequired(),
-                request.getIsCoiIdRequired(), request.getChannelType());
-        return new ResponseEntity<>("Therapy configurations updated successfully", HttpStatus.OK);
-    }
+	@PostMapping("/config/update")
+	@RequirePermissions({ Permission.MANAGE_MATERIAL })
+	@Operation(summary = "Update Therapy Configurations")
+	public ResponseEntity<String> updateTherapyConfigs(@Valid @RequestBody TherapyConfigRequestDTO request) {
+		log.debug("Updating therapy configs for materialNumbers: {}", request.getMaterialNumbers());
+		therapyService.updateTherapyConfigs(request.getMaterialNumbers(), request.getIsPatientInformationRequired(),
+				request.getIsCoiIdRequired(), request.getChannelType());
+		return new ResponseEntity<>("Therapy configurations updated successfully", HttpStatus.OK);
+	}
 
-    @GetMapping("/config/{materialNumber}")
-    @RequirePermissions({Permission.VIEW_MATERIAL, Permission.EDIT_ORDERS, Permission.VIEW_SP_MATERIAL})
-    @Operation(summary = "Find Therapy details by Material Number")
-    public ResponseEntity<MaterialDetailsResponseDTO> findTherapyDetailsByMaterialNumber(
-            @PathVariable String materialNumber, @RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType)
-            throws ResourceNotFoundException {
-        log.debug("Fetching therapy details with materialNumber: {}", materialNumber);
-        return new ResponseEntity<>(therapyService.findTherapyDetailsByMaterialNumber(materialNumber, channelType),
-                HttpStatus.OK);
+	@GetMapping("/config/{materialNumber}")
+	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.EDIT_ORDERS, Permission.VIEW_SP_MATERIAL })
+	@Operation(summary = "Find Therapy details by Material Number")
+	public ResponseEntity<MaterialDetailsResponseDTO> findTherapyDetailsByMaterialNumber(
+			@PathVariable String materialNumber, @RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType)
+			throws ResourceNotFoundException {
+		log.debug("Fetching therapy details with materialNumber: {}", materialNumber);
+		return new ResponseEntity<>(therapyService.findTherapyDetailsByMaterialNumber(materialNumber, channelType),
+				HttpStatus.OK);
 
-    }
+	}
 
-    @DeleteMapping("/config/{materialNumber}")
-    @RequirePermissions({Permission.MANAGE_MATERIAL})
-    @Operation(summary = "Delete Configuration by Material Number")
-    public ResponseEntity<String> deleteConfigByMaterialNumber(
-            @PathVariable @NotNull(message = "Material number cannot be null ") @NotEmpty(
-                    message = "Material number cannot be empty") String materialNumber,
-            @RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) throws ResourceNotFoundException {
+	@DeleteMapping("/config/{materialNumber}")
+	@RequirePermissions({ Permission.MANAGE_MATERIAL })
+	@Operation(summary = "Delete Configuration by Material Number")
+	public ResponseEntity<String> deleteConfigByMaterialNumber(
+			@PathVariable @NotNull(message = "Material number cannot be null ") @NotEmpty(
+					message = "Material number cannot be empty") String materialNumber,
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) throws ResourceNotFoundException {
 
-        therapyService.deleteConfigByMaterialNumber(materialNumber, channelType);
-        return new ResponseEntity<>(materialNumber, HttpStatus.OK);
-    }
+		therapyService.deleteConfigByMaterialNumber(materialNumber, channelType);
+		return new ResponseEntity<>(materialNumber, HttpStatus.OK);
+	}
 
-    @GetMapping("/config/therapyId/{id}")
-    @RequirePermissions({Permission.VIEW_MATERIAL, Permission.ADD_ORDERS, Permission.EDIT_ORDERS})
-    @Operation(summary = "Find Therapy details by Material Number")
-    public ResponseEntity<MaterialResponseDTO> findTherapyDetailsById(@PathVariable Long id)
-            throws ResourceNotFoundException {
-        log.debug("Fetching therapy details with materialNumber: {}", id);
-        return new ResponseEntity<>(therapyService.findTherapyDetailsById(id), HttpStatus.OK);
+	@GetMapping("/config/therapyId/{id}")
+	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.ADD_ORDERS, Permission.EDIT_ORDERS })
+	@Operation(summary = "Find Therapy details by Material Number")
+	public ResponseEntity<MaterialResponseDTO> findTherapyDetailsById(@PathVariable Long id)
+			throws ResourceNotFoundException {
+		log.debug("Fetching therapy details with materialNumber: {}", id);
+		return new ResponseEntity<>(therapyService.findTherapyDetailsById(id), HttpStatus.OK);
 
-    }
+	}
 
-	
 }
