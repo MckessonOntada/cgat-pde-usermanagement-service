@@ -229,13 +229,17 @@ public class AccountServiceImpl implements AccountService {
 
 	@Transactional
 	@Override
-	public void delinkAccountFromProvider(Long accountId, Long providerId) throws ResourceNotFoundException {
+	public void delinkAccountFromProvider(Long accountId, List<Long> providerIds) throws ResourceNotFoundException {
 		Account account = accountRepository.findById(accountId)
 			.orElseThrow(() -> new ResourceNotFoundException("Account not found with ID: " + accountId));
-		Provider provider = providerRepository.findById(providerId)
-			.orElseThrow(() -> new ResourceNotFoundException("Provider not found with ID: " + providerId));
 
-		account.getProviders().remove(provider);
+		List<Provider> providers = providerRepository.findAllById(providerIds);
+
+		if (providers.size() != providerIds.size()) {
+			throw new ResourceNotFoundException("Some of the provided provider IDs do not exist.");
+		}
+
+		account.getProviders().removeAll(providers);
 		accountRepository.save(account);
 	}
 
