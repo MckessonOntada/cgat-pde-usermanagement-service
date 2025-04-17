@@ -10,11 +10,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Index;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -24,9 +24,8 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@Table(name = "crosswalk", schema = "catalog",
-		indexes = { @Index(name = "idx_crosswalk_material_productid_composite_key",
-				columnList = "bnb_material_number, sp_product_id") })
+@Builder
+@Table(name = "crosswalk", schema = "catalog")
 public class Crosswalk extends AuditColumns implements Serializable {
 
 	private static final long serialVersionUID = 1L;

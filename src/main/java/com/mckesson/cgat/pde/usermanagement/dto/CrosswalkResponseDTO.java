@@ -1,28 +1,19 @@
 package com.mckesson.cgat.pde.usermanagement.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+public interface CrosswalkResponseDTO {
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class CrosswalkResponseDTO {
+	Long getId();
 
-	private Long id;
+	String getBnbMaterialNumber();
 
-	private String bnbMaterialNumber;
+	String getBnbMaterialDescription();
 
-	private String bnbMaterialDescription;
+	String getBnbNdc();
 
-	private String bnbNdc;
+	String getSpProductId();
 
-	private String spProductId;
+	String getSpProductName();
 
-	private String spProductName;
-
-	private String spNdc;
+	String getSpNdc();
 
 }

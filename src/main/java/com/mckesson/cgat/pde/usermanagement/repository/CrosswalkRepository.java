@@ -1,23 +1,27 @@
 package com.mckesson.cgat.pde.usermanagement.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.mckesson.cgat.pde.usermanagement.dto.CrosswalkResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Crosswalk;
-import java.util.List;
 
 public interface CrosswalkRepository extends JpaRepository<Crosswalk, Long> {
 
 	@Query(value = """
 			SELECT
-			 	cw.*,
-			    m1.material_description AS bnb_description,
-				m1.ndc_number as bnb_ndc,
-			    m2.material_description AS sp_description,
-				m2.ndc_number as sp_ndc
+			 	cw.id,
+			 	m1.material_number as bnbMaterialNumber,
+			    m1.material_description as bnbMaterialDescription,
+				m1.ndc_number as bnbNdc,
+				m2.material_number as spProductId,
+			    m2.material_description as spProductName,
+				m2.ndc_number as spNdc
 			FROM catalog.crosswalk cw
 			JOIN catalog.material m1 ON cw.bnb_material_number = m1.material_number
 			JOIN catalog.material m2 ON cw.sp_product_id = m2.material_number
@@ -38,7 +42,7 @@ public interface CrosswalkRepository extends JpaRepository<Crosswalk, Long> {
 				OR ('INACTIVE' = :status and cw.is_active = 0 )
 			)
 			""", nativeQuery = true)
-	Page<Crosswalk> findAllCrosswalks(Pageable paging, String query, @Param("status") String status);
+	Page<CrosswalkResponseDTO> findAllCrosswalks(Pageable paging, String query, @Param("status") String status);
 
 	List<Crosswalk> findBySpProductId(String spProductId);
 

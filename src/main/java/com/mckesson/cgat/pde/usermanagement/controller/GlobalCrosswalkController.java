@@ -45,8 +45,8 @@ public class GlobalCrosswalkController {
 	private static final String SORT_ORDER_ASC = "asc";
 
 	private static final Map<String, String> crosswalk_sortby_columns = Map.of("spProductId", "m2.material_number",
-			"spProductDesc", "m2.material_description", "bnbMaterialNumber", "m1.material_number", "bnbMaterialDesc",
-			"m1.material_description");
+			"spProductName", "m2.material_description", "bnbMaterialNumber", "m1.material_number",
+			"bnbMaterialDescription", "m1.material_description");
 
 	@RequirePermissions({ Permission.ADD_CROSSWALK })
 	@PostMapping(consumes = "application/json")
