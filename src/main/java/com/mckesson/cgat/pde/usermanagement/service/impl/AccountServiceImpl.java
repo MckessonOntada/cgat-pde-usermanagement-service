@@ -246,6 +246,7 @@ public class AccountServiceImpl implements AccountService {
 		if (!accountRepository.existsById(accountId)) {
 			throw new ResourceNotFoundException("Account not found with ID: " + accountId);
 		}
+		query = StringUtils.toRootLowerCase(query);
 		return providerRepository.findNonLinkedProvidersByAccountId(query, accountId, paging, practiceId);
 	}
 
