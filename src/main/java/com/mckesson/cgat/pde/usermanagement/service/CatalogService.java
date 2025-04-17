@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.service;
 
+import com.mckesson.cgat.pde.usermanagement.dto.CSVProcessingResult;
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogConfigurationDTO;
 import com.mckesson.cgat.pde.usermanagement.model.CatalogConfiguration;
@@ -8,6 +9,7 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -28,5 +30,7 @@ public interface CatalogService {
 					message = "'shipToAccount' cannot be empty") String shipToAccount,
 			@NotNull(message = "'soldToAccount' cannot be null") @NotEmpty(
 					message = "'soldToAccount' cannot be empty") String soldToAccount);
+
+	CSVProcessingResult uploadSPCatalog(MultipartFile catalogsData);
 
 }

@@ -249,4 +249,9 @@ public class AccountServiceImpl implements AccountService {
 		return providerRepository.findNonLinkedProvidersByAccountId(query, accountId, paging, practiceId);
 	}
 
+	@Override
+	public List<Account> getSPAccounts() {
+		return accountRepository.findAllByChannelTypeAndIsActive(ChannelType.SPECIALITY_PHARMA, true);
+	}
+
 }
