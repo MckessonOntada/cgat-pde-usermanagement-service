@@ -34,7 +34,7 @@ public class CrosswalkServiceImpl implements CrosswalkService {
 	}
 
 	@Override
-	public Crosswalk createAccount(Crosswalk crosswalk) throws ResourceNotFoundException {
+	public Crosswalk createCrosswalk(Crosswalk crosswalk) throws ResourceNotFoundException {
 		log.info(" Inside method - createCrosswalk ", crosswalk);
 		List<Therapy> therapies = therapyRepository.findAllById(
 				List.of(Long.valueOf(crosswalk.getBnbMaterialNumber()), Long.valueOf(crosswalk.getSpProductId())));

@@ -11,7 +11,7 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 public interface CrosswalkService {
 
-	Crosswalk createAccount(Crosswalk crosswalk) throws ResourceNotFoundException;
+	Crosswalk createCrosswalk(Crosswalk crosswalk) throws ResourceNotFoundException;
 
 	Page<CrosswalkResponseDTO> findAll(Pageable paging, String query, List<String> status);
 

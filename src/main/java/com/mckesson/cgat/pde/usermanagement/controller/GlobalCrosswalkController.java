@@ -52,7 +52,7 @@ public class GlobalCrosswalkController {
 	 * @Operation(summary = "Create Crosswalk") public ResponseEntity<Crosswalk>
 	 * createCrosswalk(@Valid @RequestBody Crosswalk crosswalk) throws
 	 * UnauthorizedAccessException, ResourceNotFoundException { return new
-	 * ResponseEntity<>(crosswalkService.createAccount(crosswalk), HttpStatus.OK);
+	 * ResponseEntity<>(crosswalkService.createCrosswalk(crosswalk), HttpStatus.OK);
 	 * 
 	 * }
 	 */
