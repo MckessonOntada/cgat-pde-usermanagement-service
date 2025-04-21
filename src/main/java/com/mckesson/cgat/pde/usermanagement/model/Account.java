@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Set;
 
 import jakarta.persistence.*;
+import org.hibernate.envers.AuditOverride;
 import org.hibernate.envers.Audited;
 import org.hibernate.type.NumericBooleanConverter;
 
@@ -35,6 +36,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
+
 @Entity
 @Setter
 @Getter
@@ -43,7 +46,9 @@ import lombok.ToString;
 @EqualsAndHashCode
 @Builder
 @ToString
-public class Account implements Serializable {
+@Audited
+@AuditOverride(forClass = AuditColumns.class)
+public class Account extends AuditColumns implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -55,7 +60,6 @@ public class Account implements Serializable {
 	private Long id;
 
 	@Column(name = "tenant_id")
-	@Audited
 	// @TenantId
 	private Long practiceId;
 
@@ -120,6 +124,7 @@ public class Account implements Serializable {
 	private String cgatIdentifier;
 
 	@ManyToMany(fetch = FetchType.EAGER)
+	@Audited(targetAuditMode = NOT_AUDITED)
 	@JoinTable(name = "user_account_mapping", joinColumns = @JoinColumn(name = "user_id"),
 			inverseJoinColumns = @JoinColumn(name = "account_id"))
 	private Set<User> user;
@@ -130,6 +135,7 @@ public class Account implements Serializable {
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "account_provider_mapping", joinColumns = @JoinColumn(name = "account_id"),
 			inverseJoinColumns = @JoinColumn(name = "provider_id"))
+	@Audited(targetAuditMode = NOT_AUDITED)
 	private Set<Provider> providers;
 
 }

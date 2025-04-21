@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.model;
 
 import java.io.Serializable;
 
+import org.hibernate.envers.AuditOverride;
 import org.hibernate.envers.Audited;
 import org.hibernate.type.NumericBooleanConverter;
 
@@ -33,6 +34,7 @@ import lombok.ToString;
 @Builder
 @ToString
 @Audited
+@AuditOverride(forClass = AuditColumns.class)
 public class Practice extends AuditColumns implements Serializable {
 
 	private static final long serialVersionUID = 1L;

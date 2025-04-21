@@ -1,3 +1,9 @@
+ALTER TABLE usermanagement.account
+    ADD IF NOT EXISTS created_by_user_name VARCHAR(255) NULL,
+    ADD IF NOT EXISTS created_by_impersonator VARCHAR(255) NULL,
+    ADD IF NOT EXISTS created_by_impersonator_user_name VARCHAR(255) NULL,
+    ADD IF NOT EXISTS updated_by_impersonator VARCHAR(255) NULL;
+
 CREATE SCHEMA IF NOT EXISTS audit;
 
 CREATE TABLE audit.revinfo (
@@ -27,9 +33,11 @@ CREATE TABLE audit.practice_aud (
     is_active INTEGER,
     created_at TIMESTAMP,
     created_by VARCHAR(255),
+    created_by_user_name VARCHAR(255),
+    created_by_impersonator VARCHAR(255),
+    created_by_impersonator_user_name VARCHAR(255),
     updated_at TIMESTAMP,
     updated_by VARCHAR(255),
-    created_by_impersonator VARCHAR(255),
     updated_by_impersonator VARCHAR(255),
     CONSTRAINT pk_practice_aud PRIMARY KEY (id, rev),
     CONSTRAINT fk_practice_aud_revinfo FOREIGN KEY (rev) REFERENCES audit.revinfo(rev)
@@ -39,7 +47,45 @@ CREATE TABLE IF NOT EXISTS audit.account_aud (
     id BIGINT NOT NULL,
     rev INTEGER NOT NULL,
     revtype SMALLINT,
+
+    -- Original Account fields
     tenant_id BIGINT,
+    name_1 VARCHAR(50),
+    sap_partner VARCHAR(10),
+    sap_customer VARCHAR(20),
+    partner_function VARCHAR(50),
+    sales_org VARCHAR(4),
+    distribution_channel VARCHAR(2),
+    vistex_customer VARCHAR(10),
+    division VARCHAR(2),
+    company_code VARCHAR(4),
+    search_term_1 VARCHAR(20),
+    cgat_identifier VARCHAR(3),
+    is_active INTEGER,
+    channel_type VARCHAR(50),
+    first_name VARCHAR(50),
+    middle_name VARCHAR(50),
+    last_name VARCHAR(50),
+    city VARCHAR(40),
+    country VARCHAR(10),
+    district VARCHAR(40),
+    email VARCHAR(255),
+    fax VARCHAR(40),
+    house_number VARCHAR(10),
+    state VARCHAR(40),
+    street VARCHAR(60),
+    street_2 VARCHAR(40),
+    street_3 VARCHAR(40),
+    telephone VARCHAR(30),
+    zip_code VARCHAR(10),
+    created_at TIMESTAMP,
+    created_by VARCHAR(255),
+    created_by_user_name VARCHAR(255),
+    created_by_impersonator VARCHAR(255),
+    created_by_impersonator_user_name VARCHAR(255),
+    updated_at TIMESTAMP,
+    updated_by VARCHAR(255),
+    updated_by_impersonator VARCHAR(255),
     CONSTRAINT pk_account_aud PRIMARY KEY (id, rev),
     CONSTRAINT fk_account_aud_revinfo FOREIGN KEY (rev) REFERENCES audit.revinfo(rev)
 );
