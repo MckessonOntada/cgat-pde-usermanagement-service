@@ -16,10 +16,6 @@ public interface MaterialCrossWalkConfigRepository extends JpaRepository<Crosswa
 
 	void deleteBySpProductIdIn(List<String> spProductIds);
 
-	@Query(value = "SELECT DISTINCT m.sp_product_id FROM catalog.crosswalk m WHERE m.sp_product_id IN :spProductIds",
-			nativeQuery = true)
-	List<String> findExistingSpProductIds(@Param("spProductIds") Set<String> spProductIds);
-
 	@Query(value = "SELECT DISTINCT m.bnb_material_number FROM catalog.crosswalk m WHERE m.bnb_material_number IN :bnbMaterialNumbers",
 			nativeQuery = true)
 	List<String> findExistingBnbMaterialNumbers(@Param("bnbMaterialNumbers") Set<String> bnbMaterialNumbers);

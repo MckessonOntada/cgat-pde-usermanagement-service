@@ -129,20 +129,17 @@ public class GlobalTherapyController {
 	public ResponseEntity<StreamingResponseBody> downloadMaterialsCsvFile(
 			@RequestParam(defaultValue = "SPECIALITY_PHARMA") ChannelType channelType) {
 
-		// Define file name and header based on channel
-		String fileName;
+		// Default to SPECIALITY_PHARMA
+		String fileName = "SP_Product_info.csv";
 		String headerLine;
 
-		if (channelType == ChannelType.SPECIALITY_PHARMA) {
-			fileName = "SP_Product_info.csv";
-			headerLine = "Product ID,Product Name,Product NDC";
-		}
-		else if (channelType == ChannelType.BUY_AND_BILL) {
+		// Override if BUY_AND_BILL
+		if (channelType == ChannelType.BUY_AND_BILL) {
 			fileName = "Material_info.csv";
 			headerLine = "Material Id,Material Description,Buy & Bill Material NDC";
 		}
 		else {
-			throw new IllegalArgumentException("Unsupported channel type: " + channelType);
+			headerLine = "Product ID,Product Name,Product NDC";
 		}
 
 		StreamingResponseBody stream = outputStream -> {
