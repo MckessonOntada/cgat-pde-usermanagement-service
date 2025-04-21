@@ -15,9 +15,9 @@ import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.determineDr
 
 /**
  * Copy below prompt to generate class using github copilot
- *
+ * <p>
  * Generate java class with following csv
- *
+ * <p>
  * Sequence,Fields,Length,Type,Description,Comments ,MPB = required/optional?,MSH =
  * required/optional? Sequence,Fields,Length,Type,Description,Comments ,MPB =
  * required/optional?,MSH = required/optional? 1,item_num,18,character,Material
@@ -80,8 +80,8 @@ import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.determineDr
  * 71,VKORG,4,character,sales orgnization,Y,Required,required
  * 72,CGAT_TYPE,2,character,CGAT type,Y,Optional,optional
  * 73,CGAT_PRODUCT_PRICING,1,character,Product level pricing,Y,Optional,optional
- *
- *
+ * <p>
+ * <p>
  * The class properties are generated like below
  *
  * @Meta(order=1, length = 10, name="EPKUNNR")
@@ -104,7 +104,7 @@ import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.determineDr
  * String else @NotNull(group={NonMPBValidationGroup.class}) when MPB = required/optional?
  * column is Optional and MSH = required/optional? column is Required For Number
  * generate @Digits For Date generate type as LocalDate
- *
+ * <p>
  * Add @Column with name compatible with postgres DB column name and is derived from
  * description column Once The class is generated, Generate a create Table sql command for
  * the same compatible with postgres DB
@@ -383,6 +383,9 @@ public class Therapy implements Serializable {
 	@Size(max = 1)
 	@Column(name = "product_level_pricing")
 	private String productLevelPricing;
+
+	@Column(name = "is_crosswalked")
+	private Boolean isCrosswalked;
 
 	@PostLoad
 	public void postLoad() {
