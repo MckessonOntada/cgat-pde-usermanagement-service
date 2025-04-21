@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.mckesson.cgat.pde.usermanagement.model.Provider;
+import com.mckesson.cgat.pde.usermanagement.repository.ProviderRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -39,6 +42,7 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 
 @Service
+@Slf4j
 public class AccountServiceImpl implements AccountService {
 
 	private final AccountRepository accountRepository;
@@ -53,15 +57,19 @@ public class AccountServiceImpl implements AccountService {
 
 	private final AccountMapper accountMapper;
 
+	private final ProviderRepository providerRepository;
+
 	public AccountServiceImpl(AccountRepository accountRepository, PracticeRepository practiceRepository,
 			UserRepository userRepository, UserPreferenceRepository userPreferenceRepository,
-			QuestionnaireService questionnaireService, AccountMapper accountMapper) {
+			QuestionnaireService questionnaireService, AccountMapper accountMapper,
+			ProviderRepository providerRepository) {
 		this.accountRepository = accountRepository;
 		this.practiceRepository = practiceRepository;
 		this.userRepository = userRepository;
 		this.userPreferenceRepository = userPreferenceRepository;
 		this.questionnaireService = questionnaireService;
 		this.accountMapper = accountMapper;
+		this.providerRepository = providerRepository;
 	}
 
 	@Override
@@ -201,6 +209,54 @@ public class AccountServiceImpl implements AccountService {
 			.build();
 
 		return detailsResponseDTO;
+	}
+
+	@Transactional
+	@Override
+	public Account linkAccountToProviders(Long accountId, List<Long> providerIds) throws ResourceNotFoundException {
+		Account account = accountRepository.findById(accountId)
+			.orElseThrow(() -> new ResourceNotFoundException("Account not found with ID: " + accountId));
+
+		List<Provider> providers = providerRepository.findAllById(providerIds);
+
+		if (providers.size() != providerIds.size()) {
+			throw new ResourceNotFoundException("Some of the provided provider IDs do not exist.");
+		}
+
+		account.getProviders().addAll(providers);
+		return accountRepository.save(account);
+	}
+
+	@Transactional
+	@Override
+	public void delinkAccountFromProvider(Long accountId, List<Long> providerIds) throws ResourceNotFoundException {
+		Account account = accountRepository.findById(accountId)
+			.orElseThrow(() -> new ResourceNotFoundException("Account not found with ID: " + accountId));
+
+		List<Provider> providers = providerRepository.findAllById(providerIds);
+
+		if (providers.size() != providerIds.size()) {
+			throw new ResourceNotFoundException("Some of the provided provider IDs do not exist.");
+		}
+
+		account.getProviders().removeAll(providers);
+		accountRepository.save(account);
+	}
+
+	@Override
+	public Page<Provider> findNonLinkedProvidersByAccountId(String query, Long accountId, Pageable paging,
+			Long practiceId) throws ResourceNotFoundException {
+		log.debug("Fetching non-linked accounts for Account ID: {}", accountId);
+		if (!accountRepository.existsById(accountId)) {
+			throw new ResourceNotFoundException("Account not found with ID: " + accountId);
+		}
+		query = StringUtils.toRootLowerCase(query);
+		return providerRepository.findNonLinkedProvidersByAccountId(query, accountId, paging, practiceId);
+	}
+
+	@Override
+	public List<Account> getSPAccounts() {
+		return accountRepository.findAllByChannelTypeAndIsActive(ChannelType.SPECIALITY_PHARMA, true);
 	}
 
 }

@@ -54,6 +54,31 @@ public class CustomUtils {
 
 	private static final Set<String> TRUE_DROPSHIP_CATEGORIES = Set.of("BANS", "BANC");
 
+	public static final String ACCOUNT_REGEX = "\\d{1,20}";
+
+	public static final String PRODUCT_ID_REGEX = "[a-zA-Z0-9]{1,50}";
+
+	public static final String STATUS_REGEX = "(?i)Link|Unlink";
+
+	public static final String HEADER_ACCOUNT_NUMBER = "Account Number";
+
+	public static final String HEADER_PRODUCT_ID = "SP Product ID";
+
+	public static final String HEADER_STATUS = "Status";
+
+	public static final String HEADER_ERROR_MESSAGE = "Error Message";
+
+	public static final List<String> REQUIRED_HEADERS = List.of(HEADER_ACCOUNT_NUMBER, HEADER_PRODUCT_ID,
+			HEADER_STATUS);
+
+	public static final String CATALOG_ACTION_STATUS_LINK = "Link";
+
+	public static final String CATALOG_ACTION_STATUS_UNLINK = "Unlink";
+
+	public static final String THERAPY_ITEM_STATUS_ACTIVE = "A";
+
+	public static final String THERAPY_ITEM_STATUS_INACTIVE = "V";
+
 	public static boolean validateEmail(String emailAddress) {
 		return Pattern.compile(regexPattern).matcher(emailAddress).matches();
 	}
@@ -107,7 +132,7 @@ public class CustomUtils {
 
 	public static String getConsolidatedStatus(List<String> status) {
 		if (CollectionUtils.isEmpty(status))
-			return object_status.ALL.name();
+			return object_status.ACTIVE.name();
 
 		boolean hasActive = status.stream().anyMatch(i -> i.equalsIgnoreCase(object_status.ACTIVE.name()));
 		boolean hasInactive = status.stream().anyMatch(i -> i.equalsIgnoreCase(object_status.INACTIVE.name()));

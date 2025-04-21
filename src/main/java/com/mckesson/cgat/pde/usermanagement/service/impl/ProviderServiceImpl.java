@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import com.mckesson.cgat.pde.usermanagement.dto.ProviderDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
+import com.mckesson.cgat.pde.usermanagement.exception.custom.ResourceConflictException;
 import com.mckesson.cgat.pde.usermanagement.model.Address;
 import com.mckesson.cgat.pde.usermanagement.model.Name;
 import com.mckesson.cgat.pde.usermanagement.model.Provider;
@@ -36,6 +37,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -125,10 +127,7 @@ public class ProviderServiceImpl implements ProviderService {
 		if (!violations.isEmpty()) {
 			StringBuilder errorMessage = new StringBuilder("Validation errors: ");
 			for (ConstraintViolation<Provider> violation : violations) {
-				errorMessage.append(violation.getPropertyPath())
-					.append(" ")
-					.append(violation.getMessage())
-					.append("; ");
+				errorMessage.append(violation.getMessage()).append("; ");
 			}
 			throw new IllegalArgumentException(errorMessage.toString());
 		}
@@ -223,14 +222,15 @@ public class ProviderServiceImpl implements ProviderService {
 	@Override
 	public Provider createProvider(Provider provider) {
 		validateProvider(provider);
-		validateUniqueConstraints(provider);
+		validateUniqueConstraintsForAddProvider(provider);
 		provider.setIsActive(true);
 		return providerRepository.save(provider);
 
 	}
 
 	@Override
-	public Page<Provider> findAllProviders(Pageable paging, String query, List<String> status) {
+	public Page<Provider> findAllProviders(Pageable paging, String query, List<String> status, Long accountId,
+			Long practiceId) {
 		log.debug("Searching providers based on filter query:{}, status: {}", query, status);
 		query = StringUtils.toRootLowerCase(query);
 
@@ -244,7 +244,7 @@ public class ProviderServiceImpl implements ProviderService {
 			}
 		}
 
-		return providerRepository.findAllByQueryText(query, statusFilter, paging);
+		return providerRepository.findAllByQueryText(query, statusFilter, paging, accountId, practiceId);
 	}
 
 	@Override
@@ -255,7 +255,7 @@ public class ProviderServiceImpl implements ProviderService {
 		provider.setDea(model.getDea());
 		provider.setNpi(model.getNpi());
 		provider.setName(model.getName());
-		validateUniqueConstraints(provider);
+		validateProvider(provider);
 		return providerRepository.save(provider);
 	}
 
@@ -302,6 +302,22 @@ public class ProviderServiceImpl implements ProviderService {
 
 		if (!errorMessage.isEmpty()) {
 			throw new IllegalArgumentException(errorMessage.toString().trim());
+		}
+	}
+
+	private void validateUniqueConstraintsForAddProvider(Provider provider) {
+		List<String> errorCodes = new ArrayList<>();
+
+		if (providerRepository.existsByPracticeIdAndDea(provider.getPracticeId(), provider.getDea())) {
+			errorCodes.add("provider.dea.conflict");
+		}
+
+		if (providerRepository.existsByPracticeIdAndNpi(provider.getPracticeId(), provider.getNpi())) {
+			errorCodes.add("provider.npi.conflict");
+		}
+
+		if (!errorCodes.isEmpty()) {
+			throw new ResourceConflictException(errorCodes);
 		}
 	}
 

@@ -5,6 +5,7 @@ import java.util.Set;
 
 import com.mckesson.cgat.pde.usermanagement.dto.AccountDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.AccountDetailsResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.model.Provider;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -37,5 +38,14 @@ public interface AccountService {
 	Page<AccountsResponseDTO> findAllPayToAccounts(Long userId, String query, Pageable paging);
 
 	AccountDetailsResponseDTO getAccountDetails(Long accountId) throws ResourceNotFoundException;
+
+	Account linkAccountToProviders(Long accountId, List<Long> providerIds) throws ResourceNotFoundException;
+
+	void delinkAccountFromProvider(Long accountId, List<Long> providerIds) throws ResourceNotFoundException;
+
+	Page<Provider> findNonLinkedProvidersByAccountId(String query, Long accountId, Pageable paging, Long practiceId)
+			throws ResourceNotFoundException;
+
+	List<Account> getSPAccounts();
 
 }

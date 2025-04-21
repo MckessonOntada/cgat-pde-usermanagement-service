@@ -58,5 +58,7 @@ public interface TherapyService {
 	MaterialResponseDTO findTherapyDetailsById(Long id) throws ResourceNotFoundException;
 
 	void deLinkSPCatalog(List<CatalogDeLinkRequestDTO> catalogList);
+	
+	List<Therapy> getSPTherapies();
 
 }
