@@ -204,7 +204,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 					OR ('SPECIALITY_PHARMA' = :channelType and channel_type = 'SPECIALITY_PHARMA' )
 				)
 			)""")
-	Page<Account> findAllOrganizations(String query, String status, Pageable paging, List<Long> practiceIdList,
-			String partnerFunctionType, List<String> salesOrg, List<String> distChannels, String channelType);
+	Page<Account> findAllOrganizations(String query, String status, Pageable paging, List<Long> practiceId,
+			String partnerFunction, List<String> salesOrg, List<String> distChannels, String channelType);
 
 }

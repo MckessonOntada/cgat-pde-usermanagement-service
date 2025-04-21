@@ -54,7 +54,7 @@ public class GlobalAccountController {
 		return new ResponseEntity<>(accounts, HttpStatus.OK);
 	}
 
-	@RequirePermissions({ Permission.VIEW_CATALOG, Permission.MANAGE_CATALOG })
+	@RequirePermissions({ Permission.VIEW_SP_CATALOG, Permission.MANAGE_SP_CATALOG })
 	@GetMapping("/for-organizations")
 	@Operation(summary = "Fetch all Accounts based on filter provided with pagination capabilities.")
 	Page<Account> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
@@ -64,7 +64,7 @@ public class GlobalAccountController {
 			@RequestParam(required = false) List<String> status, @RequestParam(required = false) List<String> salesOrg,
 			@RequestParam(required = false) List<String> distChannels,
 			@RequestParam AccountPartnerFunction partnerFunction,
-			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType,
+			@RequestParam(defaultValue = "SPECIALITY_PHARMA") ChannelType channelType,
 			@RequestParam List<Long> practiceIdList) throws UnauthorizedAccessException {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
