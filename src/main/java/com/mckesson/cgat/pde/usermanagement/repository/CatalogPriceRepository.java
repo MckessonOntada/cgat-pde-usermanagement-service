@@ -3,7 +3,6 @@ package com.mckesson.cgat.pde.usermanagement.repository;
 import java.util.List;
 import java.util.Optional;
 
-import com.mckesson.cgat.pde.usermanagement.dto.CatalogDeLinkRequestDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponse;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import org.springframework.data.domain.Page;
@@ -13,7 +12,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
-import org.springframework.data.util.Pair;
 
 public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long> {
 
@@ -82,9 +80,6 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 	Page<CatalogPrice> findAllGlobalCatalogs(@Param("accountIds") List<String> accountIds,
 			@Param("partnerFunction") String partnerFunction, @Param("query") String query, Pageable paging,
 			@Param("channelType") String channelType);
-
-	Optional<CatalogPrice> findBySapMaterialAndSoldToCustomerAndChannelType(String sapMaterial, String soldToCustomer,
-			ChannelType channelType);
 
 	Optional<CatalogPrice> findBySapMaterialAndSoldToCustomerAndChannelType(String sapMaterial, String soldToCustomer,
 			ChannelType channelType);
