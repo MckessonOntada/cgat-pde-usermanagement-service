@@ -147,13 +147,13 @@ public class AccountController {
 	}
 
 	@RequirePermissions({ Permission.ADD_SP_ACCOUNT })
-	@DeleteMapping("/{accountId}/providers/{providerId}")
-	@Operation(summary = "Delink account from provider.")
+	@DeleteMapping("/{accountId}/providers")
+	@Operation(summary = "Delink account from providers.")
 	public ResponseEntity<Void> delinkAccountFromProvider(
 			@PathVariable @NotNull(message = "Account ID cannot be null") Long accountId,
-			@PathVariable @NotNull(message = "Provider ID cannot be null") Long providerId)
+			@NotEmpty(message = "Provider IDs cannot be empty") @RequestBody List<Long> providerIds)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
-		accountService.delinkAccountFromProvider(accountId, providerId);
+		accountService.delinkAccountFromProvider(accountId, providerIds);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 

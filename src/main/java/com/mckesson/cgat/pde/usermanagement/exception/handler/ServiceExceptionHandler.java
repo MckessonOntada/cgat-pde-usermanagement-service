@@ -1,6 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.exception.handler;
 
 import com.mckesson.cgat.pde.usermanagement.exception.custom.ForbiddenActionException;
+import com.mckesson.cgat.pde.usermanagement.exception.custom.ResourceConflictException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.jbat.auth.module.exception.BadRequestException;
 import com.mckesson.jbat.auth.module.exception.JWTNotFoundException;
@@ -114,6 +115,17 @@ public class ServiceExceptionHandler {
 	@ExceptionHandler(NoResourceFoundException.class)
 	public ResponseEntity<String> handleNoResourceFoundException(NoResourceFoundException e) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Requested API not found " + e.getMessage());
+	}
+
+	@ExceptionHandler(ResourceConflictException.class)
+	public ResponseEntity<?> handleResourceConflictException(ResourceConflictException ex, WebRequest request) {
+		log.error("Resource conflict error: {}", ex.getErrorCodes());
+		Map<String, Object> errorResponse = new HashMap<>();
+		errorResponse.put("status", HttpStatus.CONFLICT.value());
+		errorResponse.put("message", ex.getMessage());
+		errorResponse.put("errorCodes", ex.getErrorCodes()); // Array of error codes like
+
+		return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
 	}
 
 }

@@ -41,7 +41,7 @@ public interface AccountService {
 
 	Account linkAccountToProviders(Long accountId, List<Long> providerIds) throws ResourceNotFoundException;
 
-	void delinkAccountFromProvider(Long accountId, Long providerId) throws ResourceNotFoundException;
+	void delinkAccountFromProvider(Long accountId, List<Long> providerIds) throws ResourceNotFoundException;
 
 	Page<Provider> findNonLinkedProvidersByAccountId(String query, Long accountId, Pageable paging, Long practiceId)
 			throws ResourceNotFoundException;
