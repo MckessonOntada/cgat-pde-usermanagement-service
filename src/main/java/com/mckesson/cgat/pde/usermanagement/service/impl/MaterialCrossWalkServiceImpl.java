@@ -87,7 +87,8 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 		}
 		catch (Exception e) {
 			log.error("System failure occurred during upload: {}", e.getMessage(), e);
-			throw new SystemFailureException("An unexpected error occurred during the upload. Please try again later.");
+			throw new SystemFailureException("An unexpected error occurred during the upload. Please try again later.",
+					e);
 		}
 
 		return failedCrossWalks.isEmpty();
