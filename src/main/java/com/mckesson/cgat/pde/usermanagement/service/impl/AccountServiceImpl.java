@@ -120,9 +120,9 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public Page<Account> findAll(Pageable paging, String query, List<String> status, Long userId,
-			List<Long> practiceIdList, AccountPartnerFunction partnerFunction, List<String> salesOrg,
-			List<String> distChannels, ChannelType channelType) throws ResourceNotFoundException {
+	public Page<Account> findAll(Pageable paging, String query, List<String> status, Long userId, Long practiceId,
+			AccountPartnerFunction partnerFunction, List<String> salesOrg, List<String> distChannels,
+			ChannelType channelType) throws ResourceNotFoundException {
 		query = StringUtils.toRootLowerCase(query);
 		String statusActive = CustomUtils.object_status.ALL.name();
 		if (!CollectionUtils.isEmpty(status)) {
@@ -142,10 +142,10 @@ public class AccountServiceImpl implements AccountService {
 			Optional<User> user = userRepository.findById(userId);
 			if (!user.isPresent())
 				throw new ResourceNotFoundException("User not found with id: " + userId);
-			return accountRepository.findAccountsByUser(userId, query, statusActive, paging, practiceIdList.get(0),
+			return accountRepository.findAccountsByUser(userId, query, statusActive, paging, practiceId,
 					partnerFunction.getPartnerFunctionType(), salesOrg, distChannels, channelType.name());
 		}
-		return accountRepository.findAllByQueryText(query, statusActive, paging, practiceIdList,
+		return accountRepository.findAllByQueryText(query, statusActive, paging, practiceId,
 				partnerFunction.getPartnerFunctionType(), salesOrg, distChannels, channelType.name());
 	}
 
@@ -257,6 +257,15 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public List<Account> getSPAccounts() {
 		return accountRepository.findAllByChannelTypeAndIsActive(ChannelType.SPECIALITY_PHARMA, true);
+	}
+
+	@Override
+	public Page<Account> findAllByOrganization(Pageable paging, String query, List<String> status,
+			List<Long> practiceIdList, AccountPartnerFunction partnerFunction, List<String> salesOrg,
+			List<String> distChannels, ChannelType channelType) {
+		query = StringUtils.toRootLowerCase(query);
+		return accountRepository.findAllOrganizations(query, CustomUtils.getConsolidatedStatus(status), paging,
+				practiceIdList, partnerFunction.getPartnerFunctionType(), salesOrg, distChannels, channelType.name());
 	}
 
 }

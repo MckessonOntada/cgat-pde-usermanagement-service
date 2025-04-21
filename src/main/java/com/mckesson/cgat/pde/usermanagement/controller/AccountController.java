@@ -116,15 +116,12 @@ public class AccountController {
 			@RequestParam(required = false) List<String> salesOrg,
 			@RequestParam(required = false) List<String> distChannels,
 			@RequestParam AccountPartnerFunction partnerFunction,
-			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType,
-			@RequestParam(required = false) List<Long> practiceIdList)
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-		if (practiceIdList == null)
-			practiceIdList = List.of(Long.valueOf(practiceId));
-		return accountService.findAll(paging, query, status, null, practiceIdList, partnerFunction, salesOrg,
+		return accountService.findAll(paging, query, status, null, Long.valueOf(practiceId), partnerFunction, salesOrg,
 				distChannels, channelType);
 	}
 

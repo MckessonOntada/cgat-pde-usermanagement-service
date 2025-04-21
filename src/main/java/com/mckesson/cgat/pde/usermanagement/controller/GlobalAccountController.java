@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.OutputStreamWriter;
 import java.util.List;
 
+import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,10 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -54,6 +52,25 @@ public class GlobalAccountController {
 				salesOrg, distChannels, ChannelType.BUY_AND_BILL);
 
 		return new ResponseEntity<>(accounts, HttpStatus.OK);
+	}
+
+	@RequirePermissions({ Permission.VIEW_CATALOG, Permission.MANAGE_CATALOG })
+	@GetMapping("/for-organizations")
+	@Operation(summary = "Fetch all Accounts based on filter provided with pagination capabilities.")
+	Page<Account> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
+			@RequestParam(defaultValue = "20") Integer pageSize,
+			@RequestParam(defaultValue = "sap_partner") String sortBy,
+			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
+			@RequestParam(required = false) List<String> status, @RequestParam(required = false) List<String> salesOrg,
+			@RequestParam(required = false) List<String> distChannels,
+			@RequestParam AccountPartnerFunction partnerFunction,
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType,
+			@RequestParam List<Long> practiceIdList) throws UnauthorizedAccessException {
+		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
+				: Sort.by(sortBy).descending();
+		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
+		return accountService.findAllByOrganization(paging, query, status, practiceIdList, partnerFunction, salesOrg,
+				distChannels, channelType);
 	}
 
 	@GetMapping(value = "/download", produces = "text/csv")
