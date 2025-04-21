@@ -122,7 +122,6 @@ public class GlobalCatalogController {
 		return ResponseEntity.ok().build();
 	}
 
-	
 	@PostMapping(value = "/upload", consumes = { "multipart/form-data" })
 	@RequirePermissions({ Permission.MANAGE_SP_CATALOG })
 	@Operation(summary = "Upload bulk SP catalogs")
