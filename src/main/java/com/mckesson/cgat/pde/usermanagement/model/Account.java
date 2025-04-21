@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Set;
 
 import jakarta.persistence.*;
+import org.hibernate.envers.Audited;
 import org.hibernate.type.NumericBooleanConverter;
 
 import com.mckesson.cgat.pde.usermanagement.model.converters.AccountPartnerFunctionConverter;
@@ -54,6 +55,7 @@ public class Account implements Serializable {
 	private Long id;
 
 	@Column(name = "tenant_id")
+	@Audited
 	// @TenantId
 	private Long practiceId;
 

@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.model;
 
 import java.io.Serializable;
 
+import org.hibernate.envers.Audited;
 import org.hibernate.type.NumericBooleanConverter;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -31,6 +32,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @Builder
 @ToString
+@Audited
 public class Practice extends AuditColumns implements Serializable {
 
 	private static final long serialVersionUID = 1L;
