@@ -33,7 +33,9 @@ public enum Permission {
 	CREATE_INVOICES(false, true), APPROVE_PENDING_USER_REQUEST(true, true), MANAGE_PAYMENT_HISTORY(false, true),
 	VIEW_SP_MATERIAL(true, false), ADD_PROVIDER(false, true), EDIT_PROVIDER(false, true), VIEW_PROVIDER(true, true),
 	MANAGE_PROVIDERS_SCREEN(false, true), UPLOAD_PROVIDER(false, true), MANAGE_SP_CATALOG(true, false),
-	VIEW_SP_CATALOG(true, false), ADD_CROSSWALK(true, false), VIEW_MATERIAL_CROSSWALK(true, false);
+	VIEW_SP_CATALOG(true, false), ADD_CROSSWALK(true, false), VIEW_MATERIAL_CROSSWALK(true, false),
+	UPLOAD_CROSSWALK(true, false), MANAGE_CROSSWALK(true, false);
+
 
 	boolean isActiveForSystemAdmin;
 
