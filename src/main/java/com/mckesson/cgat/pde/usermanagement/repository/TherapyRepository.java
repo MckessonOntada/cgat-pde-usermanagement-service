@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import com.mckesson.cgat.pde.usermanagement.dto.TherapyResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -273,5 +274,12 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			@Param("materialNumbers") Set<String> materialNumbers, @Param("channelType") String channelType);
 
 	List<Therapy> findAllByChannelTypeAndItemStatus(ChannelType channelType, String itemStatus);
+
+	@Query("""
+    SELECT new com.mckesson.cgat.pde.usermanagement.dto.TherapyResponseDTO(t, t.channelType)
+    FROM Therapy t
+    WHERE t.id = :therapyId AND t.isCrosswalked = false
+    """)
+	Optional<TherapyResponseDTO> findTherapyWithCrosswalkById(Long therapyId);
 
 }

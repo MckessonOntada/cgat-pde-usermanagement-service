@@ -287,4 +287,10 @@ public class TherapyServiceImpl implements TherapyService {
 		return therapyRepository.findAllByChannelTypeAndItemStatus(channelType, THERAPY_ITEM_STATUS_ACTIVE);
 	}
 
+	@Override
+	public TherapyResponseDTO findTherapyWithCrosswalkById(Long therapyId) throws ResourceNotFoundException {
+		return therapyRepository.findTherapyWithCrosswalkById(therapyId)
+				.orElseThrow(() -> new ResourceNotFoundException("Therapy not found with id: " + therapyId));
+	}
+
 }
