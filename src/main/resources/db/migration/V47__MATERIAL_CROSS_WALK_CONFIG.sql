@@ -26,12 +26,14 @@ CACHE 20;
 INSERT INTO usermanagement.role_permissions_mapping(role_id, permission) VALUES
 (1, 'VIEW_MATERIAL_CROSSWALK'),
 (1, 'ADD_CROSSWALK'),
-(1, 'UPLOAD_CROSSWALK');
+(1, 'UPLOAD_CROSSWALK'),
+(1, 'MANAGE_CROSSWALK');
 
 INSERT INTO usermanagement.user_permission_mapping(user_id, permission) VALUES
 (1, 'VIEW_MATERIAL_CROSSWALK'),
 (1, 'ADD_CROSSWALK'),
-(1, 'UPLOAD_CROSSWALK');
+(1, 'UPLOAD_CROSSWALK'),
+(1, 'MANAGE_CROSSWALK');
 
 CREATE INDEX IF NOT EXISTS crosswalk_sp_product_id_index ON catalog.crosswalk
 USING btree(sp_product_id);

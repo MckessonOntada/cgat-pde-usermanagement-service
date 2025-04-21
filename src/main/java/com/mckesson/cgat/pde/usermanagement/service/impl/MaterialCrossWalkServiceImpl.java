@@ -276,7 +276,6 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 		return crossWalkConfigList;
 	}
 
-	@Transactional
 	private void removeConfigsFromDB(List<Crosswalk> entitiesToDelete) {
 		List<String> spProductIds = entitiesToDelete.stream().map(Crosswalk::getSpProductId).distinct().toList();
 		if (!CollectionUtils.isEmpty(spProductIds)) {
@@ -295,50 +294,60 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 	}
 
 	private void updateCrossWalkFlagForMaterials(List<Crosswalk> deletedEntities, List<Crosswalk> addedEntities) {
-		Set<String> spProductIdsToUpdate = new HashSet<>();
-		Set<String> bnbMaterialNumbersToUpdate = new HashSet<>();
+		// --- Collect SP ---
+		Set<String> addedSpProductIds = addedEntities.stream()
+			.map(Crosswalk::getSpProductId)
+			.filter(Objects::nonNull)
+			.collect(Collectors.toSet());
 
-		// Collect SP Product IDs
-		spProductIdsToUpdate
-			.addAll(deletedEntities.stream().map(Crosswalk::getSpProductId).collect(Collectors.toSet()));
-		spProductIdsToUpdate.addAll(addedEntities.stream().map(Crosswalk::getSpProductId).collect(Collectors.toSet()));
+		Set<String> deletedSpProductIds = deletedEntities.stream()
+			.map(Crosswalk::getSpProductId)
+			.filter(Objects::nonNull)
+			.collect(Collectors.toSet());
 
-		// Collect BnB Material Numbers
-		bnbMaterialNumbersToUpdate
-			.addAll(deletedEntities.stream().map(Crosswalk::getBnbMaterialNumber).collect(Collectors.toSet()));
-		bnbMaterialNumbersToUpdate
-			.addAll(addedEntities.stream().map(Crosswalk::getBnbMaterialNumber).collect(Collectors.toSet()));
+		// --- Collect BnB ---
+		Set<String> addedBnbMaterialNumbers = addedEntities.stream()
+			.map(Crosswalk::getBnbMaterialNumber)
+			.filter(Objects::nonNull)
+			.collect(Collectors.toSet());
 
-		// Fetch existing SP Product IDs and BnB Material Numbers in batch
-		Set<String> existingSpProductIds = new HashSet<>(
-				materialCrossWalkConfigRepository.findExistingSpProductIds(spProductIdsToUpdate));
+		Set<String> deletedBnbMaterialNumbers = deletedEntities.stream()
+			.map(Crosswalk::getBnbMaterialNumber)
+			.filter(Objects::nonNull)
+			.collect(Collectors.toSet());
 
-		Set<String> existingBnbMaterialNumbers = new HashSet<>(
-				materialCrossWalkConfigRepository.findExistingBnbMaterialNumbers(bnbMaterialNumbersToUpdate));
+		// Mark SP: true for added, false for deleted
+		if (!addedSpProductIds.isEmpty()) {
+			therapyRepository.updateIsCrossWalkedForMaterialNumbersAndChannelType(true, addedSpProductIds,
+					String.valueOf(ChannelType.SPECIALITY_PHARMA));
+		}
 
-		// Group SP Product IDs by 'exists' flag
-		Map<Boolean, Set<String>> spProductGroups = spProductIdsToUpdate.stream()
-			.collect(Collectors.groupingBy(existingSpProductIds::contains, Collectors.toSet()));
+		if (!deletedSpProductIds.isEmpty()) {
+			therapyRepository.updateIsCrossWalkedForMaterialNumbersAndChannelType(false, deletedSpProductIds,
+					String.valueOf(ChannelType.SPECIALITY_PHARMA));
+		}
 
-		// Group BnB Material Numbers by 'exists' flag
-		Map<Boolean, Set<String>> bnbMaterialGroups = bnbMaterialNumbersToUpdate.stream()
-			.collect(Collectors.groupingBy(existingBnbMaterialNumbers::contains, Collectors.toSet()));
+		// Mark BnB: true for added
+		if (!addedBnbMaterialNumbers.isEmpty()) {
+			therapyRepository.updateIsCrossWalkedForMaterialNumbersAndChannelType(true, addedBnbMaterialNumbers,
+					String.valueOf(ChannelType.BUY_AND_BILL));
+		}
 
-		// Bulk update SP Product IDs
-		spProductGroups.forEach((exists, ids) -> {
-			if (!ids.isEmpty()) {
-				therapyRepository.updateIsCrossWalkedForMaterialNumbersAndChannelType(exists, ids,
-						String.valueOf(ChannelType.SPECIALITY_PHARMA));
-			}
-		});
+		// BnB deleted: Only mark false if material no longer exists in DB
+		if (!deletedBnbMaterialNumbers.isEmpty()) {
+			Set<String> stillExisting = new HashSet<>(
+					materialCrossWalkConfigRepository.findExistingBnbMaterialNumbers(deletedBnbMaterialNumbers));
 
-		// Bulk update BnB Material Numbers
-		bnbMaterialGroups.forEach((exists, ids) -> {
-			if (!ids.isEmpty()) {
-				therapyRepository.updateIsCrossWalkedForMaterialNumbersAndChannelType(exists, ids,
+			// Only keep the material numbers that no longer exist in DB
+			Set<String> toBeMarkedFalse = deletedBnbMaterialNumbers.stream()
+				.filter(bnb -> !stillExisting.contains(bnb))
+				.collect(Collectors.toSet());
+
+			if (!toBeMarkedFalse.isEmpty()) {
+				therapyRepository.updateIsCrossWalkedForMaterialNumbersAndChannelType(false, toBeMarkedFalse,
 						String.valueOf(ChannelType.BUY_AND_BILL));
 			}
-		});
+		}
 	}
 
 	private void createOutputCSV(OutputStream outputStream,

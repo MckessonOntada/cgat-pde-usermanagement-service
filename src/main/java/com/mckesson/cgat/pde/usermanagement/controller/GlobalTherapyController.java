@@ -124,13 +124,30 @@ public class GlobalTherapyController {
 	}
 
 	@GetMapping(value = "/download", produces = "text/csv")
-	@RequirePermissions({ Permission.MANAGE_SP_CATALOG })
-	@Operation(summary = "Download csv file contains all speciality pharma active materials")
-	public ResponseEntity<StreamingResponseBody> downloadSPMaterialsCsvFile(
+	@RequirePermissions({ Permission.MANAGE_SP_CATALOG, Permission.MANAGE_CROSSWALK })
+	@Operation(summary = "Download CSV file for materials based on channel type")
+	public ResponseEntity<StreamingResponseBody> downloadMaterialsCsvFile(
 			@RequestParam(defaultValue = "SPECIALITY_PHARMA") ChannelType channelType) {
+
+		// Define file name and header based on channel
+		String fileName;
+		String headerLine;
+
+		if (channelType == ChannelType.SPECIALITY_PHARMA) {
+			fileName = "SP_Product_info.csv";
+			headerLine = "Product ID,Product Name,Product NDC";
+		}
+		else if (channelType == ChannelType.BUY_AND_BILL) {
+			fileName = "Material_info.csv";
+			headerLine = "Material Id,Material Description,Buy & Bill Material NDC";
+		}
+		else {
+			throw new IllegalArgumentException("Unsupported channel type: " + channelType);
+		}
+
 		StreamingResponseBody stream = outputStream -> {
 			try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
-				writer.write("Product ID,Product Name,Product NDC");
+				writer.write(headerLine);
 				writer.newLine();
 
 				for (Therapy therapy : therapyService.getTherapiesByChannelType(channelType)) {
@@ -144,32 +161,7 @@ public class GlobalTherapyController {
 		};
 
 		return ResponseEntity.ok()
-			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "SPMaterials.csv")
-			.contentType(MediaType.parseMediaType("text/csv"))
-			.body(stream);
-	}
-
-	@GetMapping(value = "/bnb/download", produces = "text/csv")
-	@Operation(summary = "Download csv file contains all Buy & Bill active materials")
-	public ResponseEntity<StreamingResponseBody> downloadBNBMaterialsCsvFile(
-			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) {
-		StreamingResponseBody stream = outputStream -> {
-			try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
-				writer.write("Material Id,Material Description,Buy & Bill Material NDC");
-				writer.newLine();
-
-				for (Therapy therapy : therapyService.getTherapiesByChannelType(channelType)) {
-					writer.write(String.format("\"%s\",\"%s\",\"%s\"", therapy.getMaterialNumber(),
-							therapy.getMaterialDescription(), therapy.getNdcNumber()));
-					writer.newLine();
-				}
-
-				writer.flush();
-			}
-		};
-
-		return ResponseEntity.ok()
-			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "Material_info.csv")
+			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
 			.contentType(MediaType.parseMediaType("text/csv"))
 			.body(stream);
 	}
