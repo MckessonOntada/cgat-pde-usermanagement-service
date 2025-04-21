@@ -42,7 +42,8 @@ public interface TherapyService {
 	Page<Therapy> findAllGlobalTherapies(String query, Pageable paging, List<ChannelType> channelTypes,
 			List<String> status);
 
-	Page<CatalogPrice> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging);
+	Page<CatalogPrice> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging,
+			ChannelType channelType);
 
 	Therapy findByMaterialNumber(String materialNumber, ChannelType channelType) throws ResourceNotFoundException;
 
@@ -57,8 +58,7 @@ public interface TherapyService {
 	MaterialResponseDTO findTherapyDetailsById(Long id) throws ResourceNotFoundException;
 
 	List<Therapy> getTherapiesByChannelType(ChannelType channelType);
-	void deLinkSPCatalog(List<CatalogDeLinkRequestDTO> catalogList);
 
-	List<Therapy> getSPTherapies();
+	void deLinkSPCatalog(List<CatalogDeLinkRequestDTO> catalogList);
 
 }
