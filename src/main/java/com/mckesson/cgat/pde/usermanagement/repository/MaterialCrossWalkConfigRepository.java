@@ -34,8 +34,8 @@ public interface MaterialCrossWalkConfigRepository extends JpaRepository<Crosswa
 			    m2.material_description as spProductName,
 				m2.ndc_number as spNdc
 			FROM catalog.crosswalk cw
-			JOIN catalog.material m1 ON cw.bnb_material_number = m1.material_number
-			JOIN catalog.material m2 ON cw.sp_product_id = m2.material_number
+			JOIN catalog.material m1 ON cw.bnb_material_number = m1.material_number and m1.channel_type = 'BUY_AND_BILL'
+			JOIN catalog.material m2 ON cw.sp_product_id = m2.material_number and m2.channel_type = 'SPECIALITY_PHARMA'
 			WHERE
 			(
 			    :query IS NULL
