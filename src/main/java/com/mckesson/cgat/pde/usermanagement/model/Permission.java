@@ -36,7 +36,6 @@ public enum Permission {
 	VIEW_SP_CATALOG(true, false), ADD_CROSSWALK(true, false), VIEW_MATERIAL_CROSSWALK(true, false),
 	UPLOAD_CROSSWALK(true, false), MANAGE_CROSSWALK(true, false);
 
-
 	boolean isActiveForSystemAdmin;
 
 	boolean isActiveForOthers;

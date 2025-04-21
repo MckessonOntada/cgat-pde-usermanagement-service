@@ -47,4 +47,5 @@ public class Crosswalk extends AuditColumns implements Serializable {
 	@Convert(converter = NumericBooleanConverter.class)
 	@Column(name = "is_active")
 	private Boolean isActive = true;
+
 }
