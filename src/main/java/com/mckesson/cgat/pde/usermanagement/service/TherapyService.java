@@ -29,7 +29,7 @@ public interface TherapyService {
 
 	Therapy findById(Long id) throws ResourceNotFoundException;
 
-	ProgramChannelResponseDTO findAllProgramAndChannels(Long userId, String therapyId);
+	ProgramChannelResponseDTO findAllProgramAndChannels(Long userId, String therapyId, ChannelType channelType);
 
 	Page<AccountsResponseDTO> findAllCustomerIdentifiers(Long userId, String query, Pageable paging);
 

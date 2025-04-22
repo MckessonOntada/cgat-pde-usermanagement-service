@@ -146,12 +146,14 @@ public class TherapyServiceImplTest {
 		Long userId = 502L;
 		ProgramChannelProjectionDTO programsandChannels = Mockito.mock(ProgramChannelProjectionDTO.class);
 
-		Mockito.when(therapyRepository.findAllProgramAndChannels(anyLong(), anyString(), anyString()))
+		Mockito
+			.when(therapyRepository.findAllPrograms(anyLong(), anyString(), anyString(),
+					ChannelType.BUY_AND_BILL.name()))
 			.thenReturn(List.of(programsandChannels));
-		therapyRepository.findAllProgramAndChannels(userId, therapyId,
-				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
-		verify(therapyRepository, times(1)).findAllProgramAndChannels(userId, therapyId,
-				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
+		therapyRepository.findAllPrograms(userId, therapyId,
+				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), ChannelType.BUY_AND_BILL.name());
+		verify(therapyRepository, times(1)).findAllPrograms(userId, therapyId,
+				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), ChannelType.BUY_AND_BILL.name());
 	}
 
 	private Page<AccountsResponseDTO> getAccounts() {

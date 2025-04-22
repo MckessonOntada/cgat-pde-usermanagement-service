@@ -1,7 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.repository;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -18,7 +17,6 @@ import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelProjectionDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface TherapyRepository extends JpaRepository<Therapy, Long> {
@@ -188,7 +186,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			@Param("partnerFunction") String partnerFunction);
 
 	@Query(value = """
-			SELECT ac.cgat_identifier as program, ac.sales_org as channel
+			SELECT ac.cgat_identifier as program, m.is_crosswalked as crosswalked
 			FROM catalog.material m
 			JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
 			JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
@@ -202,10 +200,32 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					ac.partner_function = :partnerFunction
 				AND
 					cp.deleted = false
+			    AND m.channel_type = :channelType
 			)
 			""", nativeQuery = true)
-	public List<ProgramChannelProjectionDTO> findAllProgramAndChannels(@Param("userId") Long userId,
-			@Param("therapyId") String therapyId, @Param("partnerFunction") String partnerFunction);
+	List<ProgramChannelProjectionDTO> findAllPrograms(@Param("userId") Long userId,
+			@Param("therapyId") String therapyId, @Param("partnerFunction") String partnerFunction, String channelType);
+
+	@Query(value = """
+				select cw.sp_product_id
+			 	FROM catalog.crosswalk cw
+			 	JOIN catalog.material m on m.material_number = cw.bnb_material_number
+				JOIN catalog.catalog_price cp ON cp.sap_material = cw.sp_product_id
+				JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
+				JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
+				WHERE
+				(
+						uam.user_id = :userId
+					AND
+						cw.bnb_material_number = :therapyId
+					AND
+						ac.partner_function = :partnerFunction
+					AND
+						cp.deleted = false
+				)
+			""", nativeQuery = true)
+	List<String> findAllCrossWalkedSPsForUser(@Param("userId") Long userId, @Param("therapyId") String therapyId,
+			@Param("partnerFunction") String partnerFunction);
 
 	@Query(value = """
 			SELECT DISTINCT ac.sap_customer as accountNumber, ac.name_1 as accountName

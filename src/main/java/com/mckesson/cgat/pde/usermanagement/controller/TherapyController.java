@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import java.util.List;
 import java.util.Map;
 
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -137,9 +138,10 @@ public class TherapyController {
 	@GetMapping("/{therapyId}/programs-channels")
 	@Operation(
 			summary = "Find all programs and channels from which the selected therapy is being offered, and the logged in user has access to")
-	public ResponseEntity<ProgramChannelResponseDTO> findAllProgramAndChannels(@PathVariable String therapyId) {
+	public ResponseEntity<ProgramChannelResponseDTO> findAllProgramAndChannels(@PathVariable String therapyId,
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) {
 		return new ResponseEntity<>(therapyService.findAllProgramAndChannels(
-				Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), therapyId), HttpStatus.OK);
+				Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), therapyId, channelType), HttpStatus.OK);
 	}
 
 	@GetMapping("/customeridentifiers")
