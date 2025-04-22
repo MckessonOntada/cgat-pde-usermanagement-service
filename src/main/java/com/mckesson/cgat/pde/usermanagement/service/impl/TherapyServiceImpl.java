@@ -4,14 +4,11 @@ import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.THERAPY_ITE
 import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.getConsolidatedChannelType;
 import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.getConsolidatedStatus;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.mckesson.cgat.pde.usermanagement.dto.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -19,15 +16,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTOImpl;
-import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponse;
-import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponseDto;
-import com.mckesson.cgat.pde.usermanagement.dto.MaterialDetailsResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelProjectionDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.mapper.CatalogPriceMapper;
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
