@@ -115,6 +115,8 @@ public class TherapyServiceImpl implements TherapyService {
 
 	private AccountsResponseDTOImpl mapToAccountsResponse(ShippingLocation location) {
 		return AccountsResponseDTOImpl.builder()
+			.id(String.valueOf(location.getId()))
+			.accountNumber(String.valueOf(location.getId()))
 			.accountName(location.getName())
 			.city(location.getAddress().getCity())
 			.street(location.getAddress().getAddress1())
