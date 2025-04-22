@@ -22,6 +22,7 @@ import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponseDto;
 import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.DistributionChannel;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
@@ -94,9 +95,10 @@ public class TherapyController {
 			summary = "Find all shipto accounts that is linked to the selected soldto account and the therapy also being offered from that shipto account")
 	public Page<AccountsResponseDTO> findAllShipToAccountsForTherapy(@PathVariable String soldToAccountId,
 			@PathVariable String therapyId, @RequestParam(defaultValue = "0") Integer pageNo,
-			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query) {
+			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) {
 		Pageable paging = PageRequest.of(pageNo, pageSize);
-		return therapyService.findAllShipToAccounts(soldToAccountId, therapyId, paging, query);
+		return therapyService.findAllShipToAccounts(soldToAccountId, therapyId, paging, query, channelType);
 	}
 
 	@GetMapping("/{therapyId}")
