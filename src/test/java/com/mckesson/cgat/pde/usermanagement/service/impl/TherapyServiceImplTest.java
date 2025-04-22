@@ -179,13 +179,13 @@ public class TherapyServiceImplTest {
 	public void findAllGlobalCatalogsTest() {
 		String query = "";
 		List<String> accounts = new ArrayList<>();
-		Mockito
-			.when(catalogPriceRepository.findAllGlobalCatalogs(anyList(), anyString(), anyString(),
-					any(Pageable.class)))
+		Mockito.when(catalogPriceRepository.findAllGlobalCatalogs(anyList(), anyString(), anyString(),
+				any(Pageable.class), ChannelType.BUY_AND_BILL.name()))
 			.thenReturn(getAllGlobalCatalogs());
-		therapyService.findAllGlobalCatalogs(accounts, query, paging);
+		therapyService.findAllGlobalCatalogs(accounts, query, paging, ChannelType.BUY_AND_BILL);
 		verify(catalogPriceRepository).findAllGlobalCatalogs(accounts,
-				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), query, paging);
+				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), query, paging,
+				ChannelType.BUY_AND_BILL.name());
 	}
 
 	@DisplayName("Test : FindAll Variants linked to soldToAccount, ShipToAccounts and TherapyId")

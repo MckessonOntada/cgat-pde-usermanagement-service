@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import java.util.List;
 
+import com.mckesson.cgat.pde.usermanagement.dto.CatalogDeLinkRequestDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.CSVProcessingResult;
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogConfigurationDTO;
@@ -15,6 +16,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,6 +31,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
+
+import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.SORT_ORDER_ASC;
 
 @RestController
 @Tag(name = "Catalogs", description = "Controller for Managing all catalogs.")
@@ -46,13 +50,20 @@ public class GlobalCatalogController {
 		this.catalogService = catalogService;
 	}
 
+	@RequirePermissions({ Permission.VIEW_CATALOG, Permission.VIEW_SP_CATALOG })
 	@GetMapping
 	@Operation(summary = "Fetch all catalogs for provided soldTo accounts lists.")
 	public ResponseEntity<Page<CatalogPrice>> findAllCatalogs(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
-			@NotEmpty(message = "Account Numbers can not be empty") @RequestParam List<String> accountNumbers) {
-		Pageable paging = PageRequest.of(pageNo, pageSize);
-		return new ResponseEntity<>(therapyService.findAllGlobalCatalogs(accountNumbers, query, paging), HttpStatus.OK);
+			@NotEmpty(message = "Account Numbers can not be empty") @RequestParam List<String> accountNumbers,
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType,
+			@RequestParam(defaultValue = "sap_material") String sortBy,
+			@RequestParam(defaultValue = "desc") String sortOrder) {
+		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
+				: Sort.by(sortBy).descending();
+		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
+		return new ResponseEntity<>(therapyService.findAllGlobalCatalogs(accountNumbers, query, paging, channelType),
+				HttpStatus.OK);
 	}
 
 	@RequirePermissions({ Permission.MANAGE_CATALOG })
@@ -101,6 +112,14 @@ public class GlobalCatalogController {
 		CatalogConfiguration configuration = catalogService.findCatalogConf(materialId, variant, shipToAccountId,
 				soldToAccountId);
 		return ResponseEntity.ok(configuration);
+	}
+
+	@RequirePermissions({ Permission.MANAGE_SP_CATALOG })
+	@DeleteMapping("/specialityPharma/deLink")
+	@Operation(summary = "Delink SP catalog configuration according to sap_material and sold_to_customer")
+	public ResponseEntity<Void> deLinkSPCatalog(@RequestBody List<CatalogDeLinkRequestDTO> catalogList) {
+		therapyService.deLinkSPCatalog(catalogList);
+		return ResponseEntity.ok().build();
 	}
 
 	@PostMapping(value = "/upload", consumes = { "multipart/form-data" })

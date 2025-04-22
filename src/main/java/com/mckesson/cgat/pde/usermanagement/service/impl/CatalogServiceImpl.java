@@ -157,6 +157,7 @@ public class CatalogServiceImpl implements CatalogService {
 	}
 
 	@Override
+	@Transactional
 	public CSVProcessingResult uploadSPCatalog(MultipartFile catalogsData) {
 		validateCSVFile(catalogsData);
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(catalogsData.getInputStream()));
