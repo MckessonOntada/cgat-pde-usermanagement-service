@@ -162,4 +162,49 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
 	List<Account> findAllByChannelTypeAndIsActive(ChannelType channelType, boolean status);
 
+	@Query(nativeQuery = true, value = """
+			SELECT *
+			FROM usermanagement.account a
+			WHERE
+			(
+				(
+					:query IS NULL
+				 	OR LOWER(a.name_1) LIKE %:query%
+				 	OR LOWER(a.sap_partner) LIKE %:query%
+				 	OR LOWER(a.full_address) LIKE %:query%
+				)
+				AND
+				(
+			      COALESCE(:practiceIdList) IS NULL
+			      OR tenant_id IN (:practiceIdList)
+			  	)
+				AND
+				(
+					(:status = 'ALL' and (is_active = 1 or is_active = 0))
+					OR ('ACTIVE' = :status and is_active = 1 )
+					OR ('INACTIVE' = :status and is_active = 0 )
+				)
+				AND
+				(
+					COALESCE(:salesOrg) is null
+					or
+					sales_org IN (:salesOrg)
+				)
+				AND
+				(
+					COALESCE(:distChannels) is null
+					or
+					distribution_channel IN (:distChannels)
+				)
+				and partner_function = :partnerFunction
+				and
+				(
+					(:channelType = 'ALL')
+					OR ('BUY_AND_BILL' = :channelType and channel_type = 'BUY_AND_BILL' )
+					OR ('SPECIALITY_PHARMA' = :channelType and channel_type = 'SPECIALITY_PHARMA' )
+				)
+			)""")
+	Page<Account> findAllOrganizations(String query, String status, Pageable paging, List<Long> practiceIdList,
+			String partnerFunction, List<String> salesOrg, List<String> distChannels, String channelType);
+
 }

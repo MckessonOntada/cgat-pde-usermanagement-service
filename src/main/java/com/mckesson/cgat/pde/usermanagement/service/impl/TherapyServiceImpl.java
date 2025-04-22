@@ -246,13 +246,14 @@ public class TherapyServiceImpl implements TherapyService {
 
 	}
 
-	public Page<CatalogPrice> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging) {
+	public Page<CatalogPrice> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging,
+			ChannelType channelType) {
 		try {
 			log.info(" Inside method - findAllGlobalCatalogs");
 			log.info("accountIds : {}, query: {}", accountIds, StringUtils.toRootLowerCase(query));
 			return catalogPriceRepository.findAllGlobalCatalogs(accountIds,
-					AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), StringUtils.toRootLowerCase(query),
-					paging);
+					AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), StringUtils.toRootLowerCase(query), paging,
+					channelType.name());
 		}
 		catch (Exception e) {
 			log.error("Exception occurred in findAllGlobalCatalogs and exception details", e);
@@ -329,6 +330,20 @@ public class TherapyServiceImpl implements TherapyService {
 	public MaterialResponseDTO findTherapyDetailsById(Long id) throws ResourceNotFoundException {
 		return therapyConfigRepository.findTherapyDetailsById(id)
 			.orElseThrow(() -> new ResourceNotFoundException("Therapy not found with id: " + id));
+	}
+
+	@Override
+	@Transactional
+	public void deLinkSPCatalog(List<CatalogDeLinkRequestDTO> catalogList) {
+		List<CatalogPrice> deletedCatalog = catalogList.stream()
+			.map(dto -> catalogPriceRepository.findBySapMaterialAndSoldToCustomerAndChannelType(dto.getSapMaterial(),
+					dto.getSoldToCustomer(), ChannelType.SPECIALITY_PHARMA))
+			.filter(Optional::isPresent)
+			.map(Optional::get)
+			.peek(catalog -> catalog.setDeleted(true))
+			.toList();
+
+		catalogPriceRepository.saveAll(deletedCatalog);
 	}
 
 	@Override
