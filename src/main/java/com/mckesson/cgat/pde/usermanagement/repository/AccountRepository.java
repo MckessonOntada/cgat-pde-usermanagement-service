@@ -175,8 +175,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 				)
 				AND
 				(
-			      COALESCE(:practiceId) IS NULL
-			      OR tenant_id IN (:practiceId)
+			      COALESCE(:practiceIdList) IS NULL
+			      OR tenant_id IN (:practiceIdList)
 			  	)
 				AND
 				(
@@ -204,7 +204,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 					OR ('SPECIALITY_PHARMA' = :channelType and channel_type = 'SPECIALITY_PHARMA' )
 				)
 			)""")
-	Page<Account> findAllOrganizations(String query, String status, Pageable paging, List<Long> practiceId,
+	Page<Account> findAllOrganizations(String query, String status, Pageable paging, List<Long> practiceIdList,
 			String partnerFunction, List<String> salesOrg, List<String> distChannels, String channelType);
 
 }
