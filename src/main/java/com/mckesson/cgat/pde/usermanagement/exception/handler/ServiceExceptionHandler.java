@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.exception.handler;
 
+import com.mckesson.cgat.pde.usermanagement.exception.custom.CsvFileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.ForbiddenActionException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.ResourceConflictException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
@@ -126,6 +127,18 @@ public class ServiceExceptionHandler {
 		errorResponse.put("errorCodes", ex.getErrorCodes()); // Array of error codes like
 
 		return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+	}
+
+	@ExceptionHandler(CsvFileNotValidException.class)
+	public ResponseEntity<?> handleCsvFileNotValidException(CsvFileNotValidException ex) {
+		log.error("invalid csv file error: {}", ex.getErrorCodes());
+
+		Map<String, Object> errorResponse = new HashMap<>();
+		errorResponse.put("status", HttpStatus.BAD_REQUEST.value());
+		errorResponse.put("message", ex.getMessage());
+		errorResponse.put("errorCodes", ex.getErrorCodes());
+
+		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
 	}
 
 }

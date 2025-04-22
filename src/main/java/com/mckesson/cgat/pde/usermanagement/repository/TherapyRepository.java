@@ -81,7 +81,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 				(
 						(
 							:query is null
-							or LOWER(ac.sap_customer) like %:query%
+							or LOWER(ac.sap_partner) like %:query%
 							or LOWER(ac.name_1) like %:query%
 						)
 					AND
@@ -125,7 +125,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 				(
 						(
 							:query is null
-							or LOWER(ac.sap_customer) like %:query%
+							or LOWER(ac.sap_partner) like %:query%
 							or LOWER(ac.name_1) like %:query%
 						)
 					AND
@@ -165,7 +165,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 				(
 					(
 						:query is null
-						or LOWER(ac.sap_customer) like %:query%
+						or LOWER(ac.sap_partner) like %:query%
 						or LOWER(ac.name_1) like %:query%
 					)
 					AND

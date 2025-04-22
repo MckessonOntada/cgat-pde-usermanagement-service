@@ -2,7 +2,6 @@ package com.mckesson.cgat.pde.usermanagement.model;
 
 import java.io.Serializable;
 
-import lombok.Builder;
 import org.hibernate.type.NumericBooleanConverter;
 
 import jakarta.persistence.Column;
@@ -15,6 +14,7 @@ import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
