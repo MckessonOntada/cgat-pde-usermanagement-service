@@ -47,8 +47,6 @@ CREATE TABLE IF NOT EXISTS audit.account_aud (
     id BIGINT NOT NULL,
     rev INTEGER NOT NULL,
     revtype SMALLINT,
-
-    -- Original Account fields
     tenant_id BIGINT,
     name_1 VARCHAR(50),
     sap_partner VARCHAR(10),
@@ -89,3 +87,60 @@ CREATE TABLE IF NOT EXISTS audit.account_aud (
     CONSTRAINT pk_account_aud PRIMARY KEY (id, rev),
     CONSTRAINT fk_account_aud_revinfo FOREIGN KEY (rev) REFERENCES audit.revinfo(rev)
 );
+
+ALTER TABLE usermanagement.user
+    ADD IF NOT EXISTS created_by_user_name VARCHAR(255) NULL,
+    ADD IF NOT EXISTS created_by_impersonator VARCHAR(255) NULL,
+    ADD IF NOT EXISTS created_by_impersonator_user_name VARCHAR(255) NULL,
+    ADD IF NOT EXISTS updated_by_impersonator VARCHAR(255) NULL;
+
+CREATE TABLE IF NOT EXISTS audit.user_aud (
+    id BIGINT NOT NULL,
+    rev INTEGER NOT NULL,
+    revtype SMALLINT,
+    practice_id BIGINT,
+    first_name VARCHAR(255),
+    middle_name VARCHAR(255),
+    last_name VARCHAR(255),
+    address1 VARCHAR(255),
+    address2 VARCHAR(255),
+    city VARCHAR(255),
+    state VARCHAR(255),
+    zip VARCHAR(50),
+    email VARCHAR(255),
+    country_code VARCHAR(50),
+    phone VARCHAR(50),
+    fax VARCHAR(50),
+    role_id INTEGER,
+    is_active INTEGER,
+    provisioned_in_okta_status VARCHAR(50),
+    created_at TIMESTAMP,
+    created_by VARCHAR(255),
+    created_by_user_name VARCHAR(255),
+    created_by_impersonator VARCHAR(255),
+    created_by_impersonator_user_name VARCHAR(255),
+    updated_at TIMESTAMP,
+    updated_by VARCHAR(255),
+    updated_by_impersonator VARCHAR(255),
+    CONSTRAINT pk_user_aud PRIMARY KEY (id, rev),
+    CONSTRAINT fk_user_aud_revinfo FOREIGN KEY (rev) REFERENCES audit.revinfo(rev)
+);
+
+CREATE TABLE IF NOT EXISTS audit.user_permission_mapping_aud (
+    rev INTEGER NOT NULL,
+    user_id BIGINT NOT NULL,
+    permission VARCHAR(50) NOT NULL,
+    revtype SMALLINT,
+    CONSTRAINT pk_user_permission_mapping_aud PRIMARY KEY (rev, user_id, permission),
+    CONSTRAINT fk_user_permission_mapping_aud_revinfo FOREIGN KEY (rev) REFERENCES audit.revinfo(rev)
+);
+
+CREATE TABLE IF NOT EXISTS audit.user_account_mapping_aud (
+    rev INTEGER NOT NULL,
+    user_id BIGINT NOT NULL,
+    account_id BIGINT NOT NULL,
+    revtype SMALLINT,
+    CONSTRAINT pk_user_account_mapping_aud PRIMARY KEY (rev, user_id, account_id),
+    CONSTRAINT fk_user_account_mapping_aud_revinfo FOREIGN KEY (rev) REFERENCES audit.revinfo(rev)
+);
+
