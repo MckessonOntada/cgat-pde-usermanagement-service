@@ -48,4 +48,8 @@ public interface AccountService {
 
 	List<Account> getSPAccounts();
 
+	Page<Account> findAllByOrganization(Pageable paging, String query, List<String> status, List<Long> practiceIdList,
+			AccountPartnerFunction partnerFunction, List<String> salesOrg, List<String> distChannels,
+			ChannelType channelType);
+
 }

@@ -16,7 +16,7 @@ public class CatalogPriceResponseDto {
 
 	private Long id;
 
-	public String tenantId;
+	public Integer tenantId;
 
 	private String soldToCustomer;
 

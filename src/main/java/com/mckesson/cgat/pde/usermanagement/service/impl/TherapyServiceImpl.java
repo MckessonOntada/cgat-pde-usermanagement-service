@@ -1,14 +1,17 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
-import java.util.*;
+import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.THERAPY_ITEM_STATUS_ACTIVE;
+import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.getConsolidatedChannelType;
+import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.getConsolidatedStatus;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.mckesson.cgat.pde.usermanagement.dto.*;
-import com.mckesson.cgat.pde.usermanagement.model.*;
-import com.mckesson.cgat.pde.usermanagement.repository.TherapyConfigRepository;
-import com.mckesson.cgat.pde.usermanagement.service.QuestionnaireService;
-import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -16,15 +19,35 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTOImpl;
+import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponse;
+import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponseDto;
+import com.mckesson.cgat.pde.usermanagement.dto.MaterialDetailsResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelProjectionDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.mapper.CatalogPriceMapper;
+import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
+import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
+import com.mckesson.cgat.pde.usermanagement.model.Questionnaire;
+import com.mckesson.cgat.pde.usermanagement.model.QuestionnaireConfigurationType;
+import com.mckesson.cgat.pde.usermanagement.model.ShippingLocation;
+import com.mckesson.cgat.pde.usermanagement.model.Therapy;
+import com.mckesson.cgat.pde.usermanagement.model.TherapyConfig;
 import com.mckesson.cgat.pde.usermanagement.repository.CatalogPriceRepository;
+import com.mckesson.cgat.pde.usermanagement.repository.ShippingLocationRepository;
+import com.mckesson.cgat.pde.usermanagement.repository.TherapyConfigRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.TherapyRepository;
+import com.mckesson.cgat.pde.usermanagement.service.QuestionnaireService;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
+import com.mckesson.cgat.pde.usermanagement.utils.OrganizationContext;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-
-import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.*;
 
 @Service
 @Slf4j
@@ -40,14 +63,17 @@ public class TherapyServiceImpl implements TherapyService {
 
 	private final QuestionnaireService questionnaireService;
 
+	private final ShippingLocationRepository shippingLocationRepository;
+
 	public TherapyServiceImpl(TherapyRepository therapyRepository, CatalogPriceRepository catalogPriceRepository,
 			CatalogPriceMapper catalogPriceMapper, TherapyConfigRepository therapyConfigRepository,
-			QuestionnaireService questionnaireService) {
+			QuestionnaireService questionnaireService, ShippingLocationRepository shippingLocationRepository) {
 		this.therapyRepository = therapyRepository;
 		this.catalogPriceRepository = catalogPriceRepository;
 		this.catalogPriceMapper = catalogPriceMapper;
 		this.therapyConfigRepository = therapyConfigRepository;
 		this.questionnaireService = questionnaireService;
+		this.shippingLocationRepository = shippingLocationRepository;
 	}
 
 	public Page<TherapyCatalogResponseDTO> findAllTherapies(Long userId, String query, List<String> salesOrg,
@@ -72,9 +98,32 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	public Page<AccountsResponseDTO> findAllShipToAccounts(String soldToAccountId, String therapyId, Pageable paging,
-			String query) {
+			String query, ChannelType channelType) {
+
+		if (channelType.equals(ChannelType.SPECIALITY_PHARMA)) {
+			Page<ShippingLocation> shippingLocations = shippingLocationRepository.findAllByQueryText(query, paging,
+					OrganizationContext.getCurrentOrgId(), Long.valueOf(soldToAccountId));
+			List<AccountsResponseDTO> mappedShipTo = shippingLocations.getContent()
+				.stream()
+				.map(this::mapToAccountsResponse)
+				.collect(Collectors.toList());
+			return new PageImpl<>(mappedShipTo, paging, mappedShipTo.size());
+		}
 		return therapyRepository.findAllShipToAccounts(soldToAccountId, therapyId, StringUtils.toRootLowerCase(query),
 				paging, AccountPartnerFunction.SHIP_TO.getPartnerFunctionType());
+	}
+
+	private AccountsResponseDTOImpl mapToAccountsResponse(ShippingLocation location) {
+		return AccountsResponseDTOImpl.builder()
+			.id(String.valueOf(location.getId()))
+			.accountNumber(String.valueOf(location.getId()))
+			.accountName(location.getName())
+			.city(location.getAddress().getCity())
+			.street(location.getAddress().getAddress1())
+			.street2(location.getAddress().getAddress2())
+			.state(location.getAddress().getState())
+			.zipCode(location.getAddress().getZip())
+			.build();
 	}
 
 	public Therapy findById(Long id) throws ResourceNotFoundException {
@@ -197,13 +246,14 @@ public class TherapyServiceImpl implements TherapyService {
 
 	}
 
-	public Page<CatalogPrice> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging) {
+	public Page<CatalogPrice> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging,
+			ChannelType channelType) {
 		try {
 			log.info(" Inside method - findAllGlobalCatalogs");
 			log.info("accountIds : {}, query: {}", accountIds, StringUtils.toRootLowerCase(query));
 			return catalogPriceRepository.findAllGlobalCatalogs(accountIds,
-					AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), StringUtils.toRootLowerCase(query),
-					paging);
+					AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), StringUtils.toRootLowerCase(query), paging,
+					channelType.name());
 		}
 		catch (Exception e) {
 			log.error("Exception occurred in findAllGlobalCatalogs and exception details", e);
@@ -280,6 +330,20 @@ public class TherapyServiceImpl implements TherapyService {
 	public MaterialResponseDTO findTherapyDetailsById(Long id) throws ResourceNotFoundException {
 		return therapyConfigRepository.findTherapyDetailsById(id)
 			.orElseThrow(() -> new ResourceNotFoundException("Therapy not found with id: " + id));
+	}
+
+	@Override
+	@Transactional
+	public void deLinkSPCatalog(List<CatalogDeLinkRequestDTO> catalogList) {
+		List<CatalogPrice> deletedCatalog = catalogList.stream()
+			.map(dto -> catalogPriceRepository.findBySapMaterialAndSoldToCustomerAndChannelType(dto.getSapMaterial(),
+					dto.getSoldToCustomer(), ChannelType.SPECIALITY_PHARMA))
+			.filter(Optional::isPresent)
+			.map(Optional::get)
+			.peek(catalog -> catalog.setDeleted(true))
+			.toList();
+
+		catalogPriceRepository.saveAll(deletedCatalog);
 	}
 
 	@Override
