@@ -3,7 +3,10 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyConfigRequestDTO;
-import com.mckesson.cgat.pde.usermanagement.model.*;
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
+import com.mckesson.cgat.pde.usermanagement.model.Permission;
+import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
+import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -121,15 +124,30 @@ public class GlobalTherapyController {
 	}
 
 	@GetMapping(value = "/download", produces = "text/csv")
-	@RequirePermissions({ Permission.MANAGE_SP_CATALOG })
-	@Operation(summary = "Download csv file contains all speciality pharma active materials")
-	public ResponseEntity<StreamingResponseBody> downloadSPMaterialsCsvFile() {
+	@RequirePermissions({ Permission.MANAGE_SP_CATALOG, Permission.MANAGE_CROSSWALK })
+	@Operation(summary = "Download CSV file for materials based on channel type")
+	public ResponseEntity<StreamingResponseBody> downloadMaterialsCsvFile(
+			@RequestParam(defaultValue = "SPECIALITY_PHARMA") ChannelType channelType) {
+
+		// Default to SPECIALITY_PHARMA
+		String fileName = "SP_Product_info.csv";
+		String headerLine;
+
+		// Override if BUY_AND_BILL
+		if (channelType == ChannelType.BUY_AND_BILL) {
+			fileName = "Material_info.csv";
+			headerLine = "Material Id,Material Description,Buy & Bill Material NDC";
+		}
+		else {
+			headerLine = "Product ID,Product Name,Product NDC";
+		}
+
 		StreamingResponseBody stream = outputStream -> {
 			try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
-				writer.write("Product ID,Product Name,Product NDC");
+				writer.write(headerLine);
 				writer.newLine();
 
-				for (Therapy therapy : therapyService.getSPTherapies()) {
+				for (Therapy therapy : therapyService.getTherapiesByChannelType(channelType)) {
 					writer.write(String.format("\"%s\",\"%s\",\"%s\"", therapy.getMaterialNumber(),
 							therapy.getMaterialDescription(), therapy.getNdcNumber()));
 					writer.newLine();
@@ -140,7 +158,7 @@ public class GlobalTherapyController {
 		};
 
 		return ResponseEntity.ok()
-			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "SPMaterials.csv")
+			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
 			.contentType(MediaType.parseMediaType("text/csv"))
 			.body(stream);
 	}
