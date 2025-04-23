@@ -259,4 +259,13 @@ public class AccountServiceImpl implements AccountService {
 		return accountRepository.findAllByChannelTypeAndIsActive(ChannelType.SPECIALITY_PHARMA, true);
 	}
 
+	@Override
+	public Page<Account> findAllByOrganization(Pageable paging, String query, List<String> status,
+			List<Long> practiceIdList, AccountPartnerFunction partnerFunction, List<String> salesOrg,
+			List<String> distChannels, ChannelType channelType) {
+		query = StringUtils.toRootLowerCase(query);
+		return accountRepository.findAllOrganizations(query, CustomUtils.getConsolidatedStatus(status), paging,
+				practiceIdList, partnerFunction.getPartnerFunctionType(), salesOrg, distChannels, channelType.name());
+	}
+
 }

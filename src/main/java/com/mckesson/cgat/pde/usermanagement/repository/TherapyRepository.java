@@ -1,6 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -8,6 +9,7 @@ import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -16,6 +18,7 @@ import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelProjectionDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface TherapyRepository extends JpaRepository<Therapy, Long> {
@@ -77,7 +80,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 				(
 						(
 							:query is null
-							or LOWER(ac.sap_customer) like %:query%
+							or LOWER(ac.sap_partner) like %:query%
 							or LOWER(ac.name_1) like %:query%
 						)
 					AND
@@ -121,7 +124,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 				(
 						(
 							:query is null
-							or LOWER(ac.sap_customer) like %:query%
+							or LOWER(ac.sap_partner) like %:query%
 							or LOWER(ac.name_1) like %:query%
 						)
 					AND
@@ -161,7 +164,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 				(
 					(
 						:query is null
-						or LOWER(ac.sap_customer) like %:query%
+						or LOWER(ac.sap_partner) like %:query%
 						or LOWER(ac.name_1) like %:query%
 					)
 					AND
@@ -252,11 +255,23 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 	Page<Therapy> findAllGlobalTherapies(@Param("query") String query, String statusActive, String channelTypes,
 			Pageable paging);
 
-	Optional<Therapy> findByMaterialNumberAndChannelType(String materialNumber, ChannelType channelType);
-
 	List<Therapy> findByMaterialNumberInAndChannelTypeAndItemStatus(Set<String> productIds, ChannelType channelType,
 			String itemStatus);
 
-	List<Therapy> findAllByChannelTypeAndItemStatus(ChannelType channelType, String status);
+	Optional<Therapy> findByMaterialNumberAndChannelType(String materialNumber, ChannelType channelType);
+
+	List<Therapy> findByMaterialNumberInAndChannelType(List<String> materialNumbers, ChannelType channelType);
+
+	@Modifying
+	@Query(value = """
+			UPDATE catalog.material
+			SET is_crosswalked = :isCrossWalked
+			WHERE material_number IN (:materialNumbers)
+			AND channel_type = :channelType
+			""", nativeQuery = true)
+	void updateIsCrossWalkedForMaterialNumbersAndChannelType(@Param("isCrossWalked") boolean isCrossWalked,
+			@Param("materialNumbers") Set<String> materialNumbers, @Param("channelType") String channelType);
+
+	List<Therapy> findAllByChannelTypeAndItemStatus(ChannelType channelType, String itemStatus);
 
 }

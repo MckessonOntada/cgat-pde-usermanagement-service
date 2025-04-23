@@ -1,15 +1,16 @@
 package com.mckesson.cgat.pde.usermanagement.utils;
 
-import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
-import com.mckesson.cgat.pde.usermanagement.model.Name;
-import org.springframework.util.CollectionUtils;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
+
+import org.springframework.util.CollectionUtils;
+
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
+import com.mckesson.cgat.pde.usermanagement.model.Name;
 
 public class CustomUtils {
 
@@ -156,6 +157,24 @@ public class CustomUtils {
 		if (containsSP)
 			return ChannelType.SPECIALITY_PHARMA.name();
 		return ChannelType.BUY_AND_BILL.name();
+	}
+
+	public static String getStatus(List<String> status) {
+		String statusActive = CustomUtils.object_status.ALL.name();
+		if (!CollectionUtils.isEmpty(status)) {
+			boolean hasActive = status.stream()
+				.anyMatch(i -> i.equalsIgnoreCase(CustomUtils.object_status.ACTIVE.name()));
+			boolean hasInactive = status.stream()
+				.anyMatch(i -> i.equalsIgnoreCase(CustomUtils.object_status.INACTIVE.name()));
+
+			if (hasActive)
+				statusActive = CustomUtils.object_status.ACTIVE.name();
+
+			if (hasInactive)
+				statusActive = CustomUtils.object_status.ACTIVE.name().equals(statusActive)
+						? CustomUtils.object_status.ALL.name() : CustomUtils.object_status.INACTIVE.name();
+		}
+		return statusActive;
 	}
 
 }
