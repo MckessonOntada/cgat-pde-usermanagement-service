@@ -19,10 +19,7 @@ public interface TherapyService {
 			List<String> customerIdentifier);
 
 	Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, String therapyId, String query, Pageable paging,
-			String channel, String program);
-
-	Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, String therapyId, String query, Pageable paging,
-			List<String> channel, String program);
+			ChannelType channel, String program);
 
 	Page<AccountsResponseDTO> findAllShipToAccounts(String soldToAccountId, String therapyId, Pageable paging,
 			String query);

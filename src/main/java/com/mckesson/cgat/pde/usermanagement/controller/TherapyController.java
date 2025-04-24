@@ -46,9 +46,10 @@ public class TherapyController {
 
 	private final TherapyService therapyService;
 
-	private static final Map<String, List<String>> CHANNEL_MAPPING = Map.of("MPB",
-			List.of("20", "30", "40", "50", "60"), "Speciality", List.of("10"), "3PL", List.of("10"), "All",
-			List.of("10", "20", "30", "40", "50", "60"));
+	// private static final Map<String, List<String>> CHANNEL_MAPPING = Map.of("MPB",
+	// List.of("20", "30", "40", "50", "60"), "Speciality", List.of("10"), "3PL",
+	// List.of("10"), "All",
+	// List.of("10", "20", "30", "40", "50", "60"));
 
 	public TherapyController(TherapyService therapyService) {
 		this.therapyService = therapyService;
@@ -76,18 +77,13 @@ public class TherapyController {
 	public Page<AccountsResponseDTO> findAllSoldToAccountsByTherapy(@PathVariable String therapyId,
 			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(required = false) String query,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String channel,
-			@RequestParam(required = false) String program) {
-		if (StringUtils.isEmpty(channel) || (StringUtils.isNotEmpty(channel) && StringUtils.isNumeric(channel))) {
-			Pageable paging = PageRequest.of(pageNo, pageSize);
-			return therapyService.findAllSoldToAccounts(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()),
-					therapyId, query, paging, channel, program);
-		}
-		else {
-			Pageable paging = PageRequest.of(pageNo, pageSize);
-			List<String> channels = CHANNEL_MAPPING.get(channel);
-			return therapyService.findAllSoldToAccounts(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()),
-					therapyId, query, paging, channels, program);
-		}
+			@RequestParam(required = false) String program,
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) {
+
+		Pageable paging = PageRequest.of(pageNo, pageSize);
+		return therapyService.findAllSoldToAccounts(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()),
+				therapyId, query, paging, channelType, program);
+
 	}
 
 	@GetMapping("{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccounts")

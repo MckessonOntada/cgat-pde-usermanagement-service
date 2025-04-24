@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -187,7 +188,7 @@ public class TherapyControllerTest {
 		Long therapyId = 12L;
 
 		when(therapyService.findAllSoldToAccounts(anyLong(), anyString(), anyString(), any(Pageable.class),
-				any(String.class), anyString()))
+				any(ChannelType.class), anyString()))
 			.thenReturn(getAccounts());
 
 		mockMvc.perform(

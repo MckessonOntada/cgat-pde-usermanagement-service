@@ -58,18 +58,19 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	public Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, String therapyId, String query, Pageable paging,
-			String channel, String program) {
-		return therapyRepository.findAllSoldToAccounts(userId, therapyId, StringUtils.toRootLowerCase(query), paging,
-				channel, program, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
-	}
+			ChannelType channelType, String program) {
 
-	public Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, String therapyId, String query, Pageable paging,
-			List<String> channels, String program) {
+		if (ChannelType.SPECIALITY_PHARMA.equals(channelType)) {
+			return therapyRepository.findAllSoldToAccountsForSP(userId, therapyId, StringUtils.toRootLowerCase(query),
+					paging, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
+		}
+
 		if ("340B".equals(program)) {
 			program = "340";
 		}
+
 		return therapyRepository.findAllSoldToAccounts(userId, therapyId, StringUtils.toRootLowerCase(query), paging,
-				channels, program, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
+				channelType.name(), program, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 	}
 
 	public Page<AccountsResponseDTO> findAllShipToAccounts(String soldToAccountId, String therapyId, Pageable paging,
@@ -162,11 +163,11 @@ public class TherapyServiceImpl implements TherapyService {
 			return programChannelProjectionDTO.getProgram();
 		}).filter(Objects::nonNull).collect(Collectors.toSet())) : Collections.emptySet();
 
-		boolean isCrosswalkedMaterial = null != allPrograms
+		boolean isCrosswalkMaterial = null != allPrograms
 				&& allPrograms.stream().anyMatch(ProgramChannelProjectionDTO::isCrosswalked);
 		List<String> crossWalkedSPs = new ArrayList<>();
 
-		if (isCrosswalkedMaterial) {
+		if (isCrosswalkMaterial) {
 			crossWalkedSPs = fetchCrossWalkedSPsForUserAndTherapyId(userId, therapyId);
 		}
 
@@ -179,9 +180,8 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	private List<String> fetchCrossWalkedSPsForUserAndTherapyId(Long userId, String therapyId) {
-		List<String> allCrossWalkedSPsForUser = therapyRepository.findAllCrossWalkedSPsForUser(userId, therapyId,
-				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
-		return allCrossWalkedSPsForUser;
+        return therapyRepository.findAllCrossWalkedSPsForUser(userId, therapyId,
+                AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 	}
 
 	public Page<AccountsResponseDTO> findAllCustomerIdentifiers(Long userId, String query, Pageable paging) {

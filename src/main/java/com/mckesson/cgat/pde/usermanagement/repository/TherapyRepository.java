@@ -83,11 +83,6 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						)
 					AND
 						(
-						cast(:channel as varchar) is null
-						or ac.distribution_channel = :channel
-						)
-					AND
-						(
 						cast(:program as varchar) is null
 						or ac.cgat_identifier = :program
 						)
@@ -99,6 +94,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						uam.user_id = :userId
 					AND
 						cp.deleted = false
+				    AND ac.channel_type=:channel
 					)
 					GROUP BY ac.id, ac.sap_customer, ac.name_1, ac.house_number, ac.street, ac.street_2,
 						 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code,
@@ -111,11 +107,12 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			@Param("partnerFunction") String partnerFunction);
 
 	@Query(value = """
-				SELECT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2 as street2,
+			SELECT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2 as street2,
 						 ac.street_3 as street3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code, false as isDefault,
 						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier
-				FROM catalog.material m
-				JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
+				FROM catalog.crosswalk cw
+				JOIN catalog.material m on m.material_number = cw.bnb_material_number
+				JOIN catalog.catalog_price cp ON cp.sap_material = cw.sp_product_id
 				JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
 				JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
 				WHERE
@@ -126,14 +123,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 							or LOWER(ac.name_1) like %:query%
 						)
 					AND
-						(COALESCE(:channels) IS NULL OR ac.distribution_channel IN (:channels))
-					AND
-						(
-						cast(:program as varchar) is null
-						or ac.cgat_identifier = :program
-						)
-					AND
-						m.material_number = :therapyId
+						cw.bnb_material_number = :therapyId
 					AND
 						ac.partner_function = :partnerFunction
 					AND
@@ -146,9 +136,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel, ac.cgat_identifier
 			""",
 			nativeQuery = true)
-	public Page<AccountsResponseDTO> findAllSoldToAccounts(@Param("userId") Long userId,
+	Page<AccountsResponseDTO> findAllSoldToAccountsForSP(@Param("userId") Long userId,
 			@Param("therapyId") String therapyId, @Param("query") String query, Pageable paging,
-			@Param("channels") List<String> channels, @Param("program") String program,
 			@Param("partnerFunction") String partnerFunction);
 
 	@Query(value = """
