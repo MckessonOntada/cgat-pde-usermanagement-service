@@ -275,22 +275,19 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 	List<Therapy> findAllByChannelTypeAndItemStatus(ChannelType channelType, String itemStatus);
 
 	@Query(value = """
-			SELECT m.*
-			FROM catalog.material m
-			JOIN catalog.catalog_price cp
-			    ON m.material_number = cp.sap_material
-			    AND m.channel_type = 'SPECIALITY_PHARMA'
-			    AND m.item_status = 'A'
-			    AND cp.channel_type = 'SPECIALITY_PHARMA'
-			    AND cp.deleted = false
-			JOIN catalog.crosswalk cw
-			    ON cp.sap_material = cw.sp_product_id
-			    AND cw.bnb_material_number = :therapyId
-			    AND cw.is_active = 1
-			JOIN usermanagement.user_account_mapping uam
-			    ON cp.sold_to_customer = CAST(uam.account_id AS VARCHAR)
-			    AND uam.user_id = :userId
+			    SELECT m.*
+			    FROM catalog.material m
+			    JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
+			    JOIN catalog.crosswalk cw ON cp.sap_material = cw.sp_product_id
+			    JOIN usermanagement.user_account_mapping uam ON cp.sold_to_customer = CAST(uam.account_id AS VARCHAR)
+			    WHERE m.channel_type = 'SPECIALITY_PHARMA'
+			      AND m.item_status = 'A'
+			      AND cp.channel_type = 'SPECIALITY_PHARMA'
+			      AND cp.deleted = false
+			      AND cw.bnb_material_number = :materialNumber
+			      AND cw.is_active = 1
+			      AND uam.user_id = :userId
 			""", nativeQuery = true)
-	List<Therapy> findCrosswalkedTherapies(String therapyId, int userId);
+	List<Therapy> findCrosswalkedTherapies(String materialNumber, long userId);
 
 }

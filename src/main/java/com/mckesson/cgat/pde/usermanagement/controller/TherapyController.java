@@ -107,7 +107,7 @@ public class TherapyController {
 		return therapyService.findById(therapyId);
 	}
 
-	@GetMapping("/crosswalk/{therapyId}")
+	@GetMapping("/therapyDetails/{therapyId}")
 	@Operation(summary = "Find Therapy Details with crosswalk by id")
 	public TherapyResponseDTO findTherapyWithCrosswalkById(@PathVariable Long therapyId)
 			throws ResourceNotFoundException {

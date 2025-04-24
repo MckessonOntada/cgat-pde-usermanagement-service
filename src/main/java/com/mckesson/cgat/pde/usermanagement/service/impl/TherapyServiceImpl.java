@@ -347,7 +347,7 @@ public class TherapyServiceImpl implements TherapyService {
 			.orElseThrow(() -> new ResourceNotFoundException("Therapy not found with id: " + therapyId));
 		if (Boolean.TRUE.equals(therapy.getIsCrosswalked())) {
 			List<Therapy> crosswalkedTherapies = therapyRepository.findCrosswalkedTherapies(therapy.getMaterialNumber(),
-					Integer.parseInt(UserSecurityUtils.getLoggedInUser().getId()));
+					Long.parseLong(UserSecurityUtils.getLoggedInUser().getId()));
 			return new TherapyResponseDTO(
 					new PrimaryTherapyWrapper(therapy, crosswalkedTherapies, therapy.getChannelType()));
 		}
