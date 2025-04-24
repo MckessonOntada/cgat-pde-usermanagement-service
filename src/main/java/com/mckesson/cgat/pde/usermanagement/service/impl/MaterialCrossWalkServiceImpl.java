@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import com.mckesson.cgat.pde.usermanagement.dto.CrosswalkResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialCrossWalkConfigRecordDTO;
+import com.mckesson.cgat.pde.usermanagement.exception.custom.CsvFileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.SystemFailureException;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
@@ -61,42 +62,30 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 
 		Map<MaterialCrossWalkConfigRecordDTO, String> failedCrossWalks = new LinkedHashMap<>();
 
-		try {
-			// Parse the CSV file and perform the validation
-			parseCrossWalkDataFile(crossWalkDataFile, crossWalkConfigsToAdd, crossWalkConfigsToDelete,
-					failedCrossWalks);
+		// Parse the CSV file and perform the validation
+		parseCrossWalkDataFile(crossWalkDataFile, crossWalkConfigsToAdd, crossWalkConfigsToDelete, failedCrossWalks);
 
-			List<String> existingBnbMaterialNumbers = fetchBnbTherapies(crossWalkConfigsToAdd,
-					crossWalkConfigsToDelete);
-			List<String> existingSPProductIds = fetchSPTherapies(crossWalkConfigsToAdd, crossWalkConfigsToDelete);
+		List<String> existingBnbMaterialNumbers = fetchBnbTherapies(crossWalkConfigsToAdd, crossWalkConfigsToDelete);
+		List<String> existingSPProductIds = fetchSPTherapies(crossWalkConfigsToAdd, crossWalkConfigsToDelete);
 
-			Map<String, Crosswalk> spProductIdToConfigMap = fetchExistingCrossWalkConfigsForSPs(existingSPProductIds);
+		Map<String, Crosswalk> spProductIdToConfigMap = fetchExistingCrossWalkConfigsForSPs(existingSPProductIds);
 
-			List<Crosswalk> entitiesToDelete = validateCrossWalkConstraintsAndGetConfigs(crossWalkConfigsToDelete,
-					failedCrossWalks, existingBnbMaterialNumbers, existingSPProductIds, spProductIdToConfigMap);
+		List<Crosswalk> entitiesToDelete = validateCrossWalkConstraintsAndGetConfigs(crossWalkConfigsToDelete,
+				failedCrossWalks, existingBnbMaterialNumbers, existingSPProductIds, spProductIdToConfigMap);
 
-			List<Crosswalk> entitiesToAdd = validateCrossWalkConstraintsAndGetConfigs(crossWalkConfigsToAdd,
-					failedCrossWalks, existingBnbMaterialNumbers, existingSPProductIds, spProductIdToConfigMap);
+		List<Crosswalk> entitiesToAdd = validateCrossWalkConstraintsAndGetConfigs(crossWalkConfigsToAdd,
+				failedCrossWalks, existingBnbMaterialNumbers, existingSPProductIds, spProductIdToConfigMap);
 
-			// Removing configurations and saving in batches
-			removeConfigsFromDB(entitiesToDelete);
+		// Removing configurations and saving in batches
+		removeConfigsFromDB(entitiesToDelete);
 
-			saveOrUpdateInBatches(entitiesToAdd, BATCH_SIZE);
+		saveOrUpdateInBatches(entitiesToAdd, BATCH_SIZE);
 
-			// Update flags for materials
-			updateCrossWalkFlagForMaterials(entitiesToDelete, entitiesToAdd);
+		// Update flags for materials
+		updateCrossWalkFlagForMaterials(entitiesToDelete, entitiesToAdd);
 
-			// Generate output CSV for failed cross walks
-			createOutputCSV(outputStream, failedCrossWalks);
-		}
-		catch (FileNotValidException e) {
-			throw e;
-		}
-		catch (Exception e) {
-			log.error("System failure occurred during upload: {}", e.getMessage(), e);
-			throw new SystemFailureException("An unexpected error occurred during the upload. Please try again later.",
-					e);
-		}
+		// Generate output CSV for failed cross walks
+		createOutputCSV(outputStream, failedCrossWalks);
 
 		return failedCrossWalks.isEmpty();
 	}
@@ -121,27 +110,41 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 				}
 			}
 			if (isEmpty) {
-				throw new FileNotValidException("The uploaded file is empty or contains no data.");
+				log.error("The uploaded file is empty or contains no data.");
+				throw new CsvFileNotValidException(List.of("invalid.csv.file.empty"));
 			}
 
 		}
 		catch (IOException e) {
 			log.error("Unable to read Cross walk Data CSV");
-			throw new FileNotValidException("Unable to read User Data CSV");
-		}
-		catch (IndexOutOfBoundsException e) {
-			log.error("Invalid Cross walk Data file, some columns are missing");
-			throw new FileNotValidException("Invalid Cross walk Data file, some columns are missing");
+			throw new CsvFileNotValidException(List.of("invalid.csv.file.headers.unstructured"));
 		}
 	}
 
 	private void validateHeaders(Map<String, Integer> headerMap) {
 		List<String> expectedHeaders = List.of("Buy & Bill Material ID", "Buy & Bill Material Description",
 				"Buy & Bill NDC", "SP Product ID", "SP Product Name", "SP NDC", "Status");
-		for (String expected : expectedHeaders) {
-			if (!headerMap.containsKey(expected)) {
-				throw new FileNotValidException("The uploaded file is invalid. Please upload a valid file");
-			}
+
+		// Check for missing headers first
+		List<String> missingHeaders = expectedHeaders.stream()
+			.filter(header -> !headerMap.containsKey(header))
+			.toList();
+
+		if (!missingHeaders.isEmpty()) {
+			log.error("Invalid Cross walk Data file, some columns are missing: {}", missingHeaders);
+			throw new CsvFileNotValidException(List.of("invalid.csv.file.headers.missing"));
+		}
+
+		// Validate header sequence
+		List<String> actualHeadersInOrder = headerMap.entrySet()
+			.stream()
+			.sorted(Map.Entry.comparingByValue())
+			.map(Map.Entry::getKey)
+			.toList();
+
+		if (!expectedHeaders.equals(actualHeadersInOrder)) {
+			log.error("CSV headers are invalid or not in expected order.");
+			throw new CsvFileNotValidException(List.of("invalid.csv.file.headers.unstructured"));
 		}
 	}
 

@@ -1,6 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
 import com.mckesson.cgat.pde.usermanagement.dto.CrosswalkResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.exception.custom.CsvFileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
@@ -56,7 +57,7 @@ public class GlobalMaterialCrosswalkController {
 
 		if (crossWalkData == null
 				|| !StringUtils.getFilenameExtension(crossWalkData.getOriginalFilename()).equalsIgnoreCase("csv")) {
-			throw new FileNotValidException("Invalid file format. Please upload a CSV file.");
+			throw new CsvFileNotValidException(List.of("invalid.csv.file.type"));
 		}
 
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
