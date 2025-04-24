@@ -217,12 +217,12 @@ public class CatalogServiceImpl implements CatalogService {
 	private Set<SPCatalogLinkDTO> parseAndValidateCSVData(CSVParser csvParser, List<String[]> errorRecords,
 			Set<String> accountNumbers, Set<String> productIds) {
 		Set<SPCatalogLinkDTO> catalogsDataList = new HashSet<>();
-
+		boolean hasData = false;
 		for (CSVRecord catalogRecord : csvParser) {
 
 			if (ObjectUtils.isEmpty(catalogRecord) || catalogRecord.stream().allMatch(String::isBlank))
 				continue;
-
+			 hasData = true;
 			String accountNumber = catalogRecord.get(HEADER_ACCOUNT_NUMBER).trim();
 			String spProductId = catalogRecord.get(HEADER_PRODUCT_ID).trim();
 			String status = catalogRecord.get(HEADER_STATUS).trim();
@@ -242,7 +242,10 @@ public class CatalogServiceImpl implements CatalogService {
 				catalogsDataList.add(catalog);
 			}
 		}
-
+		if (!hasData) {
+			throw new CsvFileNotValidException(List.of("invalid.csv.file.empty"));
+		}
+		
 		return catalogsDataList;
 	}
 
