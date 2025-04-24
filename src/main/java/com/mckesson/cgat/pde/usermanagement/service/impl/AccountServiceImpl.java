@@ -9,6 +9,7 @@ import com.mckesson.cgat.pde.usermanagement.model.Provider;
 import com.mckesson.cgat.pde.usermanagement.repository.ProviderRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -142,11 +143,26 @@ public class AccountServiceImpl implements AccountService {
 			Optional<User> user = userRepository.findById(userId);
 			if (!user.isPresent())
 				throw new ResourceNotFoundException("User not found with id: " + userId);
-			return accountRepository.findAccountsByUser(userId, query, statusActive, paging, practiceId,
-					partnerFunction.getPartnerFunctionType(), salesOrg, distChannels, channelType.name());
+			return accountRepository
+				.findAccountsByUser(userId, query, statusActive, paging, practiceId,
+						partnerFunction.getPartnerFunctionType(), salesOrg, distChannels, channelType.name())
+				.map(account -> {
+					return convertingCGATIdentifierFrom340T0340B(account);
+				});
 		}
-		return accountRepository.findAllByQueryText(query, statusActive, paging, practiceId,
-				partnerFunction.getPartnerFunctionType(), salesOrg, distChannels, channelType.name());
+		return accountRepository
+			.findAllByQueryText(query, statusActive, paging, practiceId, partnerFunction.getPartnerFunctionType(),
+					salesOrg, distChannels, channelType.name())
+			.map(account -> {
+				return convertingCGATIdentifierFrom340T0340B(account);
+			});
+	}
+
+	private static Account convertingCGATIdentifierFrom340T0340B(Account account) {
+		if (StringUtils.isNotEmpty(account.getCgatIdentifier()) && "340".equals(account.getCgatIdentifier())) {
+			account.setCgatIdentifier(account.getCgatIdentifier().concat("B"));
+		}
+		return account;
 	}
 
 	@Transactional
@@ -198,6 +214,7 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public AccountDetailsResponseDTO getAccountDetails(Long accountId) throws ResourceNotFoundException {
 		Account account = getAccount(accountId);
+		convertingCGATIdentifierFrom340T0340B(account);
 
 		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
 				QuestionnaireConfigurationType.Account, "", account.getAccountNumber(), "", "",
