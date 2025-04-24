@@ -1,12 +1,12 @@
 package com.mckesson.cgat.pde.usermanagement.repository;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import com.mckesson.cgat.pde.usermanagement.dto.TherapyResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
+import jakarta.validation.constraints.Size;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,7 +19,6 @@ import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelProjectionDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface TherapyRepository extends JpaRepository<Therapy, Long> {
@@ -275,11 +274,23 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 
 	List<Therapy> findAllByChannelTypeAndItemStatus(ChannelType channelType, String itemStatus);
 
-	@Query("""
-    SELECT new com.mckesson.cgat.pde.usermanagement.dto.TherapyResponseDTO(t, t.channelType)
-    FROM Therapy t
-    WHERE t.id = :therapyId AND t.isCrosswalked = false
-    """)
-	Optional<TherapyResponseDTO> findTherapyWithCrosswalkById(Long therapyId);
+	@Query(value = """
+			SELECT m.*
+			FROM catalog.material m
+			JOIN catalog.catalog_price cp
+			    ON m.material_number = cp.sap_material
+			    AND m.channel_type = 'SPECIALITY_PHARMA'
+			    AND m.item_status = 'A'
+			    AND cp.channel_type = 'SPECIALITY_PHARMA'
+			    AND cp.deleted = false
+			JOIN catalog.crosswalk cw
+			    ON cp.sap_material = cw.sp_product_id
+			    AND cw.bnb_material_number = :therapyId
+			    AND cw.is_active = 1
+			JOIN usermanagement.user_account_mapping uam
+			    ON cp.sold_to_customer = CAST(uam.account_id AS VARCHAR)
+			    AND uam.user_id = :userId
+			""", nativeQuery = true)
+	List<Therapy> findCrosswalkedTherapies(String therapyId, int userId);
 
 }

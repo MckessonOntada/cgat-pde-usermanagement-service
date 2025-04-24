@@ -3,7 +3,6 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import java.util.List;
 import java.util.Map;
 
-import com.mckesson.cgat.pde.usermanagement.dto.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,8 +22,8 @@ import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponseDto;
 import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.TherapyResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
-import com.mckesson.cgat.pde.usermanagement.model.DistributionChannel;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
@@ -108,9 +107,10 @@ public class TherapyController {
 		return therapyService.findById(therapyId);
 	}
 
-	@GetMapping("/crosswalk/{therapyId}/")
+	@GetMapping("/crosswalk/{therapyId}")
 	@Operation(summary = "Find Therapy Details with crosswalk by id")
-	public TherapyResponseDTO findTherapyWithCrosswalkById(@PathVariable Long therapyId) throws ResourceNotFoundException {
+	public TherapyResponseDTO findTherapyWithCrosswalkById(@PathVariable Long therapyId)
+			throws ResourceNotFoundException {
 		return therapyService.findTherapyWithCrosswalkById(therapyId);
 	}
 
