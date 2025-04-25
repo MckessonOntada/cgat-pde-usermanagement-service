@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.Set;
 
 import jakarta.persistence.*;
-import org.hibernate.envers.AuditOverride;
-import org.hibernate.envers.Audited;
 import org.hibernate.type.NumericBooleanConverter;
 
 import com.mckesson.cgat.pde.usermanagement.model.converters.AccountPartnerFunctionConverter;
@@ -36,8 +34,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
-
 @Entity
 @Setter
 @Getter
@@ -46,9 +42,7 @@ import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 @EqualsAndHashCode
 @Builder
 @ToString
-@Audited
-@AuditOverride(forClass = AuditColumns.class)
-public class Account extends AuditColumns implements Serializable {
+public class Account implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -124,7 +118,6 @@ public class Account extends AuditColumns implements Serializable {
 	private String cgatIdentifier;
 
 	@ManyToMany(fetch = FetchType.EAGER)
-	@Audited(targetAuditMode = NOT_AUDITED)
 	@JoinTable(name = "user_account_mapping", joinColumns = @JoinColumn(name = "user_id"),
 			inverseJoinColumns = @JoinColumn(name = "account_id"))
 	private Set<User> user;
@@ -135,7 +128,6 @@ public class Account extends AuditColumns implements Serializable {
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "account_provider_mapping", joinColumns = @JoinColumn(name = "account_id"),
 			inverseJoinColumns = @JoinColumn(name = "provider_id"))
-	@Audited(targetAuditMode = NOT_AUDITED)
 	private Set<Provider> providers;
 
 }
