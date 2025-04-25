@@ -21,4 +21,6 @@ public interface ShippingLocationService {
 	ShippingLocation updateShippingLocation(Long shippingAccountNumber, ShippingLocation shippingLocation)
 			throws ResourceNotFoundException;
 
+	ShippingLocation findById(Long shippingId) throws ResourceNotFoundException;
+
 }

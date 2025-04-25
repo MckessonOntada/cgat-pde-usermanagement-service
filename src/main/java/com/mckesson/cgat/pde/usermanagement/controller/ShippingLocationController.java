@@ -9,6 +9,7 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -80,6 +81,15 @@ public class ShippingLocationController {
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 		return shippingLocationService.findAll(paging, query, OrganizationContext.getCurrentOrgId(),
 				Long.valueOf(accountId));
+	}
+
+	@RequirePermissions({ Permission.ADD_SP_ACCOUNT, Permission.MANAGE_SP_ACCOUNT, Permission.ADD_ORDERS,
+			Permission.EDIT_ORDERS })
+	@GetMapping("/{shippingId}")
+	@Operation(summary = "Fetch Shipping Location by shippingId")
+	ShippingLocation findById(@NotNull @PathVariable Long accountId, @NotNull @PathVariable Long shippingId)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
+		return shippingLocationService.findById(shippingId);
 	}
 
 }

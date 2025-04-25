@@ -44,6 +44,13 @@ public class ShippingLocationServiceImpl implements ShippingLocationService {
 	}
 
 	@Override
+	public ShippingLocation findById(Long shippingId) throws ResourceNotFoundException {
+		return shippingLocationRepository.findById(shippingId)
+			.orElseThrow(
+					() -> new ResourceNotFoundException("Shipping Location with ID " + shippingId + " not found."));
+	}
+
+	@Override
 	public void removeShippingLocations(List<Long> shippingLocationIds) throws ResourceNotFoundException {
 		if (shippingLocationIds == null || shippingLocationIds.isEmpty()) {
 			return;
