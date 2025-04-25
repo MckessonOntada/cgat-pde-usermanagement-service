@@ -9,6 +9,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.mckesson.cgat.pde.usermanagement.dto.*;
+import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -36,6 +37,7 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 
 @Service
 @Slf4j
@@ -337,6 +339,20 @@ public class TherapyServiceImpl implements TherapyService {
 	@Override
 	public List<Therapy> getTherapiesByChannelType(ChannelType channelType) {
 		return therapyRepository.findAllByChannelTypeAndItemStatus(channelType, THERAPY_ITEM_STATUS_ACTIVE);
+	}
+
+	@Override
+	public TherapyResponseDTO findTherapyWithCrosswalkById(Long therapyId) throws ResourceNotFoundException {
+		Therapy therapy = therapyRepository.findById(therapyId)
+			.orElseThrow(() -> new ResourceNotFoundException("Therapy not found with id: " + therapyId));
+		if (Boolean.TRUE.equals(therapy.getIsCrosswalked())) {
+			List<Therapy> crosswalkedTherapies = therapyRepository.findCrosswalkedTherapies(therapy.getMaterialNumber(),
+					Long.parseLong(UserSecurityUtils.getLoggedInUser().getId()));
+			return new TherapyResponseDTO(therapy, crosswalkedTherapies, therapy.getChannelType());
+		}
+		else {
+			return new TherapyResponseDTO(therapy, Collections.emptyList(), therapy.getChannelType());
+		}
 	}
 
 }

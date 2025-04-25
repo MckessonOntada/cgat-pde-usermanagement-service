@@ -61,4 +61,6 @@ public interface TherapyService {
 
 	void deLinkSPCatalog(List<CatalogDeLinkRequestDTO> catalogList);
 
+	TherapyResponseDTO findTherapyWithCrosswalkById(Long therapyId) throws ResourceNotFoundException;
+
 }
