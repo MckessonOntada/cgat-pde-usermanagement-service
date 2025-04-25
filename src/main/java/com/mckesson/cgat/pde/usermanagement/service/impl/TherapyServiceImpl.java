@@ -348,12 +348,10 @@ public class TherapyServiceImpl implements TherapyService {
 		if (Boolean.TRUE.equals(therapy.getIsCrosswalked())) {
 			List<Therapy> crosswalkedTherapies = therapyRepository.findCrosswalkedTherapies(therapy.getMaterialNumber(),
 					Long.parseLong(UserSecurityUtils.getLoggedInUser().getId()));
-			return new TherapyResponseDTO(
-					new PrimaryTherapyWrapper(therapy, crosswalkedTherapies, therapy.getChannelType()));
+			return new TherapyResponseDTO(therapy, crosswalkedTherapies, therapy.getChannelType());
 		}
 		else {
-			return new TherapyResponseDTO(
-					new PrimaryTherapyWrapper(therapy, Collections.emptyList(), therapy.getChannelType()));
+			return new TherapyResponseDTO(therapy, Collections.emptyList(), therapy.getChannelType());
 		}
 	}
 
