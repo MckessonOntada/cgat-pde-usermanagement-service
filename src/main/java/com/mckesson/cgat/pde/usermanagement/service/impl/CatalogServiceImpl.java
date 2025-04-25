@@ -217,9 +217,10 @@ public class CatalogServiceImpl implements CatalogService {
 	private Set<SPCatalogLinkDTO> parseAndValidateCSVData(CSVParser csvParser, List<String[]> errorRecords,
 			Set<String> accountNumbers, Set<String> productIds) {
 		Set<SPCatalogLinkDTO> catalogsDataList = new HashSet<>();
-
+		boolean isEmpty = true;
 		for (CSVRecord catalogRecord : csvParser) {
 
+			isEmpty = false;
 			if (ObjectUtils.isEmpty(catalogRecord) || catalogRecord.stream().allMatch(String::isBlank))
 				continue;
 
@@ -241,6 +242,10 @@ public class CatalogServiceImpl implements CatalogService {
 				productIds.add(spProductId);
 				catalogsDataList.add(catalog);
 			}
+		}
+		if (isEmpty) {
+			log.error("The uploaded file is empty or contains no data.");
+			throw new CsvFileNotValidException(List.of("invalid.csv.file.empty"));
 		}
 
 		return catalogsDataList;
