@@ -207,4 +207,19 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	Page<Account> findAllOrganizations(String query, String status, Pageable paging, List<Long> practiceIdList,
 			String partnerFunction, List<String> salesOrg, List<String> distChannels, String channelType);
 
+	@Query(nativeQuery = true, value = """
+			select *
+			FROM usermanagement.account ua
+			JOIN usermanagement.user_account_mapping uam ON ua.id = uam.account_id
+			WHERE
+			(
+					ua.tenant_id =:practiceId
+				AND
+					uam.user_id =:userId
+			    AND
+			    	ua.partner_function = :partnerFunction
+			)""")
+	List<Account> findAccountsByUser(@Param("userId") Long userId, @Param("practiceId") Long practiceId,
+			String partnerFunction);
+
 }
