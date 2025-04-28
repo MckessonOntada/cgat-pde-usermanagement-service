@@ -27,12 +27,11 @@ public class GlobalFooterController {
 
 	@GetMapping
 	@Operation(summary = "Get footer configuration (latest version)")
-	@Cacheable(value = "footerConfig", key = "'latest'")
 	public ResponseEntity<String> getFooterConfig() {
 		String footerJson = jdbcTemplate.queryForObject(
 				"SELECT config_json FROM usermanagement.footer_config ORDER BY version DESC LIMIT 1", String.class);
 
-		return ResponseEntity.ok().cacheControl(CacheControl.maxAge(30, TimeUnit.DAYS)).body(footerJson);
+		return ResponseEntity.ok().cacheControl(CacheControl.maxAge(1, TimeUnit.DAYS)).body(footerJson);
 	}
 
 }
