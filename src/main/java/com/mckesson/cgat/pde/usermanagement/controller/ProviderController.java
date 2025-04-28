@@ -1,6 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
 import com.mckesson.cgat.pde.usermanagement.dto.ProviderDTO;
+import com.mckesson.cgat.pde.usermanagement.exception.custom.CsvFileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
@@ -21,6 +22,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -55,6 +57,10 @@ public class ProviderController {
 	public ResponseEntity<byte[]> uploadProviders(@RequestPart("providerData") MultipartFile providerData,
 			@NotNull(message = "Practice Id is Required") @PathVariable Long practiceId)
 			throws FileNotValidException, UnauthorizedAccessException {
+		if (providerData == null
+				|| !StringUtils.getFilenameExtension(providerData.getOriginalFilename()).equalsIgnoreCase("csv")) {
+			throw new CsvFileNotValidException(List.of("invalid.csv.file.type"));
+		}
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		Boolean uploadStatus = providerService.uploadProviders(providerData, practiceId, outputStream);
 		HttpStatus status = uploadStatus ? HttpStatus.OK : HttpStatus.PARTIAL_CONTENT;
