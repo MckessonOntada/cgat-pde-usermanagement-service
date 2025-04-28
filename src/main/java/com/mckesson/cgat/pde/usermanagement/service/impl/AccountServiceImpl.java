@@ -5,12 +5,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import com.mckesson.cgat.pde.usermanagement.config.CGATWebClient;
 import com.mckesson.cgat.pde.usermanagement.model.Provider;
 import com.mckesson.cgat.pde.usermanagement.repository.ProviderRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.flywaydb.core.internal.util.CollectionsUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
