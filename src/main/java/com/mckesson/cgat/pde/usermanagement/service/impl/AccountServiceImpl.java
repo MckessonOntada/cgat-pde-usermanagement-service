@@ -5,11 +5,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.mckesson.cgat.pde.usermanagement.config.CGATWebClient;
 import com.mckesson.cgat.pde.usermanagement.model.Provider;
 import com.mckesson.cgat.pde.usermanagement.repository.ProviderRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
+import org.flywaydb.core.internal.util.CollectionsUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -113,11 +114,11 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public void delinkAccountFromPractice(Long practiceId, Long accountId) throws ResourceNotFoundException {
 		Account account = accountRepository.findById(accountId)
-			.orElseThrow(() -> new ResourceNotFoundException("Account not found with it: " + accountId.toString()));
+			.orElseThrow(() -> new ResourceNotFoundException("Account not found with it: " + accountId));
 		if (!practiceId.equals(account.getPracticeId()))
 			throw new ForbiddenActionException(CustomUtils.UNAUTHORIZED_MESSAGE);
-		account.setPracticeId(null);
-		accountRepository.save(account);
+
+		accountRepository.delinkAccountAndUserMappings(accountId);
 	}
 
 	@Override
