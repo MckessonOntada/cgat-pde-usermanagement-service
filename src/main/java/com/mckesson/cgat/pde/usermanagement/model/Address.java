@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Embeddable
-
 @Setter
 @Getter
 @NoArgsConstructor
@@ -24,34 +23,37 @@ public class Address implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@Size(min = 1, max = 100, groups = BasicInfo.class)
+	@Size(min = 1, max = 100, message = "Address 1 must be between 1 and 100 characters.", groups = BasicInfo.class)
 	@Pattern(regexp = "^[-0-9A-Za-z,./ ]+$",
-			message = "Alphanumeric, along with below chararcters allowed Space, hypen, comma, dot. slash.",
+			message = "Address 1 must be alphanumeric with allowed characters: space, hyphen, comma, period, slash.",
 			groups = BasicInfo.class)
-	@NotEmpty(message = "Address 1 is required.")
+	@NotEmpty(message = "Address 1 is required.", groups = BasicInfo.class)
 	private String address1;
 
-	@Size(max = 100, groups = BasicInfo.class)
+	@Size(max = 100, message = "Address 2 must be at most 100 characters.", groups = BasicInfo.class)
 	@Pattern(regexp = "^[0-9A-Za-z-,./ ]*$",
-			message = "Alphanumeric, along with below chararcters allowed Space, hypen, comma, dot. slash.",
+			message = "Address 2 must be alphanumeric with allowed characters: space, hyphen, comma, period, slash.",
 			groups = BasicInfo.class)
 	private String address2;
 
-	@NotEmpty(message = "City is required.")
-	@Size(min = 2, max = 50, groups = BasicInfo.class)
-	@Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ ]+$", message = "City must only contain alphabets.", groups = BasicInfo.class)
+	@NotEmpty(message = "City is required.", groups = BasicInfo.class)
+	@Size(min = 2, max = 50, message = "City must be between 2 and 50 characters.", groups = BasicInfo.class)
+	@Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ ]+$", message = "City must contain only alphabetic characters and spaces.",
+			groups = BasicInfo.class)
 	private String city;
 
-	@Size(min = 1, max = 50, groups = BasicInfo.class)
-	@NotEmpty(message = "State is required.")
+	@Size(min = 1, max = 50, message = "State must be between 1 and 50 characters.", groups = BasicInfo.class)
+	@NotEmpty(message = "State is required.", groups = BasicInfo.class)
 	@Pattern(regexp = "^(?! )[A-Za-z ]*(?<! )$",
-			message = "Only alphabets and spaces are allowed, but not start or end with a space")
+			message = "State must contain only alphabetic characters and spaces, and cannot start or end with a space.",
+			groups = BasicInfo.class)
 	private String state;
 
-	@NotEmpty(message = "ZIP code is required")
-	@Size(min = 2, max = 10, message = "Enter a valid Zip Code.", groups = BasicInfo.class)
+	@NotEmpty(message = "ZIP code is required.", groups = BasicInfo.class)
+	@Size(min = 2, max = 10, message = "ZIP code must be between 2 and 10 characters.", groups = BasicInfo.class)
 	@Pattern(regexp = "^\\d{5}(-\\d{4})?$",
-			message = "Must be 5 digits or 9 digits with last 4 digits seperated by a '-' .", groups = BasicInfo.class)
+			message = "ZIP code must be 5 digits or 9 digits with last 4 digits seperated by a '-' .",
+			groups = BasicInfo.class)
 	private String zip;
 
 }
