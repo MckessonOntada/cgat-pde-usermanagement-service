@@ -163,11 +163,21 @@ public class UserServiceImpl implements UserService {
 	@Override
 	@Transactional
 	public void delinkUserFromAccount(Long userId, Long accountId) throws ResourceNotFoundException {
-		userRepository.findById(userId)
-			.orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId.toString()));
-		accountRepository.findById(accountId)
-			.orElseThrow(() -> new ResourceNotFoundException("Account not found with id:" + accountId));
-		userRepository.delinkUserFromAccount(userId, accountId);
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+
+		Account account = accountRepository.findById(accountId)
+			.orElseThrow(() -> new ResourceNotFoundException("Account not found with id: " + accountId));
+
+		boolean removed = user.getAccounts().remove(account);
+
+		if (removed) {
+			userRepository.save(user); // Triggers Hibernate Envers auditing
+		}
+		else {
+			throw new ResourceNotFoundException(
+					"Account with id: " + accountId + " is not linked to user with id: " + userId);
+		}
 	}
 
 	@Override
