@@ -4,9 +4,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.hibernate.envers.AuditOverride;
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
 import org.hibernate.type.NumericBooleanConverter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -37,16 +34,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
-
 @Entity
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Audited
-@AuditOverride(forClass = AuditColumns.class)
 public class User extends AuditColumns implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -83,18 +76,15 @@ public class User extends AuditColumns implements Serializable {
 	@JoinTable(name = "user_account_mapping", joinColumns = @JoinColumn(name = "user_id"),
 			inverseJoinColumns = @JoinColumn(name = "account_id"))
 	@JsonIgnore
-	@Audited(targetAuditMode = NOT_AUDITED)
 	private Set<Account> accounts;
 
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinColumn(name = "user_id", referencedColumnName = "id")
 	@JsonIgnore
-	@NotAudited
 	private Set<UserPreference> preferences = new HashSet<>();
 
 	@OneToOne
 	@JoinColumn(name = "role_id", referencedColumnName = "id")
-	@Audited(targetAuditMode = NOT_AUDITED)
 	private Role role;
 
 	@Convert(converter = NumericBooleanConverter.class)
