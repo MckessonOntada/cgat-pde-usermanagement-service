@@ -48,7 +48,7 @@ import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 @ToString
 @Audited
 @AuditOverride(forClass = AuditColumns.class)
-public class Account implements Serializable {
+public class Account extends AuditColumns implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
