@@ -1,11 +1,13 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import com.mckesson.cgat.pde.usermanagement.dto.ProviderDTO;
+import com.mckesson.cgat.pde.usermanagement.exception.custom.CsvFileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.ResourceConflictException;
 import com.mckesson.cgat.pde.usermanagement.model.Address;
 import com.mckesson.cgat.pde.usermanagement.model.Name;
 import com.mckesson.cgat.pde.usermanagement.model.Provider;
+import com.mckesson.cgat.pde.usermanagement.model.ProviderStatus;
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
 import com.mckesson.cgat.pde.usermanagement.repository.ProviderRepository;
 import com.mckesson.cgat.pde.usermanagement.service.ProviderService;
@@ -138,43 +140,71 @@ public class ProviderServiceImpl implements ProviderService {
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(providerDataFile.getInputStream()));
 				CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
 
+			Map<String, Integer> headerMap = csvParser.getHeaderMap();
+			validateProviderHeaders(headerMap);
+
+			boolean isEmpty = true;
 			for (CSVRecord record : csvParser) {
-
-				if (record.stream().allMatch(String::isBlank)) {
-					break;
+				if (record.stream().anyMatch(value -> !value.isBlank())) {
+					isEmpty = false;
+					List<String> providerData = record.toList();
+					Provider provider = createProviderFromCSVRecord(providerData, practiceId, failedProvider);
+					if (provider != null) { // <-- Only add valid providers
+						providers.add(provider);
+					}
 				}
-
-				List<String> providerData = record.toList();
-				Provider provider = createProviderFromCSVRecord(providerData, practiceId);
-				providers.add(provider);
-
+			}
+			if (isEmpty) {
+				log.error("The uploaded file is empty or contains no data.");
+				throw new CsvFileNotValidException(List.of("invalid.csv.file.empty"));
 			}
 		}
 		catch (IOException e) {
-			log.error("Unable to read provider Data CSV");
-			throw new FileNotValidException("Unable to read provider Data CSV");
-		}
-		catch (IndexOutOfBoundsException e) {
-			log.error("Invalid provider Data file, some columns are missing");
-			throw new FileNotValidException("Invalid provider Data file, some columns are missing");
-		}
-		catch (Exception e) {
-			log.error("Exception occured in parsing data ", e);
-			throw e;
+			log.error("Unable to read Provider Data CSV", e);
+			throw new CsvFileNotValidException(List.of("invalid.csv.file.headers.unstructured"));
 		}
 	}
 
-	private Provider createProviderFromCSVRecord(List<String> providerData, Long practiceId) {
+	private void validateProviderHeaders(Map<String, Integer> headerMap) {
+		List<String> expectedHeaders = List.of("First Name", "Middle Name", "Last Name", "DEA Number", "NPI Number",
+				"Address 1", "Address 2", "City", "Zip", "State", "Phone Number", "Status");
+
+		// Check for missing headers
+		List<String> missingHeaders = expectedHeaders.stream()
+			.filter(header -> !headerMap.containsKey(header))
+			.toList();
+
+		if (!missingHeaders.isEmpty()) {
+			log.error("Invalid Cross walk Data file, some columns are missing: {}", missingHeaders);
+			throw new CsvFileNotValidException(List.of("invalid.csv.file.headers.missing"));
+		}
+
+		// Validate header sequence
+		List<String> actualHeadersInOrder = headerMap.entrySet()
+			.stream()
+			.sorted(Map.Entry.comparingByValue())
+			.map(Map.Entry::getKey)
+			.toList();
+
+		if (!expectedHeaders.equals(actualHeadersInOrder)) {
+			log.error("CSV headers are invalid or not in expected order.");
+			throw new CsvFileNotValidException(List.of("invalid.csv.file.headers.unstructured"));
+		}
+	}
+
+	private Provider createProviderFromCSVRecord(List<String> providerData, Long practiceId,
+			Map<Provider, String> failedProvider) {
 		String statusValue = providerData.get(11).trim().toUpperCase();
+		ProviderStatus status = null;
 
-		boolean isActive = switch (statusValue) {
-			case "ACTIVE" -> true;
-			case "INACTIVE" -> false;
-			default -> throw new IllegalArgumentException(
-					"Invalid Status value: " + statusValue + ". Expected ACTIVE or INACTIVE.");
-		};
+		try {
+			status = ProviderStatus.fromString(statusValue);
+		}
+		catch (IllegalArgumentException e) {
+			log.error("Invalid Status value: '{}'. Expected ACTIVE or INACTIVE.", statusValue);
+		}
 
-		return Provider.builder()
+		Provider provider = Provider.builder()
 			.practiceId(practiceId)
 			.name(Name.builder()
 				.firstName(providerData.get(0))
@@ -183,7 +213,6 @@ public class ProviderServiceImpl implements ProviderService {
 				.build())
 			.dea(providerData.get(3))
 			.npi(providerData.get(4))
-
 			.address(Address.builder()
 				.address1(providerData.get(5))
 				.address2(providerData.get(6))
@@ -192,8 +221,18 @@ public class ProviderServiceImpl implements ProviderService {
 				.state(providerData.get(9))
 				.build())
 			.phone(providerData.get(10))
-			.isActive(isActive)
 			.build();
+
+		// If status is invalid, record error and return null (but dummy provider is used
+		// for output)
+		if (status == null) {
+			failedProvider.put(provider, "Invalid Status Value: " + statusValue + ". Expected ACTIVE or INACTIVE.");
+			return null;
+		}
+
+		// Valid provider
+		provider.setIsActive(status == ProviderStatus.ACTIVE);
+		return provider;
 	}
 
 	private void createOutputCSV(OutputStream outputStream, Map<Provider, String> failedProvider) {
@@ -205,12 +244,28 @@ public class ProviderServiceImpl implements ProviderService {
 
 			for (Map.Entry<Provider, String> e : failedProvider.entrySet()) {
 				Provider provider = e.getKey();
-				csvPrinter.printRecord(provider.getName().getFirstName(), provider.getName().getMiddleName(),
-						provider.getName().getLastName(), provider.getDea(), provider.getNpi(),
-						provider.getAddress().getAddress1(), provider.getAddress().getAddress2(),
-						provider.getAddress().getCity(), provider.getAddress().getZip(),
-						provider.getAddress().getState(), provider.getPhone(),
-						provider.getIsActive() ? "ACTIVE" : "INACTIVE", e.getValue());
+				if (provider == null) {
+					continue;
+				}
+
+				// Fix: leave status empty if unknown
+				String status = "";
+				if (provider.getIsActive() != null) {
+					status = provider.getIsActive() ? "ACTIVE" : "INACTIVE";
+				}
+
+				csvPrinter.printRecord(provider.getName() != null ? provider.getName().getFirstName() : "",
+						provider.getName() != null ? provider.getName().getMiddleName() : "",
+						provider.getName() != null ? provider.getName().getLastName() : "",
+						provider.getDea() != null ? provider.getDea() : "",
+						provider.getNpi() != null ? provider.getNpi() : "",
+						provider.getAddress() != null ? provider.getAddress().getAddress1() : "",
+						provider.getAddress() != null ? provider.getAddress().getAddress2() : "",
+						provider.getAddress() != null ? provider.getAddress().getCity() : "",
+						provider.getAddress() != null ? provider.getAddress().getZip() : "",
+						provider.getAddress() != null ? provider.getAddress().getState() : "",
+						provider.getPhone() != null ? provider.getPhone() : "", status,
+						e.getValue() != null ? e.getValue() : "");
 			}
 		}
 		catch (IOException e) {
