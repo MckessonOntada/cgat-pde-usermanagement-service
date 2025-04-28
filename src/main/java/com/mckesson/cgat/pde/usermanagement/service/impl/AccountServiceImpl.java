@@ -110,13 +110,15 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
+	@Transactional
 	public void delinkAccountFromPractice(Long practiceId, Long accountId) throws ResourceNotFoundException {
 		Account account = accountRepository.findById(accountId)
 			.orElseThrow(() -> new ResourceNotFoundException("Account not found with it: " + accountId));
 		if (!practiceId.equals(account.getPracticeId()))
 			throw new ForbiddenActionException(CustomUtils.UNAUTHORIZED_MESSAGE);
-
-		accountRepository.delinkAccountAndUserMappings(accountId);
+		account.setPracticeId(null);
+		accountRepository.save(account);
+		accountRepository.delinkUsersFromAccount(accountId);
 	}
 
 	@Override

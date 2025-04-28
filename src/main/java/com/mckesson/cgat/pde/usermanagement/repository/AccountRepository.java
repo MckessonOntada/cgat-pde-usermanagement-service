@@ -224,10 +224,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	List<Account> findAccountsByUser(@Param("userId") Long userId, @Param("practiceId") Long practiceId,
 			String partnerFunction);
 
-	@Transactional
 	@Modifying
-	@Query(value = "DELETE FROM usermanagement.user_account_mapping WHERE account_id = :accountId; UPDATE usermanagement.account SET tenant_id = NULL WHERE id = :accountId",
-			nativeQuery = true)
-	void delinkAccountAndUserMappings(Long accountId);
+	@Query(value = "DELETE FROM usermanagement.user_account_mapping WHERE account_id = :accountId", nativeQuery = true)
+	void delinkUsersFromAccount(Long accountId);
 
 }
