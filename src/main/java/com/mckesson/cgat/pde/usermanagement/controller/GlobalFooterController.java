@@ -1,6 +1,5 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @RestController
@@ -28,10 +28,16 @@ public class GlobalFooterController {
 	@GetMapping
 	@Operation(summary = "Get footer configuration (latest version)")
 	public ResponseEntity<String> getFooterConfig() {
-		String footerJson = jdbcTemplate.queryForObject(
-				"SELECT config_json FROM usermanagement.footer_config ORDER BY version DESC LIMIT 1", String.class);
+		Map<String, Object> result = jdbcTemplate.queryForMap(
+				"SELECT config_json::text, version FROM usermanagement.footer_config ORDER BY version DESC LIMIT 1");
+		String footerJson = (String) result.get("config_json");
+		String version = String.valueOf(result.get("version"));
 
-		return ResponseEntity.ok().cacheControl(CacheControl.maxAge(1, TimeUnit.DAYS)).body(footerJson);
+		return ResponseEntity.ok()
+			.cacheControl(CacheControl.maxAge(1, TimeUnit.DAYS))
+			.eTag(version)
+			.contentType(MediaType.APPLICATION_JSON) // Ensure proper content type
+			.body(footerJson);
 	}
 
 }

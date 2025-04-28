@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS usermanagement.footer_config
 (
     id INTEGER PRIMARY KEY,
     version INTEGER NOT NULL DEFAULT 1,
-    config_json TEXT NOT NULL
+    config_json JSONB NOT NULL
 );
 
 -- Insert the sample footer configuration with version
