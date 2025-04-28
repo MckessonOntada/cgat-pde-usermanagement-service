@@ -6,9 +6,11 @@ import java.util.Set;
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -221,5 +223,9 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 			)""")
 	List<Account> findAccountsByUser(@Param("userId") Long userId, @Param("practiceId") Long practiceId,
 			String partnerFunction);
+
+	@Modifying
+	@Query(value = "DELETE FROM usermanagement.user_account_mapping WHERE account_id = :accountId", nativeQuery = true)
+	void delinkUsersFromAccount(Long accountId);
 
 }
