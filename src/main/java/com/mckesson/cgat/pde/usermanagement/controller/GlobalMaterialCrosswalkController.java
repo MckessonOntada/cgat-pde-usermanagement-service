@@ -111,6 +111,7 @@ public class GlobalMaterialCrosswalkController {
 		return new ResponseEntity<>(materialCrossWalkService.findAll(paging, query, status), HttpStatus.OK);
 	}
 
+	@RequirePermissions({ Permission.MANAGE_CROSSWALK })
 	@DeleteMapping("/{crosswalkId}/deLink")
 	@Operation(summary = "Delink Material Crosswalk")
 	public ResponseEntity<Void> deLinkMaterialCrosswalk(

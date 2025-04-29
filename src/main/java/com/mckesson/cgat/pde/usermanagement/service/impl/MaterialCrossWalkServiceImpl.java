@@ -423,25 +423,12 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 	public void deLinkMaterialCrosswalk(Long crosswalkId) throws ResourceNotFoundException {
 
 		try {
-			log.info(" Inside method - deLinkMaterialCrosswalk, query: {} ", crosswalkId);
+			log.info(" Inside method - deLinkMaterialCrosswalk, crosswalkId: {} ", crosswalkId);
 			Crosswalk crosswalk = materialCrossWalkConfigRepository.findById(crosswalkId)
 				.orElseThrow(() -> new ResourceNotFoundException("No Crosswalk found with id: " + crosswalkId));
 
 			String bnbMaterialNumber = crosswalk.getBnbMaterialNumber();
 			String spProductId = crosswalk.getSpProductId();
-			List<Therapy> therapies = therapyRepository.findByMaterialNumber(List.of(bnbMaterialNumber, spProductId));
-
-			therapies.stream()
-				.filter(t -> t.getChannelType().equals(ChannelType.SPECIALITY_PHARMA))
-				.findAny()
-				.orElseThrow(() -> new ResourceNotFoundException(
-						"No 'Speciality pharma' material found with id: " + spProductId));
-
-			therapies.stream()
-				.filter(t -> t.getChannelType().equals(ChannelType.BUY_AND_BILL))
-				.findAny()
-				.orElseThrow(() -> new ResourceNotFoundException(
-						"No 'Buy and Bill' material found with id: " + bnbMaterialNumber));
 
 			therapyRepository.updateIsCrossWalkedForMaterialNumbersAndChannelType(false, Set.of(spProductId),
 					ChannelType.SPECIALITY_PHARMA.name());
