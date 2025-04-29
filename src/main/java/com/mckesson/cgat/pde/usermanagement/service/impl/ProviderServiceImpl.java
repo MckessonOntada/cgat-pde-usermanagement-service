@@ -240,7 +240,7 @@ public class ProviderServiceImpl implements ProviderService {
 				CSVPrinter csvPrinter = new CSVPrinter(writer,
 						CSVFormat.DEFAULT.withHeader("First Name", "Middle Name", "Last Name", "DEA Number",
 								"NPI Number", "Address 1", "Address 2", "City", "Zip", "State", "Phone Number",
-								"Status", "Message"))) {
+								"Status", "Error Reason"))) {
 
 			for (Map.Entry<Provider, String> e : failedProvider.entrySet()) {
 				Provider provider = e.getKey();
