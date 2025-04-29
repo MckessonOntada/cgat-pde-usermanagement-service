@@ -37,7 +37,6 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.CollectionUtils;
 
 @Service
 @Slf4j
@@ -122,18 +121,27 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	@Override
-	public Page<CatalogPriceResponseDto> findAllVariantsLinkedToShipToAccountsForTherapy(String soldToAccountId,
-			String shipToAccountId, String therapyId, Pageable paging) {
+	public Page<VariantsResponseDTO> findAllVariantsLinkedToShipToAccountsForTherapy(String soldToAccountId,
+			String shipToAccountId, String therapyId, Pageable paging, ChannelType channelType) {
 		try {
 			log.info(" Inside method - findAllVariantsLinkedToShipToAccountsForTherapy..");
 			log.info("soldToAccountId: {} , shipToAccountId: {} and therapyId: {}", soldToAccountId, shipToAccountId,
 					therapyId);
-			Page<CatalogPrice> allVariants = catalogPriceRepository
-				.findAllCatalogPricesLinkedToShipToAccountsForTherapy(soldToAccountId, shipToAccountId, therapyId,
-						paging);
-			List<CatalogPriceResponseDto> allTherapyVariants = catalogPriceMapper
-				.toResponseDtoVariantsList(allVariants.getContent());
-			return new PageImpl<>(allTherapyVariants, paging, allVariants.getTotalElements());
+			List<VariantsResponseDTO> variantsResponse;
+
+			Page<CatalogPrice> allVariants;
+			if (ChannelType.BUY_AND_BILL.equals(channelType)) {
+				allVariants = catalogPriceRepository.findAllCatalogPricesLinkedToShipToAccountsForTherapy(
+						soldToAccountId, shipToAccountId, therapyId, paging);
+				variantsResponse = toResponseDtoVariantsFromCatalogs(allVariants.getContent());
+			}
+			else {
+				List<Therapy> crosswalkedTherapies = therapyRepository.findCrosswalkedTherapies(therapyId,
+						Long.parseLong(UserSecurityUtils.getLoggedInUser().getId()));
+				variantsResponse = toResponseDtoVariantsListFromTherapies(crosswalkedTherapies);
+
+			}
+			return new PageImpl<>(variantsResponse, paging, variantsResponse.size());
 		}
 		catch (Exception ex) {
 			log.error(
@@ -141,6 +149,34 @@ public class TherapyServiceImpl implements TherapyService {
 					ex);
 			throw ex;
 		}
+	}
+
+	private List<VariantsResponseDTO> toResponseDtoVariantsListFromTherapies(List<Therapy> therapies) {
+		if (therapies == null) {
+			return null;
+		}
+
+		return therapies.stream()
+			.map(therapy -> VariantsResponseDTO.builder()
+				.variant(therapy.getMaterialDescription())
+				.variantDescription(therapy.getMaterialDescription())
+				.materialNumber(therapy.getMaterialNumber())
+				.build())
+			.toList();
+	}
+
+	private List<VariantsResponseDTO> toResponseDtoVariantsFromCatalogs(List<CatalogPrice> catalogPriceList) {
+		if (catalogPriceList == null) {
+			return null;
+		}
+
+		return catalogPriceList.stream()
+			.map(catalogPrice -> VariantsResponseDTO.builder()
+				.variant(catalogPrice.getVariant())
+				.variantDescription(catalogPrice.getVariantDescription())
+				.materialNumber(catalogPrice.getSapMaterial())
+				.build())
+			.toList();
 	}
 
 	@Override

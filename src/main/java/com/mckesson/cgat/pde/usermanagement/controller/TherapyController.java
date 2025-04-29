@@ -113,16 +113,17 @@ public class TherapyController {
 	@GetMapping("{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/variants")
 	@Operation(
 			summary = "Find all variants of therapy that is linked to the selected soldto account,shipto account and the therapy being offered from that shipto account")
-	public Page<CatalogPriceResponseDto> findAllVariantsLinkedToShipToAccountsForTherapy(
+	public Page<VariantsResponseDTO> findAllVariantsLinkedToShipToAccountsForTherapy(
 			@PathVariable @NotNull(message = "'soldToAccountId' cannot be null") @NotEmpty(
 					message = "'soldToAccountId' cannot be empty") String soldToAccountId,
 			@PathVariable @NotNull(message = "'shipToAccountId' cannot be null") @NotEmpty(
 					message = "'shipToAccountId' cannot be empty") String shipToAccountId,
 			@PathVariable @NotNull(message = "'therapyId' cannot be null") String therapyId,
-			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize) {
+			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize,
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) {
 		Pageable paging = PageRequest.of(pageNo, pageSize);
 		return therapyService.findAllVariantsLinkedToShipToAccountsForTherapy(soldToAccountId, shipToAccountId,
-				therapyId, paging);
+				therapyId, paging, channelType);
 	}
 
 	@GetMapping("{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/catalog")
