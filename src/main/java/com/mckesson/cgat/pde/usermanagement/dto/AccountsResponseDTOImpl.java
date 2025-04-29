@@ -1,5 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.dto;
 
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -48,6 +50,8 @@ public class AccountsResponseDTOImpl implements AccountsResponseDTO {
 	private String distChannel;
 
 	private String cgatIdentifier;
+
+	private ChannelType channelType;
 
 	@Override
 	public String getId() {
@@ -142,6 +146,11 @@ public class AccountsResponseDTOImpl implements AccountsResponseDTO {
 	@Override
 	public String getCgatIdentifier() {
 		return cgatIdentifier;
+	}
+
+	@Override
+	public ChannelType getChannelType() {
+		return channelType;
 	}
 
 }
