@@ -279,7 +279,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			    FROM catalog.material m
 			    JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
 			    JOIN catalog.crosswalk cw ON cp.sap_material = cw.sp_product_id
-			    JOIN usermanagement.user_account_mapping uam ON cp.sold_to_customer = CAST(uam.account_id AS VARCHAR)
+				JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
+			    JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
 			    WHERE m.channel_type = 'SPECIALITY_PHARMA'
 			      AND m.item_status = 'A'
 			      AND cp.channel_type = 'SPECIALITY_PHARMA'
