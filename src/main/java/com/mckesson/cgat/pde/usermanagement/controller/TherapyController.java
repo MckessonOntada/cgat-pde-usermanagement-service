@@ -76,8 +76,7 @@ public class TherapyController {
 			summary = "Find all soldto accounts from which the selected therapy is being offered, and the logged in user has access to")
 	public Page<AccountsResponseDTO> findAllSoldToAccountsByTherapy(@PathVariable String therapyId,
 			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(required = false) String query,
-			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String channel,
-			@RequestParam(required = false) String program,
+			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String program,
 			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) {
 
 		Pageable paging = PageRequest.of(pageNo, pageSize);

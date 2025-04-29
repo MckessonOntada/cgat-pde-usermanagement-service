@@ -180,8 +180,8 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	private List<String> fetchCrossWalkedSPsForUserAndTherapyId(Long userId, String therapyId) {
-        return therapyRepository.findAllCrossWalkedSPsForUser(userId, therapyId,
-                AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
+		return therapyRepository.findAllCrossWalkedSPsForUser(userId, therapyId,
+				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 	}
 
 	public Page<AccountsResponseDTO> findAllCustomerIdentifiers(Long userId, String query, Pageable paging) {

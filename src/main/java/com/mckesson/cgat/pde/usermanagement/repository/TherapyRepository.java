@@ -130,6 +130,10 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						uam.user_id = :userId
 					AND
 						cp.deleted = false
+				    AND
+						m.item_status = 'A'
+				    AND
+						cw.is_active = 1
 					)
 					GROUP BY ac.id, ac.sap_customer, ac.name_1, ac.house_number, ac.street, ac.street_2,
 						 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code,
@@ -211,6 +215,10 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						ac.partner_function = :partnerFunction
 					AND
 						cp.deleted = false
+					AND
+						m.item_status = 'A'
+				    AND
+						cw.is_active = 1
 				)
 			""", nativeQuery = true)
 	List<String> findAllCrossWalkedSPsForUser(@Param("userId") Long userId, @Param("therapyId") String therapyId,
