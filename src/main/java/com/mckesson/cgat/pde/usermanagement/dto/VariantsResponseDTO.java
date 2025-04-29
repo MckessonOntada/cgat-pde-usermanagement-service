@@ -17,4 +17,6 @@ public class VariantsResponseDTO {
 
 	private String materialNumber;
 
+	private Long therapyId;
+
 }

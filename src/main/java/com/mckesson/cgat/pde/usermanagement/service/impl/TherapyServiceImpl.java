@@ -161,6 +161,7 @@ public class TherapyServiceImpl implements TherapyService {
 				.variant(therapy.getMaterialDescription())
 				.variantDescription(therapy.getMaterialDescription())
 				.materialNumber(therapy.getMaterialNumber())
+				.therapyId(therapy.getId())
 				.build())
 			.toList();
 	}
@@ -175,6 +176,7 @@ public class TherapyServiceImpl implements TherapyService {
 				.variant(catalogPrice.getVariant())
 				.variantDescription(catalogPrice.getVariantDescription())
 				.materialNumber(catalogPrice.getSapMaterial())
+				.therapyId(null)
 				.build())
 			.toList();
 	}
