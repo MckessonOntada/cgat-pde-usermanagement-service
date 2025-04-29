@@ -291,4 +291,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			""", nativeQuery = true)
 	List<Therapy> findCrosswalkedTherapies(String materialNumber, long userId);
 
+	@Query("select t FROM Therapy t WHERE t.materialNumber IN :materialNumber")
+	List<Therapy> findByMaterialNumber(List<String> materialNumber);
+
 }
