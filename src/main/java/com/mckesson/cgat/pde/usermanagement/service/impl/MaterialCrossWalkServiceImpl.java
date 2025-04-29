@@ -3,8 +3,6 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 import com.mckesson.cgat.pde.usermanagement.dto.CrosswalkResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialCrossWalkConfigRecordDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CsvFileNotValidException;
-import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
-import com.mckesson.cgat.pde.usermanagement.exception.custom.SystemFailureException;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.MaterialCrossWalkAction;
 import com.mckesson.cgat.pde.usermanagement.model.Crosswalk;
@@ -416,6 +414,33 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 		}
 		catch (Exception ex) {
 			log.error("Exception occurred in fetching crosswalks", ex);
+			throw ex;
+		}
+	}
+
+	@Transactional
+	@Override
+	public void deLinkMaterialCrosswalk(Long crosswalkId) throws ResourceNotFoundException {
+
+		try {
+			log.info(" Inside method - deLinkMaterialCrosswalk, crosswalkId: {} ", crosswalkId);
+			Crosswalk crosswalk = materialCrossWalkConfigRepository.findById(crosswalkId)
+				.orElseThrow(() -> new ResourceNotFoundException("No Crosswalk found with id: " + crosswalkId));
+
+			String bnbMaterialNumber = crosswalk.getBnbMaterialNumber();
+			String spProductId = crosswalk.getSpProductId();
+
+			therapyRepository.updateIsCrossWalkedForMaterialNumbersAndChannelType(false, Set.of(spProductId),
+					ChannelType.SPECIALITY_PHARMA.name());
+
+			if (materialCrossWalkConfigRepository.findByBnbMaterialNumber(bnbMaterialNumber).size() == 1)
+				therapyRepository.updateIsCrossWalkedForMaterialNumbersAndChannelType(false, Set.of(bnbMaterialNumber),
+						ChannelType.BUY_AND_BILL.name());
+
+			materialCrossWalkConfigRepository.deleteById(crosswalk.getId());
+		}
+		catch (Exception ex) {
+			log.error("Exception occurred in deLinking crosswalk", ex);
 			throw ex;
 		}
 	}
