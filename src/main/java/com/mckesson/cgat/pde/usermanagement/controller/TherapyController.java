@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
+import com.mckesson.cgat.pde.usermanagement.dto.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,11 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponseDto;
-import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.model.DistributionChannel;
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
@@ -90,15 +87,23 @@ public class TherapyController {
 			summary = "Find all shipto accounts that is linked to the selected soldto account and the therapy also being offered from that shipto account")
 	public Page<AccountsResponseDTO> findAllShipToAccountsForTherapy(@PathVariable String soldToAccountId,
 			@PathVariable String therapyId, @RequestParam(defaultValue = "0") Integer pageNo,
-			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query) {
+			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) {
 		Pageable paging = PageRequest.of(pageNo, pageSize);
-		return therapyService.findAllShipToAccounts(soldToAccountId, therapyId, paging, query);
+		return therapyService.findAllShipToAccounts(soldToAccountId, therapyId, paging, query, channelType);
 	}
 
 	@GetMapping("/{therapyId}")
 	@Operation(summary = "Find Therapy by id")
 	public Therapy findbyId(@PathVariable Long therapyId) throws ResourceNotFoundException {
 		return therapyService.findById(therapyId);
+	}
+
+	@GetMapping("/therapyDetails/{therapyId}")
+	@Operation(summary = "Find Therapy Details with crosswalk by id")
+	public TherapyResponseDTO findTherapyWithCrosswalkById(@PathVariable Long therapyId)
+			throws ResourceNotFoundException {
+		return therapyService.findTherapyWithCrosswalkById(therapyId);
 	}
 
 	@GetMapping("{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/variants")

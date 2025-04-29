@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
+import jakarta.validation.constraints.Size;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -78,7 +80,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 				(
 						(
 							:query is null
-							or LOWER(ac.sap_customer) like %:query%
+							or LOWER(ac.sap_partner) like %:query%
 							or LOWER(ac.name_1) like %:query%
 						)
 					AND
@@ -119,7 +121,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 				(
 						(
 							:query is null
-							or LOWER(ac.sap_customer) like %:query%
+							or LOWER(ac.sap_partner) like %:query%
 							or LOWER(ac.name_1) like %:query%
 						)
 					AND
@@ -155,7 +157,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 				(
 					(
 						:query is null
-						or LOWER(ac.sap_customer) like %:query%
+						or LOWER(ac.sap_partner) like %:query%
 						or LOWER(ac.name_1) like %:query%
 					)
 					AND
@@ -290,5 +292,22 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			@Param("materialNumbers") Set<String> materialNumbers, @Param("channelType") String channelType);
 
 	List<Therapy> findAllByChannelTypeAndItemStatus(ChannelType channelType, String itemStatus);
+
+	@Query(value = """
+			    SELECT m.*
+			    FROM catalog.material m
+			    JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
+			    JOIN catalog.crosswalk cw ON cp.sap_material = cw.sp_product_id
+				JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
+			    JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
+			    WHERE m.channel_type = 'SPECIALITY_PHARMA'
+			      AND m.item_status = 'A'
+			      AND cp.channel_type = 'SPECIALITY_PHARMA'
+			      AND cp.deleted = false
+			      AND cw.bnb_material_number = :materialNumber
+			      AND cw.is_active = 1
+			      AND uam.user_id = :userId
+			""", nativeQuery = true)
+	List<Therapy> findCrosswalkedTherapies(String materialNumber, long userId);
 
 }

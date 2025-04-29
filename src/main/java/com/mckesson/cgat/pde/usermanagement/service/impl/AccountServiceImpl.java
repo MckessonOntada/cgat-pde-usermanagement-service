@@ -110,13 +110,15 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
+	@Transactional
 	public void delinkAccountFromPractice(Long practiceId, Long accountId) throws ResourceNotFoundException {
 		Account account = accountRepository.findById(accountId)
-			.orElseThrow(() -> new ResourceNotFoundException("Account not found with it: " + accountId.toString()));
+			.orElseThrow(() -> new ResourceNotFoundException("Account not found with it: " + accountId));
 		if (!practiceId.equals(account.getPracticeId()))
 			throw new ForbiddenActionException(CustomUtils.UNAUTHORIZED_MESSAGE);
 		account.setPracticeId(null);
 		accountRepository.save(account);
+		accountRepository.delinkUsersFromAccount(accountId);
 	}
 
 	@Override
@@ -142,11 +144,26 @@ public class AccountServiceImpl implements AccountService {
 			Optional<User> user = userRepository.findById(userId);
 			if (!user.isPresent())
 				throw new ResourceNotFoundException("User not found with id: " + userId);
-			return accountRepository.findAccountsByUser(userId, query, statusActive, paging, practiceId,
-					partnerFunction.getPartnerFunctionType(), salesOrg, distChannels, channelType.name());
+			return accountRepository
+				.findAccountsByUser(userId, query, statusActive, paging, practiceId,
+						partnerFunction.getPartnerFunctionType(), salesOrg, distChannels, channelType.name())
+				.map(account -> {
+					return convertingCGATIdentifierFrom340T0340B(account);
+				});
 		}
-		return accountRepository.findAllByQueryText(query, statusActive, paging, practiceId,
-				partnerFunction.getPartnerFunctionType(), salesOrg, distChannels, channelType.name());
+		return accountRepository
+			.findAllByQueryText(query, statusActive, paging, practiceId, partnerFunction.getPartnerFunctionType(),
+					salesOrg, distChannels, channelType.name())
+			.map(account -> {
+				return convertingCGATIdentifierFrom340T0340B(account);
+			});
+	}
+
+	private static Account convertingCGATIdentifierFrom340T0340B(Account account) {
+		if (StringUtils.isNotEmpty(account.getCgatIdentifier()) && "340".equals(account.getCgatIdentifier())) {
+			account.setCgatIdentifier(account.getCgatIdentifier().concat("B"));
+		}
+		return account;
 	}
 
 	@Transactional
@@ -198,6 +215,7 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public AccountDetailsResponseDTO getAccountDetails(Long accountId) throws ResourceNotFoundException {
 		Account account = getAccount(accountId);
+		convertingCGATIdentifierFrom340T0340B(account);
 
 		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
 				QuestionnaireConfigurationType.Account, "", account.getAccountNumber(), "", "",
@@ -257,6 +275,15 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public List<Account> getSPAccounts() {
 		return accountRepository.findAllByChannelTypeAndIsActive(ChannelType.SPECIALITY_PHARMA, true);
+	}
+
+	@Override
+	public Page<Account> findAllByOrganization(Pageable paging, String query, List<String> status,
+			List<Long> practiceIdList, AccountPartnerFunction partnerFunction, List<String> salesOrg,
+			List<String> distChannels, ChannelType channelType) {
+		query = StringUtils.toRootLowerCase(query);
+		return accountRepository.findAllOrganizations(query, CustomUtils.getConsolidatedStatus(status), paging,
+				practiceIdList, partnerFunction.getPartnerFunctionType(), salesOrg, distChannels, channelType.name());
 	}
 
 }

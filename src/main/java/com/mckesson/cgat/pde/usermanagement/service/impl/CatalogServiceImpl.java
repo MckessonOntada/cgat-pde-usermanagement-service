@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import com.mckesson.cgat.pde.usermanagement.dto.*;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CSVGenerationException;
+import com.mckesson.cgat.pde.usermanagement.exception.custom.CsvFileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.model.*;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
@@ -157,6 +158,7 @@ public class CatalogServiceImpl implements CatalogService {
 	}
 
 	@Override
+	@Transactional
 	public CSVProcessingResult uploadSPCatalog(MultipartFile catalogsData) {
 		validateCSVFile(catalogsData);
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(catalogsData.getInputStream()));
@@ -187,9 +189,9 @@ public class CatalogServiceImpl implements CatalogService {
 			result.setErrorFileContent(generateErrorCSV(errorRecords));
 			return result;
 		}
-		catch (IOException e) {
-			log.error("Unable to process output CSV file. Error: {}", e.getMessage(), e);
-			throw new CSVGenerationException("Failed to generate output CSV file", e);
+		catch (IOException | IllegalArgumentException e) {
+			log.error("Error while reading/parsing CSV file: {}", e.getMessage(), e);
+			throw new CsvFileNotValidException(List.of("invalid.csv.file.headers.missing"));
 		}
 	}
 
@@ -204,20 +206,21 @@ public class CatalogServiceImpl implements CatalogService {
 				&& originalFilename.toLowerCase().endsWith(".csv");
 
 		if (!isValidType || !isValidExtension) {
-			throw new FileNotValidException("Invalid file type. Please upload a valid .csv file.");
+			throw new CsvFileNotValidException(List.of("invalid.csv.file.type"));
 		}
 
 		if (file.isEmpty()) {
-			throw new FileNotValidException("Error: The uploaded file is empty or contains no data.");
+			throw new CsvFileNotValidException(List.of("invalid.csv.file.empty"));
 		}
 	}
 
 	private Set<SPCatalogLinkDTO> parseAndValidateCSVData(CSVParser csvParser, List<String[]> errorRecords,
 			Set<String> accountNumbers, Set<String> productIds) {
 		Set<SPCatalogLinkDTO> catalogsDataList = new HashSet<>();
-
+		boolean isEmpty = true;
 		for (CSVRecord catalogRecord : csvParser) {
 
+			isEmpty = false;
 			if (ObjectUtils.isEmpty(catalogRecord) || catalogRecord.stream().allMatch(String::isBlank))
 				continue;
 
@@ -239,6 +242,10 @@ public class CatalogServiceImpl implements CatalogService {
 				productIds.add(spProductId);
 				catalogsDataList.add(catalog);
 			}
+		}
+		if (isEmpty) {
+			log.error("The uploaded file is empty or contains no data.");
+			throw new CsvFileNotValidException(List.of("invalid.csv.file.empty"));
 		}
 
 		return catalogsDataList;
@@ -374,7 +381,7 @@ public class CatalogServiceImpl implements CatalogService {
 
 	private void validateCSVFileData(CSVParser csvParser) {
 		if (!csvParser.getHeaderMap().keySet().containsAll(REQUIRED_HEADERS)) {
-			throw new FileNotValidException("Error: The uploaded file is missing required headers.");
+			throw new CsvFileNotValidException(List.of("invalid.csv.file.headers.missing"));
 		}
 
 		boolean isValidHeaderStructure = Stream
@@ -385,7 +392,7 @@ public class CatalogServiceImpl implements CatalogService {
 			});
 
 		if (!isValidHeaderStructure) {
-			throw new FileNotValidException("Error: The uploaded file does not match the defined column structure.");
+			throw new CsvFileNotValidException(List.of("invalid.csv.file.headers.unstructured"));
 		}
 	}
 

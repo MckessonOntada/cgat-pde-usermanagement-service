@@ -16,7 +16,7 @@ public interface ProviderRepository extends JpaRepository<Provider, Long> {
 	boolean existsByPracticeIdAndNpi(Long practiceId, String npi);
 
 	@Query(value = """
-			SELECT p.*
+			SELECT DISTINCT p.*
 			FROM usermanagement.provider p
 			LEFT JOIN usermanagement.account_provider_mapping ap ON p.id = ap.provider_id
 			WHERE

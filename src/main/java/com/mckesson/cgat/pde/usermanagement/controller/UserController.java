@@ -247,6 +247,15 @@ public class UserController {
 
 	}
 
+	@GetMapping("/current/accounts")
+	@Operation(summary = "Fetch all Accounts for User")
+	ResponseEntity<List<Account>> findAllAccount() {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(accountRepository.findAccountsByUser(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()),
+					OrganizationContext.getCurrentOrgId(), AccountPartnerFunction.SOLD_TO.getPartnerFunctionType()));
+
+	}
+
 	@Operation(summary = "Find all payto accounts that are linked to all soldto accounts that the user has access")
 	@GetMapping("/current/paytoaccounts")
 	public Page<AccountsResponseDTO> findAllPayToAccounts(@RequestParam(defaultValue = "0") Integer pageNo,

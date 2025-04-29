@@ -6,9 +6,11 @@ import java.util.Set;
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -161,5 +163,69 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 			boolean isActive);
 
 	List<Account> findAllByChannelTypeAndIsActive(ChannelType channelType, boolean status);
+
+	@Query(nativeQuery = true, value = """
+			SELECT *
+			FROM usermanagement.account a
+			WHERE
+			(
+				(
+					:query IS NULL
+				 	OR LOWER(a.name_1) LIKE %:query%
+				 	OR LOWER(a.sap_partner) LIKE %:query%
+				 	OR LOWER(a.full_address) LIKE %:query%
+				)
+				AND
+				(
+			      COALESCE(:practiceIdList) IS NULL
+			      OR tenant_id IN (:practiceIdList)
+			  	)
+				AND
+				(
+					(:status = 'ALL' and (is_active = 1 or is_active = 0))
+					OR ('ACTIVE' = :status and is_active = 1 )
+					OR ('INACTIVE' = :status and is_active = 0 )
+				)
+				AND
+				(
+					COALESCE(:salesOrg) is null
+					or
+					sales_org IN (:salesOrg)
+				)
+				AND
+				(
+					COALESCE(:distChannels) is null
+					or
+					distribution_channel IN (:distChannels)
+				)
+				and partner_function = :partnerFunction
+				and
+				(
+					(:channelType = 'ALL')
+					OR ('BUY_AND_BILL' = :channelType and channel_type = 'BUY_AND_BILL' )
+					OR ('SPECIALITY_PHARMA' = :channelType and channel_type = 'SPECIALITY_PHARMA' )
+				)
+			)""")
+	Page<Account> findAllOrganizations(String query, String status, Pageable paging, List<Long> practiceIdList,
+			String partnerFunction, List<String> salesOrg, List<String> distChannels, String channelType);
+
+	@Query(nativeQuery = true, value = """
+			select *
+			FROM usermanagement.account ua
+			JOIN usermanagement.user_account_mapping uam ON ua.id = uam.account_id
+			WHERE
+			(
+					ua.tenant_id =:practiceId
+				AND
+					uam.user_id =:userId
+			    AND
+			    	ua.partner_function = :partnerFunction
+			)""")
+	List<Account> findAccountsByUser(@Param("userId") Long userId, @Param("practiceId") Long practiceId,
+			String partnerFunction);
+
+	@Modifying
+	@Query(value = "DELETE FROM usermanagement.user_account_mapping WHERE account_id = :accountId", nativeQuery = true)
+	void delinkUsersFromAccount(Long accountId);
 
 }

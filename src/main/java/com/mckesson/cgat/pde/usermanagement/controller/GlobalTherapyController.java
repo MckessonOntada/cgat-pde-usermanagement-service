@@ -71,7 +71,6 @@ public class GlobalTherapyController {
 	}
 
 	@GetMapping("/{materialNumber}")
-	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.VIEW_SP_MATERIAL })
 	@Operation(summary = "Find Therapy by Material Number")
 	public ResponseEntity<Therapy> findByMaterialNumber(@PathVariable String materialNumber,
 			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) throws ResourceNotFoundException {
