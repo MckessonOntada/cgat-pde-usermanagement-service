@@ -76,13 +76,13 @@ public class TherapyServiceImplTest {
 		List<TherapyCatalogResponseDTO> mockResponse = List.of(therapy1, therapy2, therapy3, therapy4, therapy5);
 
 		Mockito
-			.when(therapyRepository.findAllTherapies(anyLong(), anyString(), anyList(), any(Pageable.class), anyList(),
-					anyString()))
+			.when(therapyRepository.findAllTherapies(anyLong(), anyString(), anyList(), anyList(), anyString(),
+					any(Pageable.class)))
 			.thenReturn(new PageImpl<>(mockResponse, paging, 1L));
 
 		therapyService.findAllTherapies(userId, query, new ArrayList<>(), paging, new ArrayList<>());
-		verify(therapyRepository, times(1)).findAllTherapies(userId, query, new ArrayList<>(), paging,
-				new ArrayList<>(), "SP");
+		verify(therapyRepository, times(1)).findAllTherapies(userId, query, new ArrayList<>(), new ArrayList<>(), "SP",
+				paging);
 	}
 
 	@DisplayName("Test: FindAll SoldToAccounts")
