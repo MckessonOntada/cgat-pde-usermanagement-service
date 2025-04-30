@@ -62,10 +62,20 @@ public class GlobalTherapyController {
 			@RequestParam(defaultValue = "material_number") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder,
 			@RequestParam(required = false) List<ChannelType> channelTypes,
-			@RequestParam(required = false) List<String> status) {
+			@RequestParam(required = false) List<String> status,
+			@RequestParam(required = false) Boolean showNonCrosswalked) {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
+
+		if (Boolean.TRUE.equals(showNonCrosswalked) && channelTypes != null
+				&& channelTypes.contains(ChannelType.SPECIALITY_PHARMA)) {
+
+			return new ResponseEntity<>(
+					therapyService.findNonCrosswalkedSPGlobalTherapies(query, paging, channelTypes, status, false),
+					HttpStatus.OK);
+		}
+
 		return new ResponseEntity<>(therapyService.findAllGlobalTherapies(query, paging, channelTypes, status),
 				HttpStatus.OK);
 	}
@@ -160,23 +170,6 @@ public class GlobalTherapyController {
 			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
 			.contentType(MediaType.parseMediaType("text/csv"))
 			.body(stream);
-	}
-
-	@GetMapping("/cross-walk")
-	@RequirePermissions({ Permission.ADD_CROSSWALK })
-	@Operation(summary = "Fetch all therapies with crosswalk filter.")
-	public ResponseEntity<Page<Therapy>> findAllTherapies(@RequestParam(defaultValue = "0") Integer pageNo,
-			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
-			@RequestParam(defaultValue = "material_number") String sortBy,
-			@RequestParam(defaultValue = "asc") String sortOrder,
-			@RequestParam(required = false) List<ChannelType> channelTypes,
-			@RequestParam(required = false) List<String> status, @RequestParam(required = false) Boolean crosswalked) {
-		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
-				: Sort.by(sortBy).descending();
-		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-		return new ResponseEntity<>(
-				therapyService.findAllSPGlobalTherapies(query, paging, channelTypes, status, crosswalked),
-				HttpStatus.OK);
 	}
 
 }

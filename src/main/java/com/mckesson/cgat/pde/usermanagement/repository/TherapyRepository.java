@@ -4,9 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
-import jakarta.validation.constraints.Size;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -324,7 +322,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			         OR (LOWER(:crosswalked) = 'false' AND m.is_crosswalked = FALSE)
 			     )
 			""", nativeQuery = true)
-	Page<Therapy> findAllSPGlobalTherapies(@Param("query") String query, String statusActive, String channelTypes,
-			@Param("crosswalked") String crosswalked, Pageable paging);
+	Page<Therapy> findNonCrosswalkedSPGlobalTherapies(@Param("query") String query, String statusActive,
+			String channelTypes, @Param("crosswalked") String crosswalked, Pageable paging);
 
 }

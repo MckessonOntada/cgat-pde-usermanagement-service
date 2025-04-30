@@ -37,7 +37,6 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.CollectionUtils;
 
 @Service
 @Slf4j
@@ -355,12 +354,12 @@ public class TherapyServiceImpl implements TherapyService {
 		}
 	}
 
-	public Page<Therapy> findAllSPGlobalTherapies(String query, Pageable paging, List<ChannelType> channelTypes,
-			List<String> status, Boolean crosswalked) {
+	public Page<Therapy> findNonCrosswalkedSPGlobalTherapies(String query, Pageable paging,
+			List<ChannelType> channelTypes, List<String> status, Boolean crosswalked) {
 		try {
 			log.info(" Inside method - findAllSPGlobalTherapies");
 			log.info("query: {}", StringUtils.toRootLowerCase(query));
-			return therapyRepository.findAllSPGlobalTherapies(StringUtils.toRootLowerCase(query),
+			return therapyRepository.findNonCrosswalkedSPGlobalTherapies(StringUtils.toRootLowerCase(query),
 					getConsolidatedStatus(status), getConsolidatedChannelType(channelTypes),
 					crosswalked != null ? crosswalked.toString().toUpperCase() : "all", paging);
 		}

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.mckesson.cgat.pde.usermanagement.dto.CrosswalkResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.model.Crosswalk;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import java.io.ByteArrayOutputStream;
@@ -18,7 +17,7 @@ public interface MaterialCrossWalkService {
 
 	Boolean uploadCrossWalks(MultipartFile crossWalkData, ByteArrayOutputStream outputStream);
 
-	List<Crosswalk> createCrosswalks(CrosswalkRequestDTO crosswalk) throws ResourceNotFoundException;
+	void createCrosswalks(CrosswalkRequestDTO crosswalk) throws ResourceNotFoundException;
 
 	Page<CrosswalkResponseDTO> findAll(Pageable paging, String query, List<String> status);
 

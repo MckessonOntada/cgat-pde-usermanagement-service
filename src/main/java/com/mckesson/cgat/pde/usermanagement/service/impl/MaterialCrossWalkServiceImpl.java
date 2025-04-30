@@ -383,7 +383,7 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 
 	@Override
 	@Transactional
-	public List<Crosswalk> createCrosswalks(CrosswalkRequestDTO request) throws ResourceNotFoundException {
+	public void createCrosswalks(CrosswalkRequestDTO request) throws ResourceNotFoundException {
 		String bnbId = request.getBnbMaterialNumber();
 		List<String> spIds = request.getSpProductIds();
 
@@ -439,7 +439,6 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 
 		therapyRepository.saveAll(therapiesToUpdate);
 
-		return savedCrosswalks;
 	}
 
 	public Page<CrosswalkResponseDTO> findAll(Pageable paging, String query, List<String> status) {

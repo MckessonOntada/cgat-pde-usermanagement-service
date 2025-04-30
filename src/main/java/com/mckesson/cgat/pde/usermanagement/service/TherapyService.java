@@ -42,7 +42,7 @@ public interface TherapyService {
 	Page<Therapy> findAllGlobalTherapies(String query, Pageable paging, List<ChannelType> channelTypes,
 			List<String> status);
 
-	Page<Therapy> findAllSPGlobalTherapies(String query, Pageable paging, List<ChannelType> channelTypes,
+	Page<Therapy> findNonCrosswalkedSPGlobalTherapies(String query, Pageable paging, List<ChannelType> channelTypes,
 			List<String> status, Boolean crosswalked);
 
 	Page<CatalogPrice> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging,
