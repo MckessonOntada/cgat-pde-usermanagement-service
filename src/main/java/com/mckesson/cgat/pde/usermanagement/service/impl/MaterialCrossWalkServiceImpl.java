@@ -364,7 +364,7 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 		try (OutputStreamWriter writer = new OutputStreamWriter(outputStream);
 				CSVPrinter csvPrinter = new CSVPrinter(writer,
 						CSVFormat.DEFAULT.withHeader("Buy & Bill Material ID", "Buy & Bill Description",
-								"Buy & Bill NDC", "SP Product ID", "SP Product Name", "SP NDC", "Message"))) {
+								"Buy & Bill NDC", "SP Product ID", "SP Product Name", "SP NDC", "Error Reason"))) {
 
 			for (Map.Entry<MaterialCrossWalkConfigRecordDTO, String> e : failedCrossWalks.entrySet()) {
 				MaterialCrossWalkConfigRecordDTO crossWalkConfigRecordDTO = e.getKey();
