@@ -355,4 +355,20 @@ public class TherapyServiceImpl implements TherapyService {
 		}
 	}
 
+	public Page<Therapy> findAllSPGlobalTherapies(String query, Pageable paging, List<ChannelType> channelTypes,
+			List<String> status, Boolean crosswalked) {
+		try {
+			log.info(" Inside method - findAllSPGlobalTherapies");
+			log.info("query: {}", StringUtils.toRootLowerCase(query));
+			return therapyRepository.findAllSPGlobalTherapies(StringUtils.toRootLowerCase(query),
+					getConsolidatedStatus(status), getConsolidatedChannelType(channelTypes),
+					crosswalked != null ? crosswalked.toString().toUpperCase() : "all", paging);
+		}
+		catch (Exception e) {
+			log.error("Exception occurred in findAllGlobalTherapies and exception details", e);
+			throw e;
+		}
+
+	}
+
 }

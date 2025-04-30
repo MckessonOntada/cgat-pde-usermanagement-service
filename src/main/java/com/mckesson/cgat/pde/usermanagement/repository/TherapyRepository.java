@@ -295,4 +295,36 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 
 	Therapy findByMaterialNumber(String bnbId);
 
+	@Query(value = """
+			                  SELECT m.*
+			                  FROM catalog.material m
+			                  WHERE
+			                  (
+			                      :query IS NULL
+			                      OR LOWER(m.material_number) LIKE %:query%
+			                      OR LOWER(m.ndc_number) LIKE %:query%
+			                      OR LOWER(m.material_description) LIKE %:query%
+			                      OR LOWER(m.generic_name) LIKE %:query%
+			                      OR LOWER(m.site_name) LIKE %:query%
+			                  )
+			                  AND
+			                  (
+			                      :statusActive = 'ALL'
+			                      OR (:statusActive = 'ACTIVE' AND m.item_status = 'A')
+			                      OR (:statusActive = 'INACTIVE' AND m.item_status = 'V')
+			                  )
+			                  AND
+			                  (
+			                      :channelTypes = 'ALL'
+			                      OR m.channel_type = :channelTypes
+			                  )
+			AND (
+			         LOWER(:crosswalked) = 'all'
+			         OR (LOWER(:crosswalked) = 'true' AND m.is_crosswalked = TRUE)
+			         OR (LOWER(:crosswalked) = 'false' AND m.is_crosswalked = FALSE)
+			     )
+			""", nativeQuery = true)
+	Page<Therapy> findAllSPGlobalTherapies(@Param("query") String query, String statusActive, String channelTypes,
+			@Param("crosswalked") String crosswalked, Pageable paging);
+
 }
