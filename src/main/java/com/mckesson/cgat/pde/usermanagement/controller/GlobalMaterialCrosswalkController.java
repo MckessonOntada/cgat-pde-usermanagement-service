@@ -1,9 +1,11 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
+import com.mckesson.cgat.pde.usermanagement.dto.CrosswalkRequestDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.CrosswalkResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CsvFileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
+import com.mckesson.cgat.pde.usermanagement.model.Crosswalk;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
 import com.mckesson.cgat.pde.usermanagement.service.MaterialCrossWalkService;
@@ -11,8 +13,8 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.data.domain.Page;
@@ -28,7 +30,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -81,18 +82,13 @@ public class GlobalMaterialCrosswalkController {
 
 	}
 
-	/*
-	 * @RequirePermissions({ Permission.ADD_CROSSWALK })
-	 *
-	 * @PostMapping(consumes = "application/json")
-	 *
-	 * @Operation(summary = "Create Crosswalk") public ResponseEntity<Crosswalk>
-	 * createCrosswalk(@Valid @RequestBody Crosswalk crosswalk) throws
-	 * UnauthorizedAccessException, ResourceNotFoundException { return new
-	 * ResponseEntity<>(crosswalkService.createCrosswalk(crosswalk), HttpStatus.OK);
-	 *
-	 * }
-	 */
+	@RequirePermissions({ Permission.ADD_CROSSWALK })
+	@PostMapping(consumes = "application/json")
+	@Operation(summary = "Create Crosswalk")
+	public ResponseEntity<List<Crosswalk>> createCrosswalks(@Valid @RequestBody CrosswalkRequestDTO crosswalk)
+			throws UnauthorizedAccessException, ResourceNotFoundException {
+		return new ResponseEntity<>(materialCrossWalkService.createCrosswalks(crosswalk), HttpStatus.OK);
+	}
 
 	@RequirePermissions({ Permission.VIEW_MATERIAL_CROSSWALK })
 	@GetMapping
