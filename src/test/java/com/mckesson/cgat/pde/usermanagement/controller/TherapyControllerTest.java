@@ -13,6 +13,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mckesson.cgat.pde.usermanagement.dto.VariantsResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,7 +35,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponseDto;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.model.DistributionChannel;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
 import com.mckesson.cgat.pde.usermanagement.util.TestUtils;
@@ -208,7 +209,8 @@ public class TherapyControllerTest {
 		Long therapyId = 12L;
 		String soldToAccountId = "4";
 
-		when(therapyService.findAllShipToAccounts(anyString(), anyString(), any(PageRequest.class), anyString()))
+		when(therapyService.findAllShipToAccounts(anyString(), anyString(), any(PageRequest.class), anyString(),
+				any(ChannelType.class)))
 			.thenReturn(getAccounts());
 
 		mockMvc.perform(get(
@@ -349,11 +351,11 @@ public class TherapyControllerTest {
 		Long therapyId = 12L;
 		String soldToAccount = "4";
 		String shipToAccount = "103";
-		Page<CatalogPriceResponseDto> catalogPriceResponseDtos = getCatalogPriceList();
+		Page<VariantsResponseDTO> variantsList = getVariantsList();
 
 		when(therapyService.findAllVariantsLinkedToShipToAccountsForTherapy(anyString(), anyString(), anyString(),
-				any(PageRequest.class)))
-			.thenReturn(catalogPriceResponseDtos);
+				any(PageRequest.class), ChannelType.BUY_AND_BILL))
+			.thenReturn(variantsList);
 
 		mockMvc.perform(get(
 				"/practices/{practiceId}/users/current/therapies/{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/variants",
@@ -464,6 +466,26 @@ public class TherapyControllerTest {
 		catalogs.add(catalogPrice3);
 		catalogs.add(catalogPrice4);
 		return new PageImpl<>(catalogs, paging, catalogs.size());
+	}
+
+	private Page<VariantsResponseDTO> getVariantsList() {
+		List<VariantsResponseDTO> variantsResponseDTOList = new ArrayList<>();
+		VariantsResponseDTO variantsResponseDTO1 = VariantsResponseDTO.builder()
+			.variant("Type B")
+			.variantDescription("One to One")
+			.materialNumber("material_number1")
+			.build();
+
+		VariantsResponseDTO variantsResponseDTO2 = VariantsResponseDTO.builder()
+			.variant("Type B")
+			.variantDescription("One to One")
+			.materialNumber("material_number2")
+			.build();
+
+		variantsResponseDTOList.add(variantsResponseDTO1);
+		variantsResponseDTOList.add(variantsResponseDTO2);
+
+		return new PageImpl<>(variantsResponseDTOList, paging, variantsResponseDTOList.size());
 	}
 
 	/*
