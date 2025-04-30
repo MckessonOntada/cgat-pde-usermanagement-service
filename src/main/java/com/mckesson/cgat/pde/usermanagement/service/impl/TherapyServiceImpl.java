@@ -37,7 +37,6 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.CollectionUtils;
 
 @Service
 @Slf4j
@@ -324,7 +323,7 @@ public class TherapyServiceImpl implements TherapyService {
 
 	@Override
 	@Transactional
-	public void deLinkSPCatalog(List<CatalogDeLinkRequestDTO> catalogList) {
+	public void deLinkSPCatalog(List<CatalogRequestDTO> catalogList) {
 		List<CatalogPrice> deletedCatalog = catalogList.stream()
 			.map(dto -> catalogPriceRepository.findBySapMaterialAndSoldToCustomerAndChannelType(dto.getSapMaterial(),
 					dto.getSoldToCustomer(), ChannelType.SPECIALITY_PHARMA))

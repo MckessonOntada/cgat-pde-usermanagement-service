@@ -59,7 +59,7 @@ public interface TherapyService {
 
 	List<Therapy> getTherapiesByChannelType(ChannelType channelType);
 
-	void deLinkSPCatalog(List<CatalogDeLinkRequestDTO> catalogList);
+	void deLinkSPCatalog(List<CatalogRequestDTO> catalogList);
 
 	TherapyResponseDTO findTherapyWithCrosswalkById(Long therapyId) throws ResourceNotFoundException;
 

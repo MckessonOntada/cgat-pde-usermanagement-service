@@ -195,6 +195,30 @@ public class CatalogServiceImpl implements CatalogService {
 		}
 	}
 
+	@Override
+	public void linkSPCatalog(List<CatalogRequestDTO> catalogList) {
+		Set<String> sapMaterials = new HashSet<>();
+		Set<String> soldToCustomers = new HashSet<>();
+
+		for (CatalogRequestDTO dto : catalogList) {
+			sapMaterials.add(dto.getSapMaterial());
+			soldToCustomers.add(dto.getSoldToCustomer());
+		}
+
+		Map<String, Account> accountMap = getAccountMap(soldToCustomers);
+		Map<String, Therapy> materialMap = getTherapyMap(sapMaterials);
+
+        List<CatalogPrice> catalogPrices = new ArrayList<>(catalogList.stream()
+                .map(dto -> catalogPriceRepository.findBySapMaterialAndSoldToCustomerAndChannelType(dto.getSapMaterial(),
+                        dto.getSoldToCustomer(), ChannelType.SPECIALITY_PHARMA))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .peek(catalog -> catalog.setDeleted(false))
+                .toList());
+
+		catalogPrices.add()
+	}
+
 	private void validateCSVFile(MultipartFile file) {
 		String contentType = file.getContentType();
 		String originalFilename = file.getOriginalFilename();

@@ -3,7 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.dto;
 import lombok.Getter;
 
 @Getter
-public class CatalogDeLinkRequestDTO {
+public class CatalogRequestDTO {
 
 	private String sapMaterial;
 

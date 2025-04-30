@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.service;
 import com.mckesson.cgat.pde.usermanagement.dto.CSVProcessingResult;
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogConfigurationDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.CatalogRequestDTO;
 import com.mckesson.cgat.pde.usermanagement.model.CatalogConfiguration;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -33,4 +34,5 @@ public interface CatalogService {
 
 	CSVProcessingResult uploadSPCatalog(MultipartFile catalogsData);
 
+	void linkSPCatalog(List<CatalogRequestDTO> catalogList);
 }
