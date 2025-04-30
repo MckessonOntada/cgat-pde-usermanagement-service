@@ -8,7 +8,6 @@ import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.MaterialCrossWalkAction;
 import com.mckesson.cgat.pde.usermanagement.model.Crosswalk;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
-import com.mckesson.cgat.pde.usermanagement.model.validators.UploadCrosswalkInfo;
 import com.mckesson.cgat.pde.usermanagement.repository.MaterialCrossWalkConfigRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.TherapyRepository;
 import com.mckesson.cgat.pde.usermanagement.service.MaterialCrossWalkService;
