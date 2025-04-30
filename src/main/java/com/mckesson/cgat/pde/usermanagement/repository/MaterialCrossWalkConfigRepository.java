@@ -57,4 +57,6 @@ public interface MaterialCrossWalkConfigRepository extends JpaRepository<Crosswa
 
 	List<Crosswalk> findBySpProductId(String spProductId);
 
+	List<Crosswalk> findByBnbMaterialNumber(String bnbMaterialNumber);
+
 }

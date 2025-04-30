@@ -121,7 +121,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
 	@Query(value = """
 			SELECT DISTINCT ON (ac1.sap_partner) ac1.id, ac1.sap_partner as AccountNumber, ac1.name_1 as AccountName, ac1.house_number, ac1.street, ac1.street_2 as street2, ac1.street_3 as street3,
-			ac1.telephone, ac1.city, ac1.district, ac1.state, ac1.country, ac1.zip_code, false as isDefault, ac1.sales_org, ac1.company_code
+			ac1.telephone, ac1.city, ac1.district, ac1.state, ac1.country, ac1.zip_code, false as isDefault, ac1.sales_org, ac1.company_code, ac1.channel_Type
 			FROM usermanagement.account ac1
 			JOIN usermanagement.account ac2 ON ac1.sap_customer = ac2.sap_customer
 			JOIN usermanagement.user_account_mapping uam ON ac2.id = uam.account_id

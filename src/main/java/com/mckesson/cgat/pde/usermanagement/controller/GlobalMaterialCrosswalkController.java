@@ -12,6 +12,7 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.data.domain.Page;
@@ -108,6 +109,16 @@ public class GlobalMaterialCrosswalkController {
 				: Sort.by(mappedSortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 		return new ResponseEntity<>(materialCrossWalkService.findAll(paging, query, status), HttpStatus.OK);
+	}
+
+	@RequirePermissions({ Permission.MANAGE_CROSSWALK })
+	@DeleteMapping("/{crosswalkId}/deLink")
+	@Operation(summary = "Delink Material Crosswalk")
+	public ResponseEntity<Void> deLinkMaterialCrosswalk(
+			@PathVariable @NotNull(message = "'crosswalkId' cannot be null") Long crosswalkId)
+			throws ResourceNotFoundException {
+		materialCrossWalkService.deLinkMaterialCrosswalk(crosswalkId);
+		return ResponseEntity.ok().build();
 	}
 
 }
