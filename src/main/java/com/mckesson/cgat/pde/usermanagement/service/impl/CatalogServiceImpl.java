@@ -3,7 +3,6 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 import com.mckesson.cgat.pde.usermanagement.dto.*;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CSVGenerationException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CsvFileNotValidException;
-import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.model.*;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.CatalogPriceRepository;
@@ -197,6 +196,7 @@ public class CatalogServiceImpl implements CatalogService {
 
 	@Override
 	public void linkSPCatalog(List<CatalogRequestDTO> catalogList) {
+		List<CatalogPrice> catalogsToUpdate = new ArrayList<>();
 		Set<String> sapMaterials = new HashSet<>();
 		Set<String> soldToCustomers = new HashSet<>();
 
@@ -208,15 +208,32 @@ public class CatalogServiceImpl implements CatalogService {
 		Map<String, Account> accountMap = getAccountMap(soldToCustomers);
 		Map<String, Therapy> materialMap = getTherapyMap(sapMaterials);
 
-        List<CatalogPrice> catalogPrices = new ArrayList<>(catalogList.stream()
-                .map(dto -> catalogPriceRepository.findBySapMaterialAndSoldToCustomerAndChannelType(dto.getSapMaterial(),
-                        dto.getSoldToCustomer(), ChannelType.SPECIALITY_PHARMA))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .peek(catalog -> catalog.setDeleted(false))
-                .toList());
+		List<CatalogPrice> existingCatalogs = catalogList.stream()
+			.map(dto -> catalogPriceRepository.findBySapMaterialAndSoldToCustomerAndChannelType(dto.getSapMaterial(),
+					dto.getSoldToCustomer(), ChannelType.SPECIALITY_PHARMA))
+			.flatMap(Optional::stream)
+			.toList();
 
-		catalogPrices.add()
+		Map<Pair<String, String>, CatalogPrice> existingCatalogMap = existingCatalogs.stream()
+			.collect(Collectors.toMap(c -> Pair.of(c.getSoldToCustomer(), c.getSapMaterial()), Function.identity()));
+
+		for (CatalogRequestDTO dto : catalogList) {
+			updateCatalogsToUploadList(dto, catalogsToUpdate, accountMap, materialMap, existingCatalogMap);
+		}
+		catalogPriceRepository.saveAll(catalogsToUpdate);
+	}
+
+	private void updateCatalogsToUploadList(CatalogRequestDTO dto, List<CatalogPrice> catalogToUpdate,
+			Map<String, Account> accountMap, Map<String, Therapy> materialMap,
+			Map<Pair<String, String>, CatalogPrice> existingCatalogMap) {
+		String accountNumber = dto.getSoldToCustomer();
+		String productId = dto.getSapMaterial();
+
+		Account account = accountMap.get(accountNumber);
+		Therapy therapy = materialMap.get(productId);
+		Pair<String, String> key = Pair.of(accountNumber, productId);
+		CatalogPrice existing = existingCatalogMap.get(key);
+		handleLink(account, therapy, existing, catalogToUpdate);
 	}
 
 	private void validateCSVFile(MultipartFile file) {

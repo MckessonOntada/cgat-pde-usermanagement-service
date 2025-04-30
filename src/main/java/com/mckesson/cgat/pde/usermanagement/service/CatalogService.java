@@ -35,4 +35,5 @@ public interface CatalogService {
 	CSVProcessingResult uploadSPCatalog(MultipartFile catalogsData);
 
 	void linkSPCatalog(List<CatalogRequestDTO> catalogList);
+
 }
