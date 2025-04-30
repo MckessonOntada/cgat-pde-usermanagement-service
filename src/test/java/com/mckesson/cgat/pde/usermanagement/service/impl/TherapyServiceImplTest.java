@@ -110,7 +110,7 @@ public class TherapyServiceImplTest {
 			.when(therapyRepository.findAllShipToAccounts(anyString(), anyString(), anyString(), any(Pageable.class),
 					anyString()))
 			.thenReturn(getAccounts());
-		therapyService.findAllShipToAccounts(soldToAccount, therapyId, paging, "");
+		therapyService.findAllShipToAccounts(soldToAccount, therapyId, paging, "", ChannelType.BUY_AND_BILL);
 		verify(therapyRepository, times(1)).findAllShipToAccounts(soldToAccount, therapyId, "", paging, "SH");
 	}
 
@@ -200,7 +200,8 @@ public class TherapyServiceImplTest {
 			.when(catalogPriceRepository.findAllCatalogPricesLinkedToShipToAccountsForTherapy(anyString(), anyString(),
 					anyString(), any(Pageable.class)))
 			.thenReturn(getAllVariantsLinkedToShipToAccounts());
-		therapyService.findAllVariantsLinkedToShipToAccountsForTherapy(soldToAccount, shipToAccount, therapyId, paging);
+		therapyService.findAllVariantsLinkedToShipToAccountsForTherapy(soldToAccount, shipToAccount, therapyId, paging,
+				ChannelType.BUY_AND_BILL);
 		verify(catalogPriceRepository, times(1)).findAllCatalogPricesLinkedToShipToAccountsForTherapy(soldToAccount,
 				shipToAccount, therapyId, paging);
 	}
