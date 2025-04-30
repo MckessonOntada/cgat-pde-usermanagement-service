@@ -71,7 +71,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 	@Query(value = """
 				SELECT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2 as street2,
 						 ac.street_3 as street3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code, false as isDefault,
-						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier
+						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier, ac.channel_Type
 				FROM catalog.material m
 				JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
 				JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
@@ -100,7 +100,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					)
 					GROUP BY ac.id, ac.sap_customer, ac.name_1, ac.house_number, ac.street, ac.street_2,
 						 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code,
-						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel, ac.cgat_identifier
+						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel, ac.cgat_identifier, ac.channel_Type
 			""",
 			nativeQuery = true)
 	public Page<AccountsResponseDTO> findAllSoldToAccounts(@Param("userId") Long userId,
@@ -139,7 +139,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					)
 					GROUP BY ac.id, ac.sap_customer, ac.name_1, ac.house_number, ac.street, ac.street_2,
 						 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code,
-						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel, ac.cgat_identifier
+						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel, ac.cgat_identifier, ac.channel_Type
 			""",
 			nativeQuery = true)
 	Page<AccountsResponseDTO> findAllSoldToAccountsForSP(@Param("userId") Long userId,
@@ -149,7 +149,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 	@Query(value = """
 				SELECT ac.id, ac.sap_partner as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2 as street2,
 						 ac.street_3 as street3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code, false as isDefault,
-						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier
+						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier, ac.channel_Type
 				FROM catalog.material m
 				JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
 				JOIN usermanagement.account ac ON ac.sap_partner = cp.ship_to_customer
@@ -173,7 +173,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					)
 					GROUP BY ac.id, ac.sap_customer, ac.name_1, ac.house_number, ac.street, ac.street_2,
 						 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code,
-						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel, ac.cgat_identifier
+						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel, ac.cgat_identifier, ac.channel_Type
 			""",
 			nativeQuery = true)
 	public Page<AccountsResponseDTO> findAllShipToAccounts(@Param("soldToAccountId") String soldToAccountId,

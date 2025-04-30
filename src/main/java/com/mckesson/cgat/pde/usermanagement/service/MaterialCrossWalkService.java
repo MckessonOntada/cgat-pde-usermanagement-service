@@ -21,4 +21,6 @@ public interface MaterialCrossWalkService {
 
 	Page<CrosswalkResponseDTO> findAll(Pageable paging, String query, List<String> status);
 
+	void deLinkMaterialCrosswalk(Long crosswalkId) throws ResourceNotFoundException;
+
 }

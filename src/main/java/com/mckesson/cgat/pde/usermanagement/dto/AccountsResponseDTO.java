@@ -1,6 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.DistributionChannel;
 
 public interface AccountsResponseDTO {
@@ -38,6 +39,8 @@ public interface AccountsResponseDTO {
 	String getCompanyCode();
 
 	String getDivision();
+
+	ChannelType getChannelType();
 
 	@JsonIgnore
 	String getDistChannel();

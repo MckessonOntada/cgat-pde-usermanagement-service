@@ -6,6 +6,7 @@ import java.util.Set;
 import jakarta.persistence.*;
 import org.hibernate.envers.AuditOverride;
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.hibernate.type.NumericBooleanConverter;
 
 import com.mckesson.cgat.pde.usermanagement.model.converters.AccountPartnerFunctionConverter;
@@ -135,7 +136,7 @@ public class Account extends AuditColumns implements Serializable {
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "account_provider_mapping", joinColumns = @JoinColumn(name = "account_id"),
 			inverseJoinColumns = @JoinColumn(name = "provider_id"))
-	@Audited(targetAuditMode = NOT_AUDITED)
+	@NotAudited
 	private Set<Provider> providers;
 
 }
