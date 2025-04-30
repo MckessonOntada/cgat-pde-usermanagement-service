@@ -85,11 +85,6 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						)
 					AND
 						(
-						cast(:channel as varchar) is null
-						or ac.distribution_channel = :channel
-						)
-					AND
-						(
 						cast(:program as varchar) is null
 						or ac.cgat_identifier = :program
 						)
@@ -101,6 +96,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						uam.user_id = :userId
 					AND
 						cp.deleted = false
+				    AND ac.channel_type=:channel
 					)
 					GROUP BY ac.id, ac.sap_customer, ac.name_1, ac.house_number, ac.street, ac.street_2,
 						 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code,
@@ -113,11 +109,12 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			@Param("partnerFunction") String partnerFunction);
 
 	@Query(value = """
-				SELECT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2 as street2,
+			SELECT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2 as street2,
 						 ac.street_3 as street3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code, false as isDefault,
-						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier, ac.channel_Type
-				FROM catalog.material m
-				JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
+						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier
+				FROM catalog.crosswalk cw
+				JOIN catalog.material m on m.material_number = cw.bnb_material_number
+				JOIN catalog.catalog_price cp ON cp.sap_material = cw.sp_product_id
 				JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
 				JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
 				WHERE
@@ -128,29 +125,25 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 							or LOWER(ac.name_1) like %:query%
 						)
 					AND
-						(COALESCE(:channels) IS NULL OR ac.distribution_channel IN (:channels))
-					AND
-						(
-						cast(:program as varchar) is null
-						or ac.cgat_identifier = :program
-						)
-					AND
-						m.material_number = :therapyId
+						cw.bnb_material_number = :therapyId
 					AND
 						ac.partner_function = :partnerFunction
 					AND
 						uam.user_id = :userId
 					AND
 						cp.deleted = false
+				    AND
+						m.item_status = 'A'
+				    AND
+						cw.is_active = 1
 					)
 					GROUP BY ac.id, ac.sap_customer, ac.name_1, ac.house_number, ac.street, ac.street_2,
 						 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code,
 						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel, ac.cgat_identifier, ac.channel_Type
 			""",
 			nativeQuery = true)
-	public Page<AccountsResponseDTO> findAllSoldToAccounts(@Param("userId") Long userId,
+	Page<AccountsResponseDTO> findAllSoldToAccountsForSP(@Param("userId") Long userId,
 			@Param("therapyId") String therapyId, @Param("query") String query, Pageable paging,
-			@Param("channels") List<String> channels, @Param("program") String program,
 			@Param("partnerFunction") String partnerFunction);
 
 	@Query(value = """
@@ -188,7 +181,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			@Param("partnerFunction") String partnerFunction);
 
 	@Query(value = """
-			SELECT ac.cgat_identifier as program, ac.sales_org as channel
+			SELECT ac.cgat_identifier as program, m.is_crosswalked as crosswalked
 			FROM catalog.material m
 			JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
 			JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
@@ -202,10 +195,36 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					ac.partner_function = :partnerFunction
 				AND
 					cp.deleted = false
+			    AND m.channel_type = :channelType
 			)
 			""", nativeQuery = true)
-	public List<ProgramChannelProjectionDTO> findAllProgramAndChannels(@Param("userId") Long userId,
-			@Param("therapyId") String therapyId, @Param("partnerFunction") String partnerFunction);
+	List<ProgramChannelProjectionDTO> findAllPrograms(@Param("userId") Long userId,
+			@Param("therapyId") String therapyId, @Param("partnerFunction") String partnerFunction, String channelType);
+
+	@Query(value = """
+				select cw.sp_product_id
+			 	FROM catalog.crosswalk cw
+			 	JOIN catalog.material m on m.material_number = cw.bnb_material_number
+				JOIN catalog.catalog_price cp ON cp.sap_material = cw.sp_product_id
+				JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
+				JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
+				WHERE
+				(
+						uam.user_id = :userId
+					AND
+						cw.bnb_material_number = :therapyId
+					AND
+						ac.partner_function = :partnerFunction
+					AND
+						cp.deleted = false
+					AND
+						m.item_status = 'A'
+				    AND
+						cw.is_active = 1
+				)
+			""", nativeQuery = true)
+	List<String> findAllCrossWalkedSPsForUser(@Param("userId") Long userId, @Param("therapyId") String therapyId,
+			@Param("partnerFunction") String partnerFunction);
 
 	@Query(value = """
 			SELECT DISTINCT ac.sap_customer as accountNumber, ac.name_1 as accountName

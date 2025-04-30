@@ -38,6 +38,9 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.util.CollectionUtils;
+import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.*;
+
 @Service
 @Slf4j
 public class TherapyServiceImpl implements TherapyService {
@@ -72,18 +75,19 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	public Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, String therapyId, String query, Pageable paging,
-			String channel, String program) {
-		return therapyRepository.findAllSoldToAccounts(userId, therapyId, StringUtils.toRootLowerCase(query), paging,
-				channel, program, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
-	}
+			ChannelType channelType, String program) {
 
-	public Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, String therapyId, String query, Pageable paging,
-			List<String> channels, String program) {
+		if (ChannelType.SPECIALITY_PHARMA.equals(channelType)) {
+			return therapyRepository.findAllSoldToAccountsForSP(userId, therapyId, StringUtils.toRootLowerCase(query),
+					paging, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
+		}
+
 		if ("340B".equals(program)) {
 			program = "340";
 		}
+
 		return therapyRepository.findAllSoldToAccounts(userId, therapyId, StringUtils.toRootLowerCase(query), paging,
-				channels, program, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
+				channelType.name(), program, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 	}
 
 	public Page<AccountsResponseDTO> findAllShipToAccounts(String soldToAccountId, String therapyId, Pageable paging,
@@ -219,39 +223,44 @@ public class TherapyServiceImpl implements TherapyService {
 					"Therapy not found with materialNumber: " + materialNumber + " and channelType: " + channelType));
 	}
 
-	public ProgramChannelResponseDTO findAllProgramAndChannels(Long userId, String therapyId) {
+	public ProgramChannelResponseDTO findAllProgramAndChannels(Long userId, String therapyId, ChannelType channelType) {
 
-		List<ProgramChannelProjectionDTO> programAndChannels = therapyRepository.findAllProgramAndChannels(userId,
-				therapyId, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
-
-		Set<String> uniquePrograms = null != programAndChannels
-				? (programAndChannels.stream().map(programChannelProjectionDTO -> {
-					if ("340".equals(programChannelProjectionDTO.getProgram())) {
-						return "340B";
-					}
-					return programChannelProjectionDTO.getProgram();
-				}).filter(Objects::nonNull).collect(Collectors.toSet())) : Collections.emptySet();
-
-		Set<String> uniqueChannels = programAndChannels != null
-				? programAndChannels.stream().map(ProgramChannelProjectionDTO::getChannel).map(channel -> {
-					if ("8545".equals(channel))
-						return "MPB";
-					if ("1010".equals(channel))
-						return "Speciality";
-					if ("1100".equals(channel) || channel.startsWith("2"))
-						return "3PL";
-					return null; // Ignore other entries
-				})
-					.filter(Objects::nonNull) // Remove ignored entries
-					.collect(Collectors.toSet())
-				: Collections.emptySet();
-
-		if (uniqueChannels.size() > 1) {
-			// Add an option All
-			uniqueChannels.add("All");
+		if (ChannelType.SPECIALITY_PHARMA.equals(channelType)) {
+			return ProgramChannelResponseDTO.builder()
+				.channels(Collections.singleton(ChannelType.SPECIALITY_PHARMA.name()))
+				.programs(new HashSet<>())
+				.build();
 		}
 
+		List<ProgramChannelProjectionDTO> allPrograms = therapyRepository.findAllPrograms(userId, therapyId,
+				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), ChannelType.BUY_AND_BILL.name());
+
+		Set<String> uniquePrograms = null != allPrograms ? (allPrograms.stream().map(programChannelProjectionDTO -> {
+			if ("340".equals(programChannelProjectionDTO.getProgram())) {
+				return "340B";
+			}
+			return programChannelProjectionDTO.getProgram();
+		}).filter(Objects::nonNull).collect(Collectors.toSet())) : Collections.emptySet();
+
+		boolean isCrosswalkMaterial = null != allPrograms
+				&& allPrograms.stream().anyMatch(ProgramChannelProjectionDTO::isCrosswalked);
+		List<String> crossWalkedSPs = new ArrayList<>();
+
+		if (isCrosswalkMaterial) {
+			crossWalkedSPs = fetchCrossWalkedSPsForUserAndTherapyId(userId, therapyId);
+		}
+
+		Set<String> uniqueChannels = new HashSet<>();
+		uniqueChannels.add(ChannelType.BUY_AND_BILL.name());
+		if (!CollectionUtils.isEmpty(crossWalkedSPs)) {
+			uniqueChannels.add(ChannelType.SPECIALITY_PHARMA.name());
+		}
 		return ProgramChannelResponseDTO.builder().channels(uniqueChannels).programs(uniquePrograms).build();
+	}
+
+	private List<String> fetchCrossWalkedSPsForUserAndTherapyId(Long userId, String therapyId) {
+		return therapyRepository.findAllCrossWalkedSPsForUser(userId, therapyId,
+				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 	}
 
 	public Page<AccountsResponseDTO> findAllCustomerIdentifiers(Long userId, String query, Pageable paging) {

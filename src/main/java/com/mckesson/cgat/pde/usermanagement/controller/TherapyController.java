@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import java.util.List;
 import java.util.Map;
 
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.dto.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -42,9 +43,10 @@ public class TherapyController {
 
 	private final TherapyService therapyService;
 
-	private static final Map<String, List<String>> CHANNEL_MAPPING = Map.of("MPB",
-			List.of("20", "30", "40", "50", "60"), "Speciality", List.of("10"), "3PL", List.of("10"), "All",
-			List.of("10", "20", "30", "40", "50", "60"));
+	// private static final Map<String, List<String>> CHANNEL_MAPPING = Map.of("MPB",
+	// List.of("20", "30", "40", "50", "60"), "Speciality", List.of("10"), "3PL",
+	// List.of("10"), "All",
+	// List.of("10", "20", "30", "40", "50", "60"));
 
 	public TherapyController(TherapyService therapyService) {
 		this.therapyService = therapyService;
@@ -71,19 +73,13 @@ public class TherapyController {
 			summary = "Find all soldto accounts from which the selected therapy is being offered, and the logged in user has access to")
 	public Page<AccountsResponseDTO> findAllSoldToAccountsByTherapy(@PathVariable String therapyId,
 			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(required = false) String query,
-			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String channel,
-			@RequestParam(required = false) String program) {
-		if (StringUtils.isEmpty(channel) || (StringUtils.isNotEmpty(channel) && StringUtils.isNumeric(channel))) {
-			Pageable paging = PageRequest.of(pageNo, pageSize);
-			return therapyService.findAllSoldToAccounts(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()),
-					therapyId, query, paging, channel, program);
-		}
-		else {
-			Pageable paging = PageRequest.of(pageNo, pageSize);
-			List<String> channels = CHANNEL_MAPPING.get(channel);
-			return therapyService.findAllSoldToAccounts(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()),
-					therapyId, query, paging, channels, program);
-		}
+			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String program,
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) {
+
+		Pageable paging = PageRequest.of(pageNo, pageSize);
+		return therapyService.findAllSoldToAccounts(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()),
+				therapyId, query, paging, channelType, program);
+
 	}
 
 	@GetMapping("{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccounts")
@@ -143,9 +139,10 @@ public class TherapyController {
 	@GetMapping("/{therapyId}/programs-channels")
 	@Operation(
 			summary = "Find all programs and channels from which the selected therapy is being offered, and the logged in user has access to")
-	public ResponseEntity<ProgramChannelResponseDTO> findAllProgramAndChannels(@PathVariable String therapyId) {
+	public ResponseEntity<ProgramChannelResponseDTO> findAllProgramAndChannels(@PathVariable String therapyId,
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) {
 		return new ResponseEntity<>(therapyService.findAllProgramAndChannels(
-				Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), therapyId), HttpStatus.OK);
+				Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), therapyId, channelType), HttpStatus.OK);
 	}
 
 	@GetMapping("/customeridentifiers")
