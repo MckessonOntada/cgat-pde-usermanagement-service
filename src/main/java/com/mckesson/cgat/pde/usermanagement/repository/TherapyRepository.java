@@ -43,6 +43,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			                 AND cp.deleted = false
 							 AND
 								m.item_status = 'A'
+			             	AND ac.is_active = 1
 			             union distinct
 
 			             select  m.id, m.material_number as material_number, m.material_description as material_description,
@@ -67,6 +68,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 								m.item_status = 'A'
 							AND
 								cw.is_active = 1
+							AND ac.is_active = 1
 			         )
 			         SELECT * from COMBINED com
 			 where (
@@ -98,6 +100,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					             AND cp.deleted = false
 					        AND
 								m.item_status = 'A'
+						 	AND ac.is_active = 1
 
 					         UNION distinct
 
@@ -116,6 +119,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 									m.item_status = 'A'
 								AND
 									cw.is_active = 1
+					         	AND ac.is_active = 1
 					     )
 					         SELECT * FROM COMBINED com
 					         where (
