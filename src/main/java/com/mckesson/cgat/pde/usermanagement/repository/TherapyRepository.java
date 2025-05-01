@@ -29,7 +29,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			                    m.ndc_number as ndc, cp.udi, m.strength, m.dosage, m.selling_unit_code,
 			                    m.vendor_name, m.upc_code, m.item_category_group, m.item_status as status,
 			                    m.base_unit_of_measure, m.cgat_therapy_type, m.sales_organization, m.product_level_pricing,
-			                    cp.minimum_order_quantity, cp.dist_channel as dist_channel, m.channel_Type as channel_Type
+			                    cp.minimum_order_quantity, cp.dist_channel as dist_channel, m.channel_Type as channelType
 			             FROM catalog.material m
 			             JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material AND m.channel_type = cp.channel_type
 			             JOIN usermanagement.account ac  ON ac.sap_customer = cp.sold_to_customer
@@ -50,7 +50,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			                    m.ndc_number as ndc, cp.udi, m.strength, m.dosage, m.selling_unit_code,
 			                    m.vendor_name, m.upc_code, m.item_category_group, m.item_status as status,
 			                    m.base_unit_of_measure, m.cgat_therapy_type, m.sales_organization, m.product_level_pricing,
-			                    cp.minimum_order_quantity, cp.dist_channel as dist_channel, m.channel_Type as channel_Type
+			                    cp.minimum_order_quantity, cp.dist_channel as dist_channel, m.channel_Type as channelType
 			             FROM catalog.material m
 			             JOIN catalog.crosswalk cw
 			                 ON cw.bnb_material_number = m.material_number
@@ -70,7 +70,12 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 								cw.is_active = 1
 							AND ac.is_active = 1
 			         )
-			         SELECT * from COMBINED com
+			         SELECT com.id, com.material_number as therapyId, com.material_description as therapyDescription,
+							com.ndc, com.udi, com.strength, com.dosage, com.selling_unit_code,
+							com.vendor_name, com.upc_code, com.item_category_group, com.status,
+							com.base_unit_of_measure, com.cgat_therapy_type, com.sales_organization, com.product_level_pricing,
+							com.minimum_order_quantity, com.dist_channel, com.channelType
+			         from COMBINED com
 			 where (
 				cast(:query as varchar) is null
 			    OR LOWER(com.material_number) LIKE %:query%
@@ -79,7 +84,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			)
 			         GROUP BY com.id, com.material_number,com.material_description,com.ndc,com.udi, com.strength, com.dosage, com.selling_unit_code,
 				com.vendor_name, com.upc_code, com.item_category_group, com.base_unit_of_measure, com.cgat_therapy_type, com.sales_organization,
-				 com.product_level_pricing, com.minimum_order_quantity, com.dist_channel, com.status, com.channel_Type
+				 com.product_level_pricing, com.minimum_order_quantity, com.dist_channel, com.status, com.channelType
 			         """,
 			countQuery = """
 
