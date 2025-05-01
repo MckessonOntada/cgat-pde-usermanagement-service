@@ -5,7 +5,6 @@ import com.mckesson.cgat.pde.usermanagement.dto.CrosswalkResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CsvFileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
-import com.mckesson.cgat.pde.usermanagement.model.Crosswalk;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
 import com.mckesson.cgat.pde.usermanagement.service.MaterialCrossWalkService;
@@ -83,12 +82,12 @@ public class GlobalMaterialCrosswalkController {
 	}
 
 	@RequirePermissions({ Permission.ADD_CROSSWALK })
-	@PostMapping(consumes = "application/json")
+	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(summary = "Create Crosswalk")
+	public ResponseEntity<Integer> createCrosswalks(@Valid @RequestBody CrosswalkRequestDTO crosswalk)
 			throws UnauthorizedAccessException, ResourceNotFoundException {
-
-		materialCrossWalkService.createCrosswalks(crosswalk);
-		return ResponseEntity.ok("Crosswalks created successfully.");
+		int count = materialCrossWalkService.createCrosswalks(crosswalk);
+		return ResponseEntity.ok(count);
 	}
 
 	@RequirePermissions({ Permission.VIEW_MATERIAL_CROSSWALK })

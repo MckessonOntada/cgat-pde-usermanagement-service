@@ -289,10 +289,6 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			""", nativeQuery = true)
 	List<Therapy> findCrosswalkedTherapies(String materialNumber, long userId);
 
-	List<Therapy> findAllByMaterialNumberIn(List<String> materialNumbers);
-
-	Therapy findByMaterialNumber(String bnbId);
-
 	@Query(value = """
 			                  SELECT m.*
 			                  FROM catalog.material m
@@ -316,13 +312,9 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			                      :channelTypes = 'ALL'
 			                      OR m.channel_type = :channelTypes
 			                  )
-			AND (
-			         LOWER(:crosswalked) = 'all'
-			         OR (LOWER(:crosswalked) = 'true' AND m.is_crosswalked = TRUE)
-			         OR (LOWER(:crosswalked) = 'false' AND m.is_crosswalked = FALSE)
-			     )
+			AND m.is_crosswalked = :crosswalked
 			""", nativeQuery = true)
 	Page<Therapy> findNonCrosswalkedSPGlobalTherapies(@Param("query") String query, String statusActive,
-			String channelTypes, @Param("crosswalked") String crosswalked, Pageable paging);
+			String channelTypes, @Param("crosswalked") Boolean crosswalked, Pageable paging);
 
 }

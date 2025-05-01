@@ -360,8 +360,7 @@ public class TherapyServiceImpl implements TherapyService {
 			log.info(" Inside method - findNonCrosswalkedSPGlobalTherapies");
 			log.info("query: {}", StringUtils.toRootLowerCase(query));
 			return therapyRepository.findNonCrosswalkedSPGlobalTherapies(StringUtils.toRootLowerCase(query),
-					getConsolidatedStatus(status), getConsolidatedChannelType(channelTypes),
-					crosswalked != null ? crosswalked.toString().toUpperCase() : "all", paging);
+					getConsolidatedStatus(status), getConsolidatedChannelType(channelTypes), crosswalked, paging);
 		}
 		catch (Exception e) {
 			log.error("Exception occurred in findNonCrosswalkedSPGlobalTherapies and exception details", e);
