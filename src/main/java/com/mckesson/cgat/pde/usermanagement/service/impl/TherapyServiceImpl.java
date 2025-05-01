@@ -40,8 +40,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.util.CollectionUtils;
 
-import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.*;
-
 @Service
 @Slf4j
 public class TherapyServiceImpl implements TherapyService {
