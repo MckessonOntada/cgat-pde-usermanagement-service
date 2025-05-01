@@ -24,21 +24,22 @@ public class Address implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Size(min = 1, max = 100, message = "Address 1 must be between 1 and 100 characters.", groups = BasicInfo.class)
-	@Pattern(regexp = "^[-0-9A-Za-z,./ ]+$",
-			message = "Address 1 must be alphanumeric with allowed characters: space, hyphen, comma, period, slash.",
+	@Pattern(regexp = "^(?! )[A-Za-z0-9,./-]+(?: [A-Za-z0-9,./-]+)*(?<! )$",
+			message = "Address 1 must be alphanumeric and may include space, hyphen, comma, dot, or slash. It must not start or end with a space.",
 			groups = BasicInfo.class)
 	@NotEmpty(message = "Address 1 is required.", groups = BasicInfo.class)
 	private String address1;
 
 	@Size(max = 100, message = "Address 2 must be at most 100 characters.", groups = BasicInfo.class)
-	@Pattern(regexp = "^[0-9A-Za-z-,./ ]*$",
-			message = "Address 2 must be alphanumeric with allowed characters: space, hyphen, comma, period, slash.",
+	@Pattern(regexp = "^(?! )[A-Za-z0-9,./-]+(?: [A-Za-z0-9,./-]+)*(?<! )$",
+			message = "Address 2 must be alphanumeric and may include space, hyphen, comma, dot, or slash. It must not start or end with a space.",
 			groups = BasicInfo.class)
 	private String address2;
 
-	@NotEmpty(message = "City is required.", groups = BasicInfo.class)
-	@Size(min = 2, max = 50, message = "City must be between 2 and 50 characters.", groups = BasicInfo.class)
-	@Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ ]+$", message = "City must contain only alphabetic characters and spaces.",
+	@NotEmpty(message = "Please enter the City.", groups = BasicInfo.class)
+	@Size(max = 50, message = "City should not exceed 50 characters.", groups = BasicInfo.class)
+	@Pattern(regexp = "^(?! )[A-Za-zÀ-ÖØ-öø-ÿ]+(?: [A-Za-zÀ-ÖØ-öø-ÿ]+)*(?<! )$",
+			message = "City name can only contain alphabets and spaces and must not start or end with a space.",
 			groups = BasicInfo.class)
 	private String city;
 
@@ -51,8 +52,8 @@ public class Address implements Serializable {
 
 	@NotEmpty(message = "ZIP code is required.", groups = BasicInfo.class)
 	@Size(min = 2, max = 10, message = "ZIP code must be between 2 and 10 characters.", groups = BasicInfo.class)
-	@Pattern(regexp = "^\\d{5}(-\\d{4})?$",
-			message = "ZIP code must be 5 digits or 9 digits with last 4 digits seperated by a '-' .",
+	@Pattern(regexp = "^(\\d{5}|\\d{5}-\\d{4})$",
+			message = "ZIP code must be in the format 12345 or 12345-6789, with no spaces or invalid characters.",
 			groups = BasicInfo.class)
 	private String zip;
 
