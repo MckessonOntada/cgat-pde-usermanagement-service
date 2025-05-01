@@ -22,9 +22,13 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.flywaydb.core.internal.util.CollectionsUtils;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -223,6 +227,29 @@ public class CatalogServiceImpl implements CatalogService {
 		}
 		catalogPriceRepository.saveAll(catalogsToUpdate);
 		return new CatalogLinkResponseDto(catalogsToUpdate.size());
+	}
+
+	@Override
+	public StreamingResponseBody downloadAllGlobalCatalogs(List<String> accountNumbers, Pageable paging, String query) {
+		return outputStream -> {
+			try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
+				writer.write("SP Product ID,Product Name,NDC,Account Number");
+				writer.newLine();
+
+				List<CatalogPrice> allCatalogs = catalogPriceRepository
+					.findAllGlobalCatalogs(accountNumbers, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(),
+							query, paging, ChannelType.SPECIALITY_PHARMA.name())
+					.getContent();
+
+				for (CatalogPrice cp : allCatalogs) {
+					writer.write(String.format("\"%s\",\"%s\",\"%s\",\"%s\"", cp.getSapMaterial(),
+							cp.getMaterialDescriptionInLanguageEn(), cp.getNdc(), cp.getSoldToCustomer()));
+					writer.newLine();
+				}
+
+				writer.flush();
+			}
+		};
 	}
 
 	private void updateCatalogsToUploadList(CatalogRequestDTO dto, List<CatalogPrice> catalogToUpdate,
