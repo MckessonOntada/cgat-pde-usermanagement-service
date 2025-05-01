@@ -55,7 +55,7 @@ public class GlobalTherapyController {
 	}
 
 	@GetMapping
-	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.VIEW_SP_MATERIAL })
+	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.VIEW_SP_MATERIAL, Permission.ADD_CROSSWALK })
 	@Operation(summary = "Fetch all therapies.")
 	public ResponseEntity<Page<Therapy>> findAllTherapies(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
