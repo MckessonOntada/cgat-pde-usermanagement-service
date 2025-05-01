@@ -398,6 +398,7 @@ public class ProviderServiceImpl implements ProviderService {
 			}
 
 			accounts.stream().map(a -> a.getProviders().add(provider)).collect(Collectors.toList());
+			accountRepository.saveAll(accounts);
 		}
 		catch (Exception e) {
 			log.error("Linking provider with SP accounts failed ! ", e);
