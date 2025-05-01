@@ -31,4 +31,6 @@ public interface ProviderService {
 
 	Provider getProvider(Long providerId) throws ResourceNotFoundException;
 
+	void linkProviderToAccounts(Long providerId, List<Long> accountIds) throws ResourceNotFoundException;
+
 }
