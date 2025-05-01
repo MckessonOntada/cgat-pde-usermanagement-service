@@ -132,7 +132,7 @@ public class ProviderController {
 		return new ResponseEntity<>(providerService.getProvider(providerId), HttpStatus.OK);
 	}
 
-	@RequirePermissions({ Permission.ADD_PROVIDER, Permission.EDIT_PROVIDER })
+	// @RequirePermissions({ Permission.ADD_PROVIDER, Permission.EDIT_PROVIDER })
 	@PatchMapping("/providers-accounts")
 	@Operation(summary = "Link multiple provider with multiple sp account.")
 	public ResponseEntity<Void> linkProviderToAccounts(@Valid @RequestBody ProviderAccountsDTO providersAccounts)

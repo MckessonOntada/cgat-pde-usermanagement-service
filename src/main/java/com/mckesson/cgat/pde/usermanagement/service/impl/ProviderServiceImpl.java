@@ -391,8 +391,8 @@ public class ProviderServiceImpl implements ProviderService {
 			log.info(" Inside method - linkProvidersToAccounts, providerId: {}, accountIds: {} ",
 					providersAccounts.getProviderIds(), providersAccounts.getAccountIds());
 
-			List<Provider> provider = providerRepository.findAllById(providersAccounts.getProviderIds());
-			if (provider.size() != providersAccounts.getProviderIds().size()) {
+			List<Provider> providers = providerRepository.findAllById(providersAccounts.getProviderIds());
+			if (providers.size() != providersAccounts.getProviderIds().size()) {
 				throw new ResourceNotFoundException("Some of the provider IDs do not exist.");
 			}
 
@@ -401,8 +401,10 @@ public class ProviderServiceImpl implements ProviderService {
 				throw new ResourceNotFoundException("Some of the account IDs do not exist.");
 			}
 
-			accounts.stream().map(a -> a.getProviders().addAll(provider)).collect(Collectors.toList());
+			// Link all providers to each account
+			accounts.stream().map(a -> a.getProviders().addAll(providers)).collect(Collectors.toList());
 			accountRepository.saveAll(accounts);
+			log.info("Successfully linked providers to accounts.");
 		}
 		catch (Exception e) {
 			log.error("Linking provider with SP accounts failed ! ", e);
