@@ -45,4 +45,6 @@ public interface TherapyCatalogResponseDTO {
 	@JsonIgnore
 	String getItemCategoryGroup();
 
+	String getChannelType();
+
 }
