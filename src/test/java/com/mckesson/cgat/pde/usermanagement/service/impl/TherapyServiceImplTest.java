@@ -76,13 +76,13 @@ public class TherapyServiceImplTest {
 		List<TherapyCatalogResponseDTO> mockResponse = List.of(therapy1, therapy2, therapy3, therapy4, therapy5);
 
 		Mockito
-			.when(therapyRepository.findAllTherapies(anyLong(), anyString(), anyList(), any(Pageable.class), anyList(),
-					anyString()))
+			.when(therapyRepository.findAllTherapies(anyLong(), anyString(), anyList(), anyList(), anyString(),
+					any(Pageable.class)))
 			.thenReturn(new PageImpl<>(mockResponse, paging, 1L));
 
 		therapyService.findAllTherapies(userId, query, new ArrayList<>(), paging, new ArrayList<>());
-		verify(therapyRepository, times(1)).findAllTherapies(userId, query, new ArrayList<>(), paging,
-				new ArrayList<>(), "SP");
+		verify(therapyRepository, times(1)).findAllTherapies(userId, query, new ArrayList<>(), new ArrayList<>(), "SP",
+				paging);
 	}
 
 	@DisplayName("Test: FindAll SoldToAccounts")
@@ -96,7 +96,7 @@ public class TherapyServiceImplTest {
 			.when(therapyRepository.findAllSoldToAccounts(anyLong(), anyString(), anyString(), any(Pageable.class),
 					anyString(), anyString(), anyString()))
 			.thenReturn(getAccounts());
-		therapyService.findAllSoldToAccounts(userId, therapyId, query, paging, "80", "");
+		therapyService.findAllSoldToAccounts(userId, therapyId, query, paging, ChannelType.BUY_AND_BILL, "");
 		verify(therapyRepository, times(1)).findAllSoldToAccounts(userId, therapyId, query, paging, "80", "", "SP");
 	}
 
@@ -110,7 +110,7 @@ public class TherapyServiceImplTest {
 			.when(therapyRepository.findAllShipToAccounts(anyString(), anyString(), anyString(), any(Pageable.class),
 					anyString()))
 			.thenReturn(getAccounts());
-		therapyService.findAllShipToAccounts(soldToAccount, therapyId, paging, "");
+		therapyService.findAllShipToAccounts(soldToAccount, therapyId, paging, "", ChannelType.BUY_AND_BILL);
 		verify(therapyRepository, times(1)).findAllShipToAccounts(soldToAccount, therapyId, "", paging, "SH");
 	}
 
@@ -146,12 +146,14 @@ public class TherapyServiceImplTest {
 		Long userId = 502L;
 		ProgramChannelProjectionDTO programsandChannels = Mockito.mock(ProgramChannelProjectionDTO.class);
 
-		Mockito.when(therapyRepository.findAllProgramAndChannels(anyLong(), anyString(), anyString()))
+		Mockito
+			.when(therapyRepository.findAllPrograms(anyLong(), anyString(), anyString(),
+					ChannelType.BUY_AND_BILL.name()))
 			.thenReturn(List.of(programsandChannels));
-		therapyRepository.findAllProgramAndChannels(userId, therapyId,
-				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
-		verify(therapyRepository, times(1)).findAllProgramAndChannels(userId, therapyId,
-				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
+		therapyRepository.findAllPrograms(userId, therapyId, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(),
+				ChannelType.BUY_AND_BILL.name());
+		verify(therapyRepository, times(1)).findAllPrograms(userId, therapyId,
+				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), ChannelType.BUY_AND_BILL.name());
 	}
 
 	private Page<AccountsResponseDTO> getAccounts() {
@@ -198,7 +200,8 @@ public class TherapyServiceImplTest {
 			.when(catalogPriceRepository.findAllCatalogPricesLinkedToShipToAccountsForTherapy(anyString(), anyString(),
 					anyString(), any(Pageable.class)))
 			.thenReturn(getAllVariantsLinkedToShipToAccounts());
-		therapyService.findAllVariantsLinkedToShipToAccountsForTherapy(soldToAccount, shipToAccount, therapyId, paging);
+		therapyService.findAllVariantsLinkedToShipToAccountsForTherapy(soldToAccount, shipToAccount, therapyId, paging,
+				ChannelType.BUY_AND_BILL);
 		verify(catalogPriceRepository, times(1)).findAllCatalogPricesLinkedToShipToAccountsForTherapy(soldToAccount,
 				shipToAccount, therapyId, paging);
 	}

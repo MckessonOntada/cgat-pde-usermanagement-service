@@ -19,22 +19,19 @@ public interface TherapyService {
 			List<String> customerIdentifier);
 
 	Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, String therapyId, String query, Pageable paging,
-			String channel, String program);
-
-	Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, String therapyId, String query, Pageable paging,
-			List<String> channel, String program);
+			ChannelType channel, String program);
 
 	Page<AccountsResponseDTO> findAllShipToAccounts(String soldToAccountId, String therapyId, Pageable paging,
 			String query, ChannelType channelType);
 
 	Therapy findById(Long id) throws ResourceNotFoundException;
 
-	ProgramChannelResponseDTO findAllProgramAndChannels(Long userId, String therapyId);
+	ProgramChannelResponseDTO findAllProgramAndChannels(Long userId, String therapyId, ChannelType channelType);
 
 	Page<AccountsResponseDTO> findAllCustomerIdentifiers(Long userId, String query, Pageable paging);
 
-	Page<CatalogPriceResponseDto> findAllVariantsLinkedToShipToAccountsForTherapy(String soldToAccountId,
-			String shipToAccountId, String therapyId, Pageable paging);
+	Page<VariantsResponseDTO> findAllVariantsLinkedToShipToAccountsForTherapy(String soldToAccountId,
+			String shipToAccountId, String therapyId, Pageable paging, ChannelType channelType);
 
 	CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForTherapy(String soldToAccountId,
 			String shipToAccountId, String variantType, String therapyId);

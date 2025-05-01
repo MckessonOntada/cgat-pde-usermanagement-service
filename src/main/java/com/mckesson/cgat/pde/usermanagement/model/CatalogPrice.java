@@ -112,22 +112,22 @@ public class CatalogPrice extends Auditable {
 	@Column(name = "tenant_id")
 	public Integer tenantId;
 
-	@Size(max = 10)
+	@Size(max = 20)
 	@NotBlank
 	@Column(name = "sold_to_customer")
 	private String soldToCustomer;
 
-	@Size(max = 35)
+	@Size(max = 100)
 	@NotBlank
 	@Column(name = "sold_to_customer_name")
 	private String soldToCustomerName;
 
-	@Size(max = 10)
+	@Size(max = 20)
 	@NotBlank
 	@Column(name = "ship_to_customer")
 	private String shipToCustomer;
 
-	@Size(max = 35)
+	@Size(max = 100)
 	@NotBlank
 	@Column(name = "ship_to_customer_name")
 	private String shipToCustomerName;
@@ -155,7 +155,7 @@ public class CatalogPrice extends Auditable {
 	@Column(name = "division")
 	private String division;
 
-	@Size(max = 18)
+	@Size(max = 50)
 	@NotBlank
 	@Column(name = "sap_material")
 	private String sapMaterial;
@@ -181,7 +181,7 @@ public class CatalogPrice extends Auditable {
 	@Column(name = "udi")
 	private String udi;
 
-	@Size(max = 40)
+	@Size(max = 100)
 	@NotBlank
 	@Column(name = "material_description_in_language_en")
 	private String materialDescriptionInLanguageEn;
