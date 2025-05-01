@@ -2,10 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import java.util.List;
 
-import com.mckesson.cgat.pde.usermanagement.dto.CSVProcessingResult;
-import com.mckesson.cgat.pde.usermanagement.dto.CatalogDetailsResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.CatalogConfigurationDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.CatalogRequestDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.*;
 import com.mckesson.cgat.pde.usermanagement.model.*;
 import com.mckesson.cgat.pde.usermanagement.service.CatalogService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -117,17 +114,16 @@ public class GlobalCatalogController {
 	@RequirePermissions({ Permission.MANAGE_SP_CATALOG })
 	@DeleteMapping("/specialityPharma/deLink")
 	@Operation(summary = "Delink SP catalog configuration according to sap_material and sold_to_customer")
-	public ResponseEntity<Void> deLinkSPCatalog(@RequestBody List<CatalogRequestDTO> catalogList) {
+	public ResponseEntity<Void> deLinkSPCatalog(@RequestBody List<CatalogDeLinkRequestDTO> catalogList) {
 		therapyService.deLinkSPCatalog(catalogList);
 		return ResponseEntity.ok().build();
 	}
 
 	@RequirePermissions({ Permission.MANAGE_SP_CATALOG })
-	@PostMapping("/specialityPharma/link")
-	@Operation(summary = "Link SP catalog configuration according to sap_material and sold_to_customer")
-	public ResponseEntity<Void> linkSPCatalog(@RequestBody List<CatalogRequestDTO> catalogList) {
-		catalogService.linkSPCatalog(catalogList);
-		return ResponseEntity.ok().build();
+	@PostMapping("/specialityPharma")
+	@Operation(summary = "Link SP catalog configuration according to SP Product ID and SP Account number")
+	public ResponseEntity<CatalogLinkResponseDto> linkSPCatalog(@RequestBody List<CatalogRequestDTO> catalogList) {
+		return ResponseEntity.ok(catalogService.linkSPCatalog(catalogList));
 	}
 
 	@PostMapping(value = "/upload", consumes = { "multipart/form-data" })

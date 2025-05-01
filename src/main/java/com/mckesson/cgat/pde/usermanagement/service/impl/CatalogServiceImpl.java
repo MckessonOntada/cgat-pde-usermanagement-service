@@ -195,22 +195,23 @@ public class CatalogServiceImpl implements CatalogService {
 	}
 
 	@Override
-	public void linkSPCatalog(List<CatalogRequestDTO> catalogList) {
+	@Transactional
+	public CatalogLinkResponseDto linkSPCatalog(List<CatalogRequestDTO> catalogList) {
 		List<CatalogPrice> catalogsToUpdate = new ArrayList<>();
-		Set<String> sapMaterials = new HashSet<>();
-		Set<String> soldToCustomers = new HashSet<>();
+		Set<String> spProductIds = new HashSet<>();
+		Set<String> spAccountNumbers = new HashSet<>();
 
 		for (CatalogRequestDTO dto : catalogList) {
-			sapMaterials.add(dto.getSapMaterial());
-			soldToCustomers.add(dto.getSoldToCustomer());
+			spProductIds.add(dto.getSpProductId());
+			spAccountNumbers.add(dto.getSpAccountNumber());
 		}
 
-		Map<String, Account> accountMap = getAccountMap(soldToCustomers);
-		Map<String, Therapy> materialMap = getTherapyMap(sapMaterials);
+		Map<String, Account> accountMap = getAccountMap(spAccountNumbers);
+		Map<String, Therapy> materialMap = getTherapyMap(spProductIds);
 
 		List<CatalogPrice> existingCatalogs = catalogList.stream()
-			.map(dto -> catalogPriceRepository.findBySapMaterialAndSoldToCustomerAndChannelType(dto.getSapMaterial(),
-					dto.getSoldToCustomer(), ChannelType.SPECIALITY_PHARMA))
+			.map(dto -> catalogPriceRepository.findBySapMaterialAndSoldToCustomerAndChannelType(dto.getSpProductId(),
+					dto.getSpAccountNumber(), ChannelType.SPECIALITY_PHARMA))
 			.flatMap(Optional::stream)
 			.toList();
 
@@ -221,13 +222,14 @@ public class CatalogServiceImpl implements CatalogService {
 			updateCatalogsToUploadList(dto, catalogsToUpdate, accountMap, materialMap, existingCatalogMap);
 		}
 		catalogPriceRepository.saveAll(catalogsToUpdate);
+		return new CatalogLinkResponseDto(catalogsToUpdate.size());
 	}
 
 	private void updateCatalogsToUploadList(CatalogRequestDTO dto, List<CatalogPrice> catalogToUpdate,
 			Map<String, Account> accountMap, Map<String, Therapy> materialMap,
 			Map<Pair<String, String>, CatalogPrice> existingCatalogMap) {
-		String accountNumber = dto.getSoldToCustomer();
-		String productId = dto.getSapMaterial();
+		String accountNumber = dto.getSpAccountNumber();
+		String productId = dto.getSpProductId();
 
 		Account account = accountMap.get(accountNumber);
 		Therapy therapy = materialMap.get(productId);

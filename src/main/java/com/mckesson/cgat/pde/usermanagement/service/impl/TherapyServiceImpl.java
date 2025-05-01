@@ -372,7 +372,7 @@ public class TherapyServiceImpl implements TherapyService {
 
 	@Override
 	@Transactional
-	public void deLinkSPCatalog(List<CatalogRequestDTO> catalogList) {
+	public void deLinkSPCatalog(List<CatalogDeLinkRequestDTO> catalogList) {
 		List<CatalogPrice> deletedCatalog = catalogList.stream()
 			.map(dto -> catalogPriceRepository.findBySapMaterialAndSoldToCustomerAndChannelType(dto.getSapMaterial(),
 					dto.getSoldToCustomer(), ChannelType.SPECIALITY_PHARMA))

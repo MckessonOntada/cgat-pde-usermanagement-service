@@ -5,8 +5,8 @@ import lombok.Getter;
 @Getter
 public class CatalogRequestDTO {
 
-	private String sapMaterial;
+	private String spProductId;
 
-	private String soldToCustomer;
+	private String spAccountNumber;
 
 }
