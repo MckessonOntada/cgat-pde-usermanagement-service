@@ -4,6 +4,6 @@ public interface ProgramChannelProjectionDTO {
 
 	String getProgram();
 
-	String getChannel();
+	boolean isCrosswalked();
 
 }
