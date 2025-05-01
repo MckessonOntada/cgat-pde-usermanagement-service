@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
+import com.mckesson.cgat.pde.usermanagement.dto.ProviderAccountsDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.ProviderDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CsvFileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
@@ -385,19 +386,22 @@ public class ProviderServiceImpl implements ProviderService {
 
 	@Transactional
 	@Override
-	public void linkProviderToAccounts(Long providerId, List<Long> accountIds) throws ResourceNotFoundException {
+	public void linkProvidersToAccounts(ProviderAccountsDTO providersAccounts) throws ResourceNotFoundException {
 		try {
-			log.info(" Inside method - linkProviderToAccounts, providerId: {}, accountIds: {} ", providerId,
-					accountIds);
-			Provider provider = providerRepository.findById(providerId)
-				.orElseThrow(() -> new ResourceNotFoundException("Provider not found with ID: " + providerId));
-			List<Account> accounts = accountRepository.findAllById(accountIds);
+			log.info(" Inside method - linkProvidersToAccounts, providerId: {}, accountIds: {} ",
+					providersAccounts.getProviderIds(), providersAccounts.getAccountIds());
 
-			if (accounts.size() != accountIds.size()) {
+			List<Provider> provider = providerRepository.findAllById(providersAccounts.getProviderIds());
+			if (provider.size() != providersAccounts.getProviderIds().size()) {
+				throw new ResourceNotFoundException("Some of the provider IDs do not exist.");
+			}
+
+			List<Account> accounts = accountRepository.findAllById(providersAccounts.getAccountIds());
+			if (accounts.size() != providersAccounts.getAccountIds().size()) {
 				throw new ResourceNotFoundException("Some of the account IDs do not exist.");
 			}
 
-			accounts.stream().map(a -> a.getProviders().add(provider)).collect(Collectors.toList());
+			accounts.stream().map(a -> a.getProviders().addAll(provider)).collect(Collectors.toList());
 			accountRepository.saveAll(accounts);
 		}
 		catch (Exception e) {

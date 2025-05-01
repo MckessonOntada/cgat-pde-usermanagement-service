@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
+import com.mckesson.cgat.pde.usermanagement.dto.ProviderAccountsDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.ProviderDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CsvFileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
@@ -13,6 +14,7 @@ import com.mckesson.cgat.pde.usermanagement.service.ProviderService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
@@ -131,13 +133,11 @@ public class ProviderController {
 	}
 
 	@RequirePermissions({ Permission.ADD_PROVIDER, Permission.EDIT_PROVIDER })
-	@PatchMapping("/{providerId}/accounts")
-	@Operation(summary = "Link Provider with multiple sp accounts.")
-	public ResponseEntity<Void> linkProviderToAccounts(
-			@PathVariable @NotNull(message = "Provider Id cannot be null") Long providerId,
-			@NotEmpty(message = "Account Ids cannot be empty") @RequestBody List<Long> accountIds)
+	@PatchMapping("/providers-accounts")
+	@Operation(summary = "Link multiple provider with multiple sp account.")
+	public ResponseEntity<Void> linkProviderToAccounts(@Valid @RequestBody ProviderAccountsDTO providersAccounts)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
-		providerService.linkProviderToAccounts(providerId, accountIds);
+		providerService.linkProvidersToAccounts(providersAccounts);
 		return ResponseEntity.ok().build();
 	}
 
