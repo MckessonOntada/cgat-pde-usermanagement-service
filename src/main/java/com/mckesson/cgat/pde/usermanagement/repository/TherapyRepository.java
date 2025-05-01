@@ -97,6 +97,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					AND
 						cp.deleted = false
 				    AND ac.channel_type=:channel
+				    AND m.channel_type=:channel
 					)
 					GROUP BY ac.id, ac.sap_customer, ac.name_1, ac.house_number, ac.street, ac.street_2,
 						 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code,
@@ -111,7 +112,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 	@Query(value = """
 			SELECT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2 as street2,
 						 ac.street_3 as street3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code, false as isDefault,
-						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier
+						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier, ac.channel_type
 				FROM catalog.crosswalk cw
 				JOIN catalog.material m on m.material_number = cw.bnb_material_number
 				JOIN catalog.catalog_price cp ON cp.sap_material = cw.sp_product_id
