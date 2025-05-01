@@ -90,8 +90,11 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 
 							SELECT COUNT(*) FROM (
 					         WITH COMBINED AS (
-					             SELECT m.id, m.material_number as material_number, m.material_description as material_description,
-					                    m.ndc_number as ndc
+							SELECT  m.id, m.material_number as material_number, m.material_description as material_description,
+								m.ndc_number as ndc, cp.udi, m.strength, m.dosage, m.selling_unit_code,
+								m.vendor_name, m.upc_code, m.item_category_group, m.item_status as status,
+								m.base_unit_of_measure, m.cgat_therapy_type, m.sales_organization, m.product_level_pricing,
+								cp.minimum_order_quantity, cp.dist_channel as dist_channel, m.channel_Type as channelType
 					         FROM catalog.material m
 					         JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material AND m.channel_type = cp.channel_type
 					         JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
@@ -109,8 +112,11 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 
 					         UNION distinct
 
-					          SELECT m.id, m.material_number as material_number, m.material_description as material_description,
-					                    m.ndc_number as ndc
+							SELECT  m.id, m.material_number as material_number, m.material_description as material_description,
+								m.ndc_number as ndc, cp.udi, m.strength, m.dosage, m.selling_unit_code,
+								m.vendor_name, m.upc_code, m.item_category_group, m.item_status as status,
+								m.base_unit_of_measure, m.cgat_therapy_type, m.sales_organization, m.product_level_pricing,
+								cp.minimum_order_quantity, cp.dist_channel as dist_channel, m.channel_Type as channelType
 					         FROM catalog.material m
 					         JOIN catalog.crosswalk cw ON cw.bnb_material_number = m.material_number
 					         JOIN catalog.catalog_price cp ON cp.sap_material = cw.sp_product_id
