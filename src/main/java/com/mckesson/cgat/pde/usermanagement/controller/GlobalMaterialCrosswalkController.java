@@ -85,7 +85,6 @@ public class GlobalMaterialCrosswalkController {
 	@RequirePermissions({ Permission.ADD_CROSSWALK })
 	@PostMapping(consumes = "application/json")
 	@Operation(summary = "Create Crosswalk")
-	public ResponseEntity<String> createCrosswalks(@Valid @RequestBody CrosswalkRequestDTO crosswalk)
 			throws UnauthorizedAccessException, ResourceNotFoundException {
 
 		materialCrossWalkService.createCrosswalks(crosswalk);

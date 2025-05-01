@@ -383,62 +383,85 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 
 	@Override
 	@Transactional
-	public void createCrosswalks(CrosswalkRequestDTO request) throws ResourceNotFoundException {
+	public int createCrosswalks(CrosswalkRequestDTO request) throws ResourceNotFoundException {
 		String bnbId = request.getBnbMaterialNumber();
 		List<String> spIds = request.getSpProductIds();
 
 		// Validate BNB therapy
-		Therapy bnbTherapy = therapyRepository.findByMaterialNumber(bnbId);
-		if (bnbTherapy == null || !ChannelType.BUY_AND_BILL.equals(bnbTherapy.getChannelType())) {
-			throw new ResourceNotFoundException("Invalid BNB material number: " + bnbId);
-		}
+		Therapy bnbTherapy = validateBnbTherapy(bnbId);
 
 		// Fetch and validate SP therapies
-		List<Therapy> spTherapies = therapyRepository.findAllByMaterialNumberIn(spIds);
-		Map<String, Therapy> spTherapyMap = spTherapies.stream()
-			.filter(t -> ChannelType.SPECIALITY_PHARMA.equals(t.getChannelType()))
-			.collect(Collectors.toMap(Therapy::getMaterialNumber, t -> t));
+		Map<String, Therapy> spTherapyMap = validateSpTherapies(spIds);
 
-		Set<String> validSpIds = spTherapyMap.keySet();
+		// All inputs valid, create crosswalks
+		List<Crosswalk> newCrosswalks = spTherapyMap.values()
+			.stream()
+			.map(spTherapy -> Crosswalk.builder()
+				.bnbMaterialNumber(bnbId)
+				.spProductId(spTherapy.getMaterialNumber())
+				.build())
+			.toList();
 
-		// Identify invalid SP IDs
-		List<String> invalidSpIds = spIds.stream().filter(spId -> !validSpIds.contains(spId)).toList();
+		materialCrossWalkConfigRepository.saveAll(newCrosswalks);
+
+		// Set SP therapies as crosswalked
+		List<Therapy> therapiesToUpdate = new ArrayList<>();
+		int crosswalkedSpCount = 0; // Keep track of crosswalked SP count
+		for (Therapy spTherapy : spTherapyMap.values()) {
+			spTherapy.setIsCrosswalked(true);
+			therapiesToUpdate.add(spTherapy);
+			crosswalkedSpCount++; // Increment count
+		}
+		// Set BNB therapy as crosswalked
+		bnbTherapy.setIsCrosswalked(true);
+		therapiesToUpdate.add(bnbTherapy);
+		therapyRepository.saveAll(therapiesToUpdate);
+
+		log.info("Crosswalked {} SP Product IDs for BNB Material Number: {}", crosswalkedSpCount, bnbId);
+		return crosswalkedSpCount;
+
+	}
+
+	private Therapy validateBnbTherapy(String bnbId) throws ResourceNotFoundException {
+		Optional<Therapy> bnbTherapy = therapyRepository.findByMaterialNumberAndChannelType(bnbId,
+				ChannelType.BUY_AND_BILL);
+		if (bnbTherapy.isEmpty()) {
+			throw new ResourceNotFoundException("Invalid BNB material number or channel type: " + bnbId);
+		}
+		return bnbTherapy.get();
+	}
+
+	private Map<String, Therapy> validateSpTherapies(List<String> spIds) throws ResourceNotFoundException {
+		Map<String, Therapy> validSpTherapyMap = new HashMap<>();
+		List<String> invalidSpIds = new ArrayList<>();
+		List<String> alreadyCrosswalkedSpIds = new ArrayList<>();
+
+		for (String spId : spIds) {
+			Optional<Therapy> therapy = therapyRepository.findByMaterialNumberAndChannelType(spId,
+					ChannelType.SPECIALITY_PHARMA);
+			if (therapy.isPresent()) {
+				Therapy spTherapy = therapy.get();
+				if (Boolean.TRUE.equals(spTherapy.getIsCrosswalked())) {
+					alreadyCrosswalkedSpIds.add(spId);
+				}
+				else {
+					validSpTherapyMap.put(spId, spTherapy);
+				}
+			}
+			else {
+				invalidSpIds.add(spId);
+			}
+		}
 
 		if (!invalidSpIds.isEmpty()) {
 			throw new ResourceNotFoundException("Invalid SP Product IDs: " + String.join(", ", invalidSpIds));
 		}
 
-		// Check if any SP is already crosswalked
-		List<String> alreadyCrosswalkedSpIds = spTherapyMap.values()
-			.stream()
-			.filter(t -> Boolean.TRUE.equals(t.getIsCrosswalked()))
-			.map(Therapy::getMaterialNumber)
-			.toList();
-
 		if (!alreadyCrosswalkedSpIds.isEmpty()) {
 			throw new IllegalArgumentException(
 					"These SP Product IDs are already crosswalked: " + String.join(", ", alreadyCrosswalkedSpIds));
 		}
-
-		// All inputs valid, create crosswalks
-		List<Crosswalk> newCrosswalks = validSpIds.stream()
-			.map(spId -> Crosswalk.builder().bnbMaterialNumber(bnbId).spProductId(spId).build())
-			.toList();
-
-		List<Crosswalk> savedCrosswalks = materialCrossWalkConfigRepository.saveAll(newCrosswalks);
-
-		// Set SP therapies as crosswalked
-		List<Therapy> therapiesToUpdate = new ArrayList<>();
-		for (Therapy spTherapy : spTherapyMap.values()) {
-			spTherapy.setIsCrosswalked(true);
-			therapiesToUpdate.add(spTherapy);
-		}
-		// Set BNB therapyas crosswalked
-		bnbTherapy.setIsCrosswalked(true);
-		therapiesToUpdate.add(bnbTherapy);
-
-		therapyRepository.saveAll(therapiesToUpdate);
-
+		return validSpTherapyMap;
 	}
 
 	public Page<CrosswalkResponseDTO> findAll(Pageable paging, String query, List<String> status) {

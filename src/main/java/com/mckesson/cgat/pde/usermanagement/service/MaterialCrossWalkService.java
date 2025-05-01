@@ -17,7 +17,7 @@ public interface MaterialCrossWalkService {
 
 	Boolean uploadCrossWalks(MultipartFile crossWalkData, ByteArrayOutputStream outputStream);
 
-	void createCrosswalks(CrosswalkRequestDTO crosswalk) throws ResourceNotFoundException;
+	int createCrosswalks(CrosswalkRequestDTO crosswalk) throws ResourceNotFoundException;
 
 	Page<CrosswalkResponseDTO> findAll(Pageable paging, String query, List<String> status);
 
