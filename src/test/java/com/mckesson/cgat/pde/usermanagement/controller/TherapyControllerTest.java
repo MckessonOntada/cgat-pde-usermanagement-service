@@ -164,6 +164,12 @@ public class TherapyControllerTest {
 			public String getItemCategoryGroup() {
 				return "";
 			}
+
+			@Override
+			public String getChannelType() {
+				return "";
+			}
+
 		};
 
 		when(therapyService.findAllTherapies(anyLong(), anyString(), anyList(), any(Pageable.class), anyList()))

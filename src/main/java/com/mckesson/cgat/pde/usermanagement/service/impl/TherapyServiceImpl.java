@@ -69,8 +69,9 @@ public class TherapyServiceImpl implements TherapyService {
 
 	public Page<TherapyCatalogResponseDTO> findAllTherapies(Long userId, String query, List<String> salesOrg,
 			Pageable paging, List<String> customerIdentifier) {
-		return therapyRepository.findAllTherapies(userId, StringUtils.toRootLowerCase(query), salesOrg, paging,
-				customerIdentifier, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
+		return therapyRepository.findAllTherapies(userId, StringUtils.toRootLowerCase(query), salesOrg,
+				customerIdentifier, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), paging);
+
 	}
 
 	public Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, String therapyId, String query, Pageable paging,

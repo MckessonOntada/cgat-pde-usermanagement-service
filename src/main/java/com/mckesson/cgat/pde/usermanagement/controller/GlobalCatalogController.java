@@ -2,10 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import java.util.List;
 
-import com.mckesson.cgat.pde.usermanagement.dto.CatalogDeLinkRequestDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.CSVProcessingResult;
-import com.mckesson.cgat.pde.usermanagement.dto.CatalogDetailsResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.CatalogConfigurationDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.*;
 import com.mckesson.cgat.pde.usermanagement.model.*;
 import com.mckesson.cgat.pde.usermanagement.service.CatalogService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -31,6 +28,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.SORT_ORDER_ASC;
 
@@ -122,6 +120,13 @@ public class GlobalCatalogController {
 		return ResponseEntity.ok().build();
 	}
 
+	@RequirePermissions({ Permission.MANAGE_SP_CATALOG })
+	@PostMapping("/specialityPharma")
+	@Operation(summary = "Link SP catalog configuration according to SP Product ID and SP Account number")
+	public ResponseEntity<CatalogLinkResponseDto> linkSPCatalog(@RequestBody List<CatalogRequestDTO> catalogList) {
+		return ResponseEntity.ok(catalogService.linkSPCatalog(catalogList));
+	}
+
 	@PostMapping(value = "/upload", consumes = { "multipart/form-data" })
 	@RequirePermissions({ Permission.MANAGE_SP_CATALOG })
 	@Operation(summary = "Upload bulk SP catalogs")
@@ -136,6 +141,22 @@ public class GlobalCatalogController {
 				.body(resource);
 		}
 		return ResponseEntity.ok("File processed successfully, No errors were found.");
+	}
+
+	@GetMapping("/download")
+	@Operation(summary = "Download all sp catalogs for provided sp accounts as a CSV file.")
+	public ResponseEntity<StreamingResponseBody> downloadAllCatalogs(
+			@NotEmpty(message = "Account Numbers cannot be empty") @RequestParam List<String> accountIds,
+			@RequestParam(defaultValue = "sap_material") String sortBy,
+			@RequestParam(defaultValue = "desc") String sortOrder, @RequestParam(required = false) String query) {
+		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
+				: Sort.by(sortBy).descending();
+		Pageable paging = PageRequest.of(0, Integer.MAX_VALUE, sort);
+		StreamingResponseBody stream = catalogService.downloadAllGlobalCatalogs(accountIds, paging, query);
+		return ResponseEntity.ok()
+			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=sp_catalogs.csv")
+			.contentType(MediaType.parseMediaType("text/csv"))
+			.body(stream);
 	}
 
 }

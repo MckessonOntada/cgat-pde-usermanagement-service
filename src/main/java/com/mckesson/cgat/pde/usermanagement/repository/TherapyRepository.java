@@ -24,49 +24,127 @@ import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 
 	@Query(value = """
-				SELECT m.id, m.material_number as therapyId, m.material_description as therapyDescription, m.ndc_number as ndc, cp.udi, m.strength, m.dosage, m.selling_unit_code,
-				m.vendor_name, m.upc_code, m.item_category_group, m.item_status as status, m.base_unit_of_measure, m.cgat_therapy_type, m.sales_organization,
-				 m.product_level_pricing, cp.minimum_order_quantity
-				FROM catalog.material m
-				JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
-				JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
-				JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
-				WHERE
-				(
-					(
-						:query is null
-						or LOWER(m.ndc_number) like %:query%
-						or LOWER(cp.dist_channel) like %:query%
-						or LOWER(cp.sap_material) like %:query%
-						or LOWER(m.material_description) like %:query%
+			         WITH COMBINED AS  (
+			             SELECT m.id, m.material_number as material_number, m.material_description as material_description,
+			                    m.ndc_number as ndc, cp.udi, m.strength, m.dosage, m.selling_unit_code,
+			                    m.vendor_name, m.upc_code, m.item_category_group, m.item_status as status,
+			                    m.base_unit_of_measure, m.cgat_therapy_type, m.sales_organization, m.product_level_pricing,
+			                    cp.minimum_order_quantity, cp.dist_channel as dist_channel, m.channel_Type as channelType
+			             FROM catalog.material m
+			             JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material AND m.channel_type = cp.channel_type
+			             JOIN usermanagement.account ac  ON ac.sap_customer = cp.sold_to_customer
+			             JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
+			             WHERE
+			                 NOT (m.channel_type = 'SPECIALITY_PHARMA' AND m.is_crosswalked = true)
+			                 AND uam.user_id = :userId
+			                 AND ac.partner_function = :partnerFunction
+			                 AND (COALESCE(:salesOrg) IS NULL OR cp.sales_org IN (:salesOrg))
+			                 AND (COALESCE(:customerIdentifier) IS NULL OR cp.sold_to_customer IN (:customerIdentifier))
+			                 AND cp.deleted = false
+							 AND
+								m.item_status = 'A'
+			             	AND ac.is_active = 1
+			             union distinct
+
+			             select  m.id, m.material_number as material_number, m.material_description as material_description,
+			                    m.ndc_number as ndc, cp.udi, m.strength, m.dosage, m.selling_unit_code,
+			                    m.vendor_name, m.upc_code, m.item_category_group, m.item_status as status,
+			                    m.base_unit_of_measure, m.cgat_therapy_type, m.sales_organization, m.product_level_pricing,
+			                    cp.minimum_order_quantity, cp.dist_channel as dist_channel, m.channel_Type as channelType
+			             FROM catalog.material m
+			             JOIN catalog.crosswalk cw
+			                 ON cw.bnb_material_number = m.material_number
+			             JOIN catalog.catalog_price cp
+			                 ON cp.sap_material = cw.sp_product_id
+			             JOIN usermanagement.account ac
+			                 ON ac.sap_customer = cp.sold_to_customer
+			             JOIN usermanagement.user_account_mapping uam
+			                 ON ac.id = uam.account_id
+			             WHERE
+			                 uam.user_id = :userId
+			                 AND ac.partner_function = :partnerFunction
+			                 AND cp.deleted = false
+			                 AND
+								m.item_status = 'A'
+							AND
+								cw.is_active = 1
+							AND ac.is_active = 1
+			         )
+			         SELECT com.id, com.material_number as therapyId, com.material_description as therapyDescription,
+							com.ndc, com.udi, com.strength, com.dosage, com.selling_unit_code,
+							com.vendor_name, com.upc_code, com.item_category_group, com.status,
+							com.base_unit_of_measure, com.cgat_therapy_type, com.sales_organization, com.product_level_pricing,
+							com.minimum_order_quantity, com.dist_channel, com.channelType
+			         from COMBINED com
+			 where (
+				cast(:query as varchar) is null
+			    OR LOWER(com.material_number) LIKE %:query%
+			    OR LOWER(com.ndc) LIKE %:query%
+			    OR LOWER(com.material_description) LIKE %:query%
+			)
+			         GROUP BY com.id, com.material_number,com.material_description,com.ndc,com.udi, com.strength, com.dosage, com.selling_unit_code,
+				com.vendor_name, com.upc_code, com.item_category_group, com.base_unit_of_measure, com.cgat_therapy_type, com.sales_organization,
+				 com.product_level_pricing, com.minimum_order_quantity, com.dist_channel, com.status, com.channelType
+			         """,
+			countQuery = """
+
+							SELECT COUNT(*) FROM (
+					         WITH COMBINED AS (
+							SELECT  m.id, m.material_number as material_number, m.material_description as material_description,
+								m.ndc_number as ndc, cp.udi, m.strength, m.dosage, m.selling_unit_code,
+								m.vendor_name, m.upc_code, m.item_category_group, m.item_status as status,
+								m.base_unit_of_measure, m.cgat_therapy_type, m.sales_organization, m.product_level_pricing,
+								cp.minimum_order_quantity, cp.dist_channel as dist_channel, m.channel_Type as channelType
+					         FROM catalog.material m
+					         JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material AND m.channel_type = cp.channel_type
+					         JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
+					         JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
+					         WHERE
+					             NOT (m.channel_type = 'SPECIALITY_PHARMA' AND m.is_crosswalked = true)
+					             AND uam.user_id = :userId
+					             AND ac.partner_function = :partnerFunction
+					           AND (COALESCE(:salesOrg) IS NULL OR cp.sales_org IN (:salesOrg))
+					 		AND (COALESCE(:customerIdentifier) IS NULL OR cp.sold_to_customer IN (:customerIdentifier))
+					             AND cp.deleted = false
+					        AND
+								m.item_status = 'A'
+						 	AND ac.is_active = 1
+
+					         UNION distinct
+
+							SELECT  m.id, m.material_number as material_number, m.material_description as material_description,
+								m.ndc_number as ndc, cp.udi, m.strength, m.dosage, m.selling_unit_code,
+								m.vendor_name, m.upc_code, m.item_category_group, m.item_status as status,
+								m.base_unit_of_measure, m.cgat_therapy_type, m.sales_organization, m.product_level_pricing,
+								cp.minimum_order_quantity, cp.dist_channel as dist_channel, m.channel_Type as channelType
+					         FROM catalog.material m
+					         JOIN catalog.crosswalk cw ON cw.bnb_material_number = m.material_number
+					         JOIN catalog.catalog_price cp ON cp.sap_material = cw.sp_product_id
+					         JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
+					         JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
+					         WHERE
+					             uam.user_id = :userId
+					             AND ac.partner_function = :partnerFunction
+					             AND cp.deleted = false
+								 AND
+									m.item_status = 'A'
+								AND
+									cw.is_active = 1
+					         	AND ac.is_active = 1
+					     )
+					         SELECT * FROM COMBINED com
+					         where (
+						cast(:query as varchar) is null
+					    OR LOWER(com.material_number) LIKE %:query%
+					    OR LOWER(com.ndc) LIKE %:query%
+					    OR LOWER(com.material_description) LIKE %:query%
 					)
-					AND
-						uam.user_id = :userId
-					AND
-						ac.partner_function = :partnerFunction
-					AND
-						(
-						COALESCE(:salesOrg) is null
-						or
-						cp.sales_org IN (:salesOrg)
-						)
-					AND
-						(
-						COALESCE(:customerIdentifier) is null
-						or
-						cp.sold_to_customer IN (:customerIdentifier)
-						)
-					AND cp.deleted = false
-				)
-				GROUP BY m.id, m.material_number, m.material_description, m.ndc_number, cp.udi, m.strength, m.dosage, m.selling_unit_code,
-				m.vendor_name, m.upc_code, m.item_category_group, m.base_unit_of_measure, m.cgat_therapy_type, m.sales_organization,
-				 m.product_level_pricing, cp.minimum_order_quantity
-			""",
+					     ) AS total_count
+					 """,
 			nativeQuery = true)
-	public Page<TherapyCatalogResponseDTO> findAllTherapies(@Param("userId") Long userId, @Param("query") String query,
-			@Param("salesOrg") List<String> salesOrg, Pageable paging,
-			@Param("customerIdentifier") List<String> customerIdentifier,
-			@Param("partnerFunction") String partnerFunction);
+	Page<TherapyCatalogResponseDTO> findAllTherapies(@Param("userId") Long userId, @Param("query") String query,
+			@Param("salesOrg") List<String> salesOrg, @Param("customerIdentifier") List<String> customerIdentifier,
+			@Param("partnerFunction") String partnerFunction, Pageable paging);
 
 	@Query(value = """
 				SELECT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2 as street2,
