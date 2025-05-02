@@ -262,6 +262,7 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 				Crosswalk config = Crosswalk.builder()
 					.bnbMaterialNumber(bnbMaterialNumber)
 					.spProductId(spProductId)
+					.isActive(true)
 					.build();
 
 				Crosswalk existingConfig = spProductIdToConfigMap.get(spProductId);
@@ -399,6 +400,7 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 			.map(spTherapy -> Crosswalk.builder()
 				.bnbMaterialNumber(bnbId)
 				.spProductId(spTherapy.getMaterialNumber())
+				.isActive(true)
 				.build())
 			.toList();
 
