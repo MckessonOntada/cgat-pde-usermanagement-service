@@ -259,10 +259,7 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 				if (!existingSPProductIds.contains(spProductId)) {
 					throw new IllegalArgumentException("Invalid SP Product ID");
 				}
-				Crosswalk config = Crosswalk.builder()
-					.bnbMaterialNumber(bnbMaterialNumber)
-					.spProductId(spProductId)
-					.build();
+				Crosswalk config = new Crosswalk(bnbMaterialNumber, spProductId, true);
 
 				Crosswalk existingConfig = spProductIdToConfigMap.get(spProductId);
 				if (existingConfig != null) {
@@ -396,10 +393,7 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 		// All inputs valid, create crosswalks
 		List<Crosswalk> newCrosswalks = spTherapyMap.values()
 			.stream()
-			.map(spTherapy -> Crosswalk.builder()
-				.bnbMaterialNumber(bnbId)
-				.spProductId(spTherapy.getMaterialNumber())
-				.build())
+			.map(spTherapy -> new Crosswalk(bnbId, spTherapy.getMaterialNumber(), true))
 			.toList();
 
 		materialCrossWalkConfigRepository.saveAll(newCrosswalks);

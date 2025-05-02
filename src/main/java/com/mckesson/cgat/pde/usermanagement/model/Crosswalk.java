@@ -24,7 +24,6 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@Builder
 @Table(name = "crosswalk", schema = "catalog")
 public class Crosswalk extends AuditColumns implements Serializable {
 
@@ -47,5 +46,11 @@ public class Crosswalk extends AuditColumns implements Serializable {
 	@Convert(converter = NumericBooleanConverter.class)
 	@Column(name = "is_active")
 	private Boolean isActive = true;
+
+	public Crosswalk(String bnbMaterialNumber, String spProductId, Boolean isActive) {
+		this.bnbMaterialNumber = bnbMaterialNumber;
+		this.spProductId = spProductId;
+		this.isActive = isActive;
+	}
 
 }
