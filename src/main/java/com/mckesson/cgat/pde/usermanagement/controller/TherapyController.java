@@ -74,11 +74,12 @@ public class TherapyController {
 	public Page<AccountsResponseDTO> findAllSoldToAccountsByTherapy(@PathVariable String therapyId,
 			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(required = false) String query,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String program,
-			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) {
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType,
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType therapyChannelType) {
 
 		Pageable paging = PageRequest.of(pageNo, pageSize);
 		return therapyService.findAllSoldToAccounts(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()),
-				therapyId, query, paging, channelType, program);
+				therapyId, query, paging, channelType, program, therapyChannelType);
 
 	}
 

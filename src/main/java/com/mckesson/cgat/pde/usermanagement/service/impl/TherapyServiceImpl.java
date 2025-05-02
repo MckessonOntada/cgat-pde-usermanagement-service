@@ -75,9 +75,11 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	public Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, String therapyId, String query, Pageable paging,
-			ChannelType channelType, String program) {
+			ChannelType channelType, String program, ChannelType therapyChannelType) {
 
-		if (ChannelType.SPECIALITY_PHARMA.equals(channelType)) {
+		boolean isCrossWalkedTherapySelected = !therapyChannelType.equals(channelType);
+
+		if (ChannelType.SPECIALITY_PHARMA.equals(channelType) && isCrossWalkedTherapySelected) {
 			return therapyRepository.findAllSoldToAccountsForSP(userId, therapyId, StringUtils.toRootLowerCase(query),
 					paging, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 		}
