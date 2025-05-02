@@ -39,7 +39,6 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.util.CollectionUtils;
-import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.*;
 
 @Service
 @Slf4j
@@ -401,6 +400,21 @@ public class TherapyServiceImpl implements TherapyService {
 		else {
 			return new TherapyResponseDTO(therapy, Collections.emptyList(), therapy.getChannelType());
 		}
+	}
+
+	public Page<Therapy> findNonCrosswalkedSPGlobalTherapies(String query, Pageable paging,
+			List<ChannelType> channelTypes, List<String> status, Boolean crosswalked) {
+		try {
+			log.info(" Inside method - findNonCrosswalkedSPGlobalTherapies");
+			log.info("query: {}", StringUtils.toRootLowerCase(query));
+			return therapyRepository.findNonCrosswalkedSPGlobalTherapies(StringUtils.toRootLowerCase(query),
+					getConsolidatedStatus(status), getConsolidatedChannelType(channelTypes), crosswalked, paging);
+		}
+		catch (Exception e) {
+			log.error("Exception occurred in findNonCrosswalkedSPGlobalTherapies and exception details", e);
+			throw e;
+		}
+
 	}
 
 }

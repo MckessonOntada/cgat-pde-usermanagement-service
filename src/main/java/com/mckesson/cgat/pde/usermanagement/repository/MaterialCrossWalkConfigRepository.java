@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -55,8 +56,8 @@ public interface MaterialCrossWalkConfigRepository extends JpaRepository<Crosswa
 			""", nativeQuery = true)
 	Page<CrosswalkResponseDTO> findAllCrosswalks(Pageable paging, String query, @Param("status") String status);
 
-	List<Crosswalk> findBySpProductId(String spProductId);
-
 	List<Crosswalk> findByBnbMaterialNumber(String bnbMaterialNumber);
+
+	List<Crosswalk> findAllBySpProductIdIn(Set<String> validSpIds);
 
 }
