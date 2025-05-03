@@ -31,14 +31,14 @@ public class Address implements Serializable {
 	private String address1;
 
 	@Size(max = 100, message = "Address 2 must be at most 100 characters.", groups = BasicInfo.class)
-	@Pattern(regexp = "^(?! )[A-Za-z0-9,./-]+(?: [A-Za-z0-9,./-]+)*(?<! )$",
+	@Pattern(regexp = "^(|(?!\\s)[0-9A-Za-z., \\/-]*(?<!\\s))$",
 			message = "Address 2 must be alphanumeric and may include space, hyphen, comma, dot, or slash. It must not start or end with a space.",
 			groups = BasicInfo.class)
 	private String address2;
 
-	@NotEmpty(message = "Please enter the City.", groups = BasicInfo.class)
+	@NotEmpty(message = "City is required.", groups = BasicInfo.class)
 	@Size(max = 50, message = "City should not exceed 50 characters.", groups = BasicInfo.class)
-	@Pattern(regexp = "^(?! )[A-Za-zÀ-ÖØ-öø-ÿ]+(?: [A-Za-zÀ-ÖØ-öø-ÿ]+)*(?<! )$",
+	@Pattern(regexp = "^(?! )[A-Za-z ]*(?<! )$",
 			message = "City name can only contain alphabets and spaces and must not start or end with a space.",
 			groups = BasicInfo.class)
 	private String city;
