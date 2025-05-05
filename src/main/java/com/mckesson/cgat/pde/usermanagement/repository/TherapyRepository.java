@@ -79,6 +79,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			    OR LOWER(com.material_number) LIKE %:query%
 			    OR LOWER(com.ndc) LIKE %:query%
 			    OR LOWER(com.material_description) LIKE %:query%
+			    OR LOWER(com.strength) LIKE %:query%
+			    OR LOWER(com.dosage) LIKE %:query%
 			)
 			         GROUP BY com.id, com.material_number,com.material_description,com.ndc,com.udi, com.strength, com.dosage, com.selling_unit_code,
 				com.vendor_name, com.upc_code, com.item_category_group, com.base_unit_of_measure, com.cgat_therapy_type, com.sales_organization,
