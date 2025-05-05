@@ -225,7 +225,8 @@ public class TherapyServiceImpl implements TherapyService {
 					"Therapy not found with materialNumber: " + materialNumber + " and channelType: " + channelType));
 	}
 
-	public ProgramChannelResponseDTO findAllProgramAndChannels(Long userId, String therapyId, ChannelType channelType) {
+	public ProgramChannelResponseDTO findAllProgramAndChannels(Long userId, String therapyId, ChannelType channelType)
+			throws ResourceNotFoundException {
 
 		if (ChannelType.SPECIALITY_PHARMA.equals(channelType)) {
 			return ProgramChannelResponseDTO.builder()
@@ -244,16 +245,24 @@ public class TherapyServiceImpl implements TherapyService {
 			return programChannelProjectionDTO.getProgram();
 		}).filter(Objects::nonNull).collect(Collectors.toSet())) : Collections.emptySet();
 
-		boolean isCrosswalkMaterial = null != allPrograms
-				&& allPrograms.stream().anyMatch(ProgramChannelProjectionDTO::isCrosswalked);
+		boolean isCrosswalkMaterial;
+		Set<String> uniqueChannels = new HashSet<>();
+
+		if (allPrograms != null) {
+			isCrosswalkMaterial = allPrograms.stream().anyMatch(ProgramChannelProjectionDTO::isCrosswalked);
+			uniqueChannels.add(ChannelType.BUY_AND_BILL.name());
+		}
+		else {
+			Therapy therapy = findByMaterialNumber(therapyId, channelType);
+			isCrosswalkMaterial = therapy.getIsCrosswalked();
+		}
+
 		List<String> crossWalkedSPs = new ArrayList<>();
 
 		if (isCrosswalkMaterial) {
 			crossWalkedSPs = fetchCrossWalkedSPsForUserAndTherapyId(userId, therapyId);
 		}
 
-		Set<String> uniqueChannels = new HashSet<>();
-		uniqueChannels.add(ChannelType.BUY_AND_BILL.name());
 		if (!CollectionUtils.isEmpty(crossWalkedSPs)) {
 			uniqueChannels.add(ChannelType.SPECIALITY_PHARMA.name());
 		}
