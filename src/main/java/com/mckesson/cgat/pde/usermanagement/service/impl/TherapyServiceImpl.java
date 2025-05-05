@@ -248,7 +248,7 @@ public class TherapyServiceImpl implements TherapyService {
 		boolean isCrosswalkMaterial;
 		Set<String> uniqueChannels = new HashSet<>();
 
-		if (allPrograms != null) {
+		if (!CollectionUtils.isEmpty(allPrograms)) {
 			isCrosswalkMaterial = allPrograms.stream().anyMatch(ProgramChannelProjectionDTO::isCrosswalked);
 			uniqueChannels.add(ChannelType.BUY_AND_BILL.name());
 		}
