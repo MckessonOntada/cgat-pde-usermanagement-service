@@ -413,4 +413,19 @@ public class TherapyServiceImpl implements TherapyService {
 		}
 	}
 
+	public Page<Therapy> findNonCrosswalkedSPGlobalTherapies(String query, Pageable paging,
+			List<ChannelType> channelTypes, List<String> status, Boolean crosswalked) {
+		try {
+			log.info(" Inside method - findNonCrosswalkedSPGlobalTherapies");
+			log.info("query: {}", StringUtils.toRootLowerCase(query));
+			return therapyRepository.findNonCrosswalkedSPGlobalTherapies(StringUtils.toRootLowerCase(query),
+					getConsolidatedStatus(status), getConsolidatedChannelType(channelTypes), crosswalked, paging);
+		}
+		catch (Exception e) {
+			log.error("Exception occurred in findNonCrosswalkedSPGlobalTherapies and exception details", e);
+			throw e;
+		}
+
+	}
+
 }

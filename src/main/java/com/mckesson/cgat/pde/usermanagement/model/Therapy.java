@@ -133,7 +133,7 @@ public class Therapy implements Serializable {
 	@Column(name = "site_name")
 	private String siteName;
 
-	@Size(max = 20)
+	// @Size(max = 20)
 	@Column(name = "channel_type")
 	@Enumerated(EnumType.STRING)
 	private ChannelType channelType;

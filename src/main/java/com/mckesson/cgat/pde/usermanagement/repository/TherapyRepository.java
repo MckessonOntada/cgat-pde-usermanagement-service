@@ -4,9 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
-import jakarta.validation.constraints.Size;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -388,5 +386,33 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			      AND uam.user_id = :userId
 			""", nativeQuery = true)
 	List<Therapy> findCrosswalkedTherapies(String materialNumber, long userId);
+
+	@Query(value = """
+			                  SELECT m.*
+			                  FROM catalog.material m
+			                  WHERE
+			                  (
+			                      :query IS NULL
+			                      OR LOWER(m.material_number) LIKE %:query%
+			                      OR LOWER(m.ndc_number) LIKE %:query%
+			                      OR LOWER(m.material_description) LIKE %:query%
+			                      OR LOWER(m.generic_name) LIKE %:query%
+			                      OR LOWER(m.site_name) LIKE %:query%
+			                  )
+			                  AND
+			                  (
+			                      :statusActive = 'ALL'
+			                      OR (:statusActive = 'ACTIVE' AND m.item_status = 'A')
+			                      OR (:statusActive = 'INACTIVE' AND m.item_status = 'V')
+			                  )
+			                  AND
+			                  (
+			                      :channelTypes = 'ALL'
+			                      OR m.channel_type = :channelTypes
+			                  )
+			AND m.is_crosswalked = :crosswalked
+			""", nativeQuery = true)
+	Page<Therapy> findNonCrosswalkedSPGlobalTherapies(@Param("query") String query, String statusActive,
+			String channelTypes, @Param("crosswalked") Boolean crosswalked, Pageable paging);
 
 }
