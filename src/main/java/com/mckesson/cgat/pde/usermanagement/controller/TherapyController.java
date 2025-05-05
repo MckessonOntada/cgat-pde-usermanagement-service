@@ -141,7 +141,7 @@ public class TherapyController {
 	@Operation(
 			summary = "Find all programs and channels from which the selected therapy is being offered, and the logged in user has access to")
 	public ResponseEntity<ProgramChannelResponseDTO> findAllProgramAndChannels(@PathVariable String therapyId,
-			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) {
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) throws ResourceNotFoundException {
 		return new ResponseEntity<>(therapyService.findAllProgramAndChannels(
 				Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), therapyId, channelType), HttpStatus.OK);
 	}
