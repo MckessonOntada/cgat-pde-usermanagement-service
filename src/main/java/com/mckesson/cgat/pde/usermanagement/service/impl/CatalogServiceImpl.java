@@ -3,7 +3,6 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 import com.mckesson.cgat.pde.usermanagement.dto.*;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CSVGenerationException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CsvFileNotValidException;
-import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.model.*;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.CatalogPriceRepository;
@@ -23,9 +22,13 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.flywaydb.core.internal.util.CollectionsUtils;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -193,6 +196,73 @@ public class CatalogServiceImpl implements CatalogService {
 			log.error("Error while reading/parsing CSV file: {}", e.getMessage(), e);
 			throw new CsvFileNotValidException(List.of("invalid.csv.file.headers.missing"));
 		}
+	}
+
+	@Override
+	@Transactional
+	public CatalogLinkResponseDto linkSPCatalog(List<CatalogRequestDTO> catalogList) {
+		List<CatalogPrice> catalogsToUpdate = new ArrayList<>();
+		Set<String> spProductIds = new HashSet<>();
+		Set<String> spAccountNumbers = new HashSet<>();
+
+		for (CatalogRequestDTO dto : catalogList) {
+			spProductIds.add(dto.getSpProductId());
+			spAccountNumbers.add(dto.getSpAccountNumber());
+		}
+
+		Map<String, Account> accountMap = getAccountMap(spAccountNumbers);
+		Map<String, Therapy> materialMap = getTherapyMap(spProductIds);
+
+		List<CatalogPrice> existingCatalogs = catalogList.stream()
+			.map(dto -> catalogPriceRepository.findBySapMaterialAndSoldToCustomerAndChannelType(dto.getSpProductId(),
+					dto.getSpAccountNumber(), ChannelType.SPECIALITY_PHARMA))
+			.flatMap(Optional::stream)
+			.toList();
+
+		Map<Pair<String, String>, CatalogPrice> existingCatalogMap = existingCatalogs.stream()
+			.collect(Collectors.toMap(c -> Pair.of(c.getSoldToCustomer(), c.getSapMaterial()), Function.identity()));
+
+		for (CatalogRequestDTO dto : catalogList) {
+			updateCatalogsToUploadList(dto, catalogsToUpdate, accountMap, materialMap, existingCatalogMap);
+		}
+		catalogPriceRepository.saveAll(catalogsToUpdate);
+		return new CatalogLinkResponseDto(catalogsToUpdate.size());
+	}
+
+	@Override
+	public StreamingResponseBody downloadAllGlobalCatalogs(List<String> accountNumbers, Pageable paging, String query) {
+		return outputStream -> {
+			try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
+				writer.write("SP Product ID,Product Name,NDC,Account Number");
+				writer.newLine();
+
+				List<CatalogPrice> allCatalogs = catalogPriceRepository
+					.findAllGlobalCatalogs(accountNumbers, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(),
+							query, paging, ChannelType.SPECIALITY_PHARMA.name())
+					.getContent();
+
+				for (CatalogPrice cp : allCatalogs) {
+					writer.write(String.format("\"%s\",\"%s\",\"%s\",\"%s\"", cp.getSapMaterial(),
+							cp.getMaterialDescriptionInLanguageEn(), cp.getNdc(), cp.getSoldToCustomer()));
+					writer.newLine();
+				}
+
+				writer.flush();
+			}
+		};
+	}
+
+	private void updateCatalogsToUploadList(CatalogRequestDTO dto, List<CatalogPrice> catalogToUpdate,
+			Map<String, Account> accountMap, Map<String, Therapy> materialMap,
+			Map<Pair<String, String>, CatalogPrice> existingCatalogMap) {
+		String accountNumber = dto.getSpAccountNumber();
+		String productId = dto.getSpProductId();
+
+		Account account = accountMap.get(accountNumber);
+		Therapy therapy = materialMap.get(productId);
+		Pair<String, String> key = Pair.of(accountNumber, productId);
+		CatalogPrice existing = existingCatalogMap.get(key);
+		handleLink(account, therapy, existing, catalogToUpdate);
 	}
 
 	private void validateCSVFile(MultipartFile file) {

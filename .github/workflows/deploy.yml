@@ -84,6 +84,9 @@ jobs:
         else
           DEV=$(eval "echo  \${CLUSTER_TYPE}_\${CLUSTER_REGION}DEV")
           SHARED_CLUSTER="\$${DEV}"
+          echo "SPRING_DATASOURCE_URL ${SPRING_DATASOURCE_URL}"
+          echo "SPRING_DATASOURCE_USERNAME ${SPRING_DATASOURCE_USERNAME}"
+           echo "SPRING_DATASOURCE_PASSWORD ${SPRING_DATASOURCE_PASSWORD}"
         fi
 
         # Set shared cluster cert and API

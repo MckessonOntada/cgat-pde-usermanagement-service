@@ -96,7 +96,8 @@ public class TherapyServiceImplTest {
 			.when(therapyRepository.findAllSoldToAccounts(anyLong(), anyString(), anyString(), any(Pageable.class),
 					anyString(), anyString(), anyString()))
 			.thenReturn(getAccounts());
-		therapyService.findAllSoldToAccounts(userId, therapyId, query, paging, ChannelType.BUY_AND_BILL, "");
+		therapyService.findAllSoldToAccounts(userId, therapyId, query, paging, ChannelType.BUY_AND_BILL, "",
+				ChannelType.BUY_AND_BILL);
 		verify(therapyRepository, times(1)).findAllSoldToAccounts(userId, therapyId, query, paging, "80", "", "SP");
 	}
 

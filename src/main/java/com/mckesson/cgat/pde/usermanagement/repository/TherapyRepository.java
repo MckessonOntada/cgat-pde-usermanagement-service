@@ -4,9 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
-import jakarta.validation.constraints.Size;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -175,6 +173,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					AND
 						cp.deleted = false
 				    AND ac.channel_type=:channel
+				    AND m.channel_type=:channel
 					)
 					GROUP BY ac.id, ac.sap_customer, ac.name_1, ac.house_number, ac.street, ac.street_2,
 						 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code,
@@ -189,7 +188,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 	@Query(value = """
 			SELECT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2 as street2,
 						 ac.street_3 as street3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code, false as isDefault,
-						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier
+						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier, ac.channel_type
 				FROM catalog.crosswalk cw
 				JOIN catalog.material m on m.material_number = cw.bnb_material_number
 				JOIN catalog.catalog_price cp ON cp.sap_material = cw.sp_product_id
@@ -387,5 +386,33 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			      AND uam.user_id = :userId
 			""", nativeQuery = true)
 	List<Therapy> findCrosswalkedTherapies(String materialNumber, long userId);
+
+	@Query(value = """
+			                  SELECT m.*
+			                  FROM catalog.material m
+			                  WHERE
+			                  (
+			                      :query IS NULL
+			                      OR LOWER(m.material_number) LIKE %:query%
+			                      OR LOWER(m.ndc_number) LIKE %:query%
+			                      OR LOWER(m.material_description) LIKE %:query%
+			                      OR LOWER(m.generic_name) LIKE %:query%
+			                      OR LOWER(m.site_name) LIKE %:query%
+			                  )
+			                  AND
+			                  (
+			                      :statusActive = 'ALL'
+			                      OR (:statusActive = 'ACTIVE' AND m.item_status = 'A')
+			                      OR (:statusActive = 'INACTIVE' AND m.item_status = 'V')
+			                  )
+			                  AND
+			                  (
+			                      :channelTypes = 'ALL'
+			                      OR m.channel_type = :channelTypes
+			                  )
+			AND m.is_crosswalked = :crosswalked
+			""", nativeQuery = true)
+	Page<Therapy> findNonCrosswalkedSPGlobalTherapies(@Param("query") String query, String statusActive,
+			String channelTypes, @Param("crosswalked") Boolean crosswalked, Pageable paging);
 
 }

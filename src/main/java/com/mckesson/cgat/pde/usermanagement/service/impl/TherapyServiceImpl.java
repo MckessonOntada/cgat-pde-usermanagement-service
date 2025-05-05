@@ -39,7 +39,6 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.util.CollectionUtils;
-import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.*;
 
 @Service
 @Slf4j
@@ -76,9 +75,11 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	public Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, String therapyId, String query, Pageable paging,
-			ChannelType channelType, String program) {
+			ChannelType channelType, String program, ChannelType therapyChannelType) {
 
-		if (ChannelType.SPECIALITY_PHARMA.equals(channelType)) {
+		boolean isCrossWalkedTherapySelected = !therapyChannelType.equals(channelType);
+
+		if (ChannelType.SPECIALITY_PHARMA.equals(channelType) && isCrossWalkedTherapySelected) {
 			return therapyRepository.findAllSoldToAccountsForSP(userId, therapyId, StringUtils.toRootLowerCase(query),
 					paging, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 		}
@@ -224,7 +225,8 @@ public class TherapyServiceImpl implements TherapyService {
 					"Therapy not found with materialNumber: " + materialNumber + " and channelType: " + channelType));
 	}
 
-	public ProgramChannelResponseDTO findAllProgramAndChannels(Long userId, String therapyId, ChannelType channelType) {
+	public ProgramChannelResponseDTO findAllProgramAndChannels(Long userId, String therapyId, ChannelType channelType)
+			throws ResourceNotFoundException {
 
 		if (ChannelType.SPECIALITY_PHARMA.equals(channelType)) {
 			return ProgramChannelResponseDTO.builder()
@@ -243,16 +245,24 @@ public class TherapyServiceImpl implements TherapyService {
 			return programChannelProjectionDTO.getProgram();
 		}).filter(Objects::nonNull).collect(Collectors.toSet())) : Collections.emptySet();
 
-		boolean isCrosswalkMaterial = null != allPrograms
-				&& allPrograms.stream().anyMatch(ProgramChannelProjectionDTO::isCrosswalked);
+		boolean isCrosswalkMaterial;
+		Set<String> uniqueChannels = new HashSet<>();
+
+		if (!CollectionUtils.isEmpty(allPrograms)) {
+			isCrosswalkMaterial = allPrograms.stream().anyMatch(ProgramChannelProjectionDTO::isCrosswalked);
+			uniqueChannels.add(ChannelType.BUY_AND_BILL.name());
+		}
+		else {
+			Therapy therapy = findByMaterialNumber(therapyId, channelType);
+			isCrosswalkMaterial = therapy.getIsCrosswalked();
+		}
+
 		List<String> crossWalkedSPs = new ArrayList<>();
 
 		if (isCrosswalkMaterial) {
 			crossWalkedSPs = fetchCrossWalkedSPsForUserAndTherapyId(userId, therapyId);
 		}
 
-		Set<String> uniqueChannels = new HashSet<>();
-		uniqueChannels.add(ChannelType.BUY_AND_BILL.name());
 		if (!CollectionUtils.isEmpty(crossWalkedSPs)) {
 			uniqueChannels.add(ChannelType.SPECIALITY_PHARMA.name());
 		}
@@ -401,6 +411,21 @@ public class TherapyServiceImpl implements TherapyService {
 		else {
 			return new TherapyResponseDTO(therapy, Collections.emptyList(), therapy.getChannelType());
 		}
+	}
+
+	public Page<Therapy> findNonCrosswalkedSPGlobalTherapies(String query, Pageable paging,
+			List<ChannelType> channelTypes, List<String> status, Boolean crosswalked) {
+		try {
+			log.info(" Inside method - findNonCrosswalkedSPGlobalTherapies");
+			log.info("query: {}", StringUtils.toRootLowerCase(query));
+			return therapyRepository.findNonCrosswalkedSPGlobalTherapies(StringUtils.toRootLowerCase(query),
+					getConsolidatedStatus(status), getConsolidatedChannelType(channelTypes), crosswalked, paging);
+		}
+		catch (Exception e) {
+			log.error("Exception occurred in findNonCrosswalkedSPGlobalTherapies and exception details", e);
+			throw e;
+		}
+
 	}
 
 }
