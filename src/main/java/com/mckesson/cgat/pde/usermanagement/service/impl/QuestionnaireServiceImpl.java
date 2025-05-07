@@ -80,7 +80,6 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 		List<QuestionnaireConfiguration> spConfigs = updpateQuestionnaireList(type, ChannelType.SPECIALITY_PHARMA,
 				questionnaireConfigurationDTO.getSp(), existingMap, questionnaireList);
 
-		List<QuestionnaireConfiguration> questionnaireConfigurationList = new ArrayList<>();
 		// Combine all configurations into one list
 		List<QuestionnaireConfiguration> allConfigs = new ArrayList<>();
 		allConfigs.addAll(bnbConfigs != null ? bnbConfigs : Collections.emptyList());
