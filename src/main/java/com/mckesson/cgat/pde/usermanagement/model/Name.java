@@ -43,4 +43,16 @@ public class Name implements Serializable {
 			groups = BasicInfo.class)
 	private String lastName;
 
+	public String getFullName() {
+		if (middleName == null || middleName.trim().isEmpty()) {
+			return firstName + " " + lastName;
+		}
+		return firstName + " " + middleName + " " + lastName;
+	}
+
+	@Override
+	public String toString() {
+		return getFullName();
+	}
+
 }
