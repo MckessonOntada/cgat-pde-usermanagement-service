@@ -1,7 +1,7 @@
 CREATE SCHEMA IF NOT EXISTS audit;
 
 CREATE TABLE IF NOT EXISTS audit.on_behalf_aud (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT PRIMARY KEY,
     user_id VARCHAR(50),
     user_name VARCHAR(255),
     user_email VARCHAR(255),
