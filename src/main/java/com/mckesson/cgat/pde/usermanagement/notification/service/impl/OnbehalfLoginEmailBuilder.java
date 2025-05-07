@@ -27,7 +27,7 @@ public class OnbehalfLoginEmailBuilder implements EmailTemplateBuilder {
 			.linkPortal(config.getLinkPDEPortal())
 			.organizationName(practiceName)
 			.loginDateTime(formattedDateTime)
-			.adminName("user.getImpersonatedByUser().getName().getFullName()")
+			.adminName(user.getImpersonatedByUser().getName().getFullName())
 			.build();
 	}
 

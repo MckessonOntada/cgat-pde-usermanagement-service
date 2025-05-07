@@ -94,7 +94,7 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
 
 			Map<String, String> templateData = buildTemplateData(user, eventType);
 			EmailNotification emailNotification = EmailNotificationUtil.createEmailNotificationPayload(templateData,
-					"deepak.sharma@deepmindz.co", EmailNotificationConstants.ON_BEHALF_LOGIN_TEMPLATE, user.getId(),
+					user.getUserName(), EmailNotificationConstants.ON_BEHALF_LOGIN_TEMPLATE, user.getId(),
 					getTemplateForEvent(eventType), getEventTypeConstant(eventType),
 					String.valueOf(user.getPracticeId()), emailNotificationConfig.getHookActionURI());
 			sendEmailNotification(emailNotification, user, eventType);
