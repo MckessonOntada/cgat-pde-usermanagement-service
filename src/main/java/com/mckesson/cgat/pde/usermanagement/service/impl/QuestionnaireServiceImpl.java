@@ -142,37 +142,32 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 		})).collect(Collectors.toList());
 	}
 
-	private List<String> generateEntityIds(QuestionnaireConfigurationType type,
-			QuestionnaireEntityConfigDTO questionnaireConfigurationDTO) throws BadRequestException {
+	private List<String> generateEntityIds(QuestionnaireConfigurationType type, QuestionnaireEntityConfigDTO dto)
+			throws BadRequestException {
 		switch (type) {
 			case Account:
-				if (questionnaireConfigurationDTO.getAccountNumberList() == null
-						|| questionnaireConfigurationDTO.getAccountNumberList().isEmpty()) {
-					return null;
-				}
-				return questionnaireConfigurationDTO.getAccountNumberList();
+				return safeList(dto.getAccountNumberList());
 
 			case Material:
-				if (questionnaireConfigurationDTO.getMaterialNumberList() == null
-						|| questionnaireConfigurationDTO.getMaterialNumberList().isEmpty()) {
-					return null;
-				}
-				return questionnaireConfigurationDTO.getMaterialNumberList();
+				return safeList(dto.getMaterialNumberList());
 
 			case Catalog:
-				if (questionnaireConfigurationDTO.getCatalogIdAttributes() == null
-						|| questionnaireConfigurationDTO.getCatalogIdAttributes().isEmpty()) {
+				List<CatalogConfigurationAttributes> catalogs = dto.getCatalogIdAttributes();
+				if (catalogs == null || catalogs.isEmpty()) {
 					return null;
 				}
-				return questionnaireConfigurationDTO.getCatalogIdAttributes()
-					.stream()
-					.map(catalog -> getCatalogId(catalog.getSapMaterial(), catalog.getSoldToCustomer(),
-							catalog.getShipToCustomer(), catalog.getVariant()))
+				return catalogs.stream()
+					.map(c -> getCatalogId(c.getSapMaterial(), c.getSoldToCustomer(), c.getShipToCustomer(),
+							c.getVariant()))
 					.collect(Collectors.toList());
 
 			default:
 				throw new BadRequestException("Unknown configuration type: " + type);
 		}
+	}
+
+	private List<String> safeList(List<String> list) {
+		return (list == null || list.isEmpty()) ? null : list;
 	}
 
 	@Override
