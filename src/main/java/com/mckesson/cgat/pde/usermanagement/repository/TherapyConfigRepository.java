@@ -22,6 +22,7 @@ public interface TherapyConfigRepository extends JpaRepository<TherapyConfig, Lo
 			    FROM Therapy m
 			    LEFT JOIN TherapyConfig tc
 			    ON m.materialNumber = tc.materialNumber
+			    AND m.channelType = tc.channelType
 			    WHERE m.materialNumber = :materialNumber
 			    AND m.channelType = :channelType
 			""")
