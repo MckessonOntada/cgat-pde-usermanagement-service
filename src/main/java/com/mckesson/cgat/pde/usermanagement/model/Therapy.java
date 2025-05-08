@@ -123,7 +123,7 @@ public class Therapy implements Serializable {
 	private Long id;
 
 	@Column(name = "tenant_id")
-	public String tenantId;
+	public Integer tenantId;
 
 	@Size(max = 50)
 	@Column(name = "material_number")
