@@ -19,9 +19,10 @@ public interface QuestionnaireConfigurationRepository extends JpaRepository<Ques
 
 	@Modifying
 	@Transactional
-	@Query("DELETE FROM QuestionnaireConfiguration q WHERE q.questionnaireId.id = :questionnaireId AND q.entityId = :entityId AND q.configuredType = :configuredType")
-	void deleteByQuestionnaireIdAndEntityIdAndConfiguredType(@Param("questionnaireId") Long questionnaireId,
-			@Param("entityId") String entityId, @Param("configuredType") QuestionnaireConfigurationType configuredType);
+	@Query("DELETE FROM QuestionnaireConfiguration q WHERE q.questionnaireId.id = :questionnaireId AND q.entityId = :entityId AND q.configuredType = :configuredType AND q.channelType = :channelType")
+	void deleteByQuestionnaireIdAndEntityIdAndConfiguredTypeAndChannelType(
+			@Param("questionnaireId") Long questionnaireId, @Param("entityId") String entityId,
+			@Param("configuredType") QuestionnaireConfigurationType configuredType, ChannelType channelType);
 
 	@Query(nativeQuery = true, value = """
 			      SELECT qc.*

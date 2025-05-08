@@ -23,7 +23,7 @@ public class MaterialCrossWalkConfigRecordDTO {
 	private String bnbDescription;
 
 	@Size(max = 11, message = "Buy & Bill Material NDC must be at most 11 characters long")
-	@Pattern(regexp = "^[0-9]{11}$", message = "Buy & Bill Material NDC must be numeric and 11 digits")
+	@Pattern(regexp = "^(|[0-9]{11})$", message = "Buy & Bill Material NDC must be numeric and exactly 11 digits")
 	private String bnbNDC;
 
 	@NotBlank(message = "SP Product ID is mandatory, please provide SP Product ID and try again.")
@@ -35,7 +35,7 @@ public class MaterialCrossWalkConfigRecordDTO {
 	private String spProductName;
 
 	@Size(max = 11, message = "SP Product NDC must be at most 11 characters long")
-	@Pattern(regexp = "^[0-9]{11}$", message = "SP Product NDC must be numeric and 11 digits")
+	@Pattern(regexp = "^(|[0-9]{11})$", message = "SP Product NDC must be numeric and exactly 11 digits")
 	private String spNDC;
 
 }
