@@ -1,6 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.dto;
 
-import com.mckesson.cgat.pde.usermanagement.model.QuestionnaireConfigurationType;
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -19,5 +19,7 @@ public class DeLinkQuestionnaireConfigurationDTO {
 	@Nullable
 	@Valid
 	private CatalogConfigurationAttributes catalogId;
+
+	ChannelType channelType = ChannelType.BUY_AND_BILL;
 
 }

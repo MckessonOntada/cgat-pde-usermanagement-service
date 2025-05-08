@@ -64,14 +64,15 @@ public class Provider extends AuditColumns implements Serializable {
 
 	@NotBlank(message = "NPI Number is required", groups = BasicInfo.class)
 	@Size(min = 10, max = 10, message = "NPI must be exactly 10 digits", groups = BasicInfo.class)
-	@Pattern(regexp = "\\d{10}", message = "NPI must contain only numeric digits")
+	@Pattern(regexp = "\\d{10}", message = "NPI must contain only numeric digits", groups = BasicInfo.class)
 	@Column(name = "npi", length = 10, nullable = false)
 	private String npi;
 
-	@NotEmpty(message = "Phone Number is required", groups = BasicInfo.class)
+	@NotBlank(message = "Phone Number is required", groups = BasicInfo.class)
 	@Pattern(regexp = "^[1-9][0-9]{9}$",
-			message = "Phone number must be exactly 10 digits, start with 1-9, and contain only numbers",
+			message = "Phone number must be exactly 10 digits, start with 1-9, and must not have any spaces or characters.",
 			groups = BasicInfo.class)
+	@NotBlank(message = "Phone number is required", groups = BasicInfo.class)
 	private String phone;
 
 	@Valid
