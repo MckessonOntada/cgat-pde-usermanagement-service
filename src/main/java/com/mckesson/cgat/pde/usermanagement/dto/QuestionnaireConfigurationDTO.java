@@ -13,8 +13,8 @@ public class QuestionnaireConfigurationDTO {
 	@Size(min = 1, message = "QuestionnaireIds should not be empty")
 	List<Long> questionnaireIds;
 
-	QuestionnaireEntityConfigDTO bnb;
+	QuestionnaireEntityConfigDTO bnbConfigs;
 
-	QuestionnaireEntityConfigDTO sp;
+	QuestionnaireEntityConfigDTO spConfigs;
 
 }
