@@ -25,8 +25,8 @@ public interface QuestionnaireService {
 			QuestionnaireConfigurationDTO questionnaireConfigurationDTO)
 			throws ResourceNotFoundException, BadRequestException;
 
-	void deLinkConfiguredQuestionnaire(DeLinkQuestionnaireConfigurationDTO dto, QuestionnaireConfigurationType type,
-			ChannelType channelType) throws ResourceNotFoundException;
+	void deLinkConfiguredQuestionnaire(DeLinkQuestionnaireConfigurationDTO dto, QuestionnaireConfigurationType type)
+			throws ResourceNotFoundException;
 
 	List<Questionnaire> getAllConfiguredQuestionnaires(String sapMaterial, String soldToCustomer, String shipToCustomer,
 			String variant, ChannelType channelType);

@@ -171,14 +171,13 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 	@Override
 	@Transactional
 	public void deLinkConfiguredQuestionnaire(DeLinkQuestionnaireConfigurationDTO dto,
-			QuestionnaireConfigurationType type, ChannelType channelType) throws ResourceNotFoundException {
+			QuestionnaireConfigurationType type) throws ResourceNotFoundException {
 		Questionnaire questionnaire = questionnaireRepository.findById(dto.getQuestionnaireId())
 			.orElseThrow(() -> new ResourceNotFoundException(
 					"Questionnaire not found with Id: " + dto.getQuestionnaireId()));
 
-
 		String entityId = getEntityId(dto.getMaterialNumber(), dto.getAccountNumber(), dto.getCatalogId(), type,
-				channelType);
+				dto.getChannelType());
 		questionnaireConfigurationRepository.deleteByQuestionnaireIdAndEntityIdAndConfiguredTypeAndChannelType(
 				dto.getQuestionnaireId(), entityId, type, dto.getChannelType());
 
