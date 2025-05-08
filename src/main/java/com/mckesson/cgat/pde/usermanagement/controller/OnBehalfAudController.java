@@ -1,6 +1,8 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
 import com.mckesson.cgat.pde.usermanagement.model.LoggedInUserDetails;
+import com.mckesson.cgat.pde.usermanagement.model.Permission;
+import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
 import com.mckesson.cgat.pde.usermanagement.service.OnBehalfAuidtService;
 import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,13 +12,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/on-behalf")
+@RequestMapping("/practices/{practiceId}/on-behalf")
 @Tag(name = "On Behalf", description = "Controller for sending email and auditing impersonated and user details.")
 public class OnBehalfAudController {
 
 	@Autowired
 	private OnBehalfAuidtService auditService;
 
+	@RequirePermissions({ Permission.ON_BEHALF_OF_USER })
 	@PostMapping("/log")
 	@Operation(summary = "Audit log for User and Impersonated User along with sending email about the login.")
 	public ResponseEntity<String> logImpersonation() {
