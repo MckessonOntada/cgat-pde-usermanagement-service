@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/practices/{practiceId}/on-behalf")
+@RequestMapping("/practices/{practiceId}/on-behalf-notification")
 @Tag(name = "On Behalf", description = "Controller for sending email and auditing impersonated and user details.")
 public class OnBehalfAudController {
 
@@ -20,7 +20,7 @@ public class OnBehalfAudController {
 	private OnBehalfAuidtService auditService;
 
 	@RequirePermissions({ Permission.ON_BEHALF_OF_USER })
-	@PostMapping("/log")
+	@PostMapping
 	@Operation(summary = "Audit log for User and Impersonated User along with sending email about the login.")
 	public ResponseEntity<String> logImpersonation() {
 		LoggedInUserDetails user = UserSecurityUtils.getLoggedInUser();
