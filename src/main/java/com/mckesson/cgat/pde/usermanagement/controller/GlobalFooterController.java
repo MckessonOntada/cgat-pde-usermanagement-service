@@ -28,14 +28,12 @@ public class GlobalFooterController {
 	@GetMapping
 	@Operation(summary = "Get footer configuration (latest version)")
 	public ResponseEntity<String> getFooterConfig() {
-		Map<String, Object> result = jdbcTemplate.queryForMap(
-				"SELECT config_json::text, version FROM usermanagement.footer_config ORDER BY version DESC LIMIT 1");
+		Map<String, Object> result = jdbcTemplate
+			.queryForMap("SELECT config_json::text FROM usermanagement.footer_config WHERE id = 1");
 		String footerJson = (String) result.get("config_json");
-		String version = String.valueOf(result.get("version"));
 
 		return ResponseEntity.ok()
-			.cacheControl(CacheControl.maxAge(1, TimeUnit.DAYS))
-			.eTag(version)
+			.cacheControl(CacheControl.maxAge(30, TimeUnit.MINUTES))
 			.contentType(MediaType.APPLICATION_JSON) // Ensure proper content type
 			.body(footerJson);
 	}
