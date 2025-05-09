@@ -8,6 +8,7 @@ import com.mckesson.cgat.pde.usermanagement.repository.OnBehalfAuditRepository;
 import com.mckesson.cgat.pde.usermanagement.service.OnBehalfAuidtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -21,6 +22,7 @@ public class OnBehalfAuditServiceImpl implements OnBehalfAuidtService {
 	private EmailNotificationService emailNotificationService;
 
 	@Override
+	@Transactional
 	public void logImpersonation(LoggedInUserDetails impersonatedUser, LoggedInUserDetails actualUser) {
 		OnBehalfAudit log = OnBehalfAudit.builder()
 			.impersonatedUserId(impersonatedUser.getId())
