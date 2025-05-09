@@ -217,16 +217,16 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	public User linkUserToAccounts(Long userId, List<Long> accountIds) throws ResourceNotFoundException {
 		User user = userRepository.findById(userId)
-			.orElseThrow(() -> new ResourceNotFoundException("User not found with this Id :" + userId));
-
-		List<Account> accounts = accountRepository.findAllById(accountIds);
-
-		if (accounts.size() != accountIds.size())
-			throw new ResourceNotFoundException("Some of the provided account IDs does not exist.");
-
-		user.getAccounts().addAll(accounts);
+				.orElseThrow(() -> new ResourceNotFoundException("User not found with this Id :" + userId));
+		List<Account> accountsToLink = accountRepository.findAllById(accountIds);
+		if (accountsToLink.size() != accountIds.size()) {
+			throw new ResourceNotFoundException("Some of the provided account IDs do not exist.");
+		}
+		Set<Account> existingAccounts = new HashSet<>(user.getAccounts());
+		existingAccounts.addAll(accountsToLink);
+		user.getAccounts().clear();
+		user.setAccounts(existingAccounts);
 		return userRepository.save(user);
-
 	}
 
 	@Transactional
