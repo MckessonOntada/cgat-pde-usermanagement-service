@@ -26,7 +26,7 @@ public class GlobalFooterController {
 	}
 
 	@GetMapping
-	@Operation(summary = "Get footer configuration (latest version)")
+	@Operation(summary = "Get footer configuration")
 	public ResponseEntity<String> getFooterConfig() {
 		Map<String, Object> result = jdbcTemplate
 			.queryForMap("SELECT config_json::text FROM usermanagement.footer_config WHERE id = 1");
