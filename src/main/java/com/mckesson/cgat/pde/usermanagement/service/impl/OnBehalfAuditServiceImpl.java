@@ -2,10 +2,13 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import com.mckesson.cgat.pde.usermanagement.model.LoggedInUserDetails;
 import com.mckesson.cgat.pde.usermanagement.model.OnBehalfAudit;
+import com.mckesson.cgat.pde.usermanagement.notification.config.EmailNotificationEventType;
+import com.mckesson.cgat.pde.usermanagement.notification.service.EmailNotificationService;
 import com.mckesson.cgat.pde.usermanagement.repository.OnBehalfAuditRepository;
 import com.mckesson.cgat.pde.usermanagement.service.OnBehalfAuidtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -15,7 +18,11 @@ public class OnBehalfAuditServiceImpl implements OnBehalfAuidtService {
 	@Autowired
 	private OnBehalfAuditRepository auditRepository;
 
+	@Autowired
+	private EmailNotificationService emailNotificationService;
+
 	@Override
+	@Transactional
 	public void logImpersonation(LoggedInUserDetails impersonatedUser, LoggedInUserDetails actualUser) {
 		OnBehalfAudit log = OnBehalfAudit.builder()
 			.impersonatedUserId(impersonatedUser.getId())
@@ -29,6 +36,7 @@ public class OnBehalfAuditServiceImpl implements OnBehalfAuidtService {
 			.build();
 
 		auditRepository.save(log);
+		emailNotificationService.sendOnBehalfEmail(EmailNotificationEventType.ON_BEHALF_LOGIN);
 	}
 
 }
