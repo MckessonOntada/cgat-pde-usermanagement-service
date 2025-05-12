@@ -112,6 +112,7 @@ public class CatalogServiceImpl implements CatalogService {
 
 		catalogDetailsResponseDTO.setCatalogConfiguration(catalogResponseDTO.getCatalogConfiguration());
 		catalogDetailsResponseDTO.setCatalogPrice(catalogResponseDTO.getCatalogPrice());
+		catalogDetailsResponseDTO.setSiteName(catalogResponseDTO.getSiteName());
 		return catalogDetailsResponseDTO;
 	}
 
