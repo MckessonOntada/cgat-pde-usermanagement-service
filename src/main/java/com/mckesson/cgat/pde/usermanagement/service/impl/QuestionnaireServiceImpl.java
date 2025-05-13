@@ -142,8 +142,8 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 					"Questionnaire not found with Id: " + dto.getQuestionnaireId()));
 
 		String entityId = getEntityId(dto.getMaterialNumber(), dto.getAccountNumber(), dto.getCatalogId(), type);
-		questionnaireConfigurationRepository
-			.deleteByQuestionnaireIdAndEntityIdAndConfiguredType(dto.getQuestionnaireId(), entityId, type);
+		questionnaireConfigurationRepository.deleteByQuestionnaireIdAndEntityIdAndConfiguredTypeAndChannelType(
+				dto.getQuestionnaireId(), entityId, type, dto.getChannelType());
 		long count = questionnaireConfigurationRepository
 			.countByQuestionnaireIdAndConfiguredType(dto.getQuestionnaireId(), type);
 		if (count == 0) {

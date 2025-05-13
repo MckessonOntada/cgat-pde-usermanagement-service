@@ -123,7 +123,7 @@ public class Therapy implements Serializable {
 	private Long id;
 
 	@Column(name = "tenant_id")
-	public String tenantId;
+	public Integer tenantId;
 
 	@Size(max = 50)
 	@Column(name = "material_number")
@@ -133,7 +133,7 @@ public class Therapy implements Serializable {
 	@Column(name = "site_name")
 	private String siteName;
 
-	@Size(max = 20)
+	// @Size(max = 20)
 	@Column(name = "channel_type")
 	@Enumerated(EnumType.STRING)
 	private ChannelType channelType;

@@ -4,7 +4,6 @@ import com.mckesson.cgat.pde.usermanagement.model.Address;
 import com.mckesson.cgat.pde.usermanagement.model.Name;
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
 import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -30,7 +29,7 @@ public class ProviderDTO {
 
 	@NotBlank(message = "NPI Number is required", groups = BasicInfo.class)
 	@Size(min = 10, max = 10, message = "NPI must be exactly 10 digits", groups = BasicInfo.class)
-	@Pattern(regexp = "\\d{10}", message = "NPI must contain only numeric digits")
+	@Pattern(regexp = "\\d{10}", message = "NPI must contain only numeric digits", groups = BasicInfo.class)
 	@Column(name = "npi", length = 10, nullable = false)
 	private String npi;
 

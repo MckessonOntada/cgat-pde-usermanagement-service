@@ -96,72 +96,12 @@ public class TherapyControllerTest {
 			}
 
 			@Override
-			public String getUdi() {
-				return "";
-			}
-
-			@Override
 			public String getStrength() {
 				return "";
 			}
 
 			@Override
 			public String getDosage() {
-				return "";
-			}
-
-			@Override
-			public String getSellingUnitCode() {
-				return "";
-			}
-
-			@Override
-			public String getVendorName() {
-				return "";
-			}
-
-			@Override
-			public String getUpcCode() {
-				return "";
-			}
-
-			@Override
-			public String getDropshipIndicator() {
-				return "";
-			}
-
-			@Override
-			public String getStatus() {
-				return "";
-			}
-
-			@Override
-			public String getBaseUnitOfMeasure() {
-				return "";
-			}
-
-			@Override
-			public String getCgatTherapyType() {
-				return "";
-			}
-
-			@Override
-			public String getSalesOrganization() {
-				return "";
-			}
-
-			@Override
-			public String getProductLevelPricing() {
-				return "";
-			}
-
-			@Override
-			public String getMinimumOrderQuantity() {
-				return "";
-			}
-
-			@Override
-			public String getItemCategoryGroup() {
 				return "";
 			}
 
@@ -194,7 +134,7 @@ public class TherapyControllerTest {
 		Long therapyId = 12L;
 
 		when(therapyService.findAllSoldToAccounts(anyLong(), anyString(), anyString(), any(Pageable.class),
-				any(ChannelType.class), anyString()))
+				any(ChannelType.class), anyString(), ChannelType.BUY_AND_BILL))
 			.thenReturn(getAccounts());
 
 		mockMvc.perform(

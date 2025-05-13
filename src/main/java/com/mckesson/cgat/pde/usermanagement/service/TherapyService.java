@@ -19,14 +19,15 @@ public interface TherapyService {
 			List<String> customerIdentifier);
 
 	Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, String therapyId, String query, Pageable paging,
-			ChannelType channel, String program);
+			ChannelType channel, String program, ChannelType therapyChannelType);
 
 	Page<AccountsResponseDTO> findAllShipToAccounts(String soldToAccountId, String therapyId, Pageable paging,
 			String query, ChannelType channelType);
 
 	Therapy findById(Long id) throws ResourceNotFoundException;
 
-	ProgramChannelResponseDTO findAllProgramAndChannels(Long userId, String therapyId, ChannelType channelType);
+	ProgramChannelResponseDTO findAllProgramAndChannels(Long userId, String therapyId, ChannelType channelType)
+			throws ResourceNotFoundException;
 
 	Page<AccountsResponseDTO> findAllCustomerIdentifiers(Long userId, String query, Pageable paging);
 
@@ -38,6 +39,9 @@ public interface TherapyService {
 
 	Page<Therapy> findAllGlobalTherapies(String query, Pageable paging, List<ChannelType> channelTypes,
 			List<String> status);
+
+	Page<Therapy> findNonCrosswalkedSPGlobalTherapies(String query, Pageable paging, List<ChannelType> channelTypes,
+			List<String> status, Boolean crosswalked);
 
 	Page<CatalogPrice> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging,
 			ChannelType channelType);

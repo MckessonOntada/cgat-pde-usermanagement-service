@@ -1,15 +1,15 @@
 package com.mckesson.cgat.pde.usermanagement.service;
 
-import com.mckesson.cgat.pde.usermanagement.dto.CSVProcessingResult;
-import com.mckesson.cgat.pde.usermanagement.dto.CatalogDetailsResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.CatalogConfigurationDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.*;
 import com.mckesson.cgat.pde.usermanagement.model.CatalogConfiguration;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.util.List;
 
@@ -32,5 +32,11 @@ public interface CatalogService {
 					message = "'soldToAccount' cannot be empty") String soldToAccount);
 
 	CSVProcessingResult uploadSPCatalog(MultipartFile catalogsData);
+
+	CatalogLinkResponseDto linkSPCatalog(List<CatalogRequestDTO> catalogList);
+
+	StreamingResponseBody downloadAllGlobalCatalogs(
+			@NotEmpty(message = "Account Numbers cannot be empty") List<String> accountNumbers, Pageable paging,
+			String query);
 
 }

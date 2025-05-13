@@ -5,15 +5,15 @@ public enum ProviderStatus {
 	ACTIVE, INACTIVE;
 
 	public static ProviderStatus fromString(String input) {
-		if (input == null) {
-			return INACTIVE; // Default value
+		if (input == null || input.isBlank()) {
+			throw new IllegalArgumentException("Status cannot be null or blank");
 		}
-		for (ProviderStatus status : ProviderStatus.values()) {
-			if (status.name().equalsIgnoreCase(input)) {
-				return status;
-			}
+		try {
+			return ProviderStatus.valueOf(input.trim().toUpperCase());
 		}
-		throw new IllegalArgumentException("Invalid ProviderStatus: " + input);
+		catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException("Invalid Status: " + input);
+		}
 	}
 
 }

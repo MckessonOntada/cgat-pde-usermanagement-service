@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import com.mckesson.cgat.pde.usermanagement.dto.ProviderAccountsDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.ProviderDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.ProviderWrapper;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CsvFileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.ResourceConflictException;
@@ -66,17 +67,22 @@ public class ProviderServiceImpl implements ProviderService {
 	@Override
 	public Boolean uploadProviders(MultipartFile providerDataFile, Long practiceId, OutputStream outputStream)
 			throws FileNotValidException {
-		List<Provider> providers = new ArrayList<>();
 		// Map to store failed provider
 		Map<Provider, String> failedProviders = new LinkedHashMap<>();
 
-		// Parse CSV and Store Provider Data
-		parseProviderDataCSV(providerDataFile, providers, practiceId, failedProviders);
+		List<ProviderWrapper> providerWrappers = new ArrayList<>();
 
-		for (Provider provider : providers) {
+		parseProviderDataCSV(providerDataFile, providerWrappers, practiceId);
+
+		for (ProviderWrapper wrapper : providerWrappers) {
+			Provider provider = wrapper.getProvider();
 			try {
-
 				validateProvider(provider);
+
+				if (failedProviders.containsKey(provider)) {
+					continue;
+				}
+
 				Provider existingProvider = providerRepository.findByPracticeIdAndNpi(practiceId, provider.getNpi());
 
 				if (existingProvider != null) {
@@ -91,23 +97,16 @@ public class ProviderServiceImpl implements ProviderService {
 					log.info("Saved new provider with NPI: {} for Practice ID: {}", provider.getNpi(), practiceId);
 				}
 			}
-			catch (IllegalArgumentException e) {
-				log.error("Validation failed for provider {}", provider.getName().getFirstName());
-				log.error(e.getMessage());
-				failedProviders.put(provider, e.getMessage());
-			}
-			catch (DataIntegrityViolationException e) {
-				log.error("Data Integrity violation for provider {}", provider.getName().getFirstName());
-				log.error(e.getMessage());
-				failedProviders.put(provider, e.getCause().getCause().getMessage());
-			}
 			catch (Exception e) {
-				log.error("Exception occured in validation of provider", e);
-				failedProviders.put(provider, e.getCause().getCause().getMessage());
+				String errorMsg = e instanceof IllegalArgumentException ? e.getMessage()
+						: e.getCause() != null && e.getCause().getCause() != null ? e.getCause().getCause().getMessage()
+								: e.getMessage();
+				String existing = failedProviders.getOrDefault(provider, "");
+				failedProviders.put(provider, (existing + " " + errorMsg).trim());
 			}
 		}
 		// Create output csv
-		createOutputCSV(outputStream, failedProviders);
+		createOutputCSV(outputStream, failedProviders, providerWrappers);
 
 		return failedProviders.isEmpty();
 	}
@@ -131,20 +130,24 @@ public class ProviderServiceImpl implements ProviderService {
 	}
 
 	private void validateProvider(Provider provider) {
-		// Trigger validation with the BasicInfo group
 		Set<ConstraintViolation<Provider>> violations = validator.validate(provider, BasicInfo.class);
+		StringBuilder errorMessage = new StringBuilder();
 
-		if (!violations.isEmpty()) {
-			StringBuilder errorMessage = new StringBuilder("Validation errors: ");
-			for (ConstraintViolation<Provider> violation : violations) {
-				errorMessage.append(violation.getMessage()).append("; ");
-			}
-			throw new IllegalArgumentException(errorMessage.toString());
+		for (ConstraintViolation<Provider> violation : violations) {
+			errorMessage.append(violation.getMessage()).append("; ");
+		}
+
+		if (provider.getIsActive() == null) {
+			errorMessage.append("Invalid status value; ");
+		}
+
+		if (errorMessage.length() > 0) {
+			throw new IllegalArgumentException("Validation errors: " + errorMessage.toString());
 		}
 	}
 
-	private void parseProviderDataCSV(MultipartFile providerDataFile, List<Provider> providers, Long practiceId,
-			Map<Provider, String> failedProvider) {
+	private void parseProviderDataCSV(MultipartFile providerDataFile, List<ProviderWrapper> providerWrappers,
+			Long practiceId) {
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(providerDataFile.getInputStream()));
 				CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
 
@@ -156,12 +159,14 @@ public class ProviderServiceImpl implements ProviderService {
 				if (record.stream().anyMatch(value -> !value.isBlank())) {
 					isEmpty = false;
 					List<String> providerData = record.toList();
-					Provider provider = createProviderFromCSVRecord(providerData, practiceId, failedProvider);
-					if (provider != null) { // <-- Only add valid providers
-						providers.add(provider);
+					String statusValue = providerData.get(11).trim();
+					Provider provider = createProviderFromCSVRecord(providerData, practiceId);
+					if (provider != null) {
+						providerWrappers.add(new ProviderWrapper(provider, statusValue));
 					}
 				}
 			}
+
 			if (isEmpty) {
 				log.error("The uploaded file is empty or contains no data.");
 				throw new CsvFileNotValidException(List.of("invalid.csv.file.empty"));
@@ -200,17 +205,8 @@ public class ProviderServiceImpl implements ProviderService {
 		}
 	}
 
-	private Provider createProviderFromCSVRecord(List<String> providerData, Long practiceId,
-			Map<Provider, String> failedProvider) {
-		String statusValue = providerData.get(11).trim().toUpperCase();
-		ProviderStatus status = null;
-
-		try {
-			status = ProviderStatus.fromString(statusValue);
-		}
-		catch (IllegalArgumentException e) {
-			log.error("Invalid Status value: '{}'. Expected ACTIVE or INACTIVE.", statusValue);
-		}
+	private Provider createProviderFromCSVRecord(List<String> providerData, Long practiceId) {
+		String statusValue = providerData.get(11).trim();
 
 		Provider provider = Provider.builder()
 			.practiceId(practiceId)
@@ -231,19 +227,19 @@ public class ProviderServiceImpl implements ProviderService {
 			.phone(providerData.get(10))
 			.build();
 
-		// If status is invalid, record error and return null (but dummy provider is used
-		// for output)
-		if (status == null) {
-			failedProvider.put(provider, "Invalid Status Value: " + statusValue + ". Expected ACTIVE or INACTIVE.");
-			return null;
+		try {
+			ProviderStatus status = ProviderStatus.fromString(statusValue);
+			provider.setIsActive(status == ProviderStatus.ACTIVE);
+		}
+		catch (IllegalArgumentException e) {
+			provider.setIsActive(null); // This will trigger validation failure later
 		}
 
-		// Valid provider
-		provider.setIsActive(status == ProviderStatus.ACTIVE);
 		return provider;
 	}
 
-	private void createOutputCSV(OutputStream outputStream, Map<Provider, String> failedProvider) {
+	private void createOutputCSV(OutputStream outputStream, Map<Provider, String> failedProvider,
+			List<ProviderWrapper> providerWrappers) {
 		try (OutputStreamWriter writer = new OutputStreamWriter(outputStream);
 				CSVPrinter csvPrinter = new CSVPrinter(writer,
 						CSVFormat.DEFAULT.withHeader("First Name", "Middle Name", "Last Name", "DEA Number",
@@ -252,14 +248,14 @@ public class ProviderServiceImpl implements ProviderService {
 
 			for (Map.Entry<Provider, String> e : failedProvider.entrySet()) {
 				Provider provider = e.getKey();
-				if (provider == null) {
-					continue;
-				}
+				String error = e.getValue();
 
-				// Fix: leave status empty if unknown
-				String status = "";
-				if (provider.getIsActive() != null) {
-					status = provider.getIsActive() ? "ACTIVE" : "INACTIVE";
+				String rawStatus = "";
+				for (ProviderWrapper wrapper : providerWrappers) {
+					if (wrapper.getProvider().equals(provider)) {
+						rawStatus = wrapper.getRawStatusInput();
+						break;
+					}
 				}
 
 				csvPrinter.printRecord(provider.getName() != null ? provider.getName().getFirstName() : "",
@@ -272,8 +268,7 @@ public class ProviderServiceImpl implements ProviderService {
 						provider.getAddress() != null ? provider.getAddress().getCity() : "",
 						provider.getAddress() != null ? provider.getAddress().getZip() : "",
 						provider.getAddress() != null ? provider.getAddress().getState() : "",
-						provider.getPhone() != null ? provider.getPhone() : "", status,
-						e.getValue() != null ? e.getValue() : "");
+						provider.getPhone() != null ? provider.getPhone() : "", rawStatus, error != null ? error : "");
 			}
 		}
 		catch (IOException e) {
