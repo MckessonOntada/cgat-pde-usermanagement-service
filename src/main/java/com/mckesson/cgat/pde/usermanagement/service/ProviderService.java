@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.service;
 
+import com.mckesson.cgat.pde.usermanagement.dto.ProviderAccountsDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.ProviderDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
@@ -30,5 +31,7 @@ public interface ProviderService {
 	Provider updateProviderDetailsById(Long providerId, ProviderDTO model) throws ResourceNotFoundException;
 
 	Provider getProvider(Long providerId) throws ResourceNotFoundException;
+
+	void linkProvidersToAccounts(ProviderAccountsDTO providersAccounts) throws ResourceNotFoundException;
 
 }

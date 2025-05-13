@@ -1,9 +1,11 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
+import com.mckesson.cgat.pde.usermanagement.dto.ProviderAccountsDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.ProviderDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CsvFileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
+import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.Provider;
 import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
@@ -12,6 +14,8 @@ import com.mckesson.cgat.pde.usermanagement.service.ProviderService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -127,6 +131,15 @@ public class ProviderController {
 	@Operation(summary = "Get provider details by Id ")
 	public ResponseEntity<Provider> getProvider(@PathVariable Long providerId) throws ResourceNotFoundException {
 		return new ResponseEntity<>(providerService.getProvider(providerId), HttpStatus.OK);
+	}
+
+	@RequirePermissions({ Permission.MANAGE_PROVIDER })
+	@PatchMapping("/link-accounts")
+	@Operation(summary = "Link multiple provider with multiple sp account.")
+	public ResponseEntity<Void> linkProviderToAccounts(@Valid @RequestBody ProviderAccountsDTO providersAccounts)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
+		providerService.linkProvidersToAccounts(providersAccounts);
+		return ResponseEntity.ok().build();
 	}
 
 }
