@@ -133,7 +133,7 @@ public class ProviderController {
 	}
 
 	@RequirePermissions({ Permission.MANAGE_PROVIDER })
-	@PatchMapping("/providers-accounts")
+	@PatchMapping("/link-accounts")
 	@Operation(summary = "Link multiple provider with multiple sp account.")
 	public ResponseEntity<Void> linkProviderToAccounts(@Valid @RequestBody ProviderAccountsDTO providersAccounts)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
