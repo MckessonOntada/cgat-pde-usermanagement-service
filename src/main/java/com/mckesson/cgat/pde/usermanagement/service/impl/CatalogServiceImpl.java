@@ -100,7 +100,7 @@ public class CatalogServiceImpl implements CatalogService {
 			String soldToAccount, ChannelType channelType) throws ResourceNotFoundException {
 		logSearchDetails(materialId, variant, shipToAccount, soldToAccount);
 		CatalogConfigId id = buildCatalogConfigId(materialId, variant, shipToAccount, soldToAccount);
-		CatalogResponseDTO catalogResponseDTO = catalogServiceRepository.findCatalogDetailsById(id)
+		CatalogResponseDTO catalogResponseDTO = catalogServiceRepository.findCatalogDetailsById(id, channelType)
 			.orElseThrow(() -> new ResourceNotFoundException(CATALOG_CONFIGURATION_NOT_FOUND));
 
 		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
@@ -112,6 +112,7 @@ public class CatalogServiceImpl implements CatalogService {
 
 		catalogDetailsResponseDTO.setCatalogConfiguration(catalogResponseDTO.getCatalogConfiguration());
 		catalogDetailsResponseDTO.setCatalogPrice(catalogResponseDTO.getCatalogPrice());
+		catalogDetailsResponseDTO.setSiteName(catalogResponseDTO.getSiteName());
 		return catalogDetailsResponseDTO;
 	}
 

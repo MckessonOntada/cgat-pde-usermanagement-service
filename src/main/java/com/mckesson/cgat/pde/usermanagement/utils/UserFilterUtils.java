@@ -109,6 +109,7 @@ public class UserFilterUtils {
 		return LoggedInUserDetails.builder()
 			.id(String.valueOf(user.getId()))
 			.name(userName)
+			.contact(user.getContact())
 			.role(user.getRole())
 			.permissions(user.getPermissions())
 			.practiceId(user.getPracticeId())

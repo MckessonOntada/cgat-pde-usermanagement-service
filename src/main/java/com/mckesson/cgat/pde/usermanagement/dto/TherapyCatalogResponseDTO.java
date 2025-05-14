@@ -14,36 +14,9 @@ public interface TherapyCatalogResponseDTO {
 
 	String getNdc();
 
-	String getUdi();
-
 	String getStrength();
 
 	String getDosage();
-
-	String getSellingUnitCode();
-
-	String getVendorName();
-
-	String getUpcCode();
-
-	default String getDropshipIndicator() {
-		return determineDropshipIndicator(getItemCategoryGroup());
-	}
-
-	String getStatus();
-
-	String getBaseUnitOfMeasure();
-
-	String getCgatTherapyType();
-
-	String getSalesOrganization();
-
-	String getProductLevelPricing();
-
-	String getMinimumOrderQuantity();
-
-	@JsonIgnore
-	String getItemCategoryGroup();
 
 	String getChannelType();
 

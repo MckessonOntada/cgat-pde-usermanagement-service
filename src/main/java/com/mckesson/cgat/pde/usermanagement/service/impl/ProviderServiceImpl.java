@@ -1,19 +1,23 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
+import com.mckesson.cgat.pde.usermanagement.dto.ProviderAccountsDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.ProviderDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.ProviderWrapper;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CsvFileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.ResourceConflictException;
+import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.model.Address;
 import com.mckesson.cgat.pde.usermanagement.model.Name;
 import com.mckesson.cgat.pde.usermanagement.model.Provider;
 import com.mckesson.cgat.pde.usermanagement.model.ProviderStatus;
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
+import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.ProviderRepository;
 import com.mckesson.cgat.pde.usermanagement.service.ProviderService;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
+import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -49,11 +54,14 @@ public class ProviderServiceImpl implements ProviderService {
 
 	private final ProviderRepository providerRepository;
 
+	private final AccountRepository accountRepository;
+
 	@Autowired
 	Validator validator;
 
-	public ProviderServiceImpl(ProviderRepository providerRepository) {
+	public ProviderServiceImpl(ProviderRepository providerRepository, AccountRepository accountRepository) {
 		this.providerRepository = providerRepository;
+		this.accountRepository = accountRepository;
 	}
 
 	@Override
@@ -369,6 +377,35 @@ public class ProviderServiceImpl implements ProviderService {
 		if (!errorCodes.isEmpty()) {
 			throw new ResourceConflictException(errorCodes);
 		}
+	}
+
+	@Transactional
+	@Override
+	public void linkProvidersToAccounts(ProviderAccountsDTO providersAccounts) throws ResourceNotFoundException {
+		try {
+			log.info(" Inside method - linkProvidersToAccounts, providerId: {}, accountIds: {} ",
+					providersAccounts.getProviderIds(), providersAccounts.getAccountIds());
+
+			List<Provider> providers = providerRepository.findAllById(providersAccounts.getProviderIds());
+			if (providers.size() != providersAccounts.getProviderIds().size()) {
+				throw new ResourceNotFoundException("Some of the provider IDs do not exist.");
+			}
+
+			List<Account> accounts = accountRepository.findAllById(providersAccounts.getAccountIds());
+			if (accounts.size() != providersAccounts.getAccountIds().size()) {
+				throw new ResourceNotFoundException("Some of the account IDs do not exist.");
+			}
+
+			// Link all providers to each account
+			accounts.stream().map(a -> a.getProviders().addAll(providers)).collect(Collectors.toList());
+			accountRepository.saveAll(accounts);
+			log.info("Successfully linked providers to accounts.");
+		}
+		catch (Exception e) {
+			log.error("Linking provider with SP accounts failed ! ", e);
+			throw new RuntimeException("Linking provider with SP accounts failed ! ", e);
+		}
+
 	}
 
 }
