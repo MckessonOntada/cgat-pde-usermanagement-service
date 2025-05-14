@@ -24,21 +24,25 @@ public interface QuestionnaireConfigurationRepository extends JpaRepository<Ques
 			@Param("questionnaireId") Long questionnaireId, @Param("entityId") String entityId,
 			@Param("configuredType") QuestionnaireConfigurationType configuredType, ChannelType channelType);
 
-	@Query(nativeQuery = true, value = """
-			      SELECT qc.*
-			      FROM catalog.questionnaire_configuration qc
-			      JOIN catalog.questionnaire q ON qc.questionnaire_id = q.id
-			      WHERE q.is_active = 1
-			        AND (
-			              (qc.configured_type = 'Material' AND qc.entity_id = :sapMaterial)
-			           OR (qc.configured_type = 'Account' AND qc.entity_id = :soldToCustomer)
-			           OR (qc.configured_type = 'Catalog' AND qc.entity_id = :catalogId)
-			            )
-			      AND qc.channel_type = :channelType
-			      ;
-			""")
+	@Query(nativeQuery = true,
+			value = """
+					    SELECT qc.*
+					    FROM catalog.questionnaire_configuration qc
+					    JOIN catalog.questionnaire q ON qc.questionnaire_id = q.id
+					    WHERE q.is_active = 1
+					      AND (
+					            (qc.configured_type = 'Material' AND qc.entity_id = :sapMaterial
+					                AND (
+					                    (:isCrosswalked = false AND qc.channel_type = :channelType)
+					                    OR (:isCrosswalked = true AND qc.channel_type = 'BUY_AND_BILL')
+					                )
+					            )
+					         OR (qc.configured_type = 'Account' AND qc.entity_id = :soldToCustomer AND qc.channel_type = :channelType)
+					         OR (qc.configured_type = 'Catalog' AND qc.entity_id = :catalogId AND qc.channel_type = :channelType)
+					          )
+					""")
 	List<QuestionnaireConfiguration> getAllConfiguredQuestionnaires(String sapMaterial, String soldToCustomer,
-			String catalogId, String channelType);
+			String catalogId, String channelType, boolean isCrosswalked);
 
 	@Query(nativeQuery = true, value = """
 			      SELECT qc.*

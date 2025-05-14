@@ -155,14 +155,20 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 	@Override
 	public List<Questionnaire> getAllConfiguredQuestionnaires(String sapMaterial, String soldToCustomer,
 			String shipToCustomer, String variant, ChannelType channelType) {
-		String catalogId = getCatalogId(sapMaterial, soldToCustomer, shipToCustomer, variant);
+		Crosswalk crosswalkDetails = null;
+		if (channelType.equals(ChannelType.SPECIALITY_PHARMA)) {
+			crosswalkDetails = materialCrossWalkConfigRepository.findAllBySpProductIdAndIsActive(sapMaterial, true);
+		}
+
+		String catalogId = getCatalogId(sapMaterial, soldToCustomer, shipToCustomer, variant, channelType.name());
 		List<QuestionnaireConfiguration> allConfiguredQuestionnaires = questionnaireConfigurationRepository
-			.getAllConfiguredQuestionnaires(sapMaterial, soldToCustomer, catalogId, channelType.name());
-		List<Questionnaire> questionnaires = allConfiguredQuestionnaires.stream()
+			.getAllConfiguredQuestionnaires(
+					ObjectUtils.isEmpty(crosswalkDetails) ? sapMaterial : crosswalkDetails.getBnbMaterialNumber(),
+					soldToCustomer, catalogId, channelType.name(), !ObjectUtils.isEmpty(crosswalkDetails));
+		return allConfiguredQuestionnaires.stream()
 			.map(QuestionnaireConfiguration::getQuestionnaireId)
 			.distinct()
-			.collect(Collectors.toList());
-		return questionnaires;
+			.toList();
 
 	}
 

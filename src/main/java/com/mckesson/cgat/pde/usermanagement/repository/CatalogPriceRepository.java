@@ -74,8 +74,8 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 					AND cp.sold_to_customer IN :accountIds
 					AND ac.partner_function = :partnerFunction
 					AND cp.deleted = false
-					AND cp.channel_type = :channelType
-				)
+			        	AND (:channelType = 'ALL' OR cp.channel_type = :channelType)
+			                                       				)
 			""", nativeQuery = true)
 	Page<CatalogPrice> findAllGlobalCatalogs(@Param("accountIds") List<String> accountIds,
 			@Param("partnerFunction") String partnerFunction, @Param("query") String query, Pageable paging,
