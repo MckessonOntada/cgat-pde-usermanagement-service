@@ -157,7 +157,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 			String shipToCustomer, String variant, ChannelType channelType) {
 		Crosswalk crosswalkDetails = null;
 		if (channelType.equals(ChannelType.SPECIALITY_PHARMA)) {
-			crosswalkDetails = materialCrossWalkConfigRepository.findAllBySpProductIdAndIsActive(sapMaterial, true);
+			crosswalkDetails = materialCrossWalkConfigRepository.findBySpProductIdAndIsActive(sapMaterial, true);
 		}
 
 		String catalogId = getCatalogId(sapMaterial, soldToCustomer, shipToCustomer, variant, channelType.name());
