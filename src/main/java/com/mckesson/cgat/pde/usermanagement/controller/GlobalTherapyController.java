@@ -77,7 +77,8 @@ public class GlobalTherapyController {
 					HttpStatus.OK);
 		}
 
-		return new ResponseEntity<>(therapyService.findAllGlobalTherapies(query, paging, channelTypes, status, ignoreCrosswalkedSP),
+		return new ResponseEntity<>(
+				therapyService.findAllGlobalTherapies(query, paging, channelTypes, status, ignoreCrosswalkedSP),
 				HttpStatus.OK);
 	}
 

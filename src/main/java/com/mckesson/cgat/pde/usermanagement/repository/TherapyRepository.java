@@ -346,16 +346,16 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			)
 			AND
 			(
-					(	
-						true = :ignoreCrosswalkedSP 
+					(
+						true = :ignoreCrosswalkedSP
 						and
 						(
 							( m.channel_type = 'SPECIALITY_PHARMA' and m.is_crosswalked = false )
-				        	OR 
+				        	OR
 							m.channel_type = 'BUY_AND_BILL'
 					    )
 					)
-				OR 
+				OR
 			    	:channelTypes = 'ALL'
 			    OR
 			    	m.channel_type = :channelTypes

@@ -285,7 +285,8 @@ public class TherapyServiceImpl implements TherapyService {
 			log.info(" Inside method - findAllGlobalTherapies");
 			log.info("query: {}", StringUtils.toRootLowerCase(query));
 			return therapyRepository.findAllGlobalTherapies(StringUtils.toRootLowerCase(query),
-					getConsolidatedStatus(status), getConsolidatedChannelType(channelTypes), paging, ignoreCrosswalkedSP);
+					getConsolidatedStatus(status), getConsolidatedChannelType(channelTypes), paging,
+					ignoreCrosswalkedSP);
 		}
 		catch (Exception e) {
 			log.error("Exception occurred in findAllGlobalTherapies and exception details", e);
