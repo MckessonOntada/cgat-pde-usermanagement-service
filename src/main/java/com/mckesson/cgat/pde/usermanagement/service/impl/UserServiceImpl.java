@@ -297,8 +297,8 @@ public class UserServiceImpl implements UserService {
 				List<String> userData = record.toList();
 				User user = createUserFromCSVRecord(userData, practiceId);
 				try {
-					attachUserRole(user, userType, userData.get(12).trim(), practiceId);
-					attachAccounts(user, userData.get(13).trim());
+					attachUserRole(user, userType, userData.get(11).trim(), practiceId);
+					attachAccounts(user, userData.get(12).trim());
 					users.add(user);
 				}
 				catch (ResourceNotFoundException e) {
@@ -337,9 +337,8 @@ public class UserServiceImpl implements UserService {
 
 		Contact userContact = Contact.builder()
 			.email(userData.get(8))
-			.countryCode(userData.get(9))
-			.phone(userData.get(10))
-			.fax(userData.get(11))
+			.phone(userData.get(9))
+			.fax(userData.get(10))
 			.build();
 
 		return User.builder()
