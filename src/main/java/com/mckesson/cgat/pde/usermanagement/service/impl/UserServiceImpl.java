@@ -401,8 +401,7 @@ public class UserServiceImpl implements UserService {
 		if (!violations.isEmpty()) {
 			StringBuilder errorMessage = new StringBuilder("Validation errors: ");
 			for (ConstraintViolation<User> violation : violations) {
-				errorMessage.append(violation.getPropertyPath())
-					.append(" ")
+				errorMessage
 					.append(violation.getMessage())
 					.append("; ");
 			}
