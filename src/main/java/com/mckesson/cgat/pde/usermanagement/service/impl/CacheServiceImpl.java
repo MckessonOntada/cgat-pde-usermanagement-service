@@ -52,7 +52,7 @@ public class CacheServiceImpl implements CacheService {
 			log.info(" Inside method - findAllGlobalTherapies");
 			log.info("query: {}", StringUtils.toRootLowerCase(query));
 			return therapyRepository.findAllGlobalTherapies(StringUtils.toRootLowerCase(query), ALL,
-					ChannelType.BUY_AND_BILL.name(), paging);
+					ChannelType.BUY_AND_BILL.name(), paging, false);
 		}
 		catch (Exception e) {
 			log.error("Exception occurred in findAllGlobalTherapies and exception details", e);
