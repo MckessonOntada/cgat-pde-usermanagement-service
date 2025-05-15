@@ -38,7 +38,7 @@ public interface TherapyService {
 			String shipToAccountId, String variantType, String therapyId);
 
 	Page<Therapy> findAllGlobalTherapies(String query, Pageable paging, List<ChannelType> channelTypes,
-			List<String> status);
+			List<String> status, boolean ignoreCrosswalkedSP);
 
 	Page<Therapy> findNonCrosswalkedSPGlobalTherapies(String query, Pageable paging, List<ChannelType> channelTypes,
 			List<String> status, Boolean crosswalked);

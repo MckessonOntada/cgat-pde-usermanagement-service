@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogConfigurationAttributes;
 import com.mckesson.cgat.pde.usermanagement.dto.DeLinkQuestionnaireConfigurationDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.QuestionnaireEntityConfigDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.QuestionnaireConfigurationDTO;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.Questionnaire;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -62,6 +64,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 	public void configureQuestionnaire(QuestionnaireConfigurationType type,
 			QuestionnaireConfigurationDTO questionnaireConfigurationDTO)
 			throws ResourceNotFoundException, BadRequestException {
+		validateQuestionnaireConfigRequest(type, questionnaireConfigurationDTO);
 		List<Questionnaire> questionnaireList = questionnaireRepository
 			.findByIdInAndIsActiveTrue(questionnaireConfigurationDTO.getQuestionnaireIds());
 
@@ -70,62 +73,94 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 		}
 
 		questionnaireList.forEach(q -> q.getConfiguredAt().add(type));
+		Map<ChannelType, Map<String, Set<QuestionnaireConfiguration>>> existingMap = new HashMap<>();
 
-		List<String> entityIds = generateEntityIds(type, questionnaireConfigurationDTO);
+		List<QuestionnaireConfiguration> bnbConfigs = updpateQuestionnaireList(type, ChannelType.BUY_AND_BILL,
+				questionnaireConfigurationDTO.getBnbConfigs(), existingMap, questionnaireList);
+		existingMap = new HashMap<>();
+		List<QuestionnaireConfiguration> spConfigs = updpateQuestionnaireList(type, ChannelType.SPECIALITY_PHARMA,
+				questionnaireConfigurationDTO.getSpConfigs(), existingMap, questionnaireList);
 
-		List<QuestionnaireConfiguration> existingConfigs = questionnaireConfigurationRepository
-			.findByEntityIdInAndConfiguredType(entityIds, type);
-
-		Map<String, Set<QuestionnaireConfiguration>> existingMap = new HashMap<>();
-
-		existingConfigs
-			.forEach(config -> existingMap.computeIfAbsent(config.getEntityId(), k -> new HashSet<>()).add(config));
-
-		List<QuestionnaireConfiguration> questionnaireConfigurationList = questionnaireList.stream()
-			.flatMap(questionnaire -> entityIds.stream()
-				.map(entityId -> existingMap.getOrDefault(entityId, Collections.emptySet())
-					.stream()
-					.filter(config -> config.getQuestionnaireId().getId().equals(questionnaire.getId()))
-					.findFirst()
-					.orElseGet(() -> QuestionnaireConfiguration.builder()
-						.configuredType(type)
-						.questionnaireId(questionnaire)
-						.entityId(entityId)
-						.channelType(questionnaireConfigurationDTO.getChannelType())
-						.build())))
-			.collect(Collectors.toList());
-
+		// Combine all configurations into one list
+		List<QuestionnaireConfiguration> allConfigs = new ArrayList<>();
+		allConfigs.addAll(bnbConfigs != null ? bnbConfigs : Collections.emptyList());
+		allConfigs.addAll(spConfigs != null ? spConfigs : Collections.emptyList());
 		questionnaireRepository.saveAll(questionnaireList);
-		questionnaireConfigurationRepository.saveAll(questionnaireConfigurationList);
+		if (!allConfigs.isEmpty()) {
+			questionnaireConfigurationRepository.saveAll(allConfigs);
+		}
 
 	}
 
-	private List<String> generateEntityIds(QuestionnaireConfigurationType type,
-			QuestionnaireConfigurationDTO questionnaireConfigurationDTO) throws BadRequestException {
+	private void validateQuestionnaireConfigRequest(QuestionnaireConfigurationType type,
+			QuestionnaireConfigurationDTO configDTO) throws BadRequestException {
+		boolean isValid = switch (type) {
+			case Account -> hasAny(configDTO.getBnbConfigs().getAccountNumberList(),
+					configDTO.getSpConfigs().getAccountNumberList());
+			case Material -> hasAny(configDTO.getBnbConfigs().getMaterialNumberList(),
+					configDTO.getSpConfigs().getMaterialNumberList());
+			case Catalog -> hasAny(configDTO.getBnbConfigs().getCatalogIdAttributes(),
+					configDTO.getSpConfigs().getCatalogIdAttributes());
+		};
+
+		if (!isValid) {
+			throw new BadRequestException("Either SP or Bnb " + type + " configuration is required: ");
+		}
+	}
+
+	private <T> boolean hasAny(List<T> bnbList, List<T> spList) {
+		return (bnbList != null && !bnbList.isEmpty()) || (spList != null && !spList.isEmpty());
+	}
+
+	private List<QuestionnaireConfiguration> updpateQuestionnaireList(QuestionnaireConfigurationType configType,
+			ChannelType channelType, QuestionnaireEntityConfigDTO items,
+			Map<ChannelType, Map<String, Set<QuestionnaireConfiguration>>> existingMap,
+			List<Questionnaire> questionnaireList) throws BadRequestException {
+		List<String> configEntityIds = generateEntityIds(configType, items, channelType);
+		if (configEntityIds == null || configEntityIds.isEmpty())
+			return null;
+		List<QuestionnaireConfiguration> existingConfigsOfBnb = questionnaireConfigurationRepository
+			.findByEntityIdInAndConfiguredTypeAndChannelType(configEntityIds, configType, channelType);
+
+		existingConfigsOfBnb.forEach(config -> existingMap.computeIfAbsent(channelType, k -> new HashMap<>())
+			.computeIfAbsent(config.getEntityId(), k -> new HashSet<>())
+			.add(config));
+
+		return questionnaireList.stream().flatMap(questionnaire -> configEntityIds.stream().map(entityId -> {
+
+			Map<String, Set<QuestionnaireConfiguration>> entityMap = existingMap.getOrDefault(channelType,
+					Collections.emptyMap());
+			Set<QuestionnaireConfiguration> configs = entityMap.getOrDefault(entityId, Collections.emptySet());
+
+			return configs.stream()
+				.filter(config -> config.getQuestionnaireId().getId().equals(questionnaire.getId()))
+				.findFirst()
+				.orElseGet(() -> QuestionnaireConfiguration.builder()
+					.configuredType(configType)
+					.questionnaireId(questionnaire)
+					.entityId(entityId)
+					.channelType(channelType)
+					.build());
+		})).collect(Collectors.toList());
+	}
+
+	private List<String> generateEntityIds(QuestionnaireConfigurationType type, QuestionnaireEntityConfigDTO dto,
+			ChannelType channelType) throws BadRequestException {
 		switch (type) {
 			case Account:
-				if (questionnaireConfigurationDTO.getAccountNumberList() == null
-						|| questionnaireConfigurationDTO.getAccountNumberList().isEmpty()) {
-					throw new BadRequestException("Account Number List should not be null or Empty");
-				}
-				return questionnaireConfigurationDTO.getAccountNumberList();
+				return CollectionUtils.isEmpty(dto.getAccountNumberList()) ? null : dto.getAccountNumberList();
 
 			case Material:
-				if (questionnaireConfigurationDTO.getMaterialNumberList() == null
-						|| questionnaireConfigurationDTO.getMaterialNumberList().isEmpty()) {
-					throw new BadRequestException("Material Number List should not be null or Empty");
-				}
-				return questionnaireConfigurationDTO.getMaterialNumberList();
+				return CollectionUtils.isEmpty(dto.getMaterialNumberList()) ? null : dto.getMaterialNumberList();
 
 			case Catalog:
-				if (questionnaireConfigurationDTO.getCatalogIdAttributes() == null
-						|| questionnaireConfigurationDTO.getCatalogIdAttributes().isEmpty()) {
-					throw new BadRequestException("Catalog Id List should not be null or Empty");
+				List<CatalogConfigurationAttributes> catalogs = dto.getCatalogIdAttributes();
+				if (catalogs == null || catalogs.isEmpty()) {
+					return null;
 				}
-				return questionnaireConfigurationDTO.getCatalogIdAttributes()
-					.stream()
-					.map(catalog -> getCatalogId(catalog.getSapMaterial(), catalog.getSoldToCustomer(),
-							catalog.getShipToCustomer(), catalog.getVariant()))
+				return catalogs.stream()
+					.map(c -> getCatalogId(c.getSapMaterial(), c.getSoldToCustomer(), c.getShipToCustomer(),
+							c.getVariant(), channelType.name()))
 					.collect(Collectors.toList());
 
 			default:
@@ -141,9 +176,11 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 			.orElseThrow(() -> new ResourceNotFoundException(
 					"Questionnaire not found with Id: " + dto.getQuestionnaireId()));
 
-		String entityId = getEntityId(dto.getMaterialNumber(), dto.getAccountNumber(), dto.getCatalogId(), type);
+		String entityId = getEntityId(dto.getMaterialNumber(), dto.getAccountNumber(), dto.getCatalogId(), type,
+				dto.getChannelType());
 		questionnaireConfigurationRepository.deleteByQuestionnaireIdAndEntityIdAndConfiguredTypeAndChannelType(
 				dto.getQuestionnaireId(), entityId, type, dto.getChannelType());
+
 		long count = questionnaireConfigurationRepository
 			.countByQuestionnaireIdAndConfiguredType(dto.getQuestionnaireId(), type);
 		if (count == 0) {
@@ -201,7 +238,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 			.shipToCustomer(shipToCustomer)
 			.sapMaterial(sapMaterial)
 			.build();
-		String entityId = getEntityId(sapMaterial, soldToCustomer, catalogConfigurationAttributes, type);
+		String entityId = getEntityId(sapMaterial, soldToCustomer, catalogConfigurationAttributes, type, channelType);
 
 		List<QuestionnaireConfiguration> allConfiguredQuestionnaires = questionnaireConfigurationRepository
 			.getAllConfiguredQuestionnairesForSpecificType(entityId, type.name(), channelType.name());
@@ -214,7 +251,8 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 	}
 
 	private String getEntityId(String materialNumber, String accountNumber,
-			CatalogConfigurationAttributes catalogAttributes, QuestionnaireConfigurationType type) {
+			CatalogConfigurationAttributes catalogAttributes, QuestionnaireConfigurationType type,
+			ChannelType channelType) {
 		switch (type) {
 			case Account:
 				if (accountNumber == null)
@@ -228,13 +266,14 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 				if (catalogAttributes == null)
 					throw new IllegalArgumentException("CatalogId should not be null");
 				return getCatalogId(catalogAttributes.getSapMaterial(), catalogAttributes.getSoldToCustomer(),
-						catalogAttributes.getShipToCustomer(), catalogAttributes.getVariant());
+						catalogAttributes.getShipToCustomer(), catalogAttributes.getVariant(), channelType.name());
 			default:
 				throw new IllegalArgumentException("Unknown configuration type: " + type);
 		}
 	}
 
-	private String getCatalogId(String sapMaterial, String soldToCustomer, String shipToCustomer, String variant) {
+	private String getCatalogId(String sapMaterial, String soldToCustomer, String shipToCustomer, String variant,
+			String channelType) {
 		List<String> parts = new ArrayList<>();
 		parts.add(sapMaterial);
 		parts.add(soldToCustomer);
@@ -243,6 +282,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 		if (StringUtils.isNotEmpty(variant)) {
 			parts.add(variant);
 		}
+		parts.add(channelType);
 
 		// Join the parts with "_"
 		return String.join("_", parts);

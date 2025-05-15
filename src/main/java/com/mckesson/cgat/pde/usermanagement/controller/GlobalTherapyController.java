@@ -63,7 +63,8 @@ public class GlobalTherapyController {
 			@RequestParam(defaultValue = "asc") String sortOrder,
 			@RequestParam(required = false) List<ChannelType> channelTypes,
 			@RequestParam(required = false) List<String> status,
-			@RequestParam(required = false) Boolean showNonCrosswalked) {
+			@RequestParam(required = false) Boolean showNonCrosswalked,
+			@RequestParam(defaultValue = "false") Boolean ignoreCrosswalkedSP) {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
@@ -76,7 +77,8 @@ public class GlobalTherapyController {
 					HttpStatus.OK);
 		}
 
-		return new ResponseEntity<>(therapyService.findAllGlobalTherapies(query, paging, channelTypes, status),
+		return new ResponseEntity<>(
+				therapyService.findAllGlobalTherapies(query, paging, channelTypes, status, ignoreCrosswalkedSP),
 				HttpStatus.OK);
 	}
 
