@@ -32,7 +32,7 @@ jobs:
   deploy:
     name: "${{ github.event.inputs.deploy-environment }} deploy tag : ${{ github.event.inputs.image-tag }}"
     environment: ${{ github.event.inputs.deploy-environment }}
-    runs-on: kube-deploy
+    runs-on: runners-on-k8s
     defaults:
       run:
         shell: bash
