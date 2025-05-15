@@ -4,10 +4,8 @@ import com.mckesson.cgat.pde.usermanagement.dto.CatalogConfigurationAttributes;
 import com.mckesson.cgat.pde.usermanagement.dto.DeLinkQuestionnaireConfigurationDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.QuestionnaireEntityConfigDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.QuestionnaireConfigurationDTO;
-import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
-import com.mckesson.cgat.pde.usermanagement.model.Questionnaire;
-import com.mckesson.cgat.pde.usermanagement.model.QuestionnaireConfiguration;
-import com.mckesson.cgat.pde.usermanagement.model.QuestionnaireConfigurationType;
+import com.mckesson.cgat.pde.usermanagement.model.*;
+import com.mckesson.cgat.pde.usermanagement.repository.MaterialCrossWalkConfigRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.QuestionnaireConfigurationRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.QuestionnaireRepository;
 import com.mckesson.cgat.pde.usermanagement.service.QuestionnaireService;
@@ -20,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -34,10 +33,14 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 
 	private final QuestionnaireConfigurationRepository questionnaireConfigurationRepository;
 
+	private final MaterialCrossWalkConfigRepository materialCrossWalkConfigRepository;
+
 	public QuestionnaireServiceImpl(QuestionnaireRepository questionnaireRepository,
-			QuestionnaireConfigurationRepository questionnaireConfigurationRepository) {
+			QuestionnaireConfigurationRepository questionnaireConfigurationRepository,
+			MaterialCrossWalkConfigRepository materialCrossWalkConfigRepository) {
 		this.questionnaireRepository = questionnaireRepository;
 		this.questionnaireConfigurationRepository = questionnaireConfigurationRepository;
+		this.materialCrossWalkConfigRepository = materialCrossWalkConfigRepository;
 	}
 
 	@Override
