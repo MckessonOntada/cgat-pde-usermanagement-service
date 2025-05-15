@@ -9,6 +9,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.mckesson.cgat.pde.usermanagement.dto.*;
+import com.mckesson.cgat.pde.usermanagement.model.*;
+import com.mckesson.cgat.pde.usermanagement.repository.*;
 import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -18,18 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.mckesson.cgat.pde.usermanagement.mapper.CatalogPriceMapper;
-import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
-import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
-import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
-import com.mckesson.cgat.pde.usermanagement.model.Questionnaire;
-import com.mckesson.cgat.pde.usermanagement.model.QuestionnaireConfigurationType;
-import com.mckesson.cgat.pde.usermanagement.model.ShippingLocation;
-import com.mckesson.cgat.pde.usermanagement.model.Therapy;
-import com.mckesson.cgat.pde.usermanagement.model.TherapyConfig;
-import com.mckesson.cgat.pde.usermanagement.repository.CatalogPriceRepository;
-import com.mckesson.cgat.pde.usermanagement.repository.ShippingLocationRepository;
-import com.mckesson.cgat.pde.usermanagement.repository.TherapyConfigRepository;
-import com.mckesson.cgat.pde.usermanagement.repository.TherapyRepository;
 import com.mckesson.cgat.pde.usermanagement.service.QuestionnaireService;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
 import com.mckesson.cgat.pde.usermanagement.utils.OrganizationContext;
@@ -39,6 +29,7 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 @Service
 @Slf4j
@@ -56,15 +47,19 @@ public class TherapyServiceImpl implements TherapyService {
 
 	private final ShippingLocationRepository shippingLocationRepository;
 
+	private final MaterialCrossWalkConfigRepository materialCrossWalkConfigRepository;
+
 	public TherapyServiceImpl(TherapyRepository therapyRepository, CatalogPriceRepository catalogPriceRepository,
 			CatalogPriceMapper catalogPriceMapper, TherapyConfigRepository therapyConfigRepository,
-			QuestionnaireService questionnaireService, ShippingLocationRepository shippingLocationRepository) {
+			QuestionnaireService questionnaireService, ShippingLocationRepository shippingLocationRepository,
+			MaterialCrossWalkConfigRepository materialCrossWalkConfigRepository) {
 		this.therapyRepository = therapyRepository;
 		this.catalogPriceRepository = catalogPriceRepository;
 		this.catalogPriceMapper = catalogPriceMapper;
 		this.therapyConfigRepository = therapyConfigRepository;
 		this.questionnaireService = questionnaireService;
 		this.shippingLocationRepository = shippingLocationRepository;
+		this.materialCrossWalkConfigRepository = materialCrossWalkConfigRepository;
 	}
 
 	public Page<TherapyCatalogResponseDTO> findAllTherapies(Long userId, String query, List<String> salesOrg,
@@ -350,9 +345,16 @@ public class TherapyServiceImpl implements TherapyService {
 			.findDetailedByMaterialNumber(materialNumber, channelType)
 			.orElseThrow(() -> new ResourceNotFoundException(
 					"Therapy config not found with materialNumber: " + materialNumber));
+		Crosswalk crosswalkDetails = null;
+		if (channelType.equals(ChannelType.SPECIALITY_PHARMA)
+				&& Boolean.TRUE.equals(responseDTO.getTherapy().getIsCrosswalked())) {
+			crosswalkDetails = materialCrossWalkConfigRepository.findBySpProductIdAndIsActive(materialNumber, true);
+		}
 
 		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
-				QuestionnaireConfigurationType.Material, materialNumber, "", "", "", channelType);
+				QuestionnaireConfigurationType.Material,
+				ObjectUtils.isEmpty(crosswalkDetails) ? materialNumber : crosswalkDetails.getBnbMaterialNumber(), "",
+				"", "", ObjectUtils.isEmpty(crosswalkDetails) ? channelType : ChannelType.BUY_AND_BILL);
 
 		MaterialDetailsResponseDTO materialDetailsResponseDTO = MaterialDetailsResponseDTO.builder()
 			.questionnaires(questionnaires)
