@@ -89,18 +89,18 @@ public class TherapyServiceImpl implements TherapyService {
 
 	public Page<AccountsResponseDTO> findAllShipToAccounts(String soldToAccountId, String therapyId, Pageable paging,
 			String query, ChannelType channelType) {
-
+		String loweredCaseQuery = StringUtils.toRootLowerCase(query);
 		if (channelType.equals(ChannelType.SPECIALITY_PHARMA)) {
-			Page<ShippingLocation> shippingLocations = shippingLocationRepository.findAllByQueryText(query, paging,
-					OrganizationContext.getCurrentOrgId(), Long.valueOf(soldToAccountId));
+			Page<ShippingLocation> shippingLocations = shippingLocationRepository.findAllByQueryText(loweredCaseQuery,
+					paging, OrganizationContext.getCurrentOrgId(), Long.valueOf(soldToAccountId));
 			List<AccountsResponseDTO> mappedShipTo = shippingLocations.getContent()
 				.stream()
 				.map(this::mapToAccountsResponse)
 				.collect(Collectors.toList());
 			return new PageImpl<>(mappedShipTo, paging, mappedShipTo.size());
 		}
-		return therapyRepository.findAllShipToAccounts(soldToAccountId, therapyId, StringUtils.toRootLowerCase(query),
-				paging, AccountPartnerFunction.SHIP_TO.getPartnerFunctionType());
+		return therapyRepository.findAllShipToAccounts(soldToAccountId, therapyId, loweredCaseQuery, paging,
+				AccountPartnerFunction.SHIP_TO.getPartnerFunctionType());
 	}
 
 	private AccountsResponseDTOImpl mapToAccountsResponse(ShippingLocation location) {
