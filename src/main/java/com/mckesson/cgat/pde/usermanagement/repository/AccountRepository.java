@@ -129,7 +129,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 					(
 						:query IS NULL
 					 	OR LOWER(ac1.name_1) LIKE %:query%
-					 	OR LOWER(ac1.sap_customer) LIKE %:query%
+					 	OR LOWER(ac1.sap_partner) LIKE %:query%
 					)
 					AND
 					uam.user_id = :userId
