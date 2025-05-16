@@ -1,13 +1,10 @@
 package com.mckesson.cgat.pde.usermanagement.dto;
 
-import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
-import jakarta.annotation.Nullable;
-import jakarta.validation.Valid;
+import java.util.List;
+
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-
-import java.util.List;
 
 @Data
 public class QuestionnaireConfigurationDTO {
@@ -16,14 +13,8 @@ public class QuestionnaireConfigurationDTO {
 	@Size(min = 1, message = "QuestionnaireIds should not be empty")
 	List<Long> questionnaireIds;
 
-	List<String> materialNumberList;
+	QuestionnaireEntityConfigDTO bnbConfigs;
 
-	List<String> accountNumberList;
-
-	@Nullable
-	@Valid
-	List<CatalogConfigurationAttributes> catalogIdAttributes;
-
-	ChannelType channelType = ChannelType.BUY_AND_BILL;
+	QuestionnaireEntityConfigDTO spConfigs;
 
 }

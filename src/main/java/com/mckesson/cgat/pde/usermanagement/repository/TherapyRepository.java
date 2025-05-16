@@ -327,14 +327,28 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			    OR (:statusActive = 'ACTIVE' AND m.item_status = 'A')
 			    OR (:statusActive = 'INACTIVE' AND m.item_status = 'V')
 			)
-			AND
-			(
-			    :channelTypes = 'ALL'
-			    OR m.channel_type = :channelTypes
-			)
+			AND (
+				    (
+				      :ignoreCrosswalkedSP = true
+				      AND
+				      (
+					    (m.channel_type = 'SPECIALITY_PHARMA' AND m.is_crosswalked = false)
+					    OR m.channel_type = 'BUY_AND_BILL'
+					  )
+				    )
+				 OR
+				   (
+				      :ignoreCrosswalkedSP = false
+				      AND
+				      (
+				        :channelTypes = 'ALL'
+				        OR m.channel_type = :channelTypes
+				      )
+				    )
+				)
 			""", nativeQuery = true)
 	Page<Therapy> findAllGlobalTherapies(@Param("query") String query, String statusActive, String channelTypes,
-			Pageable paging);
+			Pageable paging, @Param("ignoreCrosswalkedSP") boolean ignoreCrosswalkedSP);
 
 	List<Therapy> findByMaterialNumberInAndChannelTypeAndItemStatus(Set<String> productIds, ChannelType channelType,
 			String itemStatus);
