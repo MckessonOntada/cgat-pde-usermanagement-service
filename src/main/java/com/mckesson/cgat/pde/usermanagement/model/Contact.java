@@ -35,7 +35,7 @@ public class Contact implements Serializable {
 	private String email;
 
 	@Size(min = 2, max = 5, message = "Must be valid Country code", groups = BasicInfo.class)
-	@Pattern(regexp = "^[+0-9]+$", message = "Must be numeric", groups = BasicInfo.class)
+	@Pattern(regexp = "^[+0-9]+$", message = "Country code must be numeric", groups = BasicInfo.class)
 	private String countryCode;
 
 	@NotEmpty(message = "Phone Number is required", groups = BasicInfo.class)
@@ -43,7 +43,7 @@ public class Contact implements Serializable {
 	private String phone;
 
 	@Size(max = 15, groups = BasicInfo.class)
-	@Pattern(regexp = "^[\\d ]*$", message = "Must be numeric", groups = BasicInfo.class)
+	@Pattern(regexp = "^[\\d ]*$", message = "Fax must be numeric", groups = BasicInfo.class)
 	private String fax;
 
 }
