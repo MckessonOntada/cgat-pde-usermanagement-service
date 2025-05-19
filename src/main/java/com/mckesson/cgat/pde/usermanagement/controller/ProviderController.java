@@ -10,12 +10,14 @@ import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.Provider;
 import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
+import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.cgat.pde.usermanagement.service.ProviderService;
+import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
+import com.mckesson.cgat.pde.usermanagement.utils.OrganizationContext;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -51,8 +53,11 @@ public class ProviderController {
 
 	private final ProviderService providerService;
 
-	public ProviderController(ProviderService providerService) {
+	private final AccountService accountService;
+
+	public ProviderController(ProviderService providerService, AccountService accountService) {
 		this.providerService = providerService;
+		this.accountService = accountService;
 	}
 
 	@RequirePermissions({ Permission.UPLOAD_PROVIDER })
@@ -140,6 +145,23 @@ public class ProviderController {
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		providerService.linkProvidersToAccounts(providersAccounts);
 		return ResponseEntity.ok().build();
+	}
+
+	@RequirePermissions({ Permission.MANAGE_PROVIDERS_SCREEN })
+	@GetMapping("/{providerId}/accounts")
+	@Operation(summary = "Get Account List by providerId")
+	public ResponseEntity<Page<Account>> getAccountsByProviderId(@RequestParam(defaultValue = "0") Integer pageNo,
+			@RequestParam(defaultValue = "20") Integer pageSize,
+			@RequestParam(defaultValue = "sap_partner") String sortBy,
+			@RequestParam(defaultValue = "desc") String sortOrder, @RequestParam(required = false) String query,
+			@PathVariable @NotNull(message = "Practice ID cannot be null") Long practiceId,
+			@PathVariable @NotNull(message = "Provider ID cannot be null") Long providerId)
+			throws ResourceNotFoundException {
+		Sort sort = CustomUtils.SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
+				: Sort.by(sortBy).descending();
+		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
+		return new ResponseEntity<>(accountService.findAccountsByProviderId(query,
+				OrganizationContext.getCurrentOrgId(), providerId, paging), HttpStatus.OK);
 	}
 
 }

@@ -286,4 +286,14 @@ public class AccountServiceImpl implements AccountService {
 				practiceIdList, partnerFunction.getPartnerFunctionType(), salesOrg, distChannels, channelType.name());
 	}
 
+	public Page<Account> findAccountsByProviderId(String query, Long practiceId, Long providerId, Pageable paging)
+			throws ResourceNotFoundException {
+		query = StringUtils.toRootLowerCase(query);
+
+		providerRepository.findById(providerId)
+			.orElseThrow(() -> new ResourceNotFoundException("Provider not found with id:" + providerId.toString()));
+		return accountRepository.findAccountsByProviderId(query, practiceId, providerId,
+				ChannelType.SPECIALITY_PHARMA.name(), paging);
+	}
+
 }

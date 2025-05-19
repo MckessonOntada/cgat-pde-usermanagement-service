@@ -228,4 +228,26 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	@Query(value = "DELETE FROM usermanagement.user_account_mapping WHERE account_id = :accountId", nativeQuery = true)
 	void delinkUsersFromAccount(Long accountId);
 
+	@Query(nativeQuery = true, value = """
+			select *
+			FROM usermanagement.account ua
+			JOIN usermanagement.account_provider_mapping apm ON ua.id = apm.account_id
+			WHERE
+			(
+				(
+					:query IS NULL
+				 	OR LOWER(ua.name_1) LIKE %:query%
+				 	OR LOWER(ua.sap_partner) LIKE %:query%
+				 	OR LOWER(ua.full_address) LIKE %:query%
+				)
+				AND
+			     	ua.tenant_id =:practiceId
+				AND
+					apm.provider_id =:providerId
+			    AND
+			    	ua.channel_type = :channelType
+			)""")
+	Page<Account> findAccountsByProviderId(@Param("query") String query, @Param("practiceId") Long practiceId,
+			@Param("providerId") Long providerId, @Param("channelType") String channelType, Pageable paging);
+
 }
