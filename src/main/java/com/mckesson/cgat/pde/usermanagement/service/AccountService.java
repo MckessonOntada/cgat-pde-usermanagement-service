@@ -52,4 +52,7 @@ public interface AccountService {
 			AccountPartnerFunction partnerFunction, List<String> salesOrg, List<String> distChannels,
 			ChannelType channelType);
 
+	Page<Account> findAccountsByProviderId(String query, Long practiceId, Long providerId, Pageable paging)
+			throws ResourceNotFoundException;
+
 }
