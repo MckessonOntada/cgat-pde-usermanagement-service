@@ -37,6 +37,6 @@ public interface CatalogServiceRepository extends JpaRepository<CatalogConfigura
 			""")
 	Optional<CatalogResponseDTO> findCatalogDetailsById(@Param("id") CatalogConfigId id, ChannelType channelType);
 
-	int removeCatalogConfigurationById(CatalogConfigId id);
+	int removeCatalogConfigurationByIdAndChannelType(CatalogConfigId id, ChannelType channelType);
 
 }
