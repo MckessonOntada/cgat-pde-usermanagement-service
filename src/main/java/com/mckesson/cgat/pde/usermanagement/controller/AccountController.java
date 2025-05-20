@@ -146,7 +146,7 @@ public class AccountController {
 		return accountService.linkAccountToProviders(accountId, providerIds);
 	}
 
-	@RequirePermissions({ Permission.ADD_SP_ACCOUNT })
+	@RequirePermissions({ Permission.ADD_SP_ACCOUNT, Permission.MANAGE_PROVIDERS_SCREEN })
 	@DeleteMapping("/{accountId}/providers")
 	@Operation(summary = "Delink account from providers.")
 	public ResponseEntity<Void> delinkAccountFromProvider(
