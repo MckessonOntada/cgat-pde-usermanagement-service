@@ -87,7 +87,11 @@ public class CatalogServiceImpl implements CatalogService {
 					.variant(StringUtils.isNotEmpty(attr.getVariant()) ? attr.getVariant() : UNKNOWN)
 					.build();
 
-				return CatalogConfiguration.builder().id(id).steps(configurationDTO.getSteps()).build();
+				return CatalogConfiguration.builder()
+					.id(id)
+					.steps(configurationDTO.getSteps())
+					.channelType(configurationDTO.getChannelType())
+					.build();
 			})
 			.toList();
 
