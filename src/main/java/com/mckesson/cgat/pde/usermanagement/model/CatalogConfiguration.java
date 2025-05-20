@@ -31,4 +31,8 @@ public class CatalogConfiguration {
 	@JdbcTypeCode(SqlTypes.JSON)
 	private List<StepDTO> steps;
 
+	@Enumerated(EnumType.STRING)
+	@Column(name = "channel_type")
+	private ChannelType channelType;
+
 }
