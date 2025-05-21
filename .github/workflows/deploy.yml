@@ -75,7 +75,7 @@ jobs:
         source /gke/gke-clusters.config
         source /aks/aks-clusters.config
 
-        if [ "$ENV" = "prod" ]; then
+        if [ "$ENV" = "prod" ] || [ "$ENV" = "stage" ]; then
           PROD=$(eval "echo \${CLUSTER_TYPE}_\${CLUSTER_REGION}PROD")
           SHARED_CLUSTER="\$${PROD}"
         elif [ "$ENV" = "prod-dr" ]; then
