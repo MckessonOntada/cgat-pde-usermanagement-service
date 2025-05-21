@@ -55,4 +55,7 @@ public interface AccountService {
 	Page<Account> findAccountsByProviderId(String query, Long practiceId, Long providerId, Pageable paging)
 			throws ResourceNotFoundException;
 
+	Page<Account> findUnlinkedAccountsOfProviderIds(String query, Long practiceId, List<Long> providerIds,
+			Pageable paging) throws ResourceNotFoundException;
+
 }

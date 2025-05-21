@@ -18,6 +18,7 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -162,6 +163,24 @@ public class ProviderController {
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 		return new ResponseEntity<>(accountService.findAccountsByProviderId(query,
 				OrganizationContext.getCurrentOrgId(), providerId, paging), HttpStatus.OK);
+	}
+
+	@RequirePermissions({ Permission.MANAGE_PROVIDERS_SCREEN })
+	@GetMapping("/unlinked-accounts")
+	@Operation(summary = "Get unlinked Accounts of providers by provider ids")
+	public ResponseEntity<Page<Account>> getUnlinkedAccountsOfProviderIds(
+			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize,
+			@RequestParam(defaultValue = "sap_partner") String sortBy,
+			@RequestParam(defaultValue = "desc") String sortOrder, @RequestParam(required = false) String query,
+			@PathVariable @NotNull(message = "Practice ID cannot be null") Long practiceId,
+			@RequestParam(required = false) List<String> status,
+			@RequestBody @NotEmpty(message = "Provider IDs cannot be empty") List<Long> providerIds)
+			throws ResourceNotFoundException {
+		Sort sort = CustomUtils.SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
+				: Sort.by(sortBy).descending();
+		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
+		return new ResponseEntity<>(accountService.findUnlinkedAccountsOfProviderIds(query,
+				OrganizationContext.getCurrentOrgId(), providerIds, paging), HttpStatus.OK);
 	}
 
 }

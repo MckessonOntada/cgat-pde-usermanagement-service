@@ -250,4 +250,28 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	Page<Account> findAccountsByProviderId(@Param("query") String query, @Param("practiceId") Long practiceId,
 			@Param("providerId") Long providerId, @Param("channelType") String channelType, Pageable paging);
 
+	@Query(nativeQuery = true, value = """
+				SELECT ua.*
+				FROM usermanagement.account ua
+				WHERE
+				    (:query IS NULL OR
+				     LOWER(ua.name_1) LIKE %:query% OR
+				     LOWER(ua.sap_partner) LIKE %:query% OR
+				     LOWER(ua.full_address) LIKE %:query%
+				     )
+				  AND
+				  	ua.tenant_id = :practiceId
+				  AND
+				  	ua.channel_type = :channelType
+				  AND
+				  	(
+				      SELECT COUNT(DISTINCT apm.provider_id)
+				      FROM usermanagement.account_provider_mapping apm
+				      WHERE apm.account_id = ua.id AND apm.provider_id IN (:providerIds)
+				  	) < :providerCount
+			""")
+	Page<Account> findUnlinkedAccountsOfProviderIds(@Param("query") String query, @Param("practiceId") Long practiceId,
+			@Param("providerIds") List<Long> providerIds, @Param("channelType") String channelType, Pageable paging,
+			@Param("providerCount") int providerCount);
+
 }

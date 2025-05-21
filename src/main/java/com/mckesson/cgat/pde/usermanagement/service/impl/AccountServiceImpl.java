@@ -296,4 +296,12 @@ public class AccountServiceImpl implements AccountService {
 				ChannelType.SPECIALITY_PHARMA.name(), paging);
 	}
 
+	public Page<Account> findUnlinkedAccountsOfProviderIds(String query, Long practiceId, List<Long> providerIds,
+			Pageable paging) throws ResourceNotFoundException {
+		query = StringUtils.toRootLowerCase(query);
+
+		return accountRepository.findUnlinkedAccountsOfProviderIds(query, practiceId, providerIds,
+				ChannelType.SPECIALITY_PHARMA.name(), paging, providerIds.size());
+	}
+
 }
