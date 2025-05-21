@@ -21,8 +21,8 @@ public interface CatalogService {
 	CatalogDetailsResponseDTO findCatalogConfiguration(String materialId, String variant, String shipToAccount,
 			String soldToAccount, ChannelType channelType) throws ResourceNotFoundException;
 
-	void deleteCatalogConfiguration(String materialId, String variant, String shipToAccount, String soldToAccount)
-			throws ResourceNotFoundException;
+	void deleteCatalogConfiguration(String materialId, String variant, String shipToAccount, String soldToAccount,
+			ChannelType channelType) throws ResourceNotFoundException;
 
 	CatalogConfiguration findCatalogConf(@NotNull(message = "'materialId' cannot be null") String materialId,
 			String variant,

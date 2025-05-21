@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import java.io.IOException;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.mckesson.cgat.pde.usermanagement.dto.PracticeLogoResponseDto;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
@@ -78,6 +79,7 @@ public class PracticeController {
 
 	private Practice parsePractice(String practiceJson) throws IOException {
 		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		return objectMapper.readValue(practiceJson, Practice.class);
 	}
 

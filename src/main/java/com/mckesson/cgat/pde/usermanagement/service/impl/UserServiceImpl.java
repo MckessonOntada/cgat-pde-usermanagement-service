@@ -339,6 +339,7 @@ public class UserServiceImpl implements UserService {
 			.email(userData.get(8))
 			.phone(userData.get(9))
 			.fax(userData.get(10))
+			.countryCode("+1")
 			.build();
 
 		return User.builder()
