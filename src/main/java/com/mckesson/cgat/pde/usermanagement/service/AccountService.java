@@ -50,7 +50,7 @@ public interface AccountService {
 
 	Page<Account> findAllByOrganization(Pageable paging, String query, List<String> status, List<Long> practiceIdList,
 			AccountPartnerFunction partnerFunction, List<String> salesOrg, List<String> distChannels,
-			ChannelType channelType);
+			ChannelType channelType, boolean allSPAccounts);
 
 	Page<Account> findAccountsByProviderId(String query, Long practiceId, Long providerId, Pageable paging)
 			throws ResourceNotFoundException;

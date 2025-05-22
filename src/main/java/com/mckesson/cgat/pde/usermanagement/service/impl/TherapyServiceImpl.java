@@ -291,13 +291,13 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	public Page<CatalogPrice> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging,
-			ChannelType channelType) {
+			ChannelType channelType, List<Long> practiceIdList, boolean allSPCatalogs) {
 		try {
 			log.info(" Inside method - findAllGlobalCatalogs");
 			log.info("accountIds : {}, query: {}", accountIds, StringUtils.toRootLowerCase(query));
 			return catalogPriceRepository.findAllGlobalCatalogs(accountIds,
 					AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), StringUtils.toRootLowerCase(query), paging,
-					channelType.name());
+					channelType.name(), practiceIdList, allSPCatalogs, practiceIdList.size());
 		}
 		catch (Exception e) {
 			log.error("Exception occurred in findAllGlobalCatalogs and exception details", e);

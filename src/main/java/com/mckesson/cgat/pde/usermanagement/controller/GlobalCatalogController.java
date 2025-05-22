@@ -56,12 +56,15 @@ public class GlobalCatalogController {
 			@NotEmpty(message = "Account Numbers can not be empty") @RequestParam List<String> accountNumbers,
 			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType,
 			@RequestParam(defaultValue = "sap_material") String sortBy,
-			@RequestParam(defaultValue = "desc") String sortOrder) {
+			@RequestParam(defaultValue = "desc") String sortOrder,
+			@RequestParam(required = false) List<Long> practiceIdList,
+			@RequestParam(defaultValue = "false") boolean allSPCatalogs) {
+
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-		return new ResponseEntity<>(therapyService.findAllGlobalCatalogs(accountNumbers, query, paging, channelType),
-				HttpStatus.OK);
+		return new ResponseEntity<>(therapyService.findAllGlobalCatalogs(accountNumbers, query, paging, channelType,
+				practiceIdList, allSPCatalogs), HttpStatus.OK);
 	}
 
 	@RequirePermissions({ Permission.MANAGE_CATALOG })

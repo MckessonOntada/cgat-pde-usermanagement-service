@@ -280,10 +280,11 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public Page<Account> findAllByOrganization(Pageable paging, String query, List<String> status,
 			List<Long> practiceIdList, AccountPartnerFunction partnerFunction, List<String> salesOrg,
-			List<String> distChannels, ChannelType channelType) {
+			List<String> distChannels, ChannelType channelType, boolean allSPAccounts) {
 		query = StringUtils.toRootLowerCase(query);
 		return accountRepository.findAllOrganizations(query, CustomUtils.getConsolidatedStatus(status), paging,
-				practiceIdList, partnerFunction.getPartnerFunctionType(), salesOrg, distChannels, channelType.name());
+				practiceIdList, partnerFunction.getPartnerFunctionType(), salesOrg, distChannels, channelType.name(),
+				allSPAccounts);
 	}
 
 	public Page<Account> findAccountsByProviderId(String query, Long practiceId, Long providerId, Pageable paging)
