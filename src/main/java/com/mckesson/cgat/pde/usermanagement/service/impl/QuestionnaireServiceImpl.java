@@ -220,7 +220,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 
 	@Override
 	public void deactivateQuestionnaires(List<Long> questionnaireIds) throws ResourceNotFoundException {
-		List<Questionnaire> questionnaires = questionnaireRepository.findAllById(questionnaireIds);
+		List<Questionnaire> questionnaires = questionnaireRepository.findByIdInAndIsActiveTrue(questionnaireIds);
 		if (questionnaires.size() != questionnaireIds.size()) {
 			throw new ResourceNotFoundException("One or more questionnaire not found");
 		}
