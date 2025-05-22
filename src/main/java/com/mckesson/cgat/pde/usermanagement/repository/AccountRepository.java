@@ -6,7 +6,6 @@ import java.util.Set;
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 
-import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
