@@ -166,7 +166,7 @@ public class ProviderController {
 	}
 
 	@RequirePermissions({ Permission.MANAGE_PROVIDERS_SCREEN })
-	@GetMapping("/unlinked-accounts")
+	@PostMapping("/unlinked-accounts")
 	@Operation(summary = "Get unlinked Accounts of providers by provider ids")
 	public ResponseEntity<Page<Account>> getUnlinkedAccountsOfProviderIds(
 			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize,
