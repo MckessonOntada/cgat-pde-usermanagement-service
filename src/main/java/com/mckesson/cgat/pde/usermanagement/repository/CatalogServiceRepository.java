@@ -24,10 +24,10 @@ public interface CatalogServiceRepository extends JpaRepository<CatalogConfigura
 			    ON c.id.materialId = p.sapMaterial
 			    AND c.id.soldToAccount = p.soldToCustomer
 			    AND c.id.shipToAccount = p.shipToCustomer
+			    AND c.channelType = :channelType
 			    AND (c.id.variant = p.variant
 			         OR (c.id.variant = 'unknown' AND p.variant IS NULL)
 			    )
-			    AND :channelType = 'BUY_AND_BILL'
 			    WHERE p.sapMaterial = :#{#id.materialId}
 			    AND p.soldToCustomer = :#{#id.soldToAccount}
 			    AND p.shipToCustomer = :#{#id.shipToAccount}
@@ -37,6 +37,6 @@ public interface CatalogServiceRepository extends JpaRepository<CatalogConfigura
 			""")
 	Optional<CatalogResponseDTO> findCatalogDetailsById(@Param("id") CatalogConfigId id, ChannelType channelType);
 
-	int removeCatalogConfigurationById(CatalogConfigId id);
+	int removeCatalogConfigurationByIdAndChannelType(CatalogConfigId id, ChannelType channelType);
 
 }

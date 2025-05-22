@@ -88,11 +88,13 @@ public class GlobalCatalogController {
 
 	@RequirePermissions({ Permission.MANAGE_CATALOG })
 	@DeleteMapping("/configuration")
-	@Operation(summary = "Delete catalog configuration using materialId, variant, soldTo account and shipTo account")
+	@Operation(
+			summary = "Delete catalog configuration using materialId, variant, soldTo account, shipTo account and channelType")
 	public ResponseEntity<String> deleteCatalogConfiguration(@RequestParam String materialId,
 			@RequestParam(required = false) String variant, @RequestParam String shipToAccount,
-			@RequestParam String soldToAccount) throws ResourceNotFoundException {
-		catalogService.deleteCatalogConfiguration(materialId, variant, shipToAccount, soldToAccount);
+			@RequestParam String soldToAccount, @RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType)
+			throws ResourceNotFoundException {
+		catalogService.deleteCatalogConfiguration(materialId, variant, shipToAccount, soldToAccount, channelType);
 		return ResponseEntity.ok("Configuration removed");
 	}
 

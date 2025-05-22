@@ -22,9 +22,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.flywaydb.core.internal.util.CollectionsUtils;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -87,7 +85,11 @@ public class CatalogServiceImpl implements CatalogService {
 					.variant(StringUtils.isNotEmpty(attr.getVariant()) ? attr.getVariant() : UNKNOWN)
 					.build();
 
-				return CatalogConfiguration.builder().id(id).steps(configurationDTO.getSteps()).build();
+				return CatalogConfiguration.builder()
+					.id(id)
+					.steps(configurationDTO.getSteps())
+					.channelType(configurationDTO.getChannelType())
+					.build();
 			})
 			.toList();
 
@@ -119,10 +121,10 @@ public class CatalogServiceImpl implements CatalogService {
 	@Override
 	@Transactional
 	public void deleteCatalogConfiguration(String materialId, String variant, String shipToAccount,
-			String soldToAccount) throws ResourceNotFoundException {
+			String soldToAccount, ChannelType channelType) throws ResourceNotFoundException {
 		CatalogConfigId id = buildCatalogConfigId(materialId, variant, shipToAccount, soldToAccount);
 
-		int deletedCount = catalogServiceRepository.removeCatalogConfigurationById(id);
+		int deletedCount = catalogServiceRepository.removeCatalogConfigurationByIdAndChannelType(id, channelType);
 
 		if (deletedCount == 0) {
 			throw new ResourceNotFoundException(CATALOG_CONFIGURATION_NOT_FOUND);
