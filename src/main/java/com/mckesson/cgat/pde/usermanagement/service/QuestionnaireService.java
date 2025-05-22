@@ -33,7 +33,7 @@ public interface QuestionnaireService {
 
 	Page<Questionnaire> findAll(Pageable paging, String query, List<String> status);
 
-	void deactivateQuestionnaire(Long questionnaireId) throws ResourceNotFoundException;
+	void deactivateQuestionnaires(List<Long> questionnaireId) throws ResourceNotFoundException;
 
 	Questionnaire fetchQuestionnaireById(Long questionnaireId) throws ResourceNotFoundException;
 
