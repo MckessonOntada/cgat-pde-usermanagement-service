@@ -83,14 +83,22 @@ public class TherapyController {
 
 	}
 
+	private static final Map<String, String> SHIPPING_ACCOUNTS_SORTBY_MAPPING = Map.of("bnb_account_number",
+			"ac.sap_partner", "sp_account_number", "id", "bnb_account_name", "ac.name_1", "sp_account_name", "name");
+
 	@GetMapping("{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccounts")
 	@Operation(
 			summary = "Find all shipto accounts that is linked to the selected soldto account and the therapy also being offered from that shipto account")
 	public Page<AccountsResponseDTO> findAllShipToAccountsForTherapy(@PathVariable String soldToAccountId,
 			@PathVariable String therapyId, @RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
+			@RequestParam(defaultValue = "sap_partner") String sortBy,
+			@RequestParam(defaultValue = "desc") String sortOrder,
 			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) {
-		Pageable paging = PageRequest.of(pageNo, pageSize);
+		sortBy = SHIPPING_ACCOUNTS_SORTBY_MAPPING.getOrDefault(sortBy, "sap_partner");
+		Sort sort = CustomUtils.SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
+				: Sort.by(sortBy).descending();
+		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 		return therapyService.findAllShipToAccounts(soldToAccountId, therapyId, paging, query, channelType);
 	}
 
