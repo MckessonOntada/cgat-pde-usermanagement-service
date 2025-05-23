@@ -69,7 +69,7 @@ public class ShippingLocationController {
 		return ResponseEntity.noContent().build();
 	}
 
-	@RequirePermissions({ Permission.ADD_SP_ACCOUNT, Permission.MANAGE_SP_ACCOUNT })
+	@RequirePermissions({ Permission.ADD_SP_ACCOUNT, Permission.MANAGE_SP_ACCOUNT, Permission.MANAGE_LINKED_ACCOUNTS })
 	@GetMapping
 	@Operation(summary = "Fetch all Shipping Locations based on filter provided with pagination capabilities.")
 	Page<ShippingLocation> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
