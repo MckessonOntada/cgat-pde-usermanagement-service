@@ -3,6 +3,9 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.mckesson.cgat.pde.usermanagement.notification.config.InAppNotificationCategory;
+import com.mckesson.cgat.pde.usermanagement.notification.config.InAppNotificationEventType;
+import com.mckesson.cgat.pde.usermanagement.notification.service.InAppNotificationEventService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,6 +18,7 @@ import com.mckesson.cgat.pde.usermanagement.model.UserProvisioningStatus;
 import com.mckesson.cgat.pde.usermanagement.repository.UserProvisioningRequestRepo;
 import com.mckesson.cgat.pde.usermanagement.service.UserProvisioningRequestService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserProvisioningRequestServiceImpl implements UserProvisioningRequestService {
@@ -22,9 +26,16 @@ public class UserProvisioningRequestServiceImpl implements UserProvisioningReque
 	@Autowired
 	private UserProvisioningRequestRepo userProvisioningRequestRepo;
 
+	@Autowired
+	private InAppNotificationEventService inAppNotificationEventService;
+
 	@Override
+	@Transactional
 	public UserProvisioningRequest createUserProvisioning(UserProvisioningRequest request) {
-		return userProvisioningRequestRepo.save(request);
+		UserProvisioningRequest savedUser = userProvisioningRequestRepo.save(request);
+		inAppNotificationEventService.saveInAppNotification(savedUser.getId(),
+				InAppNotificationCategory.USER_MANAGEMENT, InAppNotificationEventType.USER_SIGNUP_REQUEST);
+		return savedUser;
 	}
 
 	@Override
