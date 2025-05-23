@@ -15,77 +15,79 @@ import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
 
 public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long> {
 
-    @Query(value = """
-             SELECT DISTINCT  cp.*
-             FROM catalog.catalog_price cp
-             JOIN catalog.material m ON m.material_number = cp.sap_material
-             WHERE
-             	cp.sold_to_customer = :soldToAccountId
-             AND
-                 cp.ship_to_customer = :shipToAccountId
-            AND
-                cp.sap_material = :therapyId
-              	AND
-            	cp.variant is not null
-            AND
-            	cp.deleted = false
-            """, nativeQuery = true)
-    Page<CatalogPrice> findAllCatalogPricesLinkedToShipToAccountsForTherapy(
-            @Param("soldToAccountId") String soldToAccountId, @Param("shipToAccountId") String shipToAccountId,
-            @Param("therapyId") String therapyId, Pageable paging);
+	@Query(value = """
+			 SELECT DISTINCT  cp.*
+			 FROM catalog.catalog_price cp
+			 JOIN catalog.material m ON m.material_number = cp.sap_material
+			 WHERE
+			 	cp.sold_to_customer = :soldToAccountId
+			 AND
+			     cp.ship_to_customer = :shipToAccountId
+			AND
+			    cp.sap_material = :therapyId
+			  	AND
+				cp.variant is not null
+			AND
+				cp.deleted = false
+			""", nativeQuery = true)
+	Page<CatalogPrice> findAllCatalogPricesLinkedToShipToAccountsForTherapy(
+			@Param("soldToAccountId") String soldToAccountId, @Param("shipToAccountId") String shipToAccountId,
+			@Param("therapyId") String therapyId, Pageable paging);
 
-    @Query("""
-                SELECT new com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponse(cp, m.productLevelPricing)
-            	 FROM CatalogPrice cp
-            	 JOIN Therapy m ON m.materialNumber = cp.sapMaterial
-            	 WHERE
-            		cp.soldToCustomer = :soldToAccountId
-            	 AND
-            		 cp.shipToCustomer = :shipToAccountId
-            	AND
-            		cp.sapMaterial = :therapyId
-                 AND
-            	  cp.deleted = false
-            	AND
-            		(
-            		 :variantType IS NULL
-            		 OR cp.variant = :variantType
-            		)
-            """)
-    Page<CatalogPriceResponse> findPriceOfVariantLinkedToShipToAccountsForTherapy(
-            @Param("soldToAccountId") String soldToAccountId, @Param("shipToAccountId") String shipToAccountId,
-            @Param("therapyId") String therapyId, @Param("variantType") String variantType, Pageable pageable);
+	@Query("""
+			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponse(cp, m.productLevelPricing)
+				 FROM CatalogPrice cp
+				 JOIN Therapy m ON m.materialNumber = cp.sapMaterial
+				 WHERE
+					cp.soldToCustomer = :soldToAccountId
+				 AND
+					 cp.shipToCustomer = :shipToAccountId
+				AND
+					cp.sapMaterial = :therapyId
+			     AND
+				  cp.deleted = false
+				AND
+					(
+					 :variantType IS NULL
+					 OR cp.variant = :variantType
+					)
+			""")
+	Page<CatalogPriceResponse> findPriceOfVariantLinkedToShipToAccountsForTherapy(
+			@Param("soldToAccountId") String soldToAccountId, @Param("shipToAccountId") String shipToAccountId,
+			@Param("therapyId") String therapyId, @Param("variantType") String variantType, Pageable pageable);
 
-    @Query(value = """
-            SELECT DISTINCT cp.*
-            FROM catalog.catalog_price cp
-            JOIN usermanagement.account ac on cp.sold_to_customer = ac.sap_customer
-            WHERE
-            	(
-            		(
-            			:query is null
-            			or LOWER(cp.ndc) like %:query%
-            			or LOWER(cp.udi) like %:query%
-            			or LOWER(cp.dist_channel) like %:query%
-            			or LOWER(cp.sap_material) like %:query%
-            			or LOWER(cp.sold_to_customer) like %:query%
-            			or LOWER(cp.material_description_in_language_en) like %:query%
-            		)
-            AND (
-                       (:allSPCatalogs = false AND cp.sold_to_customer IN :accountIds)
-                    OR (:allSPCatalogs = true AND :practiceIdListSize > 0 AND ac.tenant_id IN :practiceIdList)
-                    OR (:allSPCatalogs = true AND :practiceIdListSize = 0)
-                 )
-                    AND ac.partner_function = :partnerFunction
-            		AND cp.deleted = false
-                    	AND (:channelType = 'ALL' OR cp.channel_type = :channelType)
-                   )
-            """, nativeQuery = true)
-    Page<CatalogPrice> findAllGlobalCatalogs(@Param("accountIds") List<String> accountIds,
-                                             @Param("partnerFunction") String partnerFunction, @Param("query") String query, Pageable paging,
-                                             @Param("channelType") String channelType, List<Long> practiceIdList, boolean allSPCatalogs, int practiceIdListSize);
+	@Query(value = """
+			SELECT DISTINCT cp.*
+			FROM catalog.catalog_price cp
+			JOIN usermanagement.account ac on cp.sold_to_customer = ac.sap_customer
+			WHERE
+				(
+					(
+						:query is null
+						or LOWER(cp.ndc) like %:query%
+						or LOWER(cp.udi) like %:query%
+						or LOWER(cp.dist_channel) like %:query%
+						or LOWER(cp.sap_material) like %:query%
+						or LOWER(cp.sold_to_customer) like %:query%
+						or LOWER(cp.material_description_in_language_en) like %:query%
+					)
+			AND (
+			           (:allSPCatalogs = false AND cp.sold_to_customer IN :accountIds)
+			        OR (:allSPCatalogs = true AND :practiceIdListSize = 0 AND cp.tenant_id IS NOT NULL)
+			        OR (:allSPCatalogs = true AND :practiceIdListSize > 0 AND cp.tenant_id IN :practiceIdList)
 
-    Optional<CatalogPrice> findBySapMaterialAndSoldToCustomerAndChannelType(String sapMaterial, String soldToCustomer,
-                                                                            ChannelType channelType);
+			     )
+			        AND ac.partner_function = :partnerFunction
+					AND cp.deleted = false
+			        	AND (:channelType = 'ALL' OR cp.channel_type = :channelType)
+			       )
+			""", nativeQuery = true)
+	Page<CatalogPrice> findAllGlobalCatalogs(@Param("accountIds") List<String> accountIds,
+			@Param("partnerFunction") String partnerFunction, @Param("query") String query, Pageable paging,
+			@Param("channelType") String channelType, List<Integer> practiceIdList, boolean allSPCatalogs,
+			int practiceIdListSize);
+
+	Optional<CatalogPrice> findBySapMaterialAndSoldToCustomerAndChannelType(String sapMaterial, String soldToCustomer,
+			ChannelType channelType);
 
 }

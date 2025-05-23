@@ -44,7 +44,7 @@ public interface TherapyService {
 			List<String> status, Boolean crosswalked);
 
 	Page<CatalogPrice> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging,
-			ChannelType channelType, List<Long> practiceIdList, boolean allSPCatalogs);
+			ChannelType channelType, List<Integer> practiceIdList, boolean allCatalogs);
 
 	Therapy findByMaterialNumber(String materialNumber, ChannelType channelType) throws ResourceNotFoundException;
 

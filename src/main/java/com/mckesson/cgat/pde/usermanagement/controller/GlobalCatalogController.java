@@ -53,18 +53,18 @@ public class GlobalCatalogController {
 	@Operation(summary = "Fetch all catalogs for provided soldTo accounts lists.")
 	public ResponseEntity<Page<CatalogPrice>> findAllCatalogs(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
-			@NotEmpty(message = "Account Numbers can not be empty") @RequestParam List<String> accountNumbers,
+			@RequestParam(required = false) List<String> accountNumbers,
 			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType,
 			@RequestParam(defaultValue = "sap_material") String sortBy,
 			@RequestParam(defaultValue = "desc") String sortOrder,
-			@RequestParam(required = false) List<Long> practiceIdList,
-			@RequestParam(defaultValue = "false") boolean allSPCatalogs) {
+			@RequestParam(required = false) List<Integer> practiceIdList,
+			@RequestParam(defaultValue = "false") boolean allCatalogs) {
 
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 		return new ResponseEntity<>(therapyService.findAllGlobalCatalogs(accountNumbers, query, paging, channelType,
-				practiceIdList, allSPCatalogs), HttpStatus.OK);
+				practiceIdList, allCatalogs), HttpStatus.OK);
 	}
 
 	@RequirePermissions({ Permission.MANAGE_CATALOG })

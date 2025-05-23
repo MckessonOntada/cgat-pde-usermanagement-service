@@ -13,6 +13,7 @@ import com.mckesson.cgat.pde.usermanagement.model.*;
 import com.mckesson.cgat.pde.usermanagement.repository.*;
 import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.flywaydb.core.internal.util.CollectionsUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -291,13 +292,17 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	public Page<CatalogPrice> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging,
-			ChannelType channelType, List<Long> practiceIdList, boolean allSPCatalogs) {
+			ChannelType channelType, List<Integer> practiceIdList, boolean allCatalogs) {
 		try {
 			log.info(" Inside method - findAllGlobalCatalogs");
 			log.info("accountIds : {}, query: {}", accountIds, StringUtils.toRootLowerCase(query));
+			int size = 0;
+			if (CollectionsUtils.hasItems(practiceIdList)) {
+				size = practiceIdList.size();
+			}
 			return catalogPriceRepository.findAllGlobalCatalogs(accountIds,
 					AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), StringUtils.toRootLowerCase(query), paging,
-					channelType.name(), practiceIdList, allSPCatalogs, practiceIdList.size());
+					channelType.name(), size == 0 ? Collections.emptyList() : practiceIdList, allCatalogs, size);
 		}
 		catch (Exception e) {
 			log.error("Exception occurred in findAllGlobalCatalogs and exception details", e);
