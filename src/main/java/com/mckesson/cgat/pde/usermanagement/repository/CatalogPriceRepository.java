@@ -75,7 +75,6 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 			           (:allSPCatalogs = false AND cp.sold_to_customer IN :accountIds)
 			        OR (:allSPCatalogs = true AND :practiceIdListSize = 0 AND cp.tenant_id IS NOT NULL)
 			        OR (:allSPCatalogs = true AND :practiceIdListSize > 0 AND cp.tenant_id IN :practiceIdList)
-
 			     )
 			        AND ac.partner_function = :partnerFunction
 					AND cp.deleted = false
