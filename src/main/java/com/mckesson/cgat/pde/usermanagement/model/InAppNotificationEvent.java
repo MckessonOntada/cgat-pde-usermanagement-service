@@ -8,8 +8,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.type.NumericBooleanConverter;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Builder
 @Entity
@@ -23,7 +26,7 @@ public class InAppNotificationEvent implements Serializable {
 
 	private static final String SEQUENCE_GENERATOR_NAME = "IN_APP_NOTIFICATION_SEQUENCE";
 
-	@jakarta.persistence.Id
+	@Id
 	@GeneratedValue(generator = SEQUENCE_GENERATOR_NAME, strategy = GenerationType.SEQUENCE)
 	@SequenceGenerator(name = SEQUENCE_GENERATOR_NAME, sequenceName = SEQUENCE_GENERATOR_NAME, allocationSize = 1)
 	private Long id;
@@ -42,5 +45,14 @@ public class InAppNotificationEvent implements Serializable {
 	@Column(name = "notification_category")
 	@Enumerated(EnumType.STRING)
 	private InAppNotificationCategory notificationCategory;
+
+	@Column(name = "created_at")
+	@CreatedDate
+	@Temporal(TemporalType.TIMESTAMP)
+	private LocalDateTime createdAt;
+
+	@Column(name = "created_by")
+	@CreatedBy
+	private String createdBy;
 
 }
