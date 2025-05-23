@@ -157,7 +157,7 @@ public class AccountController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
-	@RequirePermissions({ Permission.ADD_SP_ACCOUNT })
+	@RequirePermissions({ Permission.ADD_SP_ACCOUNT, Permission.MANAGE_LINKED_ACCOUNTS })
 	@GetMapping("/{accountId}/providers")
 	@Operation(summary = "Fetch all providers not linked to a specific Account with pagination.")
 	public Page<Provider> findNonLinkedAccountsByProviderId(
