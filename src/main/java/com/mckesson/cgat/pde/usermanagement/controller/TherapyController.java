@@ -48,6 +48,9 @@ public class TherapyController {
 	// List.of("10"), "All",
 	// List.of("10", "20", "30", "40", "50", "60"));
 
+	private static final Map<String, String> SHIPPING_ACCOUNTS_SORTBY_MAPPING = Map.of("bnb_account_number",
+			"ac.sap_partner", "sp_account_number", "id", "bnb_account_name", "ac.name_1", "sp_account_name", "name");
+
 	public TherapyController(TherapyService therapyService) {
 		this.therapyService = therapyService;
 	}
@@ -83,9 +86,6 @@ public class TherapyController {
 
 	}
 
-	private static final Map<String, String> SHIPPING_ACCOUNTS_SORTBY_MAPPING = Map.of("bnb_account_number",
-			"ac.sap_partner", "sp_account_number", "id", "bnb_account_name", "ac.name_1", "sp_account_name", "name");
-
 	@GetMapping("{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccounts")
 	@Operation(
 			summary = "Find all shipto accounts that is linked to the selected soldto account and the therapy also being offered from that shipto account")
@@ -95,7 +95,14 @@ public class TherapyController {
 			@RequestParam(defaultValue = "sap_partner") String sortBy,
 			@RequestParam(defaultValue = "desc") String sortOrder,
 			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) {
-		sortBy = SHIPPING_ACCOUNTS_SORTBY_MAPPING.getOrDefault(sortBy, "sap_partner");
+
+		if (channelType == ChannelType.BUY_AND_BILL) {
+			sortBy = SHIPPING_ACCOUNTS_SORTBY_MAPPING.getOrDefault(sortBy, "ac.sap_partner");
+		}
+		else {
+			sortBy = SHIPPING_ACCOUNTS_SORTBY_MAPPING.getOrDefault(sortBy, "id");
+		}
+
 		Sort sort = CustomUtils.SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
