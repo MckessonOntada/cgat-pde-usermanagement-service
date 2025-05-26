@@ -1,35 +1,31 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
-import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.THERAPY_ITEM_STATUS_ACTIVE;
-import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.getConsolidatedChannelType;
-import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.getConsolidatedStatus;
-
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import com.mckesson.cgat.pde.usermanagement.dto.*;
+import com.mckesson.cgat.pde.usermanagement.mapper.CatalogPriceMapper;
+import com.mckesson.cgat.pde.usermanagement.mapper.TradeCatalogResponseMapper;
 import com.mckesson.cgat.pde.usermanagement.model.*;
 import com.mckesson.cgat.pde.usermanagement.repository.*;
+import com.mckesson.cgat.pde.usermanagement.service.QuestionnaireService;
+import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
+import com.mckesson.cgat.pde.usermanagement.utils.OrganizationContext;
 import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
+import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import com.mckesson.cgat.pde.usermanagement.mapper.CatalogPriceMapper;
-import com.mckesson.cgat.pde.usermanagement.service.QuestionnaireService;
-import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
-import com.mckesson.cgat.pde.usermanagement.utils.OrganizationContext;
-import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
-
-import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.*;
 
 @Service
 @Slf4j
@@ -62,10 +58,14 @@ public class TherapyServiceImpl implements TherapyService {
 		this.materialCrossWalkConfigRepository = materialCrossWalkConfigRepository;
 	}
 
-	public Page<TherapyCatalogResponseDTO> findAllTherapies(Long userId, String query, List<String> salesOrg,
+	public Page<TradeCatalogResponseDTO> findAllTherapies(Long userId, String query, List<String> salesOrg,
 			Pageable paging, List<String> customerIdentifier) {
-		return therapyRepository.findAllTherapies(userId, StringUtils.toRootLowerCase(query), salesOrg,
-				customerIdentifier, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), paging);
+		Page<TherapyCatalogResponseDTO> projections = therapyRepository.findAllTherapies(userId,
+				StringUtils.toRootLowerCase(query), salesOrg, customerIdentifier,
+				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), paging);
+
+		Page<TradeCatalogResponseDTO> map = projections.map(TradeCatalogResponseMapper::mapToTradeCatalogResponse);
+		return map;
 
 	}
 

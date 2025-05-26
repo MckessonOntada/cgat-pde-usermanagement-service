@@ -55,11 +55,11 @@ public class TherapyController {
 	@GetMapping
 	@Operation(
 			summary = "Find all therapies being offered via catalog for all accounts that the logged in user has access")
-	public Page<TherapyCatalogResponseDTO> findAllThreapies(@RequestParam(defaultValue = "0") Integer pageNo,
+	public Page<TradeCatalogResponseDTO> findAllThreapies(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
 			@RequestParam(required = false) List<String> salesOrg,
 			@RequestParam(required = false) List<String> customerIdentifier,
-			@RequestParam(defaultValue = "material_description") String sortBy,
+			@RequestParam(defaultValue = "trade_name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder) {
 		Sort sort = CustomUtils.SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();

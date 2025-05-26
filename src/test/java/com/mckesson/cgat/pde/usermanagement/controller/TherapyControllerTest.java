@@ -76,6 +76,11 @@ public class TherapyControllerTest {
 
 		TherapyCatalogResponseDTO therapy1 = new TherapyCatalogResponseDTO() {
 			@Override
+			public String getTradeName() {
+				return "";
+			}
+
+			@Override
 			public String getId() {
 				return "";
 			}
