@@ -115,6 +115,16 @@ public class TherapyControllerTest {
 				return "";
 			}
 
+			@Override
+			public String getManufacturerName() {
+				return "";
+			}
+
+			@Override
+			public String getGenericName() {
+				return "";
+			}
+
 		};
 
 		when(therapyService.findAllTherapies(anyLong(), anyString(), anyList(), any(Pageable.class), anyList()))

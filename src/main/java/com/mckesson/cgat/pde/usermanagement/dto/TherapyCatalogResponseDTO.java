@@ -18,4 +18,8 @@ public interface TherapyCatalogResponseDTO {
 
 	String getChannelType();
 
+	String getManufacturerName();
+
+	String getGenericName();
+
 }

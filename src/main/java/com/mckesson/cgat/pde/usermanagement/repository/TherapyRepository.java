@@ -24,7 +24,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 	@Query(value = """
 			         WITH COMBINED AS  (
 			             SELECT m.id, m.material_number as material_number, m.material_description as material_description,
-			                    m.ndc_number as ndc, m.strength, m.dosage, m.channel_Type, m.trade_name
+			                    m.ndc_number as ndc, m.strength, m.dosage, m.channel_Type, m.trade_name, m.manufacturer_name, m.generic_name
 			             FROM catalog.material m
 			             JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material AND m.channel_type = cp.channel_type
 			             JOIN usermanagement.account ac  ON ac.sap_customer = cp.sold_to_customer
@@ -42,7 +42,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			             union distinct
 
 			             select  m.id, m.material_number as material_number, m.material_description as material_description,
-			                    m.ndc_number as ndc, m.strength, m.dosage, m.channel_Type,  m.trade_name
+			                    m.ndc_number as ndc, m.strength, m.dosage, m.channel_Type,  m.trade_name, m.manufacturer_name, m.generic_name
 			             FROM catalog.material m
 			             JOIN catalog.crosswalk cw
 			                 ON cw.bnb_material_number = m.material_number
@@ -68,7 +68,9 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						STRING_AGG(DISTINCT com.material_description, ', ') AS therapyDescription,
 						STRING_AGG(DISTINCT com.ndc, ', ') AS ndc,
 						STRING_AGG(DISTINCT com.strength, ', ') AS strength,
-						STRING_AGG(DISTINCT com.dosage, ', ') AS dosage
+						STRING_AGG(DISTINCT com.dosage, ', ') AS dosage,
+						STRING_AGG(DISTINCT com.manufacturer_name, ', ') AS manufacturerName,
+						STRING_AGG(DISTINCT com.generic_name, ', ') AS genericName
 			         from COMBINED com
 					 where (
 						cast(:query as varchar) is null
@@ -84,7 +86,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 							SELECT COUNT(*) FROM (
 					         WITH COMBINED AS (
 							 SELECT m.id, m.material_number as material_number, m.material_description as material_description,
-					                  m.ndc_number as ndc, m.strength, m.dosage, m.channel_Type,  m.trade_name
+					                  m.ndc_number as ndc, m.strength, m.dosage, m.channel_Type,  m.trade_name, m.manufacturer_name, m.generic_name
 					         FROM catalog.material m
 					         JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material AND m.channel_type = cp.channel_type
 					         JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
@@ -103,7 +105,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					         UNION distinct
 
 							 SELECT m.id, m.material_number as material_number, m.material_description as material_description,
-					                  m.ndc_number as ndc, m.strength, m.dosage, m.channel_Type,  m.trade_name
+					                  m.ndc_number as ndc, m.strength, m.dosage, m.channel_Type,  m.trade_name, m.manufacturer_name, m.generic_name
 					         FROM catalog.material m
 					         JOIN catalog.crosswalk cw ON cw.bnb_material_number = m.material_number
 					         JOIN catalog.catalog_price cp ON cp.sap_material = cw.sp_product_id
@@ -126,6 +128,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 							STRING_AGG(DISTINCT com.ndc, ', ') AS ndc,
 							STRING_AGG(DISTINCT com.strength, ', ') AS strength,
 							STRING_AGG(DISTINCT com.dosage, ', ') AS dosage
+							STRING_AGG(DISTINCT com.manufacturer_name, ', ') AS manufacturerName
+							STRING_AGG(DISTINCT com.generic_name, ', ') AS genericName
 							FROM COMBINED com
 					         where (
 								cast(:query as varchar) is null

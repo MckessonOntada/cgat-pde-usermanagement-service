@@ -27,8 +27,11 @@ public class TradeCatalogResponseMapper {
 		String[] ndcs = splitSafe(row.getNdc());
 		String[] strengths = splitSafe(row.getStrength());
 		String[] dosages = splitSafe(row.getDosage());
+		String[] manufacturerNames = splitSafe(row.getManufacturerName());
+		String[] genericNames = splitSafe(row.getGenericName());
 
-		int maxLength = maxLength(ids, therapyNumbers, descriptions, ndcs, strengths, dosages);
+		int maxLength = maxLength(ids, therapyNumbers, descriptions, ndcs, strengths, dosages, manufacturerNames,
+				genericNames);
 
 		List<TherapyDTO> result = new ArrayList<>(maxLength);
 
@@ -40,6 +43,8 @@ public class TradeCatalogResponseMapper {
 			dto.setNdc(safeGet(ndcs, i));
 			dto.setStrength(safeGet(strengths, i));
 			dto.setDosage(safeGet(dosages, i));
+			dto.setManufacturerName(safeGet(manufacturerNames, i));
+			dto.setGenericName(safeGet(genericNames, i));
 			result.add(dto);
 		}
 

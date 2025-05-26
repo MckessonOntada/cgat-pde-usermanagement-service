@@ -19,4 +19,8 @@ public class TherapyDTO {
 
 	private String dosage;
 
+	private String genericName;
+
+	private String manufacturerName;
+
 }
