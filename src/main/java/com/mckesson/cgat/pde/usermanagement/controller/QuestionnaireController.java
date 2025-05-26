@@ -91,11 +91,11 @@ public class QuestionnaireController {
 				shipToCustomer, variant, channelType), HttpStatus.OK);
 	}
 
-	@PatchMapping("/{questionnaireId}/deactivate")
-	@Operation(summary = "Deactivate questionnaire by Id")
-	public ResponseEntity<Void> deactivateQuestionnaire(@PathVariable Long questionnaireId)
+	@PatchMapping("/deactivate")
+	@Operation(summary = "Deactivate multiple questionnaires by IDs")
+	public ResponseEntity<Void> deactivateQuestionnaires(@RequestBody List<Long> questionnaireIds)
 			throws ResourceNotFoundException {
-		questionnaireService.deactivateQuestionnaire(questionnaireId);
+		questionnaireService.deactivateQuestionnaires(questionnaireIds);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 

@@ -219,10 +219,15 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 	}
 
 	@Override
-	public void deactivateQuestionnaire(Long questionnaireId) throws ResourceNotFoundException {
-		Questionnaire questionnaire = fetchQuestionnaireById(questionnaireId);
-		questionnaire.setActive(false);
-		questionnaireRepository.save(questionnaire);
+	public void deactivateQuestionnaires(List<Long> questionnaireIds) throws ResourceNotFoundException {
+		List<Questionnaire> questionnaires = questionnaireRepository.findByIdInAndIsActiveTrue(questionnaireIds);
+		if (questionnaires.size() != questionnaireIds.size()) {
+			throw new ResourceNotFoundException("One or more questionnaire not found");
+		}
+		for (Questionnaire q : questionnaires) {
+			q.setActive(false);
+		}
+		questionnaireRepository.saveAll(questionnaires);
 	}
 
 	@Override
