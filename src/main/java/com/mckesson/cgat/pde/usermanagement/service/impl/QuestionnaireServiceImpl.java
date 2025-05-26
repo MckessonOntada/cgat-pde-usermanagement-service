@@ -100,8 +100,8 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 		boolean isValid = switch (type) {
 			case Account -> hasAny(configDTO.getBnbConfigs().getAccountNumberList(),
 					configDTO.getSpConfigs().getAccountNumberList());
-			case Material -> hasAny(configDTO.getBnbConfigs().getMaterialNumberList(),
-					configDTO.getSpConfigs().getMaterialNumberList());
+			case Material -> hasAny(configDTO.getBnbConfigs().getTradeNameList(),
+					configDTO.getSpConfigs().getTradeNameList());
 			case Catalog -> hasAny(configDTO.getBnbConfigs().getCatalogIdAttributes(),
 					configDTO.getSpConfigs().getCatalogIdAttributes());
 		};
@@ -122,10 +122,10 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 		List<String> configEntityIds = generateEntityIds(configType, items, channelType);
 		if (configEntityIds == null || configEntityIds.isEmpty())
 			return null;
-		List<QuestionnaireConfiguration> existingConfigsOfBnb = questionnaireConfigurationRepository
+		List<QuestionnaireConfiguration> existingConfigs = questionnaireConfigurationRepository
 			.findByEntityIdInAndConfiguredTypeAndChannelType(configEntityIds, configType, channelType);
 
-		existingConfigsOfBnb.forEach(config -> existingMap.computeIfAbsent(channelType, k -> new HashMap<>())
+		existingConfigs.forEach(config -> existingMap.computeIfAbsent(channelType, k -> new HashMap<>())
 			.computeIfAbsent(config.getEntityId(), k -> new HashSet<>())
 			.add(config));
 
@@ -154,7 +154,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 				return CollectionUtils.isEmpty(dto.getAccountNumberList()) ? null : dto.getAccountNumberList();
 
 			case Material:
-				return CollectionUtils.isEmpty(dto.getMaterialNumberList()) ? null : dto.getMaterialNumberList();
+				return CollectionUtils.isEmpty(dto.getTradeNameList()) ? null : dto.getTradeNameList();
 
 			case Catalog:
 				List<CatalogConfigurationAttributes> catalogs = dto.getCatalogIdAttributes();
