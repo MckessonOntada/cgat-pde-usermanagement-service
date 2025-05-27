@@ -24,7 +24,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 	@Query(value = """
 			         WITH COMBINED AS  (
 			             SELECT m.id, m.material_number as material_number, m.material_description as material_description,
-			                    m.ndc_number as ndc, m.strength, m.dosage, m.channel_Type as channelType
+			                    m.ndc_number as ndc, m.strength, m.dosage, m.channel_Type, m.trade_name, m.manufacturer_name, m.generic_name
 			             FROM catalog.material m
 			             JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material AND m.channel_type = cp.channel_type
 			             JOIN usermanagement.account ac  ON ac.sap_customer = cp.sold_to_customer
@@ -42,7 +42,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			             union distinct
 
 			             select  m.id, m.material_number as material_number, m.material_description as material_description,
-			                    m.ndc_number as ndc, m.strength, m.dosage, m.channel_Type as channelType
+			                    m.ndc_number as ndc, m.strength, m.dosage, m.channel_Type,  m.trade_name, m.manufacturer_name, m.generic_name
 			             FROM catalog.material m
 			             JOIN catalog.crosswalk cw
 			                 ON cw.bnb_material_number = m.material_number
@@ -62,25 +62,31 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 								cw.is_active = 1
 							AND ac.is_active = 1
 			         )
-			         SELECT com.id, com.material_number as therapyId, com.material_description as therapyDescription,
-							com.ndc, com.strength, com.dosage, com.channelType
+			         SELECT
+						com.trade_name as tradeName, com.channel_type AS channelType, STRING_AGG(DISTINCT com.id::text, ', ') AS id,
+						STRING_AGG(DISTINCT com.material_number, ', ') AS therapyId,
+						STRING_AGG(DISTINCT com.material_description, ', ') AS therapyDescription,
+						STRING_AGG(DISTINCT com.ndc, ', ') AS ndc,
+						STRING_AGG(DISTINCT com.strength, ', ') AS strength,
+						STRING_AGG(DISTINCT com.dosage, ', ') AS dosage,
+						STRING_AGG(DISTINCT com.manufacturer_name, ', ') AS manufacturerName,
+						STRING_AGG(DISTINCT com.generic_name, ', ') AS genericName
 			         from COMBINED com
-			 where (
-				cast(:query as varchar) is null
-			    OR LOWER(com.material_number) LIKE %:query%
-			    OR LOWER(com.ndc) LIKE %:query%
-			    OR LOWER(com.material_description) LIKE %:query%
-			    OR LOWER(com.strength) LIKE %:query%
-			    OR LOWER(com.dosage) LIKE %:query%
-			)
-			         GROUP BY com.id, com.material_number,com.material_description,com.ndc, com.strength, com.dosage, com.channelType
+					 where (
+						cast(:query as varchar) is null
+						OR LOWER(com.material_number) LIKE %:query%
+						OR LOWER(com.ndc) LIKE %:query%
+						OR LOWER(com.material_description) LIKE %:query%
+						OR LOWER(com.strength) LIKE %:query%
+						OR LOWER(com.dosage) LIKE %:query%
+					)
+			         GROUP BY com.trade_name, com.channel_type
 			""",
 			countQuery = """
-
 							SELECT COUNT(*) FROM (
 					         WITH COMBINED AS (
 							 SELECT m.id, m.material_number as material_number, m.material_description as material_description,
-					                  m.ndc_number as ndc, m.strength, m.dosage, m.channel_Type as channelType
+					                  m.ndc_number as ndc, m.strength, m.dosage, m.channel_Type,  m.trade_name, m.manufacturer_name, m.generic_name
 					         FROM catalog.material m
 					         JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material AND m.channel_type = cp.channel_type
 					         JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
@@ -99,7 +105,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					         UNION distinct
 
 							 SELECT m.id, m.material_number as material_number, m.material_description as material_description,
-					                  m.ndc_number as ndc, m.strength, m.dosage, m.channel_Type as channelType
+					                  m.ndc_number as ndc, m.strength, m.dosage, m.channel_Type,  m.trade_name, m.manufacturer_name, m.generic_name
 					         FROM catalog.material m
 					         JOIN catalog.crosswalk cw ON cw.bnb_material_number = m.material_number
 					         JOIN catalog.catalog_price cp ON cp.sap_material = cw.sp_product_id
@@ -115,13 +121,23 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 									cw.is_active = 1
 					         	AND ac.is_active = 1
 					     )
-					         SELECT * FROM COMBINED com
+						SELECT
+							com.trade_name as tradeName, com.channel_type AS channelType, STRING_AGG(DISTINCT com.id::text, ', ') AS id,
+							STRING_AGG(DISTINCT com.material_number, ', ') AS therapyId,
+							STRING_AGG(DISTINCT com.material_description, ', ') AS therapyDescription,
+							STRING_AGG(DISTINCT com.ndc, ', ') AS ndc,
+							STRING_AGG(DISTINCT com.strength, ', ') AS strength,
+							STRING_AGG(DISTINCT com.dosage, ', ') AS dosage
+							STRING_AGG(DISTINCT com.manufacturer_name, ', ') AS manufacturerName
+							STRING_AGG(DISTINCT com.generic_name, ', ') AS genericName
+							FROM COMBINED com
 					         where (
-						cast(:query as varchar) is null
-					    OR LOWER(com.material_number) LIKE %:query%
-					    OR LOWER(com.ndc) LIKE %:query%
-					    OR LOWER(com.material_description) LIKE %:query%
-					)
+								cast(:query as varchar) is null
+								OR LOWER(com.material_number) LIKE %:query%
+								OR LOWER(com.ndc) LIKE %:query%
+								OR LOWER(com.material_description) LIKE %:query%
+							)
+							GROUP BY com.trade_name, com.channel_type
 					     ) AS total_count
 					""",
 			nativeQuery = true)
@@ -413,5 +429,21 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			""", nativeQuery = true)
 	Page<Therapy> findNonCrosswalkedSPGlobalTherapies(@Param("query") String query, String statusActive,
 			String channelTypes, @Param("crosswalked") Boolean crosswalked, Pageable paging);
+
+	@Query(value = """
+				SELECT m.*
+				  FROM catalog.material m
+				  JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
+				  JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
+				  JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
+				  WHERE m.channel_type = :channelType
+				  AND m.item_status = 'A'
+				  AND cp.channel_type = :channelType
+				  AND cp.deleted = false
+				  AND m.trade_name = :tradeName
+				  AND uam.user_id = :userId
+			""", nativeQuery = true)
+	List<Therapy> findByTradeNameAndChannelType(@Param("tradeName") String tradeName,
+			@Param("channelType") String channelType, @Param("userId") Long userId);
 
 }

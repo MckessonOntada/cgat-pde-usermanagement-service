@@ -15,7 +15,7 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 @Service
 public interface TherapyService {
 
-	Page<TherapyCatalogResponseDTO> findAllTherapies(Long userId, String query, List<String> salesOrg, Pageable paging,
+	Page<TradeCatalogResponseDTO> findAllTherapies(Long userId, String query, List<String> salesOrg, Pageable paging,
 			List<String> customerIdentifier);
 
 	Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, String therapyId, String query, Pageable paging,
@@ -63,5 +63,7 @@ public interface TherapyService {
 	void deLinkSPCatalog(List<CatalogDeLinkRequestDTO> catalogList);
 
 	TherapyResponseDTO findTherapyWithCrosswalkById(Long therapyId) throws ResourceNotFoundException;
+
+	List<Therapy> findTherapyDetailsByTradeName(String tradeName, ChannelType channelType);
 
 }

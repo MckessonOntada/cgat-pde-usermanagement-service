@@ -1,0 +1,2 @@
+ALTER TABLE catalog.material
+ADD COLUMN IF NOT EXISTS trade_name VARCHAR(18);

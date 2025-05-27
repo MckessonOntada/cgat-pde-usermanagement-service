@@ -58,11 +58,11 @@ public class TherapyController {
 	@GetMapping
 	@Operation(
 			summary = "Find all therapies being offered via catalog for all accounts that the logged in user has access")
-	public Page<TherapyCatalogResponseDTO> findAllThreapies(@RequestParam(defaultValue = "0") Integer pageNo,
+	public Page<TradeCatalogResponseDTO> findAllThreapies(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
 			@RequestParam(required = false) List<String> salesOrg,
 			@RequestParam(required = false) List<String> customerIdentifier,
-			@RequestParam(defaultValue = "material_description") String sortBy,
+			@RequestParam(defaultValue = "trade_name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder) {
 		Sort sort = CustomUtils.SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
@@ -120,6 +120,13 @@ public class TherapyController {
 	public TherapyResponseDTO findTherapyWithCrosswalkById(@PathVariable Long therapyId)
 			throws ResourceNotFoundException {
 		return therapyService.findTherapyWithCrosswalkById(therapyId);
+	}
+
+	@GetMapping("/details/{tradeName}")
+	@Operation(summary = "Find Therapy Details with crosswalk by tradeName")
+	public List<Therapy> findTherapyDetailsByTradeName(@PathVariable String tradeName,
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) {
+		return therapyService.findTherapyDetailsByTradeName(tradeName, channelType);
 	}
 
 	@GetMapping("{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/variants")
