@@ -122,6 +122,13 @@ public class TherapyController {
 		return therapyService.findTherapyWithCrosswalkById(therapyId);
 	}
 
+	@GetMapping("/details/{tradeName}")
+	@Operation(summary = "Find Therapy Details with crosswalk by id")
+	public List<Therapy> findTherapyDetailsByTradeName(@PathVariable String tradeName,
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) {
+		return therapyService.findTherapyDetailsByTradeName(tradeName, channelType);
+	}
+
 	@GetMapping("{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/variants")
 	@Operation(
 			summary = "Find all variants of therapy that is linked to the selected soldto account,shipto account and the therapy being offered from that shipto account")

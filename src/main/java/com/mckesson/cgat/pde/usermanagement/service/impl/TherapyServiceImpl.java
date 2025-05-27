@@ -416,6 +416,12 @@ public class TherapyServiceImpl implements TherapyService {
 		}
 	}
 
+	@Override
+	public List<Therapy> findTherapyDetailsByTradeName(String tradeName, ChannelType channelType) {
+		return therapyRepository.findByTradeNameAndChannelType(tradeName, channelType.name(),
+				Long.parseLong(UserSecurityUtils.getLoggedInUser().getId()));
+	}
+
 	public Page<Therapy> findNonCrosswalkedSPGlobalTherapies(String query, Pageable paging,
 			List<ChannelType> channelTypes, List<String> status, Boolean crosswalked) {
 		try {

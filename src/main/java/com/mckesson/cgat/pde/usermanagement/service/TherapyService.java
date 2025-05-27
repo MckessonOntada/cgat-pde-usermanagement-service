@@ -64,4 +64,6 @@ public interface TherapyService {
 
 	TherapyResponseDTO findTherapyWithCrosswalkById(Long therapyId) throws ResourceNotFoundException;
 
+	List<Therapy> findTherapyDetailsByTradeName(String tradeName, ChannelType channelType);
+
 }

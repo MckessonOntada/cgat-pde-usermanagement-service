@@ -430,4 +430,20 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 	Page<Therapy> findNonCrosswalkedSPGlobalTherapies(@Param("query") String query, String statusActive,
 			String channelTypes, @Param("crosswalked") Boolean crosswalked, Pageable paging);
 
+	@Query(value = """
+				SELECT m.*
+				  FROM catalog.material m
+				  JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
+				  JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
+				  JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
+				  WHERE m.channel_type = :channelType
+				  AND m.item_status = 'A'
+				  AND cp.channel_type = :channelType
+				  AND cp.deleted = false
+				  AND m.trade_name = :tradeName
+				  AND uam.user_id = :userId
+			""", nativeQuery = true)
+	List<Therapy> findByTradeNameAndChannelType(@Param("tradeName") String tradeName,
+			@Param("channelType") String channelType, @Param("userId") Long userId);
+
 }
