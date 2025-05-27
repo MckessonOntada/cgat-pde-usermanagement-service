@@ -124,13 +124,15 @@ public class GlobalTherapyController {
 		return new ResponseEntity<>(materialNumber, HttpStatus.OK);
 	}
 
-	@GetMapping("/config/therapyId/{id}")
+	@GetMapping("/config/ndcNumber/{ndcNumber}")
 	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.ADD_ORDERS, Permission.EDIT_ORDERS })
 	@Operation(summary = "Find Therapy details by Material Number")
-	public ResponseEntity<MaterialResponseDTO> findTherapyDetailsById(@PathVariable Long id)
-			throws ResourceNotFoundException {
-		log.debug("Fetching therapy details with materialNumber: {}", id);
-		return new ResponseEntity<>(therapyService.findTherapyDetailsById(id), HttpStatus.OK);
+	public ResponseEntity<MaterialResponseDTO> findTherapyDetailsById(
+			@PathVariable @NotNull(message = "Ndc number cannot be null ") @NotEmpty(
+					message = "Ndc number cannot be empty") String ndcNumber,
+			@RequestParam ChannelType channelType) throws ResourceNotFoundException {
+		log.debug("Fetching therapy details with materialNumber: {}, channel Type: {}", ndcNumber, channelType);
+		return new ResponseEntity<>(therapyService.findTherapyDetailsByNdc(ndcNumber, channelType), HttpStatus.OK);
 
 	}
 

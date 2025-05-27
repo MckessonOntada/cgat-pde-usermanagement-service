@@ -69,13 +69,13 @@ public class TherapyServiceImpl implements TherapyService {
 
 	}
 
-	public Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, String therapyId, String query, Pageable paging,
-			ChannelType channelType, String program, ChannelType therapyChannelType) {
+	public Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, String ndcNumber, String query, Pageable paging,
+			ChannelType channelType, String program, ChannelType ndcChannelType) {
 
-		boolean isCrossWalkedTherapySelected = !therapyChannelType.equals(channelType);
+		boolean isCrossWalkedTherapySelected = !ndcChannelType.equals(channelType);
 
 		if (ChannelType.SPECIALITY_PHARMA.equals(channelType) && isCrossWalkedTherapySelected) {
-			return therapyRepository.findAllSoldToAccountsForSP(userId, therapyId, StringUtils.toRootLowerCase(query),
+			return therapyRepository.findAllSoldToAccountsForSP(userId, ndcNumber, StringUtils.toRootLowerCase(query),
 					paging, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 		}
 
@@ -83,7 +83,7 @@ public class TherapyServiceImpl implements TherapyService {
 			program = "340";
 		}
 
-		return therapyRepository.findAllSoldToAccounts(userId, therapyId, StringUtils.toRootLowerCase(query), paging,
+		return therapyRepository.findAllSoldToAccounts(userId, ndcNumber, StringUtils.toRootLowerCase(query), paging,
 				channelType.name(), program, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 	}
 
@@ -220,7 +220,7 @@ public class TherapyServiceImpl implements TherapyService {
 					"Therapy not found with materialNumber: " + materialNumber + " and channelType: " + channelType));
 	}
 
-	public ProgramChannelResponseDTO findAllProgramAndChannels(Long userId, String therapyId, ChannelType channelType)
+	public ProgramChannelResponseDTO findAllProgramAndChannels(Long userId, String ndcNumber, ChannelType channelType)
 			throws ResourceNotFoundException {
 
 		if (ChannelType.SPECIALITY_PHARMA.equals(channelType)) {
@@ -230,7 +230,7 @@ public class TherapyServiceImpl implements TherapyService {
 				.build();
 		}
 
-		List<ProgramChannelProjectionDTO> allPrograms = therapyRepository.findAllPrograms(userId, therapyId,
+		List<ProgramChannelProjectionDTO> allPrograms = therapyRepository.findAllPrograms(userId, ndcNumber,
 				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), ChannelType.BUY_AND_BILL.name());
 
 		Set<String> uniquePrograms = null != allPrograms ? (allPrograms.stream().map(programChannelProjectionDTO -> {
@@ -248,14 +248,14 @@ public class TherapyServiceImpl implements TherapyService {
 			uniqueChannels.add(ChannelType.BUY_AND_BILL.name());
 		}
 		else {
-			Therapy therapy = findByMaterialNumber(therapyId, channelType);
+			Therapy therapy = findByMaterialNumber(ndcNumber, channelType);
 			isCrosswalkMaterial = therapy.getIsCrosswalked();
 		}
 
 		List<String> crossWalkedSPs = new ArrayList<>();
 
 		if (isCrosswalkMaterial) {
-			crossWalkedSPs = fetchCrossWalkedSPsForUserAndTherapyId(userId, therapyId);
+			crossWalkedSPs = fetchCrossWalkedSPsForUserAndTherapyId(userId, ndcNumber);
 		}
 
 		if (!CollectionUtils.isEmpty(crossWalkedSPs)) {
@@ -264,8 +264,8 @@ public class TherapyServiceImpl implements TherapyService {
 		return ProgramChannelResponseDTO.builder().channels(uniqueChannels).programs(uniquePrograms).build();
 	}
 
-	private List<String> fetchCrossWalkedSPsForUserAndTherapyId(Long userId, String therapyId) {
-		return therapyRepository.findAllCrossWalkedSPsForUser(userId, therapyId,
+	private List<String> fetchCrossWalkedSPsForUserAndTherapyId(Long userId, String ndcNumber) {
+		return therapyRepository.findAllCrossWalkedSPsForUser(userId, ndcNumber,
 				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 	}
 
@@ -378,9 +378,10 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	@Override
-	public MaterialResponseDTO findTherapyDetailsById(Long id) throws ResourceNotFoundException {
-		return therapyConfigRepository.findTherapyDetailsById(id)
-			.orElseThrow(() -> new ResourceNotFoundException("Therapy not found with id: " + id));
+	public MaterialResponseDTO findTherapyDetailsByNdc(String ndcNumber, ChannelType channelType)
+			throws ResourceNotFoundException {
+		return therapyConfigRepository.findTherapyDetailsByNdc(ndcNumber, channelType)
+			.orElseThrow(() -> new ResourceNotFoundException("Therapy not found with ndc: " + ndcNumber));
 	}
 
 	@Override

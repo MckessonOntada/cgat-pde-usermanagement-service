@@ -150,7 +150,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						 ac.street_3 as street3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code, false as isDefault,
 						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier, ac.channel_Type
 				FROM catalog.material m
-				JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
+				JOIN catalog.catalog_price cp ON m.ndc_number = cp.ndc
 				JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
 				JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
 				WHERE
@@ -166,7 +166,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						or ac.cgat_identifier = :program
 						)
 					AND
-						m.material_number = :therapyId
+						m.ndc_number = :ndcNumber
 					AND
 						ac.partner_function = :partnerFunction
 					AND
@@ -182,7 +182,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			""",
 			nativeQuery = true)
 	public Page<AccountsResponseDTO> findAllSoldToAccounts(@Param("userId") Long userId,
-			@Param("therapyId") String therapyId, @Param("query") String query, Pageable paging,
+			@Param("ndcNumber") String ndcNumber, @Param("query") String query, Pageable paging,
 			@Param("channel") String channel, @Param("program") String program,
 			@Param("partnerFunction") String partnerFunction);
 
@@ -191,7 +191,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						 ac.street_3 as street3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code, false as isDefault,
 						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier, ac.channel_type
 				FROM catalog.crosswalk cw
-				JOIN catalog.material m on m.material_number = cw.bnb_material_number
+				JOIN catalog.material m on m.ndc_number = cw.bnb_material_number
 				JOIN catalog.catalog_price cp ON cp.sap_material = cw.sp_product_id
 				JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
 				JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
@@ -203,7 +203,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 							or LOWER(ac.name_1) like %:query%
 						)
 					AND
-						cw.bnb_material_number = :therapyId
+						m.ndc_number = :ndcNumber
 					AND
 						ac.partner_function = :partnerFunction
 					AND
@@ -221,7 +221,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			""",
 			nativeQuery = true)
 	Page<AccountsResponseDTO> findAllSoldToAccountsForSP(@Param("userId") Long userId,
-			@Param("therapyId") String therapyId, @Param("query") String query, Pageable paging,
+			@Param("ndcNumber") String ndcNumber, @Param("query") String query, Pageable paging,
 			@Param("partnerFunction") String partnerFunction);
 
 	@Query(value = """
@@ -268,7 +268,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			(
 					uam.user_id = :userId
 				AND
-					cp.sap_material = :therapyId
+					m.ndc_number = :ndcNumber
 				AND
 					ac.partner_function = :partnerFunction
 				AND
@@ -277,20 +277,20 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			)
 			""", nativeQuery = true)
 	List<ProgramChannelProjectionDTO> findAllPrograms(@Param("userId") Long userId,
-			@Param("therapyId") String therapyId, @Param("partnerFunction") String partnerFunction, String channelType);
+			@Param("ndcNumber") String ndcNumber, @Param("partnerFunction") String partnerFunction, String channelType);
 
 	@Query(value = """
 				select cw.sp_product_id
 			 	FROM catalog.crosswalk cw
 			 	JOIN catalog.material m on m.material_number = cw.bnb_material_number
 				JOIN catalog.catalog_price cp ON cp.sap_material = cw.sp_product_id
-				JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
+				JOIN usermanagemeunt.accont ac ON ac.sap_customer = cp.sold_to_customer
 				JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
 				WHERE
 				(
 						uam.user_id = :userId
 					AND
-						cw.bnb_material_number = :therapyId
+						m.ndc_number = :ndcNumber
 					AND
 						ac.partner_function = :partnerFunction
 					AND
@@ -301,7 +301,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						cw.is_active = 1
 				)
 			""", nativeQuery = true)
-	List<String> findAllCrossWalkedSPsForUser(@Param("userId") Long userId, @Param("therapyId") String therapyId,
+	List<String> findAllCrossWalkedSPsForUser(@Param("userId") Long userId, @Param("ndcNumber") String ndcNumber,
 			@Param("partnerFunction") String partnerFunction);
 
 	@Query(value = """

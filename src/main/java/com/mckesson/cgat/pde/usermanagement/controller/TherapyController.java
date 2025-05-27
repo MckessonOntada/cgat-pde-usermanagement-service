@@ -71,18 +71,18 @@ public class TherapyController {
 				salesOrg, paging, customerIdentifier);
 	}
 
-	@GetMapping("/{therapyId}/soldtoaccounts")
+	@GetMapping("/ndcNumber/{ndcNumber}/soldtoaccounts")
 	@Operation(
 			summary = "Find all soldto accounts from which the selected therapy is being offered, and the logged in user has access to")
-	public Page<AccountsResponseDTO> findAllSoldToAccountsByTherapy(@PathVariable String therapyId,
+	public Page<AccountsResponseDTO> findAllSoldToAccountsByTherapy(@PathVariable String ndcNumber,
 			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(required = false) String query,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String program,
 			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType,
-			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType therapyChannelType) {
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType ndcChannelType) {
 
 		Pageable paging = PageRequest.of(pageNo, pageSize);
 		return therapyService.findAllSoldToAccounts(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()),
-				therapyId, query, paging, channelType, program, therapyChannelType);
+				ndcNumber, query, paging, channelType, program, ndcChannelType);
 
 	}
 
@@ -159,13 +159,13 @@ public class TherapyController {
 				variantType, therapyId);
 	}
 
-	@GetMapping("/{therapyId}/programs-channels")
+	@GetMapping("/{ndcNumber}/programs-channels")
 	@Operation(
 			summary = "Find all programs and channels from which the selected therapy is being offered, and the logged in user has access to")
-	public ResponseEntity<ProgramChannelResponseDTO> findAllProgramAndChannels(@PathVariable String therapyId,
+	public ResponseEntity<ProgramChannelResponseDTO> findAllProgramAndChannels(@PathVariable String ndcNumber,
 			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) throws ResourceNotFoundException {
 		return new ResponseEntity<>(therapyService.findAllProgramAndChannels(
-				Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), therapyId, channelType), HttpStatus.OK);
+				Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), ndcNumber, channelType), HttpStatus.OK);
 	}
 
 	@GetMapping("/customeridentifiers")
