@@ -61,4 +61,6 @@ public interface MaterialCrossWalkConfigRepository extends JpaRepository<Crosswa
 
 	Crosswalk findBySpProductIdAndIsActive(String sapMaterial, boolean isActive);
 
+	Crosswalk findBySpNdcNumberAndIsActive(String sapMaterial, boolean b);
+
 }

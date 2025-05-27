@@ -100,16 +100,14 @@ public class GlobalTherapyController {
 		return new ResponseEntity<>("Therapy configurations updated successfully", HttpStatus.OK);
 	}
 
-	@GetMapping("/config/{materialNumber}")
+	@GetMapping("/config/{ndcNumber}")
 	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.EDIT_ORDERS, Permission.VIEW_SP_MATERIAL })
-	@Operation(summary = "Find Therapy details by Material Number")
-	public ResponseEntity<MaterialDetailsResponseDTO> findTherapyDetailsByMaterialNumber(
-			@PathVariable String materialNumber, @RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType)
-			throws ResourceNotFoundException {
-		log.debug("Fetching therapy details with materialNumber: {}", materialNumber);
-		return new ResponseEntity<>(therapyService.findTherapyDetailsByMaterialNumber(materialNumber, channelType),
+	@Operation(summary = "Find Therapy details by Ndc Number and Channel Type")
+	public ResponseEntity<MaterialDetailsResponseDTO> findTherapyDetailsByNdcNumber(@PathVariable String ndcNumber,
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) throws ResourceNotFoundException {
+		log.debug("Fetching therapy details with ndcNumber: {}", ndcNumber);
+		return new ResponseEntity<>(therapyService.findTherapyDetailsByNdcNumber(ndcNumber, channelType),
 				HttpStatus.OK);
-
 	}
 
 	@DeleteMapping("/config/{materialNumber}")

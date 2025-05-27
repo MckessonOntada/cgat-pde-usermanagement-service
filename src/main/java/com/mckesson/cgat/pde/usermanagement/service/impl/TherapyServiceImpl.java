@@ -339,22 +339,26 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	@Override
-	public MaterialDetailsResponseDTO findTherapyDetailsByMaterialNumber(String materialNumber, ChannelType channelType)
+	public MaterialDetailsResponseDTO findTherapyDetailsByNdcNumber(String ndcNumber, ChannelType channelType)
 			throws ResourceNotFoundException {
-		MaterialResponseDTO responseDTO = therapyConfigRepository
-			.findDetailedByMaterialNumber(materialNumber, channelType)
-			.orElseThrow(() -> new ResourceNotFoundException(
-					"Therapy config not found with materialNumber: " + materialNumber));
+		MaterialResponseDTO responseDTO = therapyConfigRepository.findDetailedByNdcNumber(ndcNumber, channelType)
+			.orElseThrow(() -> new ResourceNotFoundException("Therapy config not found with ndcNumber: " + ndcNumber));
 		Crosswalk crosswalkDetails = null;
+		String bnbTradeName = null;
 		if (channelType.equals(ChannelType.SPECIALITY_PHARMA)
 				&& Boolean.TRUE.equals(responseDTO.getTherapy().getIsCrosswalked())) {
-			crosswalkDetails = materialCrossWalkConfigRepository.findBySpProductIdAndIsActive(materialNumber, true);
+			crosswalkDetails = materialCrossWalkConfigRepository.findBySpNdcNumberAndIsActive(ndcNumber, true);
+		}
+		if (!ObjectUtils.isEmpty(crosswalkDetails)) {
+			bnbTradeName = therapyRepository.findTradeNameByNdcNumberAndChannelType(crosswalkDetails.getBnbNdcNumber(),
+					ChannelType.BUY_AND_BILL);
 		}
 
 		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
-				QuestionnaireConfigurationType.Material,
-				ObjectUtils.isEmpty(crosswalkDetails) ? materialNumber : crosswalkDetails.getBnbMaterialNumber(), "",
-				"", "", ObjectUtils.isEmpty(crosswalkDetails) ? channelType : ChannelType.BUY_AND_BILL);
+				QuestionnaireConfigurationType.Material, "", "", "", "",
+				ObjectUtils.isEmpty(crosswalkDetails) ? channelType : ChannelType.BUY_AND_BILL,
+				ObjectUtils.isEmpty(crosswalkDetails) ? ndcNumber : crosswalkDetails.getBnbNdcNumber(),
+				ObjectUtils.isEmpty(crosswalkDetails) ? responseDTO.getTherapy().getTradeName() : bnbTradeName);
 
 		MaterialDetailsResponseDTO materialDetailsResponseDTO = MaterialDetailsResponseDTO.builder()
 			.questionnaires(questionnaires)

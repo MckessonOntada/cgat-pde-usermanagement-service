@@ -62,15 +62,15 @@ public class CacheServiceImpl implements CacheService {
 
 	@Override
 	@Cacheable(value = "singleMaterialCache", key = "#materialNumber")
-	public MaterialDetailsResponseDTO findTherapyDetailsByMaterialNumber(String materialNumber)
+	public MaterialDetailsResponseDTO findTherapyDetailsByMaterialNumber(String ndcNumber)
 			throws ResourceNotFoundException {
 		MaterialResponseDTO responseDTO = therapyConfigRepository
-			.findDetailedByMaterialNumber(materialNumber, ChannelType.BUY_AND_BILL)
-			.orElseThrow(() -> new ResourceNotFoundException(
-					"Therapy config not found with materialNumber: " + materialNumber));
+			.findDetailedByNdcNumber(ndcNumber, ChannelType.BUY_AND_BILL)
+			.orElseThrow(() -> new ResourceNotFoundException("Therapy config not found with ndcNumber: " + ndcNumber));
 
 		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
-				QuestionnaireConfigurationType.Material, materialNumber, "", "", "", ChannelType.BUY_AND_BILL);
+				QuestionnaireConfigurationType.Material, "", "", "", "", ChannelType.BUY_AND_BILL,
+				responseDTO.getTherapy().getNdcNumber(), responseDTO.getTherapy().getTradeName());
 
 		MaterialDetailsResponseDTO materialDetailsResponseDTO = MaterialDetailsResponseDTO.builder()
 			.questionnaires(questionnaires)

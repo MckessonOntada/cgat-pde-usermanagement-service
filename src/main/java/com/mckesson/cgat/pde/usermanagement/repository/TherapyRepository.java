@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
+import jakarta.validation.constraints.Size;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -413,5 +414,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			""", nativeQuery = true)
 	Page<Therapy> findNonCrosswalkedSPGlobalTherapies(@Param("query") String query, String statusActive,
 			String channelTypes, @Param("crosswalked") Boolean crosswalked, Pageable paging);
+
+	String findTradeNameByNdcNumberAndChannelType(@Size(max = 50) String bnbNdcNumber, ChannelType channelType);
 
 }
