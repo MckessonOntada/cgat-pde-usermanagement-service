@@ -123,7 +123,7 @@ public class TherapyController {
 	}
 
 	@GetMapping("/details/{tradeName}")
-	@Operation(summary = "Find Therapy Details with crosswalk by id")
+	@Operation(summary = "Find Therapy Details with crosswalk by tradeName")
 	public List<Therapy> findTherapyDetailsByTradeName(@PathVariable String tradeName,
 			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) {
 		return therapyService.findTherapyDetailsByTradeName(tradeName, channelType);
