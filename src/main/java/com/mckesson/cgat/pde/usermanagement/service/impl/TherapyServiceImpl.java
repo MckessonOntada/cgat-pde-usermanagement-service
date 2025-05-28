@@ -344,7 +344,7 @@ public class TherapyServiceImpl implements TherapyService {
 		MaterialResponseDTO responseDTO = therapyConfigRepository.findDetailedByNdcNumber(ndcNumber, channelType)
 			.orElseThrow(() -> new ResourceNotFoundException("Therapy config not found with ndcNumber: " + ndcNumber));
 		Crosswalk crosswalkDetails = null;
-		String bnbTradeName = null;
+		String bnbTradeName = responseDTO.getTherapy().getTradeName();
 		if (channelType.equals(ChannelType.SPECIALITY_PHARMA)
 				&& Boolean.TRUE.equals(responseDTO.getTherapy().getIsCrosswalked())) {
 			crosswalkDetails = materialCrossWalkConfigRepository.findBySpNdcNumberAndIsActive(ndcNumber, true);
@@ -357,8 +357,7 @@ public class TherapyServiceImpl implements TherapyService {
 		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
 				QuestionnaireConfigurationType.Material, "", "", "", "",
 				ObjectUtils.isEmpty(crosswalkDetails) ? channelType : ChannelType.BUY_AND_BILL,
-				ObjectUtils.isEmpty(crosswalkDetails) ? ndcNumber : crosswalkDetails.getBnbNdcNumber(),
-				ObjectUtils.isEmpty(crosswalkDetails) ? responseDTO.getTherapy().getTradeName() : bnbTradeName);
+				ObjectUtils.isEmpty(crosswalkDetails) ? ndcNumber : crosswalkDetails.getBnbNdcNumber(), bnbTradeName);
 
 		MaterialDetailsResponseDTO materialDetailsResponseDTO = MaterialDetailsResponseDTO.builder()
 			.questionnaires(questionnaires)

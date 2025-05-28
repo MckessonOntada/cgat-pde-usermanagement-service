@@ -276,7 +276,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 					throw new IllegalArgumentException("Account Number should not be null");
 				return accountNumber;
 			case Material:
-				if (tradeName == null && ndc == null)
+				if (tradeName == null || ndc == null)
 					throw new IllegalArgumentException("Material Number should not be null");
 				return tradeName + "_" + ndc;
 			case Catalog:
