@@ -150,7 +150,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						 ac.street_3 as street3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code, false as isDefault,
 						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier, ac.channel_Type
 				FROM catalog.material m
-				JOIN catalog.catalog_price cp ON m.ndc_number = cp.ndc
+				JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
 				JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
 				JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
 				WHERE
@@ -186,6 +186,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			@Param("channel") String channel, @Param("program") String program,
 			@Param("partnerFunction") String partnerFunction);
 
+	// Need to fix/test after column rename, under JOIN catalog.material m on m.ndc_number
+	// = cw.bnb_material_number, after deepaks merge
 	@Query(value = """
 			SELECT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2 as street2,
 						 ac.street_3 as street3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code, false as isDefault,
@@ -241,7 +243,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					AND
 						cp.sold_to_customer = :soldToAccountId
 					AND
-						cp.sap_material = :therapyId
+						m.ndc_number = :ndcNumber
 					AND
 						ac.partner_function = :partnerFunction
 					AND
@@ -255,7 +257,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			""",
 			nativeQuery = true)
 	public Page<AccountsResponseDTO> findAllShipToAccounts(@Param("soldToAccountId") String soldToAccountId,
-			@Param("therapyId") String therapyId, @Param("query") String query, Pageable paging,
+			@Param("ndcNumber") String ndcNumber, @Param("query") String query, Pageable paging,
 			@Param("partnerFunction") String partnerFunction);
 
 	@Query(value = """
@@ -284,7 +286,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			 	FROM catalog.crosswalk cw
 			 	JOIN catalog.material m on m.material_number = cw.bnb_material_number
 				JOIN catalog.catalog_price cp ON cp.sap_material = cw.sp_product_id
-				JOIN usermanagemeunt.accont ac ON ac.sap_customer = cp.sold_to_customer
+				JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
 				JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
 				WHERE
 				(
@@ -369,7 +371,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 	List<Therapy> findByMaterialNumberInAndChannelTypeAndItemStatus(Set<String> productIds, ChannelType channelType,
 			String itemStatus);
 
-	Optional<Therapy> findByMaterialNumberAndChannelType(String materialNumber, ChannelType channelType);
+	List<Therapy> findByNdcNumberAndChannelType(String ndcNumber, ChannelType channelType);
 
 	List<Therapy> findByMaterialNumberInAndChannelType(List<String> materialNumbers, ChannelType channelType);
 

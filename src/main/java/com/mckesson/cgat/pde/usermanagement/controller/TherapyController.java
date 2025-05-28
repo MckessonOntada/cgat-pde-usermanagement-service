@@ -71,9 +71,9 @@ public class TherapyController {
 				salesOrg, paging, customerIdentifier);
 	}
 
-	@GetMapping("/ndcNumber/{ndcNumber}/soldtoaccounts")
+	@GetMapping("/ndc/{ndcNumber}/soldtoaccounts")
 	@Operation(
-			summary = "Find all soldto accounts from which the selected therapy is being offered, and the logged in user has access to")
+			summary = "Find all soldto accounts from which the selected ndc is being offered, and the logged in user has access to")
 	public Page<AccountsResponseDTO> findAllSoldToAccountsByTherapy(@PathVariable String ndcNumber,
 			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(required = false) String query,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String program,
@@ -86,11 +86,11 @@ public class TherapyController {
 
 	}
 
-	@GetMapping("{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccounts")
+	@GetMapping("/ndc/{ndcNumber}/soldtoaccount/{soldToAccountId}/shiptoaccounts")
 	@Operation(
-			summary = "Find all shipto accounts that is linked to the selected soldto account and the therapy also being offered from that shipto account")
+			summary = "Find all shipto accounts that is linked to the selected soldto account and the ndc also being offered from that shipto account")
 	public Page<AccountsResponseDTO> findAllShipToAccountsForTherapy(@PathVariable String soldToAccountId,
-			@PathVariable String therapyId, @RequestParam(defaultValue = "0") Integer pageNo,
+			@PathVariable String ndcNumber, @RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
 			@RequestParam(defaultValue = "sap_partner") String sortBy,
 			@RequestParam(defaultValue = "desc") String sortOrder,
@@ -106,7 +106,7 @@ public class TherapyController {
 		Sort sort = CustomUtils.SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-		return therapyService.findAllShipToAccounts(soldToAccountId, therapyId, paging, query, channelType);
+		return therapyService.findAllShipToAccounts(soldToAccountId, ndcNumber, paging, query, channelType);
 	}
 
 	@GetMapping("/{therapyId}")
@@ -159,7 +159,7 @@ public class TherapyController {
 				variantType, therapyId);
 	}
 
-	@GetMapping("/{ndcNumber}/programs-channels")
+	@GetMapping("/ndc/{ndcNumber}/programs-channels")
 	@Operation(
 			summary = "Find all programs and channels from which the selected therapy is being offered, and the logged in user has access to")
 	public ResponseEntity<ProgramChannelResponseDTO> findAllProgramAndChannels(@PathVariable String ndcNumber,

@@ -26,6 +26,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.*;
+import static org.mockito.ArgumentMatchers.nullable;
 
 @Service
 @Slf4j
@@ -87,7 +88,7 @@ public class TherapyServiceImpl implements TherapyService {
 				channelType.name(), program, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 	}
 
-	public Page<AccountsResponseDTO> findAllShipToAccounts(String soldToAccountId, String therapyId, Pageable paging,
+	public Page<AccountsResponseDTO> findAllShipToAccounts(String soldToAccountId, String ndcNumber, Pageable paging,
 			String query, ChannelType channelType) {
 		String loweredCaseQuery = StringUtils.toRootLowerCase(query);
 		if (channelType.equals(ChannelType.SPECIALITY_PHARMA)) {
@@ -99,7 +100,7 @@ public class TherapyServiceImpl implements TherapyService {
 				.collect(Collectors.toList());
 			return new PageImpl<>(mappedShipTo, paging, mappedShipTo.size());
 		}
-		return therapyRepository.findAllShipToAccounts(soldToAccountId, therapyId, loweredCaseQuery, paging,
+		return therapyRepository.findAllShipToAccounts(soldToAccountId, ndcNumber, loweredCaseQuery, paging,
 				AccountPartnerFunction.SHIP_TO.getPartnerFunctionType());
 	}
 
@@ -213,11 +214,12 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	@Override
-	public Therapy findByMaterialNumber(String materialNumber, ChannelType channelType)
-			throws ResourceNotFoundException {
-		return therapyRepository.findByMaterialNumberAndChannelType(materialNumber, channelType)
-			.orElseThrow(() -> new ResourceNotFoundException(
-					"Therapy not found with materialNumber: " + materialNumber + " and channelType: " + channelType));
+	public List<Therapy> findByNdcNumber(String ndcNumber, ChannelType channelType) throws ResourceNotFoundException {
+		List<Therapy> therapies = therapyRepository.findByNdcNumberAndChannelType(ndcNumber, channelType);
+		if (therapies == null || therapies.isEmpty())
+			throw new ResourceNotFoundException(
+					"Therapy not found with Ndc Number: " + ndcNumber + " and channelType: " + channelType);
+		return therapies;
 	}
 
 	public ProgramChannelResponseDTO findAllProgramAndChannels(Long userId, String ndcNumber, ChannelType channelType)
@@ -248,14 +250,14 @@ public class TherapyServiceImpl implements TherapyService {
 			uniqueChannels.add(ChannelType.BUY_AND_BILL.name());
 		}
 		else {
-			Therapy therapy = findByMaterialNumber(ndcNumber, channelType);
-			isCrosswalkMaterial = therapy.getIsCrosswalked();
+			List<Therapy> therapies = findByNdcNumber(ndcNumber, channelType);
+			isCrosswalkMaterial = !therapies.stream().anyMatch(Therapy::getIsCrosswalked);
 		}
 
 		List<String> crossWalkedSPs = new ArrayList<>();
 
 		if (isCrosswalkMaterial) {
-			crossWalkedSPs = fetchCrossWalkedSPsForUserAndTherapyId(userId, ndcNumber);
+			crossWalkedSPs = fetchCrossWalkedSPsForUserAndNdc(userId, ndcNumber);
 		}
 
 		if (!CollectionUtils.isEmpty(crossWalkedSPs)) {
@@ -264,7 +266,7 @@ public class TherapyServiceImpl implements TherapyService {
 		return ProgramChannelResponseDTO.builder().channels(uniqueChannels).programs(uniquePrograms).build();
 	}
 
-	private List<String> fetchCrossWalkedSPsForUserAndTherapyId(Long userId, String ndcNumber) {
+	private List<String> fetchCrossWalkedSPsForUserAndNdc(Long userId, String ndcNumber) {
 		return therapyRepository.findAllCrossWalkedSPsForUser(userId, ndcNumber,
 				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 	}

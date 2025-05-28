@@ -21,7 +21,7 @@ public interface TherapyService {
 	Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, String ndcNumber, String query, Pageable paging,
 			ChannelType channel, String program, ChannelType ndcChannelType);
 
-	Page<AccountsResponseDTO> findAllShipToAccounts(String soldToAccountId, String therapyId, Pageable paging,
+	Page<AccountsResponseDTO> findAllShipToAccounts(String soldToAccountId, String ndcNumber, Pageable paging,
 			String query, ChannelType channelType);
 
 	Therapy findById(Long id) throws ResourceNotFoundException;
@@ -46,7 +46,7 @@ public interface TherapyService {
 	Page<CatalogPrice> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging,
 			ChannelType channelType);
 
-	Therapy findByMaterialNumber(String materialNumber, ChannelType channelType) throws ResourceNotFoundException;
+	List<Therapy> findByNdcNumber(String ndcNumber, ChannelType channelType) throws ResourceNotFoundException;
 
 	void updateTherapyConfigs(List<String> materialNumbers, boolean isPatientInformationRequired,
 			boolean isCoiIdRequired, ChannelType channelType);
