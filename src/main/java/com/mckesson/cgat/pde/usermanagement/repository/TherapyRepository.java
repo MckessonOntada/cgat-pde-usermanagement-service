@@ -21,411 +21,443 @@ import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 @Repository
 public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 
-	@Query(value = """
-			         WITH COMBINED AS  (
-			             SELECT m.id, m.material_number as material_number, m.material_description as material_description,
-			                    m.ndc_number as ndc, m.strength, m.dosage, m.channel_Type as channelType
-			             FROM catalog.material m
-			             JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material AND m.channel_type = cp.channel_type
-			             JOIN usermanagement.account ac  ON ac.sap_customer = cp.sold_to_customer
-			             JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
-			             WHERE
-			                 NOT (m.channel_type = 'SPECIALITY_PHARMA' AND m.is_crosswalked = true)
-			                 AND uam.user_id = :userId
-			                 AND ac.partner_function = :partnerFunction
-			                 AND (COALESCE(:salesOrg) IS NULL OR cp.sales_org IN (:salesOrg))
-			                 AND (COALESCE(:customerIdentifier) IS NULL OR cp.sold_to_customer IN (:customerIdentifier))
-			                 AND cp.deleted = false
-							 AND
-								m.item_status = 'A'
-			             	AND ac.is_active = 1
-			             union distinct
+    @Query(value = """
+                     WITH COMBINED AS  (
+                         SELECT m.id, m.material_number as material_number, m.material_description as material_description,
+                                m.ndc_number as ndc, m.strength, m.dosage, m.channel_Type, m.trade_name, m.manufacturer_name, m.generic_name
+                         FROM catalog.material m
+                         JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material AND m.channel_type = cp.channel_type
+                         JOIN usermanagement.account ac  ON ac.sap_customer = cp.sold_to_customer
+                         JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
+                         WHERE
+                             NOT (m.channel_type = 'SPECIALITY_PHARMA' AND m.is_crosswalked = true)
+                             AND uam.user_id = :userId
+                             AND ac.partner_function = :partnerFunction
+                             AND (COALESCE(:salesOrg) IS NULL OR cp.sales_org IN (:salesOrg))
+                             AND (COALESCE(:customerIdentifier) IS NULL OR cp.sold_to_customer IN (:customerIdentifier))
+                             AND cp.deleted = false
+            				 AND
+            					m.item_status = 'A'
+                         	AND ac.is_active = 1
+                         union distinct
+            
+                         select  m.id, m.material_number as material_number, m.material_description as material_description,
+                                m.ndc_number as ndc, m.strength, m.dosage, m.channel_Type,  m.trade_name, m.manufacturer_name, m.generic_name
+                         FROM catalog.material m
+                         JOIN catalog.crosswalk cw
+                             ON cw.bnb_material_number = m.material_number
+                         JOIN catalog.catalog_price cp
+                             ON cp.sap_material = cw.sp_product_id
+                         JOIN usermanagement.account ac
+                             ON ac.sap_customer = cp.sold_to_customer
+                         JOIN usermanagement.user_account_mapping uam
+                             ON ac.id = uam.account_id
+                         WHERE
+                             uam.user_id = :userId
+                             AND ac.partner_function = :partnerFunction
+                             AND cp.deleted = false
+                             AND
+            					m.item_status = 'A'
+            				AND
+            					cw.is_active = 1
+            				AND ac.is_active = 1
+                     )
+                     SELECT
+            			com.trade_name as tradeName, com.channel_type AS channelType, STRING_AGG(DISTINCT com.id::text, ', ') AS id,
+            			STRING_AGG(DISTINCT com.material_number, ', ') AS therapyId,
+            			STRING_AGG(DISTINCT com.material_description, ', ') AS therapyDescription,
+            			STRING_AGG(DISTINCT com.ndc, ', ') AS ndc,
+            			STRING_AGG(DISTINCT com.strength, ', ') AS strength,
+            			STRING_AGG(DISTINCT com.dosage, ', ') AS dosage,
+            			STRING_AGG(DISTINCT com.manufacturer_name, ', ') AS manufacturerName,
+            			STRING_AGG(DISTINCT com.generic_name, ', ') AS genericName
+                     from COMBINED com
+            		 where (
+            			cast(:query as varchar) is null
+            			OR LOWER(com.material_number) LIKE %:query%
+            			OR LOWER(com.ndc) LIKE %:query%
+            			OR LOWER(com.material_description) LIKE %:query%
+            			OR LOWER(com.strength) LIKE %:query%
+            			OR LOWER(com.dosage) LIKE %:query%
+            		)
+                     GROUP BY com.trade_name, com.channel_type
+            """,
+            countQuery = """
+                    		SELECT COUNT(*) FROM (
+                             WITH COMBINED AS (
+                    		 SELECT m.id, m.material_number as material_number, m.material_description as material_description,
+                                      m.ndc_number as ndc, m.strength, m.dosage, m.channel_Type,  m.trade_name, m.manufacturer_name, m.generic_name
+                             FROM catalog.material m
+                             JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material AND m.channel_type = cp.channel_type
+                             JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
+                             JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
+                             WHERE
+                                 NOT (m.channel_type = 'SPECIALITY_PHARMA' AND m.is_crosswalked = true)
+                                 AND uam.user_id = :userId
+                                 AND ac.partner_function = :partnerFunction
+                               AND (COALESCE(:salesOrg) IS NULL OR cp.sales_org IN (:salesOrg))
+                     		AND (COALESCE(:customerIdentifier) IS NULL OR cp.sold_to_customer IN (:customerIdentifier))
+                                 AND cp.deleted = false
+                            AND
+                    			m.item_status = 'A'
+                    	 	AND ac.is_active = 1
+                    
+                             UNION distinct
+                    
+                    		 SELECT m.id, m.material_number as material_number, m.material_description as material_description,
+                                      m.ndc_number as ndc, m.strength, m.dosage, m.channel_Type,  m.trade_name, m.manufacturer_name, m.generic_name
+                             FROM catalog.material m
+                             JOIN catalog.crosswalk cw ON cw.bnb_material_number = m.material_number
+                             JOIN catalog.catalog_price cp ON cp.sap_material = cw.sp_product_id
+                             JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
+                             JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
+                             WHERE
+                                 uam.user_id = :userId
+                                 AND ac.partner_function = :partnerFunction
+                                 AND cp.deleted = false
+                    			 AND
+                    				m.item_status = 'A'
+                    			AND
+                    				cw.is_active = 1
+                             	AND ac.is_active = 1
+                         )
+                    	SELECT
+                    		com.trade_name as tradeName, com.channel_type AS channelType, STRING_AGG(DISTINCT com.id::text, ', ') AS id,
+                    		STRING_AGG(DISTINCT com.material_number, ', ') AS therapyId,
+                    		STRING_AGG(DISTINCT com.material_description, ', ') AS therapyDescription,
+                    		STRING_AGG(DISTINCT com.ndc, ', ') AS ndc,
+                    		STRING_AGG(DISTINCT com.strength, ', ') AS strength,
+                    		STRING_AGG(DISTINCT com.dosage, ', ') AS dosage
+                    		STRING_AGG(DISTINCT com.manufacturer_name, ', ') AS manufacturerName
+                    		STRING_AGG(DISTINCT com.generic_name, ', ') AS genericName
+                    		FROM COMBINED com
+                             where (
+                    			cast(:query as varchar) is null
+                    			OR LOWER(com.material_number) LIKE %:query%
+                    			OR LOWER(com.ndc) LIKE %:query%
+                    			OR LOWER(com.material_description) LIKE %:query%
+                    		)
+                    		GROUP BY com.trade_name, com.channel_type
+                         ) AS total_count
+                    """,
+            nativeQuery = true)
+    Page<TherapyCatalogResponseDTO> findAllTherapies(@Param("userId") Long userId, @Param("query") String query,
+                                                     @Param("salesOrg") List<String> salesOrg, @Param("customerIdentifier") List<String> customerIdentifier,
+                                                     @Param("partnerFunction") String partnerFunction, Pageable paging);
 
-			             select  m.id, m.material_number as material_number, m.material_description as material_description,
-			                    m.ndc_number as ndc, m.strength, m.dosage, m.channel_Type as channelType
-			             FROM catalog.material m
-			             JOIN catalog.crosswalk cw
-			                 ON cw.bnb_material_number = m.material_number
-			             JOIN catalog.catalog_price cp
-			                 ON cp.sap_material = cw.sp_product_id
-			             JOIN usermanagement.account ac
-			                 ON ac.sap_customer = cp.sold_to_customer
-			             JOIN usermanagement.user_account_mapping uam
-			                 ON ac.id = uam.account_id
-			             WHERE
-			                 uam.user_id = :userId
-			                 AND ac.partner_function = :partnerFunction
-			                 AND cp.deleted = false
-			                 AND
-								m.item_status = 'A'
-							AND
-								cw.is_active = 1
-							AND ac.is_active = 1
-			         )
-			         SELECT com.id, com.material_number as therapyId, com.material_description as therapyDescription,
-							com.ndc, com.strength, com.dosage, com.channelType
-			         from COMBINED com
-			 where (
-				cast(:query as varchar) is null
-			    OR LOWER(com.material_number) LIKE %:query%
-			    OR LOWER(com.ndc) LIKE %:query%
-			    OR LOWER(com.material_description) LIKE %:query%
-			    OR LOWER(com.strength) LIKE %:query%
-			    OR LOWER(com.dosage) LIKE %:query%
-			)
-			         GROUP BY com.id, com.material_number,com.material_description,com.ndc, com.strength, com.dosage, com.channelType
-			""",
-			countQuery = """
+    @Query(value = """
+            	SELECT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2 as street2,
+            			 ac.street_3 as street3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code, false as isDefault,
+            			 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier, ac.channel_Type
+            	FROM catalog.material m
+            	JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
+            	JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
+            	JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
+            	WHERE
+            	(
+            			(
+            				:query is null
+            				or LOWER(ac.sap_partner) like %:query%
+            				or LOWER(ac.name_1) like %:query%
+            			)
+            		AND
+            			(
+            			cast(:program as varchar) is null
+            			or ac.cgat_identifier = :program
+            			)
+            		AND
+            			m.material_number = :therapyId
+            		AND
+            			ac.partner_function = :partnerFunction
+            		AND
+            			uam.user_id = :userId
+            		AND
+            			cp.deleted = false
+            	    AND ac.channel_type=:channel
+            	    AND m.channel_type=:channel
+            		)
+            		GROUP BY ac.id, ac.sap_customer, ac.name_1, ac.house_number, ac.street, ac.street_2,
+            			 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code,
+            			 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel, ac.cgat_identifier, ac.channel_Type
+            """,
+            nativeQuery = true)
+    public Page<AccountsResponseDTO> findAllSoldToAccounts(@Param("userId") Long userId,
+                                                           @Param("therapyId") String therapyId, @Param("query") String query, Pageable paging,
+                                                           @Param("channel") String channel, @Param("program") String program,
+                                                           @Param("partnerFunction") String partnerFunction);
 
-							SELECT COUNT(*) FROM (
-					         WITH COMBINED AS (
-							 SELECT m.id, m.material_number as material_number, m.material_description as material_description,
-					                  m.ndc_number as ndc, m.strength, m.dosage, m.channel_Type as channelType
-					         FROM catalog.material m
-					         JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material AND m.channel_type = cp.channel_type
-					         JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
-					         JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
-					         WHERE
-					             NOT (m.channel_type = 'SPECIALITY_PHARMA' AND m.is_crosswalked = true)
-					             AND uam.user_id = :userId
-					             AND ac.partner_function = :partnerFunction
-					           AND (COALESCE(:salesOrg) IS NULL OR cp.sales_org IN (:salesOrg))
-					 		AND (COALESCE(:customerIdentifier) IS NULL OR cp.sold_to_customer IN (:customerIdentifier))
-					             AND cp.deleted = false
-					        AND
-								m.item_status = 'A'
-						 	AND ac.is_active = 1
+    @Query(value = """
+            SELECT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2 as street2,
+            			 ac.street_3 as street3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code, false as isDefault,
+            			 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier, ac.channel_type
+            	FROM catalog.crosswalk cw
+            	JOIN catalog.material m on m.material_number = cw.bnb_material_number
+            	JOIN catalog.catalog_price cp ON cp.sap_material = cw.sp_product_id
+            	JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
+            	JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
+            	WHERE
+            	(
+            			(
+            				:query is null
+            				or LOWER(ac.sap_partner) like %:query%
+            				or LOWER(ac.name_1) like %:query%
+            			)
+            		AND
+            			cw.bnb_material_number = :therapyId
+            		AND
+            			ac.partner_function = :partnerFunction
+            		AND
+            			uam.user_id = :userId
+            		AND
+            			cp.deleted = false
+            	    AND
+            			m.item_status = 'A'
+            	    AND
+            			cw.is_active = 1
+            		)
+            		GROUP BY ac.id, ac.sap_customer, ac.name_1, ac.house_number, ac.street, ac.street_2,
+            			 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code,
+            			 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel, ac.cgat_identifier, ac.channel_Type
+            """,
+            nativeQuery = true)
+    Page<AccountsResponseDTO> findAllSoldToAccountsForSP(@Param("userId") Long userId,
+                                                         @Param("therapyId") String therapyId, @Param("query") String query, Pageable paging,
+                                                         @Param("partnerFunction") String partnerFunction);
 
-					         UNION distinct
+    @Query(value = """
+            	SELECT ac.id, ac.sap_partner as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2 as street2,
+            			 ac.street_3 as street3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code, false as isDefault,
+            			 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier, ac.channel_Type
+            	FROM catalog.material m
+            	JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
+            	JOIN usermanagement.account ac ON ac.sap_partner = cp.ship_to_customer
+            	WHERE
+            	(
+            		(
+            			:query is null
+            			or LOWER(ac.sap_partner) like %:query%
+            			or LOWER(ac.name_1) like %:query%
+            		)
+            		AND
+            			cp.sold_to_customer = :soldToAccountId
+            		AND
+            			cp.sap_material = :therapyId
+            		AND
+            			ac.partner_function = :partnerFunction
+            		AND
+            		    ac.sap_customer= :soldToAccountId
+            		AND
+            			cp.deleted = false
+            		)
+            		GROUP BY ac.id, ac.sap_customer, ac.name_1, ac.house_number, ac.street, ac.street_2,
+            			 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code,
+            			 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel, ac.cgat_identifier, ac.channel_Type
+            """,
+            nativeQuery = true)
+    public Page<AccountsResponseDTO> findAllShipToAccounts(@Param("soldToAccountId") String soldToAccountId,
+                                                           @Param("therapyId") String therapyId, @Param("query") String query, Pageable paging,
+                                                           @Param("partnerFunction") String partnerFunction);
 
-							 SELECT m.id, m.material_number as material_number, m.material_description as material_description,
-					                  m.ndc_number as ndc, m.strength, m.dosage, m.channel_Type as channelType
-					         FROM catalog.material m
-					         JOIN catalog.crosswalk cw ON cw.bnb_material_number = m.material_number
-					         JOIN catalog.catalog_price cp ON cp.sap_material = cw.sp_product_id
-					         JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
-					         JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
-					         WHERE
-					             uam.user_id = :userId
-					             AND ac.partner_function = :partnerFunction
-					             AND cp.deleted = false
-								 AND
-									m.item_status = 'A'
-								AND
-									cw.is_active = 1
-					         	AND ac.is_active = 1
-					     )
-					         SELECT * FROM COMBINED com
-					         where (
-						cast(:query as varchar) is null
-					    OR LOWER(com.material_number) LIKE %:query%
-					    OR LOWER(com.ndc) LIKE %:query%
-					    OR LOWER(com.material_description) LIKE %:query%
-					)
-					     ) AS total_count
-					""",
-			nativeQuery = true)
-	Page<TherapyCatalogResponseDTO> findAllTherapies(@Param("userId") Long userId, @Param("query") String query,
-			@Param("salesOrg") List<String> salesOrg, @Param("customerIdentifier") List<String> customerIdentifier,
-			@Param("partnerFunction") String partnerFunction, Pageable paging);
+    @Query(value = """
+            SELECT ac.cgat_identifier as program, m.is_crosswalked as crosswalked
+            FROM catalog.material m
+            JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
+            JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
+            JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
+            WHERE
+            (
+            		uam.user_id = :userId
+            	AND
+            		cp.sap_material = :therapyId
+            	AND
+            		ac.partner_function = :partnerFunction
+            	AND
+            		cp.deleted = false
+                AND m.channel_type = :channelType
+            )
+            """, nativeQuery = true)
+    List<ProgramChannelProjectionDTO> findAllPrograms(@Param("userId") Long userId,
+                                                      @Param("therapyId") String therapyId, @Param("partnerFunction") String partnerFunction, String channelType);
 
-	@Query(value = """
-				SELECT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2 as street2,
-						 ac.street_3 as street3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code, false as isDefault,
-						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier, ac.channel_Type
-				FROM catalog.material m
-				JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
-				JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
-				JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
-				WHERE
-				(
-						(
-							:query is null
-							or LOWER(ac.sap_partner) like %:query%
-							or LOWER(ac.name_1) like %:query%
-						)
-					AND
-						(
-						cast(:program as varchar) is null
-						or ac.cgat_identifier = :program
-						)
-					AND
-						m.material_number = :therapyId
-					AND
-						ac.partner_function = :partnerFunction
-					AND
-						uam.user_id = :userId
-					AND
-						cp.deleted = false
-				    AND ac.channel_type=:channel
-				    AND m.channel_type=:channel
-					)
-					GROUP BY ac.id, ac.sap_customer, ac.name_1, ac.house_number, ac.street, ac.street_2,
-						 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code,
-						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel, ac.cgat_identifier, ac.channel_Type
-			""",
-			nativeQuery = true)
-	public Page<AccountsResponseDTO> findAllSoldToAccounts(@Param("userId") Long userId,
-			@Param("therapyId") String therapyId, @Param("query") String query, Pageable paging,
-			@Param("channel") String channel, @Param("program") String program,
-			@Param("partnerFunction") String partnerFunction);
+    @Query(value = """
+            	select cw.sp_product_id
+             	FROM catalog.crosswalk cw
+             	JOIN catalog.material m on m.material_number = cw.bnb_material_number
+            	JOIN catalog.catalog_price cp ON cp.sap_material = cw.sp_product_id
+            	JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
+            	JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
+            	WHERE
+            	(
+            			uam.user_id = :userId
+            		AND
+            			cw.bnb_material_number = :therapyId
+            		AND
+            			ac.partner_function = :partnerFunction
+            		AND
+            			cp.deleted = false
+            		AND
+            			m.item_status = 'A'
+            	    AND
+            			cw.is_active = 1
+            	)
+            """, nativeQuery = true)
+    List<String> findAllCrossWalkedSPsForUser(@Param("userId") Long userId, @Param("therapyId") String therapyId,
+                                              @Param("partnerFunction") String partnerFunction);
 
-	@Query(value = """
-			SELECT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2 as street2,
-						 ac.street_3 as street3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code, false as isDefault,
-						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier, ac.channel_type
-				FROM catalog.crosswalk cw
-				JOIN catalog.material m on m.material_number = cw.bnb_material_number
-				JOIN catalog.catalog_price cp ON cp.sap_material = cw.sp_product_id
-				JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
-				JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
-				WHERE
-				(
-						(
-							:query is null
-							or LOWER(ac.sap_partner) like %:query%
-							or LOWER(ac.name_1) like %:query%
-						)
-					AND
-						cw.bnb_material_number = :therapyId
-					AND
-						ac.partner_function = :partnerFunction
-					AND
-						uam.user_id = :userId
-					AND
-						cp.deleted = false
-				    AND
-						m.item_status = 'A'
-				    AND
-						cw.is_active = 1
-					)
-					GROUP BY ac.id, ac.sap_customer, ac.name_1, ac.house_number, ac.street, ac.street_2,
-						 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code,
-						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel, ac.cgat_identifier, ac.channel_Type
-			""",
-			nativeQuery = true)
-	Page<AccountsResponseDTO> findAllSoldToAccountsForSP(@Param("userId") Long userId,
-			@Param("therapyId") String therapyId, @Param("query") String query, Pageable paging,
-			@Param("partnerFunction") String partnerFunction);
+    @Query(value = """
+            SELECT DISTINCT ac.sap_customer as accountNumber, ac.name_1 as accountName
+            FROM usermanagement.account ac
+            JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
+            JOIN catalog.catalog_price cp ON ac.sap_customer = cp.sold_to_customer
+            WHERE
+            (
+            	(
+            		:query is null
+            		or LOWER(ac.sap_customer) like %:query%
+            		or LOWER(ac.name_1) like %:query%
+            	)
+            	AND
+            		uam.user_id = :userId
+            	AND
+            		ac.partner_function = :partnerFunction
+            )
+            """, nativeQuery = true)
+    public Page<AccountsResponseDTO> findAllCustomerIdentifiers(@Param("userId") Long userId,
+                                                                @Param("query") String query, Pageable paging, @Param("partnerFunction") String partnerFunction);
 
-	@Query(value = """
-				SELECT ac.id, ac.sap_partner as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2 as street2,
-						 ac.street_3 as street3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code, false as isDefault,
-						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier, ac.channel_Type
-				FROM catalog.material m
-				JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
-				JOIN usermanagement.account ac ON ac.sap_partner = cp.ship_to_customer
-				WHERE
-				(
-					(
-						:query is null
-						or LOWER(ac.sap_partner) like %:query%
-						or LOWER(ac.name_1) like %:query%
-					)
-					AND
-						cp.sold_to_customer = :soldToAccountId
-					AND
-						cp.sap_material = :therapyId
-					AND
-						ac.partner_function = :partnerFunction
-					AND
-					    ac.sap_customer= :soldToAccountId
-					AND
-						cp.deleted = false
-					)
-					GROUP BY ac.id, ac.sap_customer, ac.name_1, ac.house_number, ac.street, ac.street_2,
-						 ac.street_3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code,
-						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel, ac.cgat_identifier, ac.channel_Type
-			""",
-			nativeQuery = true)
-	public Page<AccountsResponseDTO> findAllShipToAccounts(@Param("soldToAccountId") String soldToAccountId,
-			@Param("therapyId") String therapyId, @Param("query") String query, Pageable paging,
-			@Param("partnerFunction") String partnerFunction);
+    @Query(value = """
+            SELECT m.*
+            FROM catalog.material m
+            WHERE
+            (
+                :query IS NULL
+                OR LOWER(m.material_number) LIKE %:query%
+                OR LOWER(m.ndc_number) LIKE %:query%
+                OR LOWER(m.material_description) LIKE %:query%
+                OR LOWER(m.generic_name) LIKE %:query%
+                OR LOWER(m.site_name) LIKE %:query%
+            )
+            AND
+            (
+                :statusActive = 'ALL'
+                OR (:statusActive = 'ACTIVE' AND m.item_status = 'A')
+                OR (:statusActive = 'INACTIVE' AND m.item_status = 'V')
+            )
+            AND (
+            	    (
+            	      :ignoreCrosswalkedSP = true
+            	      AND
+            	      (
+            		    (m.channel_type = 'SPECIALITY_PHARMA' AND m.is_crosswalked = false)
+            		    OR m.channel_type = 'BUY_AND_BILL'
+            		  )
+            	    )
+            	 OR
+            	   (
+            	      :ignoreCrosswalkedSP = false
+            	      AND
+            	      (
+            	        :channelTypes = 'ALL'
+            	        OR m.channel_type = :channelTypes
+            	      )
+            	    )
+            	)
+            """, nativeQuery = true)
+    Page<Therapy> findAllGlobalTherapies(@Param("query") String query, String statusActive, String channelTypes,
+                                         Pageable paging, @Param("ignoreCrosswalkedSP") boolean ignoreCrosswalkedSP);
 
-	@Query(value = """
-			SELECT ac.cgat_identifier as program, m.is_crosswalked as crosswalked
-			FROM catalog.material m
-			JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
-			JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
-			JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
-			WHERE
-			(
-					uam.user_id = :userId
-				AND
-					cp.sap_material = :therapyId
-				AND
-					ac.partner_function = :partnerFunction
-				AND
-					cp.deleted = false
-			    AND m.channel_type = :channelType
-			)
-			""", nativeQuery = true)
-	List<ProgramChannelProjectionDTO> findAllPrograms(@Param("userId") Long userId,
-			@Param("therapyId") String therapyId, @Param("partnerFunction") String partnerFunction, String channelType);
+    List<Therapy> findByMaterialNumberInAndChannelTypeAndItemStatus(Set<String> productIds, ChannelType channelType,
+                                                                    String itemStatus);
 
-	@Query(value = """
-				select cw.sp_product_id
-			 	FROM catalog.crosswalk cw
-			 	JOIN catalog.material m on m.material_number = cw.bnb_material_number
-				JOIN catalog.catalog_price cp ON cp.sap_material = cw.sp_product_id
-				JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
-				JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
-				WHERE
-				(
-						uam.user_id = :userId
-					AND
-						cw.bnb_material_number = :therapyId
-					AND
-						ac.partner_function = :partnerFunction
-					AND
-						cp.deleted = false
-					AND
-						m.item_status = 'A'
-				    AND
-						cw.is_active = 1
-				)
-			""", nativeQuery = true)
-	List<String> findAllCrossWalkedSPsForUser(@Param("userId") Long userId, @Param("therapyId") String therapyId,
-			@Param("partnerFunction") String partnerFunction);
+    Optional<Therapy> findByMaterialNumberAndChannelType(String materialNumber, ChannelType channelType);
 
-	@Query(value = """
-			SELECT DISTINCT ac.sap_customer as accountNumber, ac.name_1 as accountName
-			FROM usermanagement.account ac
-			JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
-			JOIN catalog.catalog_price cp ON ac.sap_customer = cp.sold_to_customer
-			WHERE
-			(
-				(
-					:query is null
-					or LOWER(ac.sap_customer) like %:query%
-					or LOWER(ac.name_1) like %:query%
-				)
-				AND
-					uam.user_id = :userId
-				AND
-					ac.partner_function = :partnerFunction
-			)
-			""", nativeQuery = true)
-	public Page<AccountsResponseDTO> findAllCustomerIdentifiers(@Param("userId") Long userId,
-			@Param("query") String query, Pageable paging, @Param("partnerFunction") String partnerFunction);
+    List<Therapy> findByMaterialNumberInAndChannelType(List<String> materialNumbers, ChannelType channelType);
 
-	@Query(value = """
-			SELECT m.*
-			FROM catalog.material m
-			WHERE
-			(
-			    :query IS NULL
-			    OR LOWER(m.material_number) LIKE %:query%
-			    OR LOWER(m.ndc_number) LIKE %:query%
-			    OR LOWER(m.material_description) LIKE %:query%
-			    OR LOWER(m.generic_name) LIKE %:query%
-			    OR LOWER(m.site_name) LIKE %:query%
-			)
-			AND
-			(
-			    :statusActive = 'ALL'
-			    OR (:statusActive = 'ACTIVE' AND m.item_status = 'A')
-			    OR (:statusActive = 'INACTIVE' AND m.item_status = 'V')
-			)
-			AND (
-				    (
-				      :ignoreCrosswalkedSP = true
-				      AND
-				      (
-					    (m.channel_type = 'SPECIALITY_PHARMA' AND m.is_crosswalked = false)
-					    OR m.channel_type = 'BUY_AND_BILL'
-					  )
-				    )
-				 OR
-				   (
-				      :ignoreCrosswalkedSP = false
-				      AND
-				      (
-				        :channelTypes = 'ALL'
-				        OR m.channel_type = :channelTypes
-				      )
-				    )
-				)
-			""", nativeQuery = true)
-	Page<Therapy> findAllGlobalTherapies(@Param("query") String query, String statusActive, String channelTypes,
-			Pageable paging, @Param("ignoreCrosswalkedSP") boolean ignoreCrosswalkedSP);
+    @Modifying
+    @Query(value = """
+            UPDATE catalog.material
+            SET is_crosswalked = :isCrossWalked
+            WHERE material_number IN (:materialNumbers)
+            AND channel_type = :channelType
+            """, nativeQuery = true)
+    void updateIsCrossWalkedForMaterialNumbersAndChannelType(@Param("isCrossWalked") boolean isCrossWalked,
+                                                             @Param("materialNumbers") Set<String> materialNumbers, @Param("channelType") String channelType);
 
-	List<Therapy> findByMaterialNumberInAndChannelTypeAndItemStatus(Set<String> productIds, ChannelType channelType,
-			String itemStatus);
+    List<Therapy> findAllByChannelTypeAndItemStatus(ChannelType channelType, String itemStatus);
 
-	Optional<Therapy> findByMaterialNumberAndChannelType(String materialNumber, ChannelType channelType);
+    @Query(value = """
+                SELECT m.*
+                FROM catalog.material m
+                JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
+                JOIN catalog.crosswalk cw ON cp.sap_material = cw.sp_product_id
+            	JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
+                JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
+                WHERE m.channel_type = 'SPECIALITY_PHARMA'
+                  AND m.item_status = 'A'
+                  AND cp.channel_type = 'SPECIALITY_PHARMA'
+                  AND cp.deleted = false
+                  AND cw.bnb_material_number = :materialNumber
+                  AND cw.is_active = 1
+                  AND uam.user_id = :userId
+            """, nativeQuery = true)
+    List<Therapy> findCrosswalkedTherapies(String materialNumber, long userId);
 
-	List<Therapy> findByMaterialNumberInAndChannelType(List<String> materialNumbers, ChannelType channelType);
+    @Query(value = """
+                              SELECT m.*
+                              FROM catalog.material m
+                              WHERE
+                              (
+                                  :query IS NULL
+                                  OR LOWER(m.material_number) LIKE %:query%
+                                  OR LOWER(m.ndc_number) LIKE %:query%
+                                  OR LOWER(m.material_description) LIKE %:query%
+                                  OR LOWER(m.generic_name) LIKE %:query%
+                                  OR LOWER(m.site_name) LIKE %:query%
+                              )
+                              AND
+                              (
+                                  :statusActive = 'ALL'
+                                  OR (:statusActive = 'ACTIVE' AND m.item_status = 'A')
+                                  OR (:statusActive = 'INACTIVE' AND m.item_status = 'V')
+                              )
+                              AND
+                              (
+                                  :channelTypes = 'ALL'
+                                  OR m.channel_type = :channelTypes
+                              )
+            AND m.is_crosswalked = :crosswalked
+            """, nativeQuery = true)
+    Page<Therapy> findNonCrosswalkedSPGlobalTherapies(@Param("query") String query, String statusActive,
+                                                      String channelTypes, @Param("crosswalked") Boolean crosswalked, Pageable paging);
 
-	@Modifying
-	@Query(value = """
-			UPDATE catalog.material
-			SET is_crosswalked = :isCrossWalked
-			WHERE material_number IN (:materialNumbers)
-			AND channel_type = :channelType
-			""", nativeQuery = true)
-	void updateIsCrossWalkedForMaterialNumbersAndChannelType(@Param("isCrossWalked") boolean isCrossWalked,
-			@Param("materialNumbers") Set<String> materialNumbers, @Param("channelType") String channelType);
+    Optional<Therapy> findByNdcNumberAndChannelType(String spNdc, ChannelType channelType);
 
-	List<Therapy> findAllByChannelTypeAndItemStatus(ChannelType channelType, String itemStatus);
+    List<Therapy> findByNdcNumberInAndChannelType(List<String> distinctBnbMaterialNDC, ChannelType channelType);
 
-	@Query(value = """
-			    SELECT m.*
-			    FROM catalog.material m
-			    JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
-			    JOIN catalog.crosswalk cw ON cp.sap_material = cw.sp_product_id
-				JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
-			    JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
-			    WHERE m.channel_type = 'SPECIALITY_PHARMA'
-			      AND m.item_status = 'A'
-			      AND cp.channel_type = 'SPECIALITY_PHARMA'
-			      AND cp.deleted = false
-			      AND cw.bnb_material_number = :materialNumber
-			      AND cw.is_active = 1
-			      AND uam.user_id = :userId
-			""", nativeQuery = true)
-	List<Therapy> findCrosswalkedTherapies(String materialNumber, long userId);
+    @Modifying
+    @Query(value = """
+            UPDATE catalog.material
+            SET is_crosswalked = :isCrossWalked
+            WHERE ndc_number IN (:ndcNumbers)
+            AND channel_type = :channelType
+            """, nativeQuery = true)
+    void updateIsCrossWalkedForNdcsAndChannelType(@Param("isCrossWalked") boolean isCrossWalked,
+                                                  @Param("ndcNumbers") Set<String> ndcNumbers, @Param("channelType") String channelType);
 
-	@Query(value = """
-			                  SELECT m.*
-			                  FROM catalog.material m
-			                  WHERE
-			                  (
-			                      :query IS NULL
-			                      OR LOWER(m.material_number) LIKE %:query%
-			                      OR LOWER(m.ndc_number) LIKE %:query%
-			                      OR LOWER(m.material_description) LIKE %:query%
-			                      OR LOWER(m.generic_name) LIKE %:query%
-			                      OR LOWER(m.site_name) LIKE %:query%
-			                  )
-			                  AND
-			                  (
-			                      :statusActive = 'ALL'
-			                      OR (:statusActive = 'ACTIVE' AND m.item_status = 'A')
-			                      OR (:statusActive = 'INACTIVE' AND m.item_status = 'V')
-			                  )
-			                  AND
-			                  (
-			                      :channelTypes = 'ALL'
-			                      OR m.channel_type = :channelTypes
-			                  )
-			AND m.is_crosswalked = :crosswalked
-			""", nativeQuery = true)
-	Page<Therapy> findNonCrosswalkedSPGlobalTherapies(@Param("query") String query, String statusActive,
-			String channelTypes, @Param("crosswalked") Boolean crosswalked, Pageable paging);
-
-	Optional<Therapy> findByNdcNumberAndChannelType(String spNdc, ChannelType channelType);
-
-	List<Therapy> findByNdcNumberInAndChannelType(List<String> distinctBnbMaterialNDC, ChannelType channelType);
-
-	@Modifying
-	@Query(value = """
-			UPDATE catalog.material
-			SET is_crosswalked = :isCrossWalked
-			WHERE ndc_number IN (:ndcNumbers)
-			AND channel_type = :channelType
-			""", nativeQuery = true)
-	void updateIsCrossWalkedForNdcsAndChannelType(@Param("isCrossWalked") boolean isCrossWalked,
-			@Param("ndcNumbers") Set<String> ndcNumbers, @Param("channelType") String channelType);
+    @Query(value = """
+            	SELECT m.*
+            	  FROM catalog.material m
+            	  JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
+            	  JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
+            	  JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
+            	  WHERE m.channel_type = :channelType
+            	  AND m.item_status = 'A'
+            	  AND cp.channel_type = :channelType
+            	  AND cp.deleted = false
+            	  AND m.trade_name = :tradeName
+            	  AND uam.user_id = :userId
+            """, nativeQuery = true)
+    List<Therapy> findByTradeNameAndChannelType(@Param("tradeName") String tradeName,
+                                                @Param("channelType") String channelType, @Param("userId") Long userId);
 
 }
