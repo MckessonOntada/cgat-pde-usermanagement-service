@@ -37,12 +37,12 @@ public class Crosswalk extends AuditColumns implements Serializable {
 	private Long id;
 
 	@Size(max = 50)
-	@Column(name = "bnb_material_number", nullable = false)
-	private String bnbMaterialNumber;
+	@Column(name = "bnb_ndc_number", nullable = false)
+	private String bnbNdcNumber;
 
 	@Size(max = 50)
-	@Column(name = "sp_product_id", nullable = false)
-	private String spProductId;
+	@Column(name = "sp_ndc_number", nullable = false)
+	private String spNdcNumber;
 
 	@Convert(converter = NumericBooleanConverter.class)
 	@Column(name = "is_active")
