@@ -35,16 +35,12 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 
 	private final QuestionnaireConfigurationRepository questionnaireConfigurationRepository;
 
-	private final MaterialCrossWalkConfigRepository materialCrossWalkConfigRepository;
-
 	public QuestionnaireServiceImpl(QuestionnaireRepository questionnaireRepository,
 			TherapyRepository therapyRepository,
-			QuestionnaireConfigurationRepository questionnaireConfigurationRepository,
-			MaterialCrossWalkConfigRepository materialCrossWalkConfigRepository) {
+			QuestionnaireConfigurationRepository questionnaireConfigurationRepository) {
 		this.questionnaireRepository = questionnaireRepository;
 		this.therapyRepository = therapyRepository;
 		this.questionnaireConfigurationRepository = questionnaireConfigurationRepository;
-		this.materialCrossWalkConfigRepository = materialCrossWalkConfigRepository;
 	}
 
 	@Override
@@ -209,23 +205,15 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 	@Override
 	public List<Questionnaire> getAllConfiguredQuestionnaires(String sapMaterial, String soldToCustomer,
 			String shipToCustomer, String variant, ChannelType channelType, String ndcNumber, String tradeName) {
-		Crosswalk crosswalkDetails = null;
-		String bnbTradeName = null;
+		boolean isCrosswalked = false;
 		if (channelType.equals(ChannelType.SPECIALITY_PHARMA)) {
-			crosswalkDetails = materialCrossWalkConfigRepository.findBySpNdcNumberAndIsActive(ndcNumber, true);
-		}
-
-		if (!ObjectUtils.isEmpty(crosswalkDetails)) {
-			bnbTradeName = therapyRepository.findTradeNameByNdcNumberAndChannelType(crosswalkDetails.getBnbNdcNumber(),
-					ChannelType.BUY_AND_BILL);
+			isCrosswalked = therapyRepository.findIsCrosswalkedByMaterialNumberAndChannelType(sapMaterial, channelType);
 		}
 
 		String catalogId = getCatalogId(sapMaterial, soldToCustomer, shipToCustomer, variant, channelType.name());
 		List<QuestionnaireConfiguration> allConfiguredQuestionnaires = questionnaireConfigurationRepository
-			.getAllConfiguredQuestionnaires(
-					ObjectUtils.isEmpty(crosswalkDetails) ? tradeName + "_" + ndcNumber
-							: bnbTradeName + "_" + crosswalkDetails.getBnbNdcNumber(),
-					soldToCustomer, catalogId, channelType.name(), !ObjectUtils.isEmpty(crosswalkDetails));
+			.getAllConfiguredQuestionnaires(tradeName + "_" + ndcNumber, soldToCustomer, catalogId, channelType.name(),
+					isCrosswalked);
 		return allConfiguredQuestionnaires.stream()
 			.map(QuestionnaireConfiguration::getQuestionnaireId)
 			.distinct()

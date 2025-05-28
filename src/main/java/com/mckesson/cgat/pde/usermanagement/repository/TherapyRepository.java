@@ -417,4 +417,6 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 
 	String findTradeNameByNdcNumberAndChannelType(@Size(max = 50) String bnbNdcNumber, ChannelType channelType);
 
+	boolean findIsCrosswalkedByMaterialNumberAndChannelType(String sapMaterial, ChannelType channelType);
+
 }
