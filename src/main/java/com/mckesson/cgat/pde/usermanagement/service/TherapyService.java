@@ -34,8 +34,8 @@ public interface TherapyService {
 	Page<VariantsResponseDTO> findAllVariantsLinkedToShipToAccountsForTherapy(String soldToAccountId,
 			String shipToAccountId, String therapyId, Pageable paging, ChannelType channelType);
 
-	CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForTherapy(String soldToAccountId,
-			String shipToAccountId, String variantType, String therapyId);
+	CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForNdc(String soldToAccountId,
+			String shipToAccountId, String variantType, String ndcNumber);
 
 	Page<Therapy> findAllGlobalTherapies(String query, Pageable paging, List<ChannelType> channelTypes,
 			List<String> status, boolean ignoreCrosswalkedSP);

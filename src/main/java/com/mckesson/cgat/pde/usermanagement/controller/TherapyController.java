@@ -145,18 +145,18 @@ public class TherapyController {
 				therapyId, paging, channelType);
 	}
 
-	@GetMapping("{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/catalog")
+	@GetMapping("/ndc/{ndcNumber}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/catalog")
 	@Operation(
-			summary = "Find price of the variant of therapy that is linked to the selected soldto account,shipto account and the therapy being offered from that shipto account")
+			summary = "Find price of the variant of therapy that is linked to the selected soldto account,shipto account and the ndc being offered from that shipto account")
 	public CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForTherapy(
 			@PathVariable @NotNull(message = "'soldToAccountId' cannot be null") @NotEmpty(
 					message = "'soldToAccountId' cannot be empty") String soldToAccountId,
 			@PathVariable @NotNull(message = "'shipToAccountId' cannot be null") @NotEmpty(
 					message = "'shipToAccountId' cannot be empty") String shipToAccountId,
 			@RequestParam(required = false) String variantType,
-			@PathVariable @NotNull(message = "'therapyId' cannot be null") String therapyId) {
-		return therapyService.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccountId, shipToAccountId,
-				variantType, therapyId);
+			@PathVariable @NotNull(message = "'Ndc number' cannot be null") String ndcNumber) {
+		return therapyService.findPriceOfVariantLinkedToShipToAccountsForNdc(soldToAccountId, shipToAccountId,
+				variantType, ndcNumber);
 	}
 
 	@GetMapping("/ndc/{ndcNumber}/programs-channels")

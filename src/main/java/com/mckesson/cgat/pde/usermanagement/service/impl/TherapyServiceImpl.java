@@ -184,14 +184,14 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	@Override
-	public CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForTherapy(String soldToAccountId,
-			String shipToAccountId, String variantType, String therapyId) {
+	public CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForNdc(String soldToAccountId,
+			String shipToAccountId, String variantType, String ndcNumber) {
 		try {
-			log.info(" Inside method - findPriceOfVariantLinkedToShipToAccountsForTherapy..");
-			log.info("soldToAccountId: {} , shipToAccountId: {} , variantType: {} and therapyId: {}", soldToAccountId,
-					shipToAccountId, variantType, therapyId);
+			log.info(" Inside method - findPriceOfVariantLinkedToShipToAccountsForNdc..");
+			log.info("soldToAccountId: {} , shipToAccountId: {} , variantType: {} and ndcNumber: {}", soldToAccountId,
+					shipToAccountId, variantType, ndcNumber);
 			Page<CatalogPriceResponse> catalogPriceResponsePage = catalogPriceRepository
-				.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccountId, shipToAccountId, therapyId,
+				.findPriceOfVariantLinkedToShipToAccountsForNdc(soldToAccountId, shipToAccountId, ndcNumber,
 						variantType, PageRequest.of(0, 1));
 			CatalogPriceResponse catalogPrice = catalogPriceResponsePage.getContent().stream().findFirst().orElse(null);
 			CatalogPriceResponseDto responseDto = null;
