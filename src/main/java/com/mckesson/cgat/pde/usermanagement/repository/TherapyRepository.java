@@ -415,8 +415,4 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 	Page<Therapy> findNonCrosswalkedSPGlobalTherapies(@Param("query") String query, String statusActive,
 			String channelTypes, @Param("crosswalked") Boolean crosswalked, Pageable paging);
 
-	String findTradeNameByNdcNumberAndChannelType(@Size(max = 50) String bnbNdcNumber, ChannelType channelType);
-
-	boolean findIsCrosswalkedByMaterialNumberAndChannelType(String sapMaterial, ChannelType channelType);
-
 }
