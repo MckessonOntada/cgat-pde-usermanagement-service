@@ -430,7 +430,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			String channelTypes, @Param("crosswalked") Boolean crosswalked, Pageable paging);
 
 	@Query(value = """
-				SELECT m.*
+				SELECT distinct m.*
 				  FROM catalog.material m
 				  JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
 				  JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
