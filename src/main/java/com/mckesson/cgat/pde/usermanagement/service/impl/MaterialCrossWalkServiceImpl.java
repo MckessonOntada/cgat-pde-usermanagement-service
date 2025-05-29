@@ -65,15 +65,15 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 		parseCrossWalkDataFile(crossWalkDataFile, crossWalkConfigsToAdd, crossWalkConfigsToDelete, failedCrossWalks);
 
 		List<String> existingBnbNDCs = fetchBnbTherapies(crossWalkConfigsToAdd, crossWalkConfigsToDelete);
-		List<String> existingSPNDCs = fetchSPTherapies(crossWalkConfigsToAdd, crossWalkConfigsToDelete);
+		List<String> existingSPIds = fetchSPTherapies(crossWalkConfigsToAdd, crossWalkConfigsToDelete);
 
-		Map<String, Crosswalk> spNDCToConfigMap = fetchExistingCrossWalkConfigsForSPs(existingSPNDCs);
+		Map<String, Crosswalk> spIdToConfigMap = fetchExistingCrossWalkConfigsForSPs(existingSPIds);
 
 		List<Crosswalk> entitiesToDelete = validateCrossWalkConstraintsAndGetConfigs(crossWalkConfigsToDelete,
-				failedCrossWalks, existingBnbNDCs, existingSPNDCs, spNDCToConfigMap);
+				failedCrossWalks, existingBnbNDCs, existingSPIds, spIdToConfigMap);
 
 		List<Crosswalk> entitiesToAdd = validateCrossWalkConstraintsAndGetConfigs(crossWalkConfigsToAdd,
-				failedCrossWalks, existingBnbNDCs, existingSPNDCs, spNDCToConfigMap);
+				failedCrossWalks, existingBnbNDCs, existingSPIds, spIdToConfigMap);
 
 		// Removing configurations and saving in batches
 		removeConfigsFromDB(entitiesToDelete);
@@ -121,8 +121,7 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 	}
 
 	private void validateHeaders(Map<String, Integer> headerMap) {
-		List<String> expectedHeaders = List.of("Buy & Bill Material ID", "Buy & Bill Material Description",
-				"Buy & Bill NDC", "SP Product ID", "SP Product Name", "SP NDC", "Status");
+		List<String> expectedHeaders = List.of("Buy & Bill NDC", "SP Product ID", "SP NDC", "Status");
 
 		// Check for missing headers first
 		List<String> missingHeaders = expectedHeaders.stream()
@@ -158,12 +157,9 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 		 * remove from DB.
 		 */
 		MaterialCrossWalkConfigRecordDTO crossWalkConfig = MaterialCrossWalkConfigRecordDTO.builder()
-			.bnbMaterialNumber(recordData.get(0))
-			.bnbDescription(recordData.get(1))
-			.bnbNDC(recordData.get(2))
-			.spProductId(recordData.get(3))
-			.spProductName(recordData.get(4))
-			.spNDC(recordData.get(5))
+			.bnbNDC(recordData.get(0))
+			.spProductId(recordData.get(1))
+			.spNDC(recordData.get(2))
 			.build();
 
 		Set<ConstraintViolation<MaterialCrossWalkConfigRecordDTO>> violations = validator.validate(crossWalkConfig);
@@ -176,10 +172,10 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 		}
 
 		try {
-			String rowAction = recordData.get(6);
+			String rowAction = recordData.get(3);
 			MaterialCrossWalkAction crossWalkAction = MaterialCrossWalkAction.fromString(rowAction);
 			if (MaterialCrossWalkAction.LINK.equals(crossWalkAction)) {
-				validateForDuplicateSPRows(crossWalkConfig.getSpNDC(), crossWalkConfigsToAdd);
+				validateForDuplicateSPRows(crossWalkConfig.getSpProductId(), crossWalkConfigsToAdd);
 				crossWalkConfigsToAdd.add(crossWalkConfig);
 			}
 			else {
@@ -195,9 +191,9 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 		}
 	}
 
-	private void validateForDuplicateSPRows(String spProductNdc,
+	private void validateForDuplicateSPRows(String spProductId,
 			List<MaterialCrossWalkConfigRecordDTO> crossWalkConfigs) {
-		boolean exists = crossWalkConfigs.stream().anyMatch(record -> spProductNdc.equals(record.getSpNDC()));
+		boolean exists = crossWalkConfigs.stream().anyMatch(record -> spProductId.equals(record.getSpProductId()));
 		if (exists) {
 			throw new IllegalArgumentException("Duplicate Entry");
 		}
@@ -219,27 +215,27 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 
 	private List<String> fetchSPTherapies(List<MaterialCrossWalkConfigRecordDTO> crossWalkConfigsToAdd,
 			List<MaterialCrossWalkConfigRecordDTO> crossWalkConfigsToDelete) {
-		List<String> distinctSPNDC = Stream.concat(crossWalkConfigsToAdd.stream(), crossWalkConfigsToDelete.stream())
-			.map(MaterialCrossWalkConfigRecordDTO::getSpNDC)
+		List<String> distinctSPId = Stream.concat(crossWalkConfigsToAdd.stream(), crossWalkConfigsToDelete.stream())
+			.map(MaterialCrossWalkConfigRecordDTO::getSpProductId)
 			.distinct()
 			.toList();
-		List<Therapy> existingTherapies = therapyRepository.findByNdcNumberInAndChannelType(distinctSPNDC,
+		List<Therapy> existingTherapies = therapyRepository.findByMaterialNumberInAndChannelType(distinctSPId,
 				ChannelType.SPECIALITY_PHARMA);
 
-		return existingTherapies.stream().map(Therapy::getNdcNumber).toList();
+		return existingTherapies.stream().map(Therapy::getMaterialNumber).toList();
 
 	}
 
-	private Map<String, Crosswalk> fetchExistingCrossWalkConfigsForSPs(List<String> existingSPNDCs) {
+	private Map<String, Crosswalk> fetchExistingCrossWalkConfigsForSPs(List<String> existingSPIds) {
 		List<Crosswalk> existingCrossWalkConfigs = materialCrossWalkConfigRepository
-			.findMaterialCrossWalkConfigBySpNdcNumberIn(existingSPNDCs);
-		return existingCrossWalkConfigs.stream().collect(Collectors.toMap(Crosswalk::getSpNdcNumber, config -> config));
+			.findMaterialCrossWalkConfigBySpProductIdIn(existingSPIds);
+		return existingCrossWalkConfigs.stream().collect(Collectors.toMap(Crosswalk::getSpProductId, config -> config));
 	}
 
 	private List<Crosswalk> validateCrossWalkConstraintsAndGetConfigs(
 			List<MaterialCrossWalkConfigRecordDTO> crossWalkConfigs,
 			Map<MaterialCrossWalkConfigRecordDTO, String> failedCrossWalks, List<String> existingBnbMaterialNDC,
-			List<String> existingSPProductNDCs, Map<String, Crosswalk> spProductNDCToConfigMap) {
+			List<String> existingSPProductIds, Map<String, Crosswalk> spProductNDCToConfigMap) {
 		List<Crosswalk> crossWalkConfigList = new ArrayList<>();
 
 		Iterator<MaterialCrossWalkConfigRecordDTO> iterator = crossWalkConfigs.iterator();
@@ -247,7 +243,7 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 
 			MaterialCrossWalkConfigRecordDTO crossWalkConfig = iterator.next();
 			String bnbMaterialNDC = crossWalkConfig.getBnbNDC();
-			String spNDC = crossWalkConfig.getSpNDC();
+			String spId = crossWalkConfig.getSpProductId();
 
 			try {
 
@@ -255,20 +251,20 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 					throw new IllegalArgumentException("Invalid Buy & Bill Material NDC");
 				}
 
-				if (!existingSPProductNDCs.contains(spNDC)) {
-					throw new IllegalArgumentException("Invalid SP Product NDC");
+				if (!existingSPProductIds.contains(spId)) {
+					throw new IllegalArgumentException("Invalid SP Product Id");
 				}
 				Crosswalk config = Crosswalk.builder()
 					.bnbNdcNumber(bnbMaterialNDC)
-					.spNdcNumber(spNDC)
+					.spProductId(spId)
 					.isActive(true)
 					.build();
 
-				Crosswalk existingConfig = spProductNDCToConfigMap.get(spNDC);
+				Crosswalk existingConfig = spProductNDCToConfigMap.get(spId);
 				if (existingConfig != null) {
 					if (!existingConfig.getBnbNdcNumber().equals(bnbMaterialNDC)) {
 						throw new IllegalArgumentException(
-								"The SP product NDC is already mapped to a Material, please review the existing mapping and retry.");
+								"The SP product Id is already mapped to a Material, please review the existing mapping and retry.");
 					}
 					else {
 						config.setId(existingConfig.getId());
@@ -287,9 +283,9 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 	}
 
 	private void removeConfigsFromDB(List<Crosswalk> entitiesToDelete) {
-		List<String> spProductNDCs = entitiesToDelete.stream().map(Crosswalk::getSpNdcNumber).distinct().toList();
-		if (!CollectionUtils.isEmpty(spProductNDCs)) {
-			materialCrossWalkConfigRepository.deleteBySpNdcNumberIn(spProductNDCs);
+		List<String> spProductIds = entitiesToDelete.stream().map(Crosswalk::getSpProductId).distinct().toList();
+		if (!CollectionUtils.isEmpty(spProductIds)) {
+			materialCrossWalkConfigRepository.deleteBySpProductIdIn(spProductIds);
 		}
 
 	}
@@ -305,13 +301,13 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 
 	private void updateCrossWalkFlagForMaterials(List<Crosswalk> deletedEntities, List<Crosswalk> addedEntities) {
 		// --- Collect SP ---
-		Set<String> addedSpProductNDCs = addedEntities.stream()
-			.map(Crosswalk::getSpNdcNumber)
+		Set<String> addedSpProductIds = addedEntities.stream()
+			.map(Crosswalk::getSpProductId)
 			.filter(Objects::nonNull)
 			.collect(Collectors.toSet());
 
-		Set<String> deletedSpProductNDCs = deletedEntities.stream()
-			.map(Crosswalk::getSpNdcNumber)
+		Set<String> deletedSpProductIds = deletedEntities.stream()
+			.map(Crosswalk::getSpProductId)
 			.filter(Objects::nonNull)
 			.collect(Collectors.toSet());
 
@@ -327,13 +323,13 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 			.collect(Collectors.toSet());
 
 		// Mark SP: true for added, false for deleted
-		if (!addedSpProductNDCs.isEmpty()) {
-			therapyRepository.updateIsCrossWalkedForNdcsAndChannelType(true, addedSpProductNDCs,
+		if (!addedSpProductIds.isEmpty()) {
+			therapyRepository.updateIsCrossWalkedForMaterialNumbersAndChannelType(true, addedSpProductIds,
 					String.valueOf(ChannelType.SPECIALITY_PHARMA));
 		}
 
-		if (!deletedSpProductNDCs.isEmpty()) {
-			therapyRepository.updateIsCrossWalkedForNdcsAndChannelType(false, deletedSpProductNDCs,
+		if (!deletedSpProductIds.isEmpty()) {
+			therapyRepository.updateIsCrossWalkedForMaterialNumbersAndChannelType(false, deletedSpProductIds,
 					String.valueOf(ChannelType.SPECIALITY_PHARMA));
 		}
 
@@ -364,14 +360,11 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 			Map<MaterialCrossWalkConfigRecordDTO, String> failedCrossWalks) {
 		try (OutputStreamWriter writer = new OutputStreamWriter(outputStream);
 				CSVPrinter csvPrinter = new CSVPrinter(writer,
-						CSVFormat.DEFAULT.withHeader("Buy & Bill Material ID", "Buy & Bill Description",
-								"Buy & Bill NDC", "SP Product ID", "SP Product Name", "SP NDC", "Error Reason"))) {
+						CSVFormat.DEFAULT.withHeader("Buy & Bill NDC", "SP Product ID", "SP NDC", "Error Reason"))) {
 
 			for (Map.Entry<MaterialCrossWalkConfigRecordDTO, String> e : failedCrossWalks.entrySet()) {
 				MaterialCrossWalkConfigRecordDTO crossWalkConfigRecordDTO = e.getKey();
-				csvPrinter.printRecord(crossWalkConfigRecordDTO.getBnbMaterialNumber(),
-						crossWalkConfigRecordDTO.getBnbDescription(), crossWalkConfigRecordDTO.getBnbNDC(),
-						crossWalkConfigRecordDTO.getSpProductId(), crossWalkConfigRecordDTO.getSpProductName(),
+				csvPrinter.printRecord(crossWalkConfigRecordDTO.getBnbNDC(), crossWalkConfigRecordDTO.getSpProductId(),
 						crossWalkConfigRecordDTO.getSpNDC(), e.getValue());
 			}
 		}
@@ -384,21 +377,21 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 	@Override
 	@Transactional
 	public int createCrosswalks(CrosswalkRequestDTO request) throws ResourceNotFoundException {
-		String bnbNdc = request.getBnbMaterialNdc();
-		List<String> spNdcs = request.getSpProductNdcs();
+		String bnbNdc = request.getBnbNdc();
+		List<String> spIds = request.getSpProductIds();
 
 		// Validate BNB therapy
-		Therapy bnbTherapy = validateBnbTherapy(bnbNdc);
+		List<Therapy> bnbTherapy = validateBnbTherapy(bnbNdc);
 
 		// Fetch and validate SP therapies
-		Map<String, Therapy> spTherapyMap = validateSpTherapies(spNdcs);
+		Map<String, Therapy> spTherapyMap = validateSpTherapies(spIds);
 
 		// All inputs valid, create crosswalks
 		List<Crosswalk> newCrosswalks = spTherapyMap.values()
 			.stream()
 			.map(spTherapy -> Crosswalk.builder()
 				.bnbNdcNumber(bnbNdc)
-				.spNdcNumber(spTherapy.getNdcNumber())
+				.spProductId(spTherapy.getMaterialNumber())
 				.isActive(true)
 				.build())
 			.toList();
@@ -413,54 +406,56 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 			therapiesToUpdate.add(spTherapy);
 			crosswalkedSpCount++; // Increment count
 		}
-		// Set BNB therapy as crosswalked
-		bnbTherapy.setIsCrosswalked(true);
-		therapiesToUpdate.add(bnbTherapy);
+
+		for (Therapy therapy : bnbTherapy) {
+			therapy.setIsCrosswalked(true);
+			therapiesToUpdate.add(therapy);
+		}
+
 		therapyRepository.saveAll(therapiesToUpdate);
 
-		log.info("Crosswalked {} SP Product NDCs for BNB NDC: {}", crosswalkedSpCount, bnbNdc);
+		log.info("Crosswalked {} SP Product IDs for BNB NDC: {}", crosswalkedSpCount, bnbNdc);
 		return crosswalkedSpCount;
 
 	}
 
-	private Therapy validateBnbTherapy(String bnbNdc) throws ResourceNotFoundException {
-		Optional<Therapy> bnbTherapy = therapyRepository.findByNdcNumberAndChannelType(bnbNdc,
-				ChannelType.BUY_AND_BILL);
+	private List<Therapy> validateBnbTherapy(String bnbNdc) throws ResourceNotFoundException {
+		List<Therapy> bnbTherapy = therapyRepository.findByNdcNumberAndChannelType(bnbNdc, ChannelType.BUY_AND_BILL);
 		if (bnbTherapy.isEmpty()) {
 			throw new ResourceNotFoundException("Invalid BNB NDC or channel type: " + bnbNdc);
 		}
-		return bnbTherapy.get();
+		return bnbTherapy;
 	}
 
-	private Map<String, Therapy> validateSpTherapies(List<String> spNdcs) throws ResourceNotFoundException {
+	private Map<String, Therapy> validateSpTherapies(List<String> spIds) throws ResourceNotFoundException {
 		Map<String, Therapy> validSpTherapyMap = new HashMap<>();
-		List<String> invalidSpNdcs = new ArrayList<>();
-		List<String> alreadyCrosswalkedSpNdcs = new ArrayList<>();
+		List<String> invalidSpIds = new ArrayList<>();
+		List<String> alreadyCrosswalkedSpIds = new ArrayList<>();
 
-		for (String spNdc : spNdcs) {
-			Optional<Therapy> therapy = therapyRepository.findByNdcNumberAndChannelType(spNdc,
+		for (String spId : spIds) {
+			Optional<Therapy> therapy = therapyRepository.findByMaterialNumberAndChannelType(spId,
 					ChannelType.SPECIALITY_PHARMA);
 			if (therapy.isPresent()) {
 				Therapy spTherapy = therapy.get();
 				if (Boolean.TRUE.equals(spTherapy.getIsCrosswalked())) {
-					alreadyCrosswalkedSpNdcs.add(spNdc);
+					alreadyCrosswalkedSpIds.add(spId);
 				}
 				else {
-					validSpTherapyMap.put(spNdc, spTherapy);
+					validSpTherapyMap.put(spId, spTherapy);
 				}
 			}
 			else {
-				invalidSpNdcs.add(spNdc);
+				invalidSpIds.add(spId);
 			}
 		}
 
-		if (!invalidSpNdcs.isEmpty()) {
-			throw new ResourceNotFoundException("Invalid SP Product NDCs: " + String.join(", ", invalidSpNdcs));
+		if (!invalidSpIds.isEmpty()) {
+			throw new ResourceNotFoundException("Invalid SP Product IDs: " + String.join(", ", invalidSpIds));
 		}
 
-		if (!alreadyCrosswalkedSpNdcs.isEmpty()) {
+		if (!alreadyCrosswalkedSpIds.isEmpty()) {
 			throw new IllegalArgumentException(
-					"These SP Product NDCs are already crosswalked: " + String.join(", ", alreadyCrosswalkedSpNdcs));
+					"These SP Product IDs are already crosswalked: " + String.join(", ", alreadyCrosswalkedSpIds));
 		}
 		return validSpTherapyMap;
 	}
@@ -489,9 +484,9 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 				.orElseThrow(() -> new ResourceNotFoundException("No Crosswalk found with id: " + crosswalkId));
 
 			String bnbNdcNumber = crosswalk.getBnbNdcNumber();
-			String spNdcNumber = crosswalk.getSpNdcNumber();
+			String spProductId = crosswalk.getSpProductId();
 
-			therapyRepository.updateIsCrossWalkedForNdcsAndChannelType(false, Set.of(spNdcNumber),
+			therapyRepository.updateIsCrossWalkedForMaterialNumbersAndChannelType(false, Set.of(spProductId),
 					ChannelType.SPECIALITY_PHARMA.name());
 
 			if (materialCrossWalkConfigRepository.findByBnbNdcNumber(bnbNdcNumber).size() == 1)

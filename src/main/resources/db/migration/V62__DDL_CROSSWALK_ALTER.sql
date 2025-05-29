@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS catalog.crosswalk
 (
     id                                  INTEGER         NOT NULL,
     bnb_ndc_number                      VARCHAR(50),
-    sp_ndc_number                       VARCHAR(50)     NOT NULL,
+    sp_product_id                      VARCHAR(50)     NOT NULL,
     is_active                           INTEGER,
     created_at                          TIMESTAMP,
     created_by                          VARCHAR(255),
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS catalog.crosswalk
     CREATED_BY_IMPERSONATOR_USER_NAME   VARCHAR(255),
     CREATED_BY_USER_NAME                VARCHAR(255),
     CONSTRAINT crosswalk_pk PRIMARY KEY (id),
-    CONSTRAINT unique_bnb_ndcnumber_sp_ndcnumber UNIQUE (bnb_ndc_number, sp_ndc_number)
+    CONSTRAINT unique_bnb_ndc_number_sp_product_id UNIQUE (bnb_ndc_number, sp_product_id)
 );
 
 CREATE SEQUENCE IF NOT EXISTS catalog.CROSSWALK_SEQUENCE
@@ -26,8 +26,8 @@ MINVALUE 1
 NO MAXVALUE
 CACHE 20;
 
-CREATE INDEX IF NOT EXISTS crosswalk_sp_ndc_number_index ON catalog.crosswalk
-USING btree(sp_ndc_number);
+CREATE INDEX IF NOT EXISTS crosswalk_sp_product_id_index ON catalog.crosswalk
+USING btree(sp_product_id);
 
 CREATE INDEX IF NOT EXISTS crosswalk_bnb_ndc_number_index ON catalog.crosswalk
 USING btree(bnb_ndc_number);

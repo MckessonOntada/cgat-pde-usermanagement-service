@@ -16,7 +16,7 @@ import java.util.Set;
 @Repository
 public interface MaterialCrossWalkConfigRepository extends JpaRepository<Crosswalk, Long> {
 
-	void deleteBySpNdcNumberIn(List<String> spProductNDCs);
+	void deleteBySpProductIdIn(List<String> spProductNDCs);
 
 	@Query(value = "SELECT DISTINCT m.bnb_ndc_number FROM catalog.crosswalk m WHERE m.bnb_ndc_number IN :bnbNdcNumbers",
 			nativeQuery = true)
@@ -33,7 +33,7 @@ public interface MaterialCrossWalkConfigRepository extends JpaRepository<Crosswa
 				m2.ndc_number as spNdc
 			FROM catalog.crosswalk cw
 			JOIN catalog.material m1 ON cw.bnb_ndc_number = m1.ndc_number and m1.channel_type = 'BUY_AND_BILL'
-			JOIN catalog.material m2 ON cw.sp_ndc_number = m2.ndc_number and m2.channel_type = 'SPECIALITY_PHARMA'
+			JOIN catalog.material m2 ON cw.sp_product_id = m2.material_number and m2.channel_type = 'SPECIALITY_PHARMA'
 			WHERE
 			(
 			    :query IS NULL
@@ -55,7 +55,7 @@ public interface MaterialCrossWalkConfigRepository extends JpaRepository<Crosswa
 
 	List<Crosswalk> findByBnbNdcNumber(String bnbNdcNumber);
 
-	List<Crosswalk> findMaterialCrossWalkConfigBySpNdcNumberIn(List<String> existingSPNDCs);
+	List<Crosswalk> findMaterialCrossWalkConfigBySpProductIdIn(List<String> existingSPNDCs);
 
 	Crosswalk findBySpProductIdAndIsActive(String sapMaterial, boolean isActive);
 
