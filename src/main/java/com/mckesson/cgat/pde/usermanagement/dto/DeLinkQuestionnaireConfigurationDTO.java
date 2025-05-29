@@ -4,7 +4,6 @@ import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import kotlin.Pair;
 import lombok.Data;
 
 @Data
