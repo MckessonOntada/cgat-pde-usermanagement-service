@@ -420,7 +420,8 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 	}
 
 	private List<Therapy> validateBnbTherapy(String bnbNdc) throws ResourceNotFoundException {
-		List<Therapy> bnbTherapy = therapyRepository.findByNdcNumberAndChannelType(bnbNdc, ChannelType.BUY_AND_BILL);
+		List<Therapy> bnbTherapy = therapyRepository.findByNdcNumberInAndChannelType(List.of(bnbNdc),
+				ChannelType.BUY_AND_BILL);
 		if (bnbTherapy.isEmpty()) {
 			throw new ResourceNotFoundException("Invalid BNB NDC or channel type: " + bnbNdc);
 		}
