@@ -31,16 +31,16 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 
 	private final QuestionnaireRepository questionnaireRepository;
 
-	private final TherapyRepository therapyRepository;
-
 	private final QuestionnaireConfigurationRepository questionnaireConfigurationRepository;
 
+	private final MaterialCrossWalkConfigRepository materialCrossWalkConfigRepository;
+
 	public QuestionnaireServiceImpl(QuestionnaireRepository questionnaireRepository,
-			TherapyRepository therapyRepository,
-			QuestionnaireConfigurationRepository questionnaireConfigurationRepository) {
+			QuestionnaireConfigurationRepository questionnaireConfigurationRepository,
+			MaterialCrossWalkConfigRepository materialCrossWalkConfigRepository) {
 		this.questionnaireRepository = questionnaireRepository;
-		this.therapyRepository = therapyRepository;
 		this.questionnaireConfigurationRepository = questionnaireConfigurationRepository;
+		this.materialCrossWalkConfigRepository = materialCrossWalkConfigRepository;
 	}
 
 	@Override
@@ -100,8 +100,8 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 		boolean isValid = switch (type) {
 			case Account -> hasAny(configDTO.getBnbConfigs().getAccountNumberList(),
 					configDTO.getSpConfigs().getAccountNumberList());
-			case Material -> hasAny(configDTO.getBnbConfigs().getTradeNameNDCMapList(),
-					configDTO.getSpConfigs().getTradeNameNDCMapList());
+			case Material -> hasAny(configDTO.getBnbConfigs().getMaterialOrNdcNumberList(),
+					configDTO.getSpConfigs().getMaterialOrNdcNumberList());
 			case Catalog -> hasAny(configDTO.getBnbConfigs().getCatalogIdAttributes(),
 					configDTO.getSpConfigs().getCatalogIdAttributes());
 		};
@@ -154,8 +154,8 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 				return CollectionUtils.isEmpty(dto.getAccountNumberList()) ? null : dto.getAccountNumberList();
 
 			case Material:
-				List<String> materialEntityId = getMaterialEntityId(dto.getTradeNameNDCMapList());
-				return CollectionUtils.isEmpty(materialEntityId) ? null : materialEntityId;
+				return CollectionUtils.isEmpty(dto.getMaterialOrNdcNumberList()) ? null
+						: dto.getMaterialOrNdcNumberList();
 
 			case Catalog:
 				List<CatalogConfigurationAttributes> catalogs = dto.getCatalogIdAttributes();
@@ -172,15 +172,6 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 		}
 	}
 
-	private List<String> getMaterialEntityId(List<Map<String, List<String>>> tradeNameNDCMapList) {
-		return tradeNameNDCMapList.stream()
-			.flatMap(map -> map.entrySet().stream())
-			.filter(entry -> entry.getKey() != null && entry.getValue() != null)
-			.flatMap(entry -> entry.getValue().stream().map(value -> entry.getKey() + "_" + value))
-			.distinct()
-			.toList();
-	}
-
 	@Override
 	@Transactional
 	public void deLinkConfiguredQuestionnaire(DeLinkQuestionnaireConfigurationDTO dto,
@@ -189,8 +180,8 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 			.orElseThrow(() -> new ResourceNotFoundException(
 					"Questionnaire not found with Id: " + dto.getQuestionnaireId()));
 
-		String entityId = getEntityId(dto.getTradeName(), dto.getAccountNumber(), dto.getCatalogId(), type,
-				dto.getChannelType(), dto.getNdc());
+		String entityId = getEntityId(dto.getMaterialOrNdcNumber(), dto.getAccountNumber(), dto.getCatalogId(), type,
+				dto.getChannelType());
 		questionnaireConfigurationRepository.deleteByQuestionnaireIdAndEntityIdAndConfiguredTypeAndChannelType(
 				dto.getQuestionnaireId(), entityId, type, dto.getChannelType());
 
@@ -204,16 +195,18 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 
 	@Override
 	public List<Questionnaire> getAllConfiguredQuestionnaires(String sapMaterial, String soldToCustomer,
-			String shipToCustomer, String variant, ChannelType channelType, String ndcNumber, String tradeName) {
-		boolean isCrosswalked = false;
+			String shipToCustomer, String variant, ChannelType channelType, String materialOrNdcNumber) {
+		Crosswalk crosswalkDetails = null;
 		if (channelType.equals(ChannelType.SPECIALITY_PHARMA)) {
-			isCrosswalked = therapyRepository.findIsCrosswalkedByMaterialNumberAndChannelType(sapMaterial, channelType);
+			crosswalkDetails = materialCrossWalkConfigRepository.findBySpProductIdAndIsActive(materialOrNdcNumber,
+					true);
 		}
 
 		String catalogId = getCatalogId(sapMaterial, soldToCustomer, shipToCustomer, variant, channelType.name());
 		List<QuestionnaireConfiguration> allConfiguredQuestionnaires = questionnaireConfigurationRepository
-			.getAllConfiguredQuestionnaires(tradeName + "_" + ndcNumber, soldToCustomer, catalogId, channelType.name(),
-					isCrosswalked);
+			.getAllConfiguredQuestionnaires(
+					ObjectUtils.isEmpty(crosswalkDetails) ? materialOrNdcNumber : crosswalkDetails.getBnbNdcNumber(),
+					soldToCustomer, catalogId, channelType.name(), !ObjectUtils.isEmpty(crosswalkDetails));
 		return allConfiguredQuestionnaires.stream()
 			.map(QuestionnaireConfiguration::getQuestionnaireId)
 			.distinct()
@@ -248,7 +241,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 	@Override
 	public List<Questionnaire> getAllConfiguredQuestionnairesForSpecificType(QuestionnaireConfigurationType type,
 			String sapMaterial, String soldToCustomer, String shipToCustomer, String variant, ChannelType channelType,
-			String ndc, String tradeName) {
+			String materialOrNdcNumber) {
 
 		CatalogConfigurationAttributes catalogConfigurationAttributes = CatalogConfigurationAttributes.builder()
 			.variant(variant)
@@ -256,8 +249,8 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 			.shipToCustomer(shipToCustomer)
 			.sapMaterial(sapMaterial)
 			.build();
-		String entityId = getEntityId(tradeName, soldToCustomer, catalogConfigurationAttributes, type, channelType,
-				ndc);
+		String entityId = getEntityId(materialOrNdcNumber, soldToCustomer, catalogConfigurationAttributes, type,
+				channelType);
 
 		List<QuestionnaireConfiguration> allConfiguredQuestionnaires = questionnaireConfigurationRepository
 			.getAllConfiguredQuestionnairesForSpecificType(entityId, type.name(), channelType.name());
@@ -268,17 +261,18 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 
 	}
 
-	private String getEntityId(String tradeName, String accountNumber, CatalogConfigurationAttributes catalogAttributes,
-			QuestionnaireConfigurationType type, ChannelType channelType, String ndc) {
+	private String getEntityId(String materialOrNdcNumber, String accountNumber,
+			CatalogConfigurationAttributes catalogAttributes, QuestionnaireConfigurationType type,
+			ChannelType channelType) {
 		switch (type) {
 			case Account:
 				if (accountNumber == null)
 					throw new IllegalArgumentException("Account Number should not be null");
 				return accountNumber;
 			case Material:
-				if (tradeName == null || ndc == null)
-					throw new IllegalArgumentException("Material Number should not be null");
-				return tradeName + "_" + ndc;
+				if (materialOrNdcNumber == null)
+					throw new IllegalArgumentException("Ndc Number should not be null");
+				return materialOrNdcNumber;
 			case Catalog:
 				if (catalogAttributes == null)
 					throw new IllegalArgumentException("CatalogId should not be null");

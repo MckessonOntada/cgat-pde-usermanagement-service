@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 public class QuestionnaireEntityConfigDTO {
 
-	List<Map<String, List<String>>> tradeNameNDCMapList;
+	List<String> materialOrNdcNumberList;
 
 	List<String> accountNumberList;
 

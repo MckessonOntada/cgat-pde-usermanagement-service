@@ -29,7 +29,7 @@ public interface QuestionnaireService {
 			throws ResourceNotFoundException;
 
 	List<Questionnaire> getAllConfiguredQuestionnaires(String sapMaterial, String soldToCustomer, String shipToCustomer,
-			String variant, ChannelType channelType, String ndcNumber, String tradeName);
+			String variant, ChannelType channelType, String materialOrNdcNumber);
 
 	Page<Questionnaire> findAll(Pageable paging, String query, List<String> status);
 
@@ -39,6 +39,6 @@ public interface QuestionnaireService {
 
 	List<Questionnaire> getAllConfiguredQuestionnairesForSpecificType(QuestionnaireConfigurationType type,
 			String sapMaterial, String soldToCustomer, String shipToCustomer, String variant, ChannelType channelType,
-			String ndc, String tradeName);
+			String materialOrNdcNumber);
 
 }

@@ -339,25 +339,22 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	@Override
-	public MaterialDetailsResponseDTO findTherapyDetailsByNdcNumber(String ndcNumber, ChannelType channelType)
+	public MaterialDetailsResponseDTO findTherapyDetailsByMaterialNumber(String materialNumber, ChannelType channelType)
 			throws ResourceNotFoundException {
-		MaterialResponseDTO responseDTO = therapyConfigRepository.findDetailedByNdcNumber(ndcNumber, channelType)
-			.orElseThrow(() -> new ResourceNotFoundException("Therapy config not found with ndcNumber: " + ndcNumber));
+		MaterialResponseDTO responseDTO = therapyConfigRepository
+			.findDetailedByMaterialNumber(materialNumber, channelType)
+			.orElseThrow(() -> new ResourceNotFoundException(
+					"Therapy config not found with materialNumber: " + materialNumber));
 		Crosswalk crosswalkDetails = null;
-		String bnbTradeName = responseDTO.getTherapy().getTradeName();
 		if (channelType.equals(ChannelType.SPECIALITY_PHARMA)
 				&& Boolean.TRUE.equals(responseDTO.getTherapy().getIsCrosswalked())) {
-			crosswalkDetails = materialCrossWalkConfigRepository.findBySpNdcNumberAndIsActive(ndcNumber, true);
-		}
-		if (!ObjectUtils.isEmpty(crosswalkDetails)) {
-			bnbTradeName = therapyRepository.findTradeNameByNdcNumberAndChannelType(crosswalkDetails.getBnbNdcNumber(),
-					ChannelType.BUY_AND_BILL);
+			crosswalkDetails = materialCrossWalkConfigRepository.findBySpProductIdAndIsActive(materialNumber, true);
 		}
 
 		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
 				QuestionnaireConfigurationType.Material, "", "", "", "",
 				ObjectUtils.isEmpty(crosswalkDetails) ? channelType : ChannelType.BUY_AND_BILL,
-				ObjectUtils.isEmpty(crosswalkDetails) ? ndcNumber : crosswalkDetails.getBnbNdcNumber(), bnbTradeName);
+				ObjectUtils.isEmpty(crosswalkDetails) ? responseDTO.getTherapy().getNdcNumber() : materialNumber);
 
 		MaterialDetailsResponseDTO materialDetailsResponseDTO = MaterialDetailsResponseDTO.builder()
 			.questionnaires(questionnaires)

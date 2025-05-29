@@ -23,10 +23,10 @@ public interface TherapyConfigRepository extends JpaRepository<TherapyConfig, Lo
 			    LEFT JOIN TherapyConfig tc
 			    ON m.materialNumber = tc.materialNumber
 			    AND m.channelType = tc.channelType
-			    WHERE m.ndcNumber = :ndcNumber
+			    WHERE m.materialNumber = :materialNumber
 			    AND m.channelType = :channelType
 			""")
-	Optional<MaterialResponseDTO> findDetailedByNdcNumber(@Param("ndcNumber") String ndcNumber,
+	Optional<MaterialResponseDTO> findDetailedByMaterialNumber(@Param("materialNumber") String materialNumber,
 			ChannelType channelType);
 
 	int removeTherapyConfigByMaterialNumberAndChannelType(String materialNumber, ChannelType channelType);

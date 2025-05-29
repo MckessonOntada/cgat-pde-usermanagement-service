@@ -107,7 +107,7 @@ public class CatalogServiceImpl implements CatalogService {
 
 		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
 				QuestionnaireConfigurationType.Catalog, materialId, soldToAccount, shipToAccount, variant, channelType,
-				null, null);
+				"");
 
 		CatalogDetailsResponseDTO catalogDetailsResponseDTO = CatalogDetailsResponseDTO.builder()
 			.questionnaires(questionnaires)

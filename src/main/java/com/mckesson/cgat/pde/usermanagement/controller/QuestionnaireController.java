@@ -85,10 +85,10 @@ public class QuestionnaireController {
 	@Operation(summary = "Fetch all configured questionnaire for the data")
 	public ResponseEntity<List<Questionnaire>> getAllConfiguredQuestionnaires(@RequestParam String soldToCustomer,
 			@RequestParam String shipToCustomer, @RequestParam String sapMaterial,
-			@RequestParam(required = false) String variant, @RequestParam String ndcNumber,
-			@RequestParam String tradeName, @RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) {
+			@RequestParam(required = false) String variant, @RequestParam String materialOrNdcNumber,
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) {
 		return new ResponseEntity<>(questionnaireService.getAllConfiguredQuestionnaires(sapMaterial, soldToCustomer,
-				shipToCustomer, variant, channelType, ndcNumber, tradeName), HttpStatus.OK);
+				shipToCustomer, variant, channelType, materialOrNdcNumber), HttpStatus.OK);
 	}
 
 	@PatchMapping("/deactivate")
