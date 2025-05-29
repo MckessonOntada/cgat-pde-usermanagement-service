@@ -7,7 +7,7 @@ import java.util.List;
 @Data
 public class CrosswalkRequestDTO {
 
-	private String bnbMaterialNumber;
+	private String bnbNdcNumber;
 
 	private List<String> spProductIds;
 

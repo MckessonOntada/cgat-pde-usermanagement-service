@@ -26,7 +26,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.*;
-import static org.mockito.ArgumentMatchers.nullable;
 
 @Service
 @Slf4j
@@ -214,6 +213,14 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	@Override
+	public Therapy findByMaterialNumber(String materialNumber, ChannelType channelType)
+			throws ResourceNotFoundException {
+		return therapyRepository.findByMaterialNumberAndChannelType(materialNumber, channelType)
+			.orElseThrow(() -> new ResourceNotFoundException(
+					"Therapy not found with materialNumber: " + materialNumber + " and channelType: " + channelType));
+	}
+
+	@Override
 	public List<Therapy> findByNdcNumber(String ndcNumber, ChannelType channelType) throws ResourceNotFoundException {
 		List<Therapy> therapies = therapyRepository.findByNdcNumberAndChannelType(ndcNumber, channelType);
 		if (therapies == null || therapies.isEmpty())
@@ -384,6 +391,17 @@ public class TherapyServiceImpl implements TherapyService {
 			throws ResourceNotFoundException {
 		return therapyConfigRepository.findTherapyDetailsByNdc(ndcNumber, channelType)
 			.orElseThrow(() -> new ResourceNotFoundException("Therapy not found with ndc: " + ndcNumber));
+	}
+
+	@Override
+	public MaterialResponseDTO findTherapyDetailsByNdcAndSoldToAndProgram(String ndcNumber, String soldToAccount,
+			String shipToAccount, String program, ChannelType channelType) throws ResourceNotFoundException {
+		return therapyRepository
+			.findTherapyAndConfigBySoldToAccountAndProgramAndNdc(soldToAccount, shipToAccount, program, ndcNumber,
+					channelType)
+			.orElseThrow(() -> new ResourceNotFoundException(
+					String.format("Therapy not found with ndc: %s, soldToAccount: %s, program: %s", ndcNumber,
+							soldToAccount, program)));
 	}
 
 	@Override

@@ -31,8 +31,6 @@ public interface TherapyConfigRepository extends JpaRepository<TherapyConfig, Lo
 
 	int removeTherapyConfigByMaterialNumberAndChannelType(String materialNumber, ChannelType channelType);
 
-	// to do
-	// Need to fix/test after krishna's fix
 	@Query("""
 			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,tc)
 			    FROM Therapy m

@@ -385,11 +385,11 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 	@Override
 	@Transactional
 	public int createCrosswalks(CrosswalkRequestDTO request) throws ResourceNotFoundException {
-		String bnbId = request.getBnbMaterialNumber();
+		String bnbNdc = request.getBnbNdcNumber();
 		List<String> spIds = request.getSpProductIds();
 
 		// Validate BNB therapy
-		Therapy bnbTherapy = validateBnbTherapy(bnbId);
+		List<Therapy> bnbTherapy = validateBnbTherapy(bnbNdc);
 
 		// Fetch and validate SP therapies
 		Map<String, Therapy> spTherapyMap = validateSpTherapies(spIds);
@@ -398,7 +398,7 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 		List<Crosswalk> newCrosswalks = spTherapyMap.values()
 			.stream()
 			.map(spTherapy -> Crosswalk.builder()
-				.bnbMaterialNumber(bnbId)
+				.bnbMaterialNumber(bnbNdc)
 				.spProductId(spTherapy.getMaterialNumber())
 				.isActive(true)
 				.build())
@@ -414,23 +414,25 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 			therapiesToUpdate.add(spTherapy);
 			crosswalkedSpCount++; // Increment count
 		}
-		// Set BNB therapy as crosswalked
-		bnbTherapy.setIsCrosswalked(true);
-		therapiesToUpdate.add(bnbTherapy);
+
+		for (Therapy therapy : bnbTherapy) {
+			therapy.setIsCrosswalked(true);
+			therapiesToUpdate.add(therapy);
+		}
+
 		therapyRepository.saveAll(therapiesToUpdate);
 
-		log.info("Crosswalked {} SP Product IDs for BNB Material Number: {}", crosswalkedSpCount, bnbId);
+		log.info("Crosswalked {} SP Product IDs for BNB NDC: {}", crosswalkedSpCount, bnbNdc);
 		return crosswalkedSpCount;
 
 	}
 
-	private Therapy validateBnbTherapy(String bnbId) throws ResourceNotFoundException {
-		Optional<Therapy> bnbTherapy = therapyRepository.findByMaterialNumberAndChannelType(bnbId,
-				ChannelType.BUY_AND_BILL);
+	private List<Therapy> validateBnbTherapy(String bnbNdc) throws ResourceNotFoundException {
+		List<Therapy> bnbTherapy = therapyRepository.findByNdcNumberAndChannelType(bnbNdc, ChannelType.BUY_AND_BILL);
 		if (bnbTherapy.isEmpty()) {
-			throw new ResourceNotFoundException("Invalid BNB material number or channel type: " + bnbId);
+			throw new ResourceNotFoundException("Invalid BNB NDC or channel type: " + bnbNdc);
 		}
-		return bnbTherapy.get();
+		return bnbTherapy;
 	}
 
 	private Map<String, Therapy> validateSpTherapies(List<String> spIds) throws ResourceNotFoundException {

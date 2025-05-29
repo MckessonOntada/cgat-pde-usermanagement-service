@@ -14,6 +14,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponse;
+import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelProjectionDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
@@ -371,6 +373,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 	List<Therapy> findByMaterialNumberInAndChannelTypeAndItemStatus(Set<String> productIds, ChannelType channelType,
 			String itemStatus);
 
+	Optional<Therapy> findByMaterialNumberAndChannelType(String materialNumber, ChannelType channelType);
+
 	List<Therapy> findByNdcNumberAndChannelType(String ndcNumber, ChannelType channelType);
 
 	List<Therapy> findByMaterialNumberInAndChannelType(List<String> materialNumbers, ChannelType channelType);
@@ -447,5 +451,24 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			""", nativeQuery = true)
 	List<Therapy> findByTradeNameAndChannelType(@Param("tradeName") String tradeName,
 			@Param("channelType") String channelType, @Param("userId") Long userId);
+
+	@Query("""
+				     SELECT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,tc)
+					 FROM CatalogPrice cp
+					 JOIN Therapy m ON m.materialNumber = cp.sapMaterial
+					 left JOIN TherapyConfig tc ON m.materialNumber = tc.materialNumber
+					 JOIN Account ac ON ac.accountNumber = cp.soldToCustomer
+					 WHERE cp.soldToCustomer = :soldToAccount
+					 AND cp.shipToCustomer = :shipToAccount
+					 AND ac.cgatIdentifier = :program
+					 AND m.ndcNumber = :ndcNumber
+				     AND cp.deleted = false
+					 AND m.channelType = :channelType
+					 AND cp.channelType = :channelType
+			""")
+	Optional<MaterialResponseDTO> findTherapyAndConfigBySoldToAccountAndProgramAndNdc(
+			@Param("soldToAccount") String soldToAccount, @Param("shipToAccount") String shipToAccount,
+			@Param("program") String program, @Param("ndcNumber") String ndcNumber,
+			@Param("channelType") ChannelType channelType);
 
 }
