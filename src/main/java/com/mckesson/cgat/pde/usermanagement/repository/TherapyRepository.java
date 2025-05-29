@@ -129,15 +129,14 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 							STRING_AGG(DISTINCT com.material_description, ', ') AS therapyDescription,
 							STRING_AGG(DISTINCT com.ndc, ', ') AS ndc,
 							STRING_AGG(DISTINCT com.strength, ', ') AS strength,
-							STRING_AGG(DISTINCT com.dosage, ', ') AS dosage
-							STRING_AGG(DISTINCT com.manufacturer_name, ', ') AS manufacturerName
+							STRING_AGG(DISTINCT com.dosage, ', ') AS dosage,
+							STRING_AGG(DISTINCT com.manufacturer_name, ', ') AS manufacturerName,
 							STRING_AGG(DISTINCT com.generic_name, ', ') AS genericName
 							FROM COMBINED com
 					         where (
 								cast(:query as varchar) is null
-								OR LOWER(com.material_number) LIKE %:query%
+								OR LOWER(com.trade_name) LIKE %:query%
 								OR LOWER(com.ndc) LIKE %:query%
-								OR LOWER(com.material_description) LIKE %:query%
 							)
 							GROUP BY com.trade_name, com.channel_type
 					     ) AS total_count
@@ -437,7 +436,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			String channelTypes, @Param("crosswalked") Boolean crosswalked, Pageable paging);
 
 	@Query(value = """
-				SELECT m.*
+				SELECT distinct m.*
 				  FROM catalog.material m
 				  JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
 				  JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
