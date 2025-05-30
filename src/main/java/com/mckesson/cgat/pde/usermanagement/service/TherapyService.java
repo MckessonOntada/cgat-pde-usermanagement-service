@@ -37,11 +37,11 @@ public interface TherapyService {
 	CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForNdc(String soldToAccountId,
 			String shipToAccountId, String variantType, String ndcNumber);
 
-	Page<Therapy> findAllGlobalTherapies(String query, Pageable paging, List<ChannelType> channelTypes,
-			List<String> status, boolean ignoreCrosswalkedSP);
+	Page<TherapyCatalogResponseDTO> findAllGlobalTherapies(String query, Pageable paging,
+			List<ChannelType> channelTypes, List<String> status, boolean ignoreCrosswalkedSP);
 
-	Page<Therapy> findNonCrosswalkedSPGlobalTherapies(String query, Pageable paging, List<ChannelType> channelTypes,
-			List<String> status, Boolean crosswalked);
+	Page<TherapyCatalogResponseDTO> findNonCrosswalkedSPGlobalTherapies(String query, Pageable paging,
+			List<ChannelType> channelTypes, List<String> status, Boolean crosswalked);
 
 	Page<CatalogPrice> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging,
 			ChannelType channelType);

@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyConfigRequestDTO;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
@@ -58,9 +59,9 @@ public class GlobalTherapyController {
 	@GetMapping
 	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.VIEW_SP_MATERIAL, Permission.ADD_CROSSWALK })
 	@Operation(summary = "Fetch all therapies.")
-	public ResponseEntity<Page<Therapy>> findAllTherapies(@RequestParam(defaultValue = "0") Integer pageNo,
-			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
-			@RequestParam(defaultValue = "material_number") String sortBy,
+	public ResponseEntity<Page<TherapyCatalogResponseDTO>> findAllTherapies(
+			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize,
+			@RequestParam(required = false) String query, @RequestParam(defaultValue = "trade_name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder,
 			@RequestParam(required = false) List<ChannelType> channelTypes,
 			@RequestParam(required = false) List<String> status,
