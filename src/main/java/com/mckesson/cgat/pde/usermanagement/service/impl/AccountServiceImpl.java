@@ -92,6 +92,7 @@ public class AccountServiceImpl implements AccountService {
 		Account account = getAccount(accountId);
 		if (account == null)
 			throw new ResourceNotFoundException("Account not found with id: " + accountId);
+		account = accountMapper.mapToModel(accountDto);
 
 		account.setAccountName(accountDto.getAccountName());
 		account.getName().setFirstName(accountDto.getFirstName());
