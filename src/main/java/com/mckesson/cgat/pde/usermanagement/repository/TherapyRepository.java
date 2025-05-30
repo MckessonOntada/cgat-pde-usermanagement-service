@@ -76,9 +76,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			         from COMBINED com
 					 where (
 						cast(:query as varchar) is null
-						OR LOWER(com.material_number) LIKE %:query%
 						OR LOWER(com.ndc) LIKE %:query%
-						OR LOWER(com.material_description) LIKE %:query%
+						OR LOWER(com.trade_name) LIKE %:query%
 						OR LOWER(com.strength) LIKE %:query%
 						OR LOWER(com.dosage) LIKE %:query%
 					)
@@ -410,11 +409,11 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			      AND m.item_status = 'A'
 			      AND cp.channel_type = 'SPECIALITY_PHARMA'
 			      AND cp.deleted = false
-			      AND cw.bnb_material_number = :materialNumber
+			      AND cw.bnb_ndc_number = :ndcNumber
 			      AND cw.is_active = 1
 			      AND uam.user_id = :userId
 			""", nativeQuery = true)
-	List<Therapy> findCrosswalkedTherapies(String materialNumber, long userId);
+	List<Therapy> findCrosswalkedTherapies(String ndcNumber, long userId);
 
 	@Query(value = """
 			      SELECT

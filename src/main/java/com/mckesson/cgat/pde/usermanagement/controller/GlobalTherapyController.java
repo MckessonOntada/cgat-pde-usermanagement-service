@@ -102,14 +102,14 @@ public class GlobalTherapyController {
 		return new ResponseEntity<>("Therapy configurations updated successfully", HttpStatus.OK);
 	}
 
-	@GetMapping("/config/{materialNumber}")
+	@GetMapping("/config/{tradeName}")
 	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.EDIT_ORDERS, Permission.VIEW_SP_MATERIAL })
-	@Operation(summary = "Find Therapy details by Material Number")
-	public ResponseEntity<MaterialDetailsResponseDTO> findTherapyDetailsByMaterialNumber(
-			@PathVariable String materialNumber, @RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType)
+	@Operation(summary = "Find Therapy details by Trade Name")
+	public ResponseEntity<List<MaterialDetailsResponseDTO>> findTherapyDetailsByTradeName(
+			@PathVariable String tradeName, @RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType)
 			throws ResourceNotFoundException {
-		log.debug("Fetching therapy details with materialNumber: {}", materialNumber);
-		return new ResponseEntity<>(therapyService.findTherapyDetailsByMaterialNumber(materialNumber, channelType),
+		log.debug("Fetching therapy details with tradeName: {}", tradeName);
+		return new ResponseEntity<>(therapyService.findTherapyDetailsWithConfigByTradeName(tradeName, channelType),
 				HttpStatus.OK);
 
 	}

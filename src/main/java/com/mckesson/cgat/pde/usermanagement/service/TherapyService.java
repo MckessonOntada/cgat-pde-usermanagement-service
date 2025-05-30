@@ -31,8 +31,8 @@ public interface TherapyService {
 
 	Page<AccountsResponseDTO> findAllCustomerIdentifiers(Long userId, String query, Pageable paging);
 
-	Page<VariantsResponseDTO> findAllVariantsLinkedToShipToAccountsForTherapy(String soldToAccountId,
-			String shipToAccountId, String therapyId, Pageable paging, ChannelType channelType);
+	Page<VariantsResponseDTO> findAllVariantsLinkedToShipToAccountsForNDC(String soldToAccountId,
+			String shipToAccountId, String ndcNumber, Pageable paging, ChannelType channelType);
 
 	CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForNdc(String soldToAccountId,
 			String shipToAccountId, String variantType, String ndcNumber);
@@ -53,8 +53,8 @@ public interface TherapyService {
 	void updateTherapyConfigs(List<String> materialNumbers, boolean isPatientInformationRequired,
 			boolean isCoiIdRequired, ChannelType channelType);
 
-	MaterialDetailsResponseDTO findTherapyDetailsByMaterialNumber(String materialNumber, ChannelType channelType)
-			throws ResourceNotFoundException;
+	List<MaterialDetailsResponseDTO> findTherapyDetailsWithConfigByTradeName(String materialNumber,
+			ChannelType channelType) throws ResourceNotFoundException;
 
 	void deleteConfigByMaterialNumber(String materialNumber, ChannelType channelType) throws ResourceNotFoundException;
 
