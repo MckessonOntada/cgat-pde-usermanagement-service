@@ -45,7 +45,7 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
 		this.validator = validator;
 		this.emailTemplateFactory = emailTemplateFactory;
 		this.practiceRepository = practiceRepository;
-		restNotificationClient = new RestNotificationClient("");
+		restNotificationClient = new RestNotificationClient(this.emailNotificationConfig.getRestClientUrl());
 	}
 
 	@Override
