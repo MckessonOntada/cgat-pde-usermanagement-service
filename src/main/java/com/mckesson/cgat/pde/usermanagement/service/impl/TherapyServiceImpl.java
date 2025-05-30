@@ -352,9 +352,8 @@ public class TherapyServiceImpl implements TherapyService {
 		}
 
 		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
-				QuestionnaireConfigurationType.Material,
-				ObjectUtils.isEmpty(crosswalkDetails) ? materialNumber : crosswalkDetails.getBnbMaterialNumber(), "",
-				"", "", ObjectUtils.isEmpty(crosswalkDetails) ? channelType : ChannelType.BUY_AND_BILL);
+				QuestionnaireConfigurationType.Material, "", "", "", "",
+				ObjectUtils.isEmpty(crosswalkDetails) ? channelType : ChannelType.BUY_AND_BILL, "");
 
 		MaterialDetailsResponseDTO materialDetailsResponseDTO = MaterialDetailsResponseDTO.builder()
 			.questionnaires(questionnaires)
