@@ -19,7 +19,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 
 import java.util.*;
 import java.util.function.Function;
@@ -339,29 +338,46 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	@Override
-	public MaterialDetailsResponseDTO findTherapyDetailsByMaterialNumber(String materialNumber, ChannelType channelType)
+	public List<MaterialDetailsResponseDTO> findTherapyDetailsByTradeName(String tradeName)
 			throws ResourceNotFoundException {
-		MaterialResponseDTO responseDTO = therapyConfigRepository
-			.findDetailedByMaterialNumber(materialNumber, channelType)
-			.orElseThrow(() -> new ResourceNotFoundException(
-					"Therapy config not found with materialNumber: " + materialNumber));
-		Crosswalk crosswalkDetails = null;
-		if (channelType.equals(ChannelType.SPECIALITY_PHARMA)
-				&& Boolean.TRUE.equals(responseDTO.getTherapy().getIsCrosswalked())) {
-			crosswalkDetails = materialCrossWalkConfigRepository.findBySpProductIdAndIsActive(materialNumber, true);
+
+		List<MaterialResponseDTO> responseDTOList = therapyConfigRepository.findDetailedByTradeName(tradeName);
+
+		if (CollectionUtils.isEmpty(responseDTOList)) {
+			throw new ResourceNotFoundException("Therapy details not found with tradeName: " + tradeName);
 		}
 
-		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
-				QuestionnaireConfigurationType.Material,
-				ObjectUtils.isEmpty(crosswalkDetails) ? materialNumber : crosswalkDetails.getBnbMaterialNumber(), "",
-				"", "", ObjectUtils.isEmpty(crosswalkDetails) ? channelType : ChannelType.BUY_AND_BILL);
+		return responseDTOList.stream().map(this::buildMaterialDetailsResponse).toList();
+	}
 
-		MaterialDetailsResponseDTO materialDetailsResponseDTO = MaterialDetailsResponseDTO.builder()
+	private MaterialDetailsResponseDTO buildMaterialDetailsResponse(MaterialResponseDTO responseDTO) {
+		Therapy therapy = responseDTO.getTherapy();
+		String productId = therapy.getMaterialNumber();
+		ChannelType channelType = therapy.getChannelType();
+		boolean isSpeciality = ChannelType.SPECIALITY_PHARMA.equals(channelType);
+		boolean isCrosswalked = Boolean.TRUE.equals(therapy.getIsCrosswalked());
+
+		Crosswalk crosswalk = (isSpeciality && isCrosswalked)
+				? materialCrossWalkConfigRepository.findBySpProductIdAndIsActive(productId, true) : null;
+
+		String materialOrNdc = getMaterialOrNdcNumber(crosswalk, therapy, isSpeciality, productId);
+		ChannelType questionnaireChannel = (crosswalk != null) ? ChannelType.BUY_AND_BILL : channelType;
+
+		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
+				QuestionnaireConfigurationType.Material, "", "", "", "", questionnaireChannel, materialOrNdc);
+
+		return MaterialDetailsResponseDTO.builder()
+			.therapy(therapy)
+			.materialConfig(responseDTO.getMaterialConfig())
 			.questionnaires(questionnaires)
 			.build();
-		materialDetailsResponseDTO.setTherapy(responseDTO.getTherapy());
-		materialDetailsResponseDTO.setMaterialConfig(responseDTO.getMaterialConfig());
-		return materialDetailsResponseDTO;
+	}
+
+	private String getMaterialOrNdcNumber(Crosswalk crosswalk, Therapy therapy, boolean isSpeciality,
+			String productId) {
+		if (crosswalk != null)
+			return crosswalk.getBnbNdcNumber();
+		return isSpeciality ? productId : therapy.getNdcNumber();
 	}
 
 	@Override

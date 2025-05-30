@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public interface CacheService {
 
@@ -20,8 +22,7 @@ public interface CacheService {
 					message = "Material number cannot be empty") String materialNumber)
 			throws ResourceNotFoundException;
 
-	MaterialDetailsResponseDTO findTherapyDetailsByMaterialNumber(String materialNumber)
-			throws ResourceNotFoundException;
+	List<MaterialDetailsResponseDTO> findTherapyDetailsByTradeName(String ndcNumber) throws ResourceNotFoundException;
 
 	void testCacheEvents();
 

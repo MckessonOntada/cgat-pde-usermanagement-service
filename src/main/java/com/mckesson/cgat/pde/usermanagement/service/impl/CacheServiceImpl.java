@@ -62,23 +62,20 @@ public class CacheServiceImpl implements CacheService {
 
 	@Override
 	@Cacheable(value = "singleMaterialCache", key = "#materialNumber")
-	public MaterialDetailsResponseDTO findTherapyDetailsByMaterialNumber(String materialNumber)
+	public List<MaterialDetailsResponseDTO> findTherapyDetailsByTradeName(String tradeName)
 			throws ResourceNotFoundException {
-		MaterialResponseDTO responseDTO = therapyConfigRepository
-			.findDetailedByMaterialNumber(materialNumber, ChannelType.BUY_AND_BILL)
-			.orElseThrow(() -> new ResourceNotFoundException(
-					"Therapy config not found with materialNumber: " + materialNumber));
+		List<MaterialResponseDTO> responseDTOList = therapyConfigRepository.findDetailedByTradeName(tradeName);
 
 		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
-				QuestionnaireConfigurationType.Material, materialNumber, "", "", "", ChannelType.BUY_AND_BILL,
-				responseDTO.getTherapy().getNdcNumber());
+				QuestionnaireConfigurationType.Material, "", "", "", "", ChannelType.BUY_AND_BILL,
+				responseDTOList.get(0).getTherapy().getNdcNumber());
 
 		MaterialDetailsResponseDTO materialDetailsResponseDTO = MaterialDetailsResponseDTO.builder()
 			.questionnaires(questionnaires)
 			.build();
-		materialDetailsResponseDTO.setTherapy(responseDTO.getTherapy());
-		materialDetailsResponseDTO.setMaterialConfig(responseDTO.getMaterialConfig());
-		return materialDetailsResponseDTO;
+		materialDetailsResponseDTO.setTherapy(responseDTOList.get(0).getTherapy());
+		materialDetailsResponseDTO.setMaterialConfig(responseDTOList.get(0).getMaterialConfig());
+		return List.of(materialDetailsResponseDTO);
 	}
 
 	@Override
