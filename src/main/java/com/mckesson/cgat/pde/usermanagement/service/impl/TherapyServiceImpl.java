@@ -283,8 +283,8 @@ public class TherapyServiceImpl implements TherapyService {
 				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 	}
 
-	public Page<Therapy> findAllGlobalTherapies(String query, Pageable paging, List<ChannelType> channelTypes,
-			List<String> status, boolean ignoreCrosswalkedSP) {
+	public Page<TherapyCatalogResponseDTO> findAllGlobalTherapies(String query, Pageable paging,
+			List<ChannelType> channelTypes, List<String> status, boolean ignoreCrosswalkedSP) {
 		try {
 			log.info(" Inside method - findAllGlobalTherapies");
 			log.info("query: {}", StringUtils.toRootLowerCase(query));
@@ -442,7 +442,7 @@ public class TherapyServiceImpl implements TherapyService {
 				Long.parseLong(UserSecurityUtils.getLoggedInUser().getId()));
 	}
 
-	public Page<Therapy> findNonCrosswalkedSPGlobalTherapies(String query, Pageable paging,
+	public Page<TherapyCatalogResponseDTO> findNonCrosswalkedSPGlobalTherapies(String query, Pageable paging,
 			List<ChannelType> channelTypes, List<String> status, Boolean crosswalked) {
 		try {
 			log.info(" Inside method - findNonCrosswalkedSPGlobalTherapies");

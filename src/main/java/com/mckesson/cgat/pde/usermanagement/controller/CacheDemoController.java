@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
@@ -37,8 +38,9 @@ public class CacheDemoController {
 	@GetMapping
 	@RequirePermissions({ Permission.VIEW_MATERIAL })
 	@Operation(summary = "Fetch all therapies.")
-	public ResponseEntity<Page<Therapy>> findAllThreapies(@RequestParam(defaultValue = "0") Integer pageNo,
-			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query) {
+	public ResponseEntity<Page<TherapyCatalogResponseDTO>> findAllThreapies(
+			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize,
+			@RequestParam(required = false) String query) {
 		Pageable paging = PageRequest.of(pageNo, pageSize);
 		return new ResponseEntity<>(cacheService.findAllGlobalTherapies(query, paging), HttpStatus.OK);
 	}

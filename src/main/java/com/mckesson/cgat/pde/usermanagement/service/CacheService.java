@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.service;
 
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import jakarta.validation.constraints.NotEmpty;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 @Service
 public interface CacheService {
 
-	Page<Therapy> findAllGlobalTherapies(String query, Pageable paging);
+	Page<TherapyCatalogResponseDTO> findAllGlobalTherapies(String query, Pageable paging);
 
 	void deleteConfigByMaterialNumber(
 			@NotNull(message = "Material number cannot be null ") @NotEmpty(
