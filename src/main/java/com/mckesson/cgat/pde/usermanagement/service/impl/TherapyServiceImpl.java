@@ -412,9 +412,18 @@ public class TherapyServiceImpl implements TherapyService {
 
 	@Override
 	public MaterialResponseDTO findTherapyDetailsByNdcAndSoldToAndProgram(String ndcNumber, String soldToAccount,
-			String shipToAccount, String program, ChannelType channelType) throws ResourceNotFoundException {
-		String mappedProgram = "340B".equals(program) ? "340" : program;
+			String shipToAccount, String program, ChannelType ndcChannelType, ChannelType channelType)
+			throws ResourceNotFoundException {
 
+		String mappedProgram = "340B".equals(program) ? "340" : program;
+		boolean isCrossWalkedTherapySelected = !ndcChannelType.equals(channelType);
+		if (ChannelType.SPECIALITY_PHARMA.equals(channelType) && isCrossWalkedTherapySelected) {
+			return therapyRepository
+				.findSPTherapyAndConfigBySoldToAccountAndProgramAndNdc(soldToAccount, shipToAccount, ndcNumber,
+						channelType)
+				.orElseThrow(() -> new ResourceNotFoundException(String
+					.format("SP Therapy not found with ndc: %s, soldToAccount: %s", ndcNumber, soldToAccount)));
+		}
 		return therapyRepository
 			.findTherapyAndConfigBySoldToAccountAndProgramAndNdc(soldToAccount, shipToAccount, mappedProgram, ndcNumber,
 					channelType)
