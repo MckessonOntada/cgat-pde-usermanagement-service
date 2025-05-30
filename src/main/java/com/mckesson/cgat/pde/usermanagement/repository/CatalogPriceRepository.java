@@ -43,7 +43,7 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 				 AND
 					 cp.shipToCustomer = :shipToAccountId
 				AND
-					cp.sapMaterial = :therapyId
+					m.ndcNumber = :ndcNumber
 			     AND
 				  cp.deleted = false
 				AND
@@ -52,9 +52,9 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 					 OR cp.variant = :variantType
 					)
 			""")
-	Page<CatalogPriceResponse> findPriceOfVariantLinkedToShipToAccountsForTherapy(
+	Page<CatalogPriceResponse> findPriceOfVariantLinkedToShipToAccountsForNdc(
 			@Param("soldToAccountId") String soldToAccountId, @Param("shipToAccountId") String shipToAccountId,
-			@Param("therapyId") String therapyId, @Param("variantType") String variantType, Pageable pageable);
+			@Param("ndcNumber") String ndcNumber, @Param("variantType") String variantType, Pageable pageable);
 
 	@Query(value = """
 			SELECT DISTINCT cp.*

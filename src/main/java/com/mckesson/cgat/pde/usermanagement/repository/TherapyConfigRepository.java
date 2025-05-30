@@ -35,8 +35,11 @@ public interface TherapyConfigRepository extends JpaRepository<TherapyConfig, Lo
 			    FROM Therapy m
 			    LEFT JOIN TherapyConfig tc
 			    ON m.materialNumber = tc.materialNumber
-			    WHERE m.id = :id
+			    WHERE m.ndcNumber = :ndcNumber
+			    and m.channelType = :channelType
+			    and m.itemStatus = 'A'
 			""")
-	Optional<MaterialResponseDTO> findTherapyDetailsById(@Param("id") Long id);
+	Optional<MaterialResponseDTO> findTherapyDetailsByNdc(@Param("ndcNumber") String ndcNumber,
+			@Param("channelType") ChannelType channelType);
 
 }
