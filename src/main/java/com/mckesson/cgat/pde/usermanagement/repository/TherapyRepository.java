@@ -398,11 +398,11 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			      AND m.item_status = 'A'
 			      AND cp.channel_type = 'SPECIALITY_PHARMA'
 			      AND cp.deleted = false
-			      AND cw.bnb_material_number = :materialNumber
+			      AND cw.bnb_ndc_number = :ndcNumber
 			      AND cw.is_active = 1
 			      AND uam.user_id = :userId
 			""", nativeQuery = true)
-	List<Therapy> findCrosswalkedTherapies(String materialNumber, long userId);
+	List<Therapy> findCrosswalkedTherapies(String ndcNumber, long userId);
 
 	@Query(value = """
 			                  SELECT m.*

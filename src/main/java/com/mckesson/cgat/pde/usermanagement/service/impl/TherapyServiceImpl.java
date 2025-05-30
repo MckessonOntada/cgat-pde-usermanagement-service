@@ -122,22 +122,22 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	@Override
-	public Page<VariantsResponseDTO> findAllVariantsLinkedToShipToAccountsForTherapy(String soldToAccountId,
-			String shipToAccountId, String therapyId, Pageable paging, ChannelType channelType) {
+	public Page<VariantsResponseDTO> findAllVariantsLinkedToShipToAccountsForNDC(String soldToAccountId,
+			String shipToAccountId, String ndcNumber, Pageable paging, ChannelType channelType) {
 		try {
-			log.info(" Inside method - findAllVariantsLinkedToShipToAccountsForTherapy..");
-			log.info("soldToAccountId: {} , shipToAccountId: {} and therapyId: {}", soldToAccountId, shipToAccountId,
-					therapyId);
+			log.info(" Inside method - findAllVariantsLinkedToShipToAccountsForNDC..");
+			log.info("soldToAccountId: {} , shipToAccountId: {} and ndcNumber: {}", soldToAccountId, shipToAccountId,
+					ndcNumber);
 			List<VariantsResponseDTO> variantsResponse;
 
 			Page<CatalogPrice> allVariants;
 			if (ChannelType.BUY_AND_BILL.equals(channelType)) {
-				allVariants = catalogPriceRepository.findAllCatalogPricesLinkedToShipToAccountsForTherapy(
-						soldToAccountId, shipToAccountId, therapyId, paging);
+				allVariants = catalogPriceRepository.findAllCatalogPricesLinkedToShipToAccountsForNDC(soldToAccountId,
+						shipToAccountId, ndcNumber, paging);
 				variantsResponse = toResponseDtoVariantsFromCatalogs(allVariants.getContent());
 			}
 			else {
-				List<Therapy> crosswalkedTherapies = therapyRepository.findCrosswalkedTherapies(therapyId,
+				List<Therapy> crosswalkedTherapies = therapyRepository.findCrosswalkedTherapies(ndcNumber,
 						Long.parseLong(UserSecurityUtils.getLoggedInUser().getId()));
 				variantsResponse = toResponseDtoVariantsListFromTherapies(crosswalkedTherapies);
 
