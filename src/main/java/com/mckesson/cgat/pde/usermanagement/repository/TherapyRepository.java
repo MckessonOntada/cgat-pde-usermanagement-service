@@ -504,4 +504,22 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			@Param("program") String program, @Param("ndcNumber") String ndcNumber,
 			@Param("channelType") ChannelType channelType);
 
+	@Query("""
+			     SELECT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,tc)
+				 FROM CatalogPrice cp
+				 JOIN Therapy m ON m.materialNumber = cp.sapMaterial
+				 left JOIN TherapyConfig tc ON m.materialNumber = tc.materialNumber
+				 left JOIN Crosswalk cw on cw.spProductId  = cp.sapMaterial
+				 WHERE cp.soldToCustomer = :soldToAccount
+				 AND cp.shipToCustomer = :shipToAccount
+				 AND cw.bnbNdcNumber = :ndcNumber
+			     AND cp.deleted = false
+				 AND m.channelType = :channelType
+				 AND cp.channelType = :channelType
+				 AND m.itemStatus = 'A'
+			""")
+	Optional<MaterialResponseDTO> findSPTherapyAndConfigBySoldToAccountAndProgramAndNdc(
+			@Param("soldToAccount") String soldToAccount, @Param("shipToAccount") String shipToAccount,
+			@Param("ndcNumber") String ndcNumber, @Param("channelType") ChannelType channelType);
+
 }
