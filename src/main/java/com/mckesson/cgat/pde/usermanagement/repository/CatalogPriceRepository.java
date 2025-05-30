@@ -24,15 +24,15 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 			 AND
 			     cp.ship_to_customer = :shipToAccountId
 			AND
-			    cp.sap_material = :therapyId
+			    m.ndc_name = :ndcNumber
 			  	AND
 				cp.variant is not null
 			AND
 				cp.deleted = false
 			""", nativeQuery = true)
-	Page<CatalogPrice> findAllCatalogPricesLinkedToShipToAccountsForTherapy(
+	Page<CatalogPrice> findAllCatalogPricesLinkedToShipToAccountsForNDC(
 			@Param("soldToAccountId") String soldToAccountId, @Param("shipToAccountId") String shipToAccountId,
-			@Param("therapyId") String therapyId, Pageable paging);
+			@Param("ndcNumber") String ndcNumber, Pageable paging);
 
 	@Query("""
 			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponse(cp, m.productLevelPricing)

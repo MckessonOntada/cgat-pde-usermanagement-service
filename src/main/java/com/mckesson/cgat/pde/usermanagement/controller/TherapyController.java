@@ -5,7 +5,6 @@ import java.util.Map;
 
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.dto.*;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
@@ -129,20 +127,20 @@ public class TherapyController {
 		return therapyService.findTherapyDetailsByTradeName(tradeName, channelType);
 	}
 
-	@GetMapping("{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/variants")
+	@GetMapping("{ndcNumber}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/variants")
 	@Operation(
 			summary = "Find all variants of therapy that is linked to the selected soldto account,shipto account and the therapy being offered from that shipto account")
-	public Page<VariantsResponseDTO> findAllVariantsLinkedToShipToAccountsForTherapy(
+	public Page<VariantsResponseDTO> findAllVariantsLinkedToShipToAccountsForNDC(
 			@PathVariable @NotNull(message = "'soldToAccountId' cannot be null") @NotEmpty(
 					message = "'soldToAccountId' cannot be empty") String soldToAccountId,
 			@PathVariable @NotNull(message = "'shipToAccountId' cannot be null") @NotEmpty(
 					message = "'shipToAccountId' cannot be empty") String shipToAccountId,
-			@PathVariable @NotNull(message = "'therapyId' cannot be null") String therapyId,
+			@PathVariable @NotNull(message = "'ndcNumber' cannot be null") String ndcNumber,
 			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) {
 		Pageable paging = PageRequest.of(pageNo, pageSize);
-		return therapyService.findAllVariantsLinkedToShipToAccountsForTherapy(soldToAccountId, shipToAccountId,
-				therapyId, paging, channelType);
+		return therapyService.findAllVariantsLinkedToShipToAccountsForNDC(soldToAccountId, shipToAccountId, ndcNumber,
+				paging, channelType);
 	}
 
 	@GetMapping("{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/catalog")
