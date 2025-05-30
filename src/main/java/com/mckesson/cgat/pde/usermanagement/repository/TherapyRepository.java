@@ -283,10 +283,11 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 	List<ProgramChannelProjectionDTO> findAllPrograms(@Param("userId") Long userId,
 			@Param("ndcNumber") String ndcNumber, @Param("partnerFunction") String partnerFunction, String channelType);
 
+	// to do : change the column name of cw.bnb_material_number
 	@Query(value = """
 				select cw.sp_product_id
 			 	FROM catalog.crosswalk cw
-			 	JOIN catalog.material m on m.material_number = cw.bnb_material_number
+			 	JOIN catalog.material m on m.ndc_number = cw.bnb_material_number
 				JOIN catalog.catalog_price cp ON cp.sap_material = cw.sp_product_id
 				JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
 				JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
@@ -460,7 +461,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					 JOIN Account ac ON ac.accountNumber = cp.soldToCustomer
 					 WHERE cp.soldToCustomer = :soldToAccount
 					 AND cp.shipToCustomer = :shipToAccount
-					 AND ac.cgatIdentifier = :program
+					 AND (:program IS NULL OR ac.cgatIdentifier = :program)
 					 AND m.ndcNumber = :ndcNumber
 				     AND cp.deleted = false
 					 AND m.channelType = :channelType
