@@ -350,7 +350,7 @@ public class TherapyServiceImpl implements TherapyService {
 	public List<MaterialDetailsResponseDTO> findTherapyDetailsWithConfigByTradeName(String tradeName,
 			ChannelType channelType) throws ResourceNotFoundException {
 
-		List<MaterialResponseDTO> responseDTOList = therapyConfigRepository.findDetailedByTradeName(tradeName,
+		List<MaterialResponseDTO> responseDTOList = therapyConfigRepository.findDetailesByTradeName(tradeName,
 				channelType);
 
 		if (CollectionUtils.isEmpty(responseDTOList)) {
