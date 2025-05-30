@@ -62,9 +62,10 @@ public class CacheServiceImpl implements CacheService {
 
 	@Override
 	@Cacheable(value = "singleMaterialCache", key = "#materialNumber")
-	public List<MaterialDetailsResponseDTO> findTherapyDetailsByTradeName(String tradeName)
+	public List<MaterialDetailsResponseDTO> findTherapyDetailsByTradeName(String tradeName, ChannelType channelType)
 			throws ResourceNotFoundException {
-		List<MaterialResponseDTO> responseDTOList = therapyConfigRepository.findDetailedByTradeName(tradeName);
+		List<MaterialResponseDTO> responseDTOList = therapyConfigRepository.findDetailedByTradeName(tradeName,
+				channelType);
 
 		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
 				QuestionnaireConfigurationType.Material, "", "", "", "", ChannelType.BUY_AND_BILL,

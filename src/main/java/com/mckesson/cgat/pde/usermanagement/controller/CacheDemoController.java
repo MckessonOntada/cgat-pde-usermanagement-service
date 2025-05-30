@@ -50,9 +50,10 @@ public class CacheDemoController {
 	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.EDIT_ORDERS, Permission.VIEW_SP_MATERIAL })
 	@Operation(summary = "Find Therapy details by Trade Name")
 	public ResponseEntity<List<MaterialDetailsResponseDTO>> findTherapyDetailsByTradeName(
-			@PathVariable String tradeName) throws ResourceNotFoundException {
+			@PathVariable String tradeName, @RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType)
+			throws ResourceNotFoundException {
 		log.debug("Fetching therapy details with tradeName: {}", tradeName);
-		return new ResponseEntity<>(cacheService.findTherapyDetailsByTradeName(tradeName), HttpStatus.OK);
+		return new ResponseEntity<>(cacheService.findTherapyDetailsByTradeName(tradeName, channelType), HttpStatus.OK);
 
 	}
 

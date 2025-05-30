@@ -338,10 +338,11 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	@Override
-	public List<MaterialDetailsResponseDTO> findTherapyDetailsByTradeName(String tradeName)
-			throws ResourceNotFoundException {
+	public List<MaterialDetailsResponseDTO> findTherapyDetailsWithConfigByTradeName(String tradeName,
+			ChannelType channelType) throws ResourceNotFoundException {
 
-		List<MaterialResponseDTO> responseDTOList = therapyConfigRepository.findDetailedByTradeName(tradeName);
+		List<MaterialResponseDTO> responseDTOList = therapyConfigRepository.findDetailedByTradeName(tradeName,
+				channelType);
 
 		if (CollectionUtils.isEmpty(responseDTOList)) {
 			throw new ResourceNotFoundException("Therapy details not found with tradeName: " + tradeName);

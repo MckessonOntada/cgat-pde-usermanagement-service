@@ -51,8 +51,8 @@ public interface TherapyService {
 	void updateTherapyConfigs(List<String> materialNumbers, boolean isPatientInformationRequired,
 			boolean isCoiIdRequired, ChannelType channelType);
 
-	List<MaterialDetailsResponseDTO> findTherapyDetailsByTradeName(String materialNumber)
-			throws ResourceNotFoundException;
+	List<MaterialDetailsResponseDTO> findTherapyDetailsWithConfigByTradeName(String materialNumber,
+			ChannelType channelType) throws ResourceNotFoundException;
 
 	void deleteConfigByMaterialNumber(String materialNumber, ChannelType channelType) throws ResourceNotFoundException;
 

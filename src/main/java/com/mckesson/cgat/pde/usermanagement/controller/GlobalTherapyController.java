@@ -104,9 +104,11 @@ public class GlobalTherapyController {
 	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.EDIT_ORDERS, Permission.VIEW_SP_MATERIAL })
 	@Operation(summary = "Find Therapy details by Trade Name")
 	public ResponseEntity<List<MaterialDetailsResponseDTO>> findTherapyDetailsByTradeName(
-			@PathVariable String tradeName) throws ResourceNotFoundException {
+			@PathVariable String tradeName, @RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType)
+			throws ResourceNotFoundException {
 		log.debug("Fetching therapy details with tradeName: {}", tradeName);
-		return new ResponseEntity<>(therapyService.findTherapyDetailsByTradeName(tradeName), HttpStatus.OK);
+		return new ResponseEntity<>(therapyService.findTherapyDetailsWithConfigByTradeName(tradeName, channelType),
+				HttpStatus.OK);
 
 	}
 

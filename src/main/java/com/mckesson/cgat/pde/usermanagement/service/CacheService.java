@@ -1,7 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.service;
 
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialDetailsResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import jakarta.validation.constraints.NotEmpty;
@@ -22,7 +22,8 @@ public interface CacheService {
 					message = "Material number cannot be empty") String materialNumber)
 			throws ResourceNotFoundException;
 
-	List<MaterialDetailsResponseDTO> findTherapyDetailsByTradeName(String ndcNumber) throws ResourceNotFoundException;
+	List<MaterialDetailsResponseDTO> findTherapyDetailsByTradeName(String ndcNumber, ChannelType channelType)
+			throws ResourceNotFoundException;
 
 	void testCacheEvents();
 
