@@ -76,9 +76,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			         from COMBINED com
 					 where (
 						cast(:query as varchar) is null
-						OR LOWER(com.material_number) LIKE %:query%
 						OR LOWER(com.ndc) LIKE %:query%
-						OR LOWER(com.material_description) LIKE %:query%
+						OR LOWER(com.trade_name) LIKE %:query%
 						OR LOWER(com.strength) LIKE %:query%
 						OR LOWER(com.dosage) LIKE %:query%
 					)

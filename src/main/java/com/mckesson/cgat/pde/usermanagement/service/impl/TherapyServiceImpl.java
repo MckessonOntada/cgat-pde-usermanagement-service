@@ -395,8 +395,10 @@ public class TherapyServiceImpl implements TherapyService {
 	@Override
 	public MaterialResponseDTO findTherapyDetailsByNdcAndSoldToAndProgram(String ndcNumber, String soldToAccount,
 			String shipToAccount, String program, ChannelType channelType) throws ResourceNotFoundException {
+		String mappedProgram = "340B".equals(program) ? "340" : program;
+
 		return therapyRepository
-			.findTherapyAndConfigBySoldToAccountAndProgramAndNdc(soldToAccount, shipToAccount, program, ndcNumber,
+			.findTherapyAndConfigBySoldToAccountAndProgramAndNdc(soldToAccount, shipToAccount, mappedProgram, ndcNumber,
 					channelType)
 			.orElseThrow(() -> new ResourceNotFoundException(
 					String.format("Therapy not found with ndc: %s, soldToAccount: %s, program: %s", ndcNumber,
