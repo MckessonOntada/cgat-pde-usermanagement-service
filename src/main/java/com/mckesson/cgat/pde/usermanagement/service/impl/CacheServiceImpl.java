@@ -70,7 +70,8 @@ public class CacheServiceImpl implements CacheService {
 					"Therapy config not found with materialNumber: " + materialNumber));
 
 		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
-				QuestionnaireConfigurationType.Material, materialNumber, "", "", "", ChannelType.BUY_AND_BILL);
+				QuestionnaireConfigurationType.Material, materialNumber, "", "", "", ChannelType.BUY_AND_BILL,
+				responseDTO.getTherapy().getNdcNumber());
 
 		MaterialDetailsResponseDTO materialDetailsResponseDTO = MaterialDetailsResponseDTO.builder()
 			.questionnaires(questionnaires)
