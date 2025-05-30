@@ -326,45 +326,56 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			@Param("query") String query, Pageable paging, @Param("partnerFunction") String partnerFunction);
 
 	@Query(value = """
-			SELECT m.*
-			FROM catalog.material m
-			WHERE
-			(
-			    :query IS NULL
-			    OR LOWER(m.material_number) LIKE %:query%
-			    OR LOWER(m.ndc_number) LIKE %:query%
-			    OR LOWER(m.material_description) LIKE %:query%
-			    OR LOWER(m.generic_name) LIKE %:query%
-			    OR LOWER(m.site_name) LIKE %:query%
-			)
-			AND
-			(
-			    :statusActive = 'ALL'
-			    OR (:statusActive = 'ACTIVE' AND m.item_status = 'A')
-			    OR (:statusActive = 'INACTIVE' AND m.item_status = 'V')
-			)
-			AND (
-				    (
-				      :ignoreCrosswalkedSP = true
-				      AND
-				      (
-					    (m.channel_type = 'SPECIALITY_PHARMA' AND m.is_crosswalked = false)
-					    OR m.channel_type = 'BUY_AND_BILL'
-					  )
-				    )
-				 OR
-				   (
-				      :ignoreCrosswalkedSP = false
-				      AND
-				      (
-				        :channelTypes = 'ALL'
-				        OR m.channel_type = :channelTypes
-				      )
-				    )
-				)
+			       SELECT
+			                      m.trade_name AS tradeName,
+			                      m.channel_type AS channelType,
+			                      STRING_AGG(m.id::text, ', ') AS id,
+			                      STRING_AGG(m.material_number, ', ') AS therapyId,
+			                      STRING_AGG(m.material_description, ', ') AS therapyDescription,
+			                      STRING_AGG(m.ndc_number, ', ') AS ndc,
+			                      STRING_AGG(m.strength, ', ') AS strength,
+			                      STRING_AGG(m.dosage, ', ') AS dosage,
+			                      STRING_AGG(m.manufacturer_name, ', ') AS manufacturerName,
+			                      STRING_AGG(m.generic_name, ', ') AS genericName
+			                  FROM
+			                      catalog.material m
+			                  WHERE
+			                      (
+			                          :query IS NULL
+			                          OR LOWER(m.material_number) LIKE %:query%
+			                          OR LOWER(m.ndc_number) LIKE %:query%
+			                          OR LOWER(m.material_description) LIKE %:query%
+			                          OR LOWER(m.generic_name) LIKE %:query%
+			                          OR LOWER(m.site_name) LIKE %:query%
+			                          OR LOWER(m.trade_name) LIKE %:query%
+			                      )
+			                      AND (
+			                          :statusActive = 'ALL'
+			                          OR (:statusActive = 'ACTIVE' AND m.item_status = 'A')
+			                          OR (:statusActive = 'INACTIVE' AND m.item_status = 'V')
+			                      )
+			                      AND (
+			                          (
+			                              :ignoreCrosswalkedSP = TRUE
+			                              AND (
+			                                  (m.channel_type = 'SPECIALITY_PHARMA' AND m.is_crosswalked = FALSE)
+			                                  OR m.channel_type = 'BUY_AND_BILL'
+			                              )
+			                          )
+			                          OR (
+			                              :ignoreCrosswalkedSP = FALSE
+			                              AND (
+			                                  :channelTypes = 'ALL'
+			                                  OR m.channel_type = :channelTypes
+			                              )
+			                          )
+			                      )
+			                  GROUP BY
+			                      m.trade_name,
+			                      m.channel_type
 			""", nativeQuery = true)
-	Page<Therapy> findAllGlobalTherapies(@Param("query") String query, String statusActive, String channelTypes,
-			Pageable paging, @Param("ignoreCrosswalkedSP") boolean ignoreCrosswalkedSP);
+	Page<TherapyCatalogResponseDTO> findAllGlobalTherapies(@Param("query") String query, String statusActive,
+			String channelTypes, Pageable paging, @Param("ignoreCrosswalkedSP") boolean ignoreCrosswalkedSP);
 
 	List<Therapy> findByMaterialNumberInAndChannelTypeAndItemStatus(Set<String> productIds, ChannelType channelType,
 			String itemStatus);
@@ -405,32 +416,45 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 	List<Therapy> findCrosswalkedTherapies(String ndcNumber, long userId);
 
 	@Query(value = """
-			                  SELECT m.*
-			                  FROM catalog.material m
-			                  WHERE
-			                  (
-			                      :query IS NULL
-			                      OR LOWER(m.material_number) LIKE %:query%
-			                      OR LOWER(m.ndc_number) LIKE %:query%
-			                      OR LOWER(m.material_description) LIKE %:query%
-			                      OR LOWER(m.generic_name) LIKE %:query%
-			                      OR LOWER(m.site_name) LIKE %:query%
-			                  )
-			                  AND
-			                  (
-			                      :statusActive = 'ALL'
-			                      OR (:statusActive = 'ACTIVE' AND m.item_status = 'A')
-			                      OR (:statusActive = 'INACTIVE' AND m.item_status = 'V')
-			                  )
-			                  AND
-			                  (
-			                      :channelTypes = 'ALL'
-			                      OR m.channel_type = :channelTypes
-			                  )
-			AND m.is_crosswalked = :crosswalked
+			      SELECT
+			                   m.trade_name AS tradeName,
+			                   m.channel_type AS channelType,
+			                   STRING_AGG(m.id::text, ', ') AS id,
+			                   STRING_AGG(m.material_number, ', ') AS therapyId,
+			                   STRING_AGG(m.material_description, ', ') AS therapyDescription,
+			                   STRING_AGG(m.ndc_number, ', ') AS ndc,
+			                   STRING_AGG(m.strength, ', ') AS strength,
+			                   STRING_AGG(m.dosage, ', ') AS dosage,
+			                   STRING_AGG(m.manufacturer_name, ', ') AS manufacturerName,
+			                   STRING_AGG(m.generic_name, ', ') AS genericName
+			               FROM
+			                   catalog.material m
+			               WHERE
+			                   (
+			                       :query IS NULL
+			                       OR LOWER(m.material_number) LIKE %:query%
+			                       OR LOWER(m.ndc_number) LIKE %:query%
+			                       OR LOWER(m.material_description) LIKE %:query%
+			                       OR LOWER(m.generic_name) LIKE %:query%
+			                       OR LOWER(m.site_name) LIKE %:query%
+			                       OR LOWER(m.trade_name) LIKE %:query%
+			                   )
+			                   AND (
+			                       :statusActive = 'ALL'
+			                       OR (:statusActive = 'ACTIVE' AND m.item_status = 'A')
+			                       OR (:statusActive = 'INACTIVE' AND m.item_status = 'V')
+			                   )
+			                   AND (
+			                       :channelTypes = 'ALL'
+			                       OR m.channel_type = :channelTypes
+			                   )
+			                   AND m.is_crosswalked = :crosswalked
+			               GROUP BY
+			                   m.trade_name,
+			                   m.channel_type
 			""", nativeQuery = true)
-	Page<Therapy> findNonCrosswalkedSPGlobalTherapies(@Param("query") String query, String statusActive,
-			String channelTypes, @Param("crosswalked") Boolean crosswalked, Pageable paging);
+	Page<TherapyCatalogResponseDTO> findNonCrosswalkedSPGlobalTherapies(@Param("query") String query,
+			String statusActive, String channelTypes, @Param("crosswalked") Boolean crosswalked, Pageable paging);
 
 	List<Therapy> findByNdcNumberInAndChannelType(List<String> distinctBnbMaterialNDC, ChannelType channelType);
 
