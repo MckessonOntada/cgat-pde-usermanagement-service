@@ -16,13 +16,11 @@ import java.util.Set;
 @Repository
 public interface MaterialCrossWalkConfigRepository extends JpaRepository<Crosswalk, Long> {
 
-	List<Crosswalk> findMaterialCrossWalkConfigBySpProductIdIn(List<String> spProductIds);
+	void deleteBySpProductIdIn(List<String> spProductNDCs);
 
-	void deleteBySpProductIdIn(List<String> spProductIds);
-
-	@Query(value = "SELECT DISTINCT m.bnb_material_number FROM catalog.crosswalk m WHERE m.bnb_material_number IN :bnbMaterialNumbers",
+	@Query(value = "SELECT DISTINCT m.bnb_ndc_number FROM catalog.crosswalk m WHERE m.bnb_ndc_number IN :bnbNdcNumbers",
 			nativeQuery = true)
-	List<String> findExistingBnbMaterialNumbers(@Param("bnbMaterialNumbers") Set<String> bnbMaterialNumbers);
+	List<String> findExistingBnbNdcNumbers(@Param("bnbNdcNumbers") Set<String> bnbNdcNumbers);
 
 	@Query(value = """
 			SELECT
@@ -34,7 +32,7 @@ public interface MaterialCrossWalkConfigRepository extends JpaRepository<Crosswa
 			    m2.material_description as spProductName,
 				m2.ndc_number as spNdc
 			FROM catalog.crosswalk cw
-			JOIN catalog.material m1 ON cw.bnb_material_number = m1.material_number and m1.channel_type = 'BUY_AND_BILL'
+			JOIN catalog.material m1 ON cw.bnb_ndc_number = m1.ndc_number and m1.channel_type = 'BUY_AND_BILL'
 			JOIN catalog.material m2 ON cw.sp_product_id = m2.material_number and m2.channel_type = 'SPECIALITY_PHARMA'
 			WHERE
 			(
@@ -55,9 +53,9 @@ public interface MaterialCrossWalkConfigRepository extends JpaRepository<Crosswa
 			""", nativeQuery = true)
 	Page<CrosswalkResponseDTO> findAllCrosswalks(Pageable paging, String query, @Param("status") String status);
 
-	List<Crosswalk> findByBnbMaterialNumber(String bnbMaterialNumber);
+	List<Crosswalk> findByBnbNdcNumber(String bnbNdcNumber);
 
-	List<Crosswalk> findAllBySpProductIdIn(Set<String> validSpIds);
+	List<Crosswalk> findMaterialCrossWalkConfigBySpProductIdIn(List<String> existingSPNDCs);
 
 	Crosswalk findBySpProductIdAndIsActive(String sapMaterial, boolean isActive);
 
