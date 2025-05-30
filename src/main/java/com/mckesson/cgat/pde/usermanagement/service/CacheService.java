@@ -17,16 +17,16 @@ import java.util.List;
 @Service
 public interface CacheService {
 
-    Page<TherapyCatalogResponseDTO> findAllGlobalTherapies(String query, Pageable paging);
+	Page<TherapyCatalogResponseDTO> findAllGlobalTherapies(String query, Pageable paging);
 
-    void deleteConfigByMaterialNumber(
-            @NotNull(message = "Material number cannot be null ") @NotEmpty(
-                    message = "Material number cannot be empty") String materialNumber)
-            throws ResourceNotFoundException;
+	void deleteConfigByMaterialNumber(
+			@NotNull(message = "Material number cannot be null ") @NotEmpty(
+					message = "Material number cannot be empty") String materialNumber)
+			throws ResourceNotFoundException;
 
-    List<MaterialDetailsResponseDTO> findTherapyDetailsByTradeName(String ndcNumber, ChannelType channelType)
-            throws ResourceNotFoundException;
+	List<MaterialDetailsResponseDTO> findTherapyDetailsByTradeName(String ndcNumber, ChannelType channelType)
+			throws ResourceNotFoundException;
 
-    void testCacheEvents();
+	void testCacheEvents();
 
 }
