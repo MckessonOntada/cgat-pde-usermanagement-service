@@ -69,13 +69,13 @@ public class TherapyServiceImpl implements TherapyService {
 
 	}
 
-	public Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, String therapyId, String query, Pageable paging,
-			ChannelType channelType, String program, ChannelType therapyChannelType) {
+	public Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, String ndcNumber, String query, Pageable paging,
+			ChannelType channelType, String program, ChannelType ndcChannelType) {
 
-		boolean isCrossWalkedTherapySelected = !therapyChannelType.equals(channelType);
+		boolean isCrossWalkedTherapySelected = !ndcChannelType.equals(channelType);
 
 		if (ChannelType.SPECIALITY_PHARMA.equals(channelType) && isCrossWalkedTherapySelected) {
-			return therapyRepository.findAllSoldToAccountsForSP(userId, therapyId, StringUtils.toRootLowerCase(query),
+			return therapyRepository.findAllSoldToAccountsForSP(userId, ndcNumber, StringUtils.toRootLowerCase(query),
 					paging, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 		}
 
@@ -83,11 +83,11 @@ public class TherapyServiceImpl implements TherapyService {
 			program = "340";
 		}
 
-		return therapyRepository.findAllSoldToAccounts(userId, therapyId, StringUtils.toRootLowerCase(query), paging,
+		return therapyRepository.findAllSoldToAccounts(userId, ndcNumber, StringUtils.toRootLowerCase(query), paging,
 				channelType.name(), program, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 	}
 
-	public Page<AccountsResponseDTO> findAllShipToAccounts(String soldToAccountId, String therapyId, Pageable paging,
+	public Page<AccountsResponseDTO> findAllShipToAccounts(String soldToAccountId, String ndcNumber, Pageable paging,
 			String query, ChannelType channelType) {
 		String loweredCaseQuery = StringUtils.toRootLowerCase(query);
 		if (channelType.equals(ChannelType.SPECIALITY_PHARMA)) {
@@ -99,7 +99,7 @@ public class TherapyServiceImpl implements TherapyService {
 				.collect(Collectors.toList());
 			return new PageImpl<>(mappedShipTo, paging, mappedShipTo.size());
 		}
-		return therapyRepository.findAllShipToAccounts(soldToAccountId, therapyId, loweredCaseQuery, paging,
+		return therapyRepository.findAllShipToAccounts(soldToAccountId, ndcNumber, loweredCaseQuery, paging,
 				AccountPartnerFunction.SHIP_TO.getPartnerFunctionType());
 	}
 
@@ -183,14 +183,14 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	@Override
-	public CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForTherapy(String soldToAccountId,
-			String shipToAccountId, String variantType, String therapyId) {
+	public CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForNdc(String soldToAccountId,
+			String shipToAccountId, String variantType, String ndcNumber) {
 		try {
-			log.info(" Inside method - findPriceOfVariantLinkedToShipToAccountsForTherapy..");
-			log.info("soldToAccountId: {} , shipToAccountId: {} , variantType: {} and therapyId: {}", soldToAccountId,
-					shipToAccountId, variantType, therapyId);
+			log.info(" Inside method - findPriceOfVariantLinkedToShipToAccountsForNdc..");
+			log.info("soldToAccountId: {} , shipToAccountId: {} , variantType: {} and ndcNumber: {}", soldToAccountId,
+					shipToAccountId, variantType, ndcNumber);
 			Page<CatalogPriceResponse> catalogPriceResponsePage = catalogPriceRepository
-				.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccountId, shipToAccountId, therapyId,
+				.findPriceOfVariantLinkedToShipToAccountsForNdc(soldToAccountId, shipToAccountId, ndcNumber,
 						variantType, PageRequest.of(0, 1));
 			CatalogPriceResponse catalogPrice = catalogPriceResponsePage.getContent().stream().findFirst().orElse(null);
 			CatalogPriceResponseDto responseDto = null;
@@ -220,7 +220,16 @@ public class TherapyServiceImpl implements TherapyService {
 					"Therapy not found with materialNumber: " + materialNumber + " and channelType: " + channelType));
 	}
 
-	public ProgramChannelResponseDTO findAllProgramAndChannels(Long userId, String therapyId, ChannelType channelType)
+	@Override
+	public List<Therapy> findByNdcNumber(String ndcNumber, ChannelType channelType) throws ResourceNotFoundException {
+		List<Therapy> therapies = therapyRepository.findByNdcNumberAndChannelType(ndcNumber, channelType);
+		if (therapies == null || therapies.isEmpty())
+			throw new ResourceNotFoundException(
+					"Therapy not found with Ndc Number: " + ndcNumber + " and channelType: " + channelType);
+		return therapies;
+	}
+
+	public ProgramChannelResponseDTO findAllProgramAndChannels(Long userId, String ndcNumber, ChannelType channelType)
 			throws ResourceNotFoundException {
 
 		if (ChannelType.SPECIALITY_PHARMA.equals(channelType)) {
@@ -230,7 +239,7 @@ public class TherapyServiceImpl implements TherapyService {
 				.build();
 		}
 
-		List<ProgramChannelProjectionDTO> allPrograms = therapyRepository.findAllPrograms(userId, therapyId,
+		List<ProgramChannelProjectionDTO> allPrograms = therapyRepository.findAllPrograms(userId, ndcNumber,
 				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), ChannelType.BUY_AND_BILL.name());
 
 		Set<String> uniquePrograms = null != allPrograms ? (allPrograms.stream().map(programChannelProjectionDTO -> {
@@ -248,14 +257,14 @@ public class TherapyServiceImpl implements TherapyService {
 			uniqueChannels.add(ChannelType.BUY_AND_BILL.name());
 		}
 		else {
-			Therapy therapy = findByMaterialNumber(therapyId, channelType);
-			isCrosswalkMaterial = therapy.getIsCrosswalked();
+			List<Therapy> therapies = findByNdcNumber(ndcNumber, channelType);
+			isCrosswalkMaterial = !therapies.stream().anyMatch(Therapy::getIsCrosswalked);
 		}
 
 		List<String> crossWalkedSPs = new ArrayList<>();
 
 		if (isCrosswalkMaterial) {
-			crossWalkedSPs = fetchCrossWalkedSPsForUserAndTherapyId(userId, therapyId);
+			crossWalkedSPs = fetchCrossWalkedSPsForUserAndNdc(userId, ndcNumber);
 		}
 
 		if (!CollectionUtils.isEmpty(crossWalkedSPs)) {
@@ -264,8 +273,8 @@ public class TherapyServiceImpl implements TherapyService {
 		return ProgramChannelResponseDTO.builder().channels(uniqueChannels).programs(uniquePrograms).build();
 	}
 
-	private List<String> fetchCrossWalkedSPsForUserAndTherapyId(Long userId, String therapyId) {
-		return therapyRepository.findAllCrossWalkedSPsForUser(userId, therapyId,
+	private List<String> fetchCrossWalkedSPsForUserAndNdc(Long userId, String ndcNumber) {
+		return therapyRepository.findAllCrossWalkedSPsForUser(userId, ndcNumber,
 				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType());
 	}
 
@@ -377,9 +386,21 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	@Override
-	public MaterialResponseDTO findTherapyDetailsById(Long id) throws ResourceNotFoundException {
-		return therapyConfigRepository.findTherapyDetailsById(id)
-			.orElseThrow(() -> new ResourceNotFoundException("Therapy not found with id: " + id));
+	public MaterialResponseDTO findTherapyDetailsByNdc(String ndcNumber, ChannelType channelType)
+			throws ResourceNotFoundException {
+		return therapyConfigRepository.findTherapyDetailsByNdc(ndcNumber, channelType)
+			.orElseThrow(() -> new ResourceNotFoundException("Therapy not found with ndc: " + ndcNumber));
+	}
+
+	@Override
+	public MaterialResponseDTO findTherapyDetailsByNdcAndSoldToAndProgram(String ndcNumber, String soldToAccount,
+			String shipToAccount, String program, ChannelType channelType) throws ResourceNotFoundException {
+		return therapyRepository
+			.findTherapyAndConfigBySoldToAccountAndProgramAndNdc(soldToAccount, shipToAccount, program, ndcNumber,
+					channelType)
+			.orElseThrow(() -> new ResourceNotFoundException(
+					String.format("Therapy not found with ndc: %s, soldToAccount: %s, program: %s", ndcNumber,
+							soldToAccount, program)));
 	}
 
 	@Override

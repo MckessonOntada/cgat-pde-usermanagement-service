@@ -71,26 +71,26 @@ public class TherapyController {
 				salesOrg, paging, customerIdentifier);
 	}
 
-	@GetMapping("/{therapyId}/soldtoaccounts")
+	@GetMapping("/ndc/{ndcNumber}/soldtoaccounts")
 	@Operation(
-			summary = "Find all soldto accounts from which the selected therapy is being offered, and the logged in user has access to")
-	public Page<AccountsResponseDTO> findAllSoldToAccountsByTherapy(@PathVariable String therapyId,
+			summary = "Find all soldto accounts from which the selected ndc is being offered, and the logged in user has access to")
+	public Page<AccountsResponseDTO> findAllSoldToAccountsByTherapy(@PathVariable String ndcNumber,
 			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(required = false) String query,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String program,
 			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType,
-			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType therapyChannelType) {
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType ndcChannelType) {
 
 		Pageable paging = PageRequest.of(pageNo, pageSize);
 		return therapyService.findAllSoldToAccounts(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()),
-				therapyId, query, paging, channelType, program, therapyChannelType);
+				ndcNumber, query, paging, channelType, program, ndcChannelType);
 
 	}
 
-	@GetMapping("{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccounts")
+	@GetMapping("/ndc/{ndcNumber}/soldtoaccount/{soldToAccountId}/shiptoaccounts")
 	@Operation(
-			summary = "Find all shipto accounts that is linked to the selected soldto account and the therapy also being offered from that shipto account")
+			summary = "Find all shipto accounts that is linked to the selected soldto account and the ndc also being offered from that shipto account")
 	public Page<AccountsResponseDTO> findAllShipToAccountsForTherapy(@PathVariable String soldToAccountId,
-			@PathVariable String therapyId, @RequestParam(defaultValue = "0") Integer pageNo,
+			@PathVariable String ndcNumber, @RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
 			@RequestParam(defaultValue = "sap_partner") String sortBy,
 			@RequestParam(defaultValue = "desc") String sortOrder,
@@ -106,7 +106,7 @@ public class TherapyController {
 		Sort sort = CustomUtils.SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-		return therapyService.findAllShipToAccounts(soldToAccountId, therapyId, paging, query, channelType);
+		return therapyService.findAllShipToAccounts(soldToAccountId, ndcNumber, paging, query, channelType);
 	}
 
 	@GetMapping("/{therapyId}")
@@ -145,27 +145,27 @@ public class TherapyController {
 				therapyId, paging, channelType);
 	}
 
-	@GetMapping("{therapyId}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/catalog")
+	@GetMapping("/ndc/{ndcNumber}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/catalog")
 	@Operation(
-			summary = "Find price of the variant of therapy that is linked to the selected soldto account,shipto account and the therapy being offered from that shipto account")
+			summary = "Find price of the variant of therapy that is linked to the selected soldto account,shipto account and the ndc being offered from that shipto account")
 	public CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForTherapy(
 			@PathVariable @NotNull(message = "'soldToAccountId' cannot be null") @NotEmpty(
 					message = "'soldToAccountId' cannot be empty") String soldToAccountId,
 			@PathVariable @NotNull(message = "'shipToAccountId' cannot be null") @NotEmpty(
 					message = "'shipToAccountId' cannot be empty") String shipToAccountId,
 			@RequestParam(required = false) String variantType,
-			@PathVariable @NotNull(message = "'therapyId' cannot be null") String therapyId) {
-		return therapyService.findPriceOfVariantLinkedToShipToAccountsForTherapy(soldToAccountId, shipToAccountId,
-				variantType, therapyId);
+			@PathVariable @NotNull(message = "'Ndc number' cannot be null") String ndcNumber) {
+		return therapyService.findPriceOfVariantLinkedToShipToAccountsForNdc(soldToAccountId, shipToAccountId,
+				variantType, ndcNumber);
 	}
 
-	@GetMapping("/{therapyId}/programs-channels")
+	@GetMapping("/ndc/{ndcNumber}/programs-channels")
 	@Operation(
 			summary = "Find all programs and channels from which the selected therapy is being offered, and the logged in user has access to")
-	public ResponseEntity<ProgramChannelResponseDTO> findAllProgramAndChannels(@PathVariable String therapyId,
+	public ResponseEntity<ProgramChannelResponseDTO> findAllProgramAndChannels(@PathVariable String ndcNumber,
 			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) throws ResourceNotFoundException {
 		return new ResponseEntity<>(therapyService.findAllProgramAndChannels(
-				Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), therapyId, channelType), HttpStatus.OK);
+				Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), ndcNumber, channelType), HttpStatus.OK);
 	}
 
 	@GetMapping("/customeridentifiers")

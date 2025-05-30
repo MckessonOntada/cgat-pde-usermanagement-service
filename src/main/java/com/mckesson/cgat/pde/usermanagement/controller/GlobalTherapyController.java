@@ -8,6 +8,7 @@ import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
@@ -124,13 +125,31 @@ public class GlobalTherapyController {
 		return new ResponseEntity<>(materialNumber, HttpStatus.OK);
 	}
 
-	@GetMapping("/config/therapyId/{id}")
+	@GetMapping("/config/ndc/{ndcNumber}")
 	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.ADD_ORDERS, Permission.EDIT_ORDERS })
-	@Operation(summary = "Find Therapy details by Material Number")
-	public ResponseEntity<MaterialResponseDTO> findTherapyDetailsById(@PathVariable Long id)
+	@Operation(summary = "Find Therapy details by Ndc Number")
+	public ResponseEntity<MaterialResponseDTO> findTherapyDetailsByNdc(
+			@PathVariable @NotNull(message = "Ndc number cannot be null ") @NotEmpty(
+					message = "Ndc number cannot be empty") String ndcNumber,
+			@RequestParam ChannelType channelType) throws ResourceNotFoundException {
+		log.debug("Fetching therapy details by Ndc number: {}, channel Type: {}", ndcNumber, channelType);
+		return new ResponseEntity<>(therapyService.findTherapyDetailsByNdc(ndcNumber, channelType), HttpStatus.OK);
+
+	}
+
+	@GetMapping("/config/ndc/{ndcNumber}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/therapy")
+	@RequirePermissions({ Permission.ADD_ORDERS, Permission.EDIT_ORDERS })
+	@Operation(summary = "Find Therapy details by Ndc Number and soldTo account")
+	public ResponseEntity<MaterialResponseDTO> findTherapyDetailsByNdcAndSoldToAccount(
+			@PathVariable @NotBlank(message = "Ndc number is required") String ndcNumber,
+			@PathVariable @NotBlank(message = "Sold To Account is required") String soldToAccountId,
+			@PathVariable @NotBlank(message = "Ship To Account is required") String shipToAccountId,
+			@RequestParam(required = false) String program, @RequestParam ChannelType channelType)
 			throws ResourceNotFoundException {
-		log.debug("Fetching therapy details with materialNumber: {}", id);
-		return new ResponseEntity<>(therapyService.findTherapyDetailsById(id), HttpStatus.OK);
+		log.debug("Fetching therapy details by Ndc number: {}, channel Type: {}, soldTo: {}, shipTo: {}, program: {}",
+				ndcNumber, channelType, soldToAccountId, shipToAccountId, program);
+		return new ResponseEntity<>(therapyService.findTherapyDetailsByNdcAndSoldToAndProgram(ndcNumber,
+				soldToAccountId, shipToAccountId, program, channelType), HttpStatus.OK);
 
 	}
 

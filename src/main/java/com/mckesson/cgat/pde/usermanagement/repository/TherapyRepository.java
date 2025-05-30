@@ -14,6 +14,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponse;
+import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelProjectionDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
@@ -45,7 +47,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			                    m.ndc_number as ndc, m.strength, m.dosage, m.channel_Type,  m.trade_name, m.manufacturer_name, m.generic_name
 			             FROM catalog.material m
 			             JOIN catalog.crosswalk cw
-			                 ON cw.bnb_material_number = m.material_number
+			                 ON cw.bnb_ndc_number = m.ndc_number
 			             JOIN catalog.catalog_price cp
 			                 ON cp.sap_material = cw.sp_product_id
 			             JOIN usermanagement.account ac
@@ -107,7 +109,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 							 SELECT m.id, m.material_number as material_number, m.material_description as material_description,
 					                  m.ndc_number as ndc, m.strength, m.dosage, m.channel_Type,  m.trade_name, m.manufacturer_name, m.generic_name
 					         FROM catalog.material m
-					         JOIN catalog.crosswalk cw ON cw.bnb_material_number = m.material_number
+					         JOIN catalog.crosswalk cw ON cw.bnb_ndc_number = m.ndc_number
 					         JOIN catalog.catalog_price cp ON cp.sap_material = cw.sp_product_id
 					         JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
 					         JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
@@ -165,7 +167,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						or ac.cgat_identifier = :program
 						)
 					AND
-						m.material_number = :therapyId
+						m.ndc_number = :ndcNumber
 					AND
 						ac.partner_function = :partnerFunction
 					AND
@@ -181,7 +183,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			""",
 			nativeQuery = true)
 	public Page<AccountsResponseDTO> findAllSoldToAccounts(@Param("userId") Long userId,
-			@Param("therapyId") String therapyId, @Param("query") String query, Pageable paging,
+			@Param("ndcNumber") String ndcNumber, @Param("query") String query, Pageable paging,
 			@Param("channel") String channel, @Param("program") String program,
 			@Param("partnerFunction") String partnerFunction);
 
@@ -190,7 +192,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						 ac.street_3 as street3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code, false as isDefault,
 						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier, ac.channel_type
 				FROM catalog.crosswalk cw
-				JOIN catalog.material m on m.material_number = cw.bnb_material_number
+				JOIN catalog.material m on m.ndc_number = cw.bnb_ndc_number
 				JOIN catalog.catalog_price cp ON cp.sap_material = cw.sp_product_id
 				JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
 				JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
@@ -202,7 +204,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 							or LOWER(ac.name_1) like %:query%
 						)
 					AND
-						cw.bnb_material_number = :therapyId
+						m.ndc_number = :ndcNumber
 					AND
 						ac.partner_function = :partnerFunction
 					AND
@@ -220,7 +222,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			""",
 			nativeQuery = true)
 	Page<AccountsResponseDTO> findAllSoldToAccountsForSP(@Param("userId") Long userId,
-			@Param("therapyId") String therapyId, @Param("query") String query, Pageable paging,
+			@Param("ndcNumber") String ndcNumber, @Param("query") String query, Pageable paging,
 			@Param("partnerFunction") String partnerFunction);
 
 	@Query(value = """
@@ -240,7 +242,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					AND
 						cp.sold_to_customer = :soldToAccountId
 					AND
-						cp.sap_material = :therapyId
+						m.ndc_number = :ndcNumber
 					AND
 						ac.partner_function = :partnerFunction
 					AND
@@ -254,7 +256,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			""",
 			nativeQuery = true)
 	public Page<AccountsResponseDTO> findAllShipToAccounts(@Param("soldToAccountId") String soldToAccountId,
-			@Param("therapyId") String therapyId, @Param("query") String query, Pageable paging,
+			@Param("ndcNumber") String ndcNumber, @Param("query") String query, Pageable paging,
 			@Param("partnerFunction") String partnerFunction);
 
 	@Query(value = """
@@ -267,7 +269,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			(
 					uam.user_id = :userId
 				AND
-					cp.sap_material = :therapyId
+					m.ndc_number = :ndcNumber
 				AND
 					ac.partner_function = :partnerFunction
 				AND
@@ -276,12 +278,12 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			)
 			""", nativeQuery = true)
 	List<ProgramChannelProjectionDTO> findAllPrograms(@Param("userId") Long userId,
-			@Param("therapyId") String therapyId, @Param("partnerFunction") String partnerFunction, String channelType);
+			@Param("ndcNumber") String ndcNumber, @Param("partnerFunction") String partnerFunction, String channelType);
 
 	@Query(value = """
 				select cw.sp_product_id
 			 	FROM catalog.crosswalk cw
-			 	JOIN catalog.material m on m.material_number = cw.bnb_material_number
+			 	JOIN catalog.material m on m.ndc_number = cw.bnb_ndc_number
 				JOIN catalog.catalog_price cp ON cp.sap_material = cw.sp_product_id
 				JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
 				JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
@@ -289,7 +291,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 				(
 						uam.user_id = :userId
 					AND
-						cw.bnb_material_number = :therapyId
+						m.ndc_number = :ndcNumber
 					AND
 						ac.partner_function = :partnerFunction
 					AND
@@ -300,7 +302,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						cw.is_active = 1
 				)
 			""", nativeQuery = true)
-	List<String> findAllCrossWalkedSPsForUser(@Param("userId") Long userId, @Param("therapyId") String therapyId,
+	List<String> findAllCrossWalkedSPsForUser(@Param("userId") Long userId, @Param("ndcNumber") String ndcNumber,
 			@Param("partnerFunction") String partnerFunction);
 
 	@Query(value = """
@@ -369,6 +371,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			String itemStatus);
 
 	Optional<Therapy> findByMaterialNumberAndChannelType(String materialNumber, ChannelType channelType);
+
+	List<Therapy> findByNdcNumberAndChannelType(String ndcNumber, ChannelType channelType);
 
 	List<Therapy> findByMaterialNumberInAndChannelType(List<String> materialNumbers, ChannelType channelType);
 
@@ -456,5 +460,25 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			""", nativeQuery = true)
 	List<Therapy> findByTradeNameAndChannelType(@Param("tradeName") String tradeName,
 			@Param("channelType") String channelType, @Param("userId") Long userId);
+
+	@Query("""
+				     SELECT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,tc)
+					 FROM CatalogPrice cp
+					 JOIN Therapy m ON m.materialNumber = cp.sapMaterial
+					 left JOIN TherapyConfig tc ON m.materialNumber = tc.materialNumber
+					 JOIN Account ac ON ac.accountNumber = cp.soldToCustomer
+					 WHERE cp.soldToCustomer = :soldToAccount
+					 AND cp.shipToCustomer = :shipToAccount
+					 AND (:program IS NULL OR ac.cgatIdentifier = :program)
+					 AND m.ndcNumber = :ndcNumber
+				     AND cp.deleted = false
+					 AND m.channelType = :channelType
+					 AND cp.channelType = :channelType
+					 AND m.item_status = 'A'
+			""")
+	Optional<MaterialResponseDTO> findTherapyAndConfigBySoldToAccountAndProgramAndNdc(
+			@Param("soldToAccount") String soldToAccount, @Param("shipToAccount") String shipToAccount,
+			@Param("program") String program, @Param("ndcNumber") String ndcNumber,
+			@Param("channelType") ChannelType channelType);
 
 }
