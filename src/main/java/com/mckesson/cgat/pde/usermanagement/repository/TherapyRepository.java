@@ -465,6 +465,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 				     AND cp.deleted = false
 					 AND m.channelType = :channelType
 					 AND cp.channelType = :channelType
+					 AND m.item_status = 'A'
 			""")
 	Optional<MaterialResponseDTO> findTherapyAndConfigBySoldToAccountAndProgramAndNdc(
 			@Param("soldToAccount") String soldToAccount, @Param("shipToAccount") String shipToAccount,

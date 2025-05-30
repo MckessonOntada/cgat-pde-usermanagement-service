@@ -144,8 +144,8 @@ public class GlobalTherapyController {
 			@PathVariable @NotBlank(message = "Ndc number is required") String ndcNumber,
 			@PathVariable @NotBlank(message = "Sold To Account is required") String soldToAccountId,
 			@PathVariable @NotBlank(message = "Ship To Account is required") String shipToAccountId,
-			@RequestParam @NotBlank(message = "Program is required") String program,
-			@RequestParam ChannelType channelType) throws ResourceNotFoundException {
+			@RequestParam(required = false) String program, @RequestParam ChannelType channelType)
+			throws ResourceNotFoundException {
 		log.debug("Fetching therapy details by Ndc number: {}, channel Type: {}, soldTo: {}, shipTo: {}, program: {}",
 				ndcNumber, channelType, soldToAccountId, shipToAccountId, program);
 		return new ResponseEntity<>(therapyService.findTherapyDetailsByNdcAndSoldToAndProgram(ndcNumber,
