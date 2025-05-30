@@ -31,7 +31,7 @@ public interface QuestionnaireConfigurationRepository extends JpaRepository<Ques
 					    JOIN catalog.questionnaire q ON qc.questionnaire_id = q.id
 					    WHERE q.is_active = 1
 					      AND (
-					            (qc.configured_type = 'Material' AND qc.entity_id = :sapMaterial
+					            (qc.configured_type = 'Material' AND qc.entity_id = :materialEntityId
 					                AND (
 					                    (:isCrosswalked = false AND qc.channel_type = :channelType)
 					                    OR (:isCrosswalked = true AND qc.channel_type = 'BUY_AND_BILL')
@@ -41,7 +41,7 @@ public interface QuestionnaireConfigurationRepository extends JpaRepository<Ques
 					         OR (qc.configured_type = 'Catalog' AND qc.entity_id = :catalogId AND qc.channel_type = :channelType)
 					          )
 					""")
-	List<QuestionnaireConfiguration> getAllConfiguredQuestionnaires(String sapMaterial, String soldToCustomer,
+	List<QuestionnaireConfiguration> getAllConfiguredQuestionnaires(String materialEntityId, String soldToCustomer,
 			String catalogId, String channelType, boolean isCrosswalked);
 
 	@Query(nativeQuery = true, value = """

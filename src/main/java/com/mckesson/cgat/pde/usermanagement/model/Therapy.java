@@ -387,6 +387,9 @@ public class Therapy implements Serializable {
 	@Column(name = "is_crosswalked")
 	private Boolean isCrosswalked;
 
+	@Column(name = "trade_name")
+	private String tradeName;
+
 	@PostLoad
 	public void postLoad() {
 		this.dropshipIndicator = determineDropshipIndicator(this.itemCategoryGroup);
