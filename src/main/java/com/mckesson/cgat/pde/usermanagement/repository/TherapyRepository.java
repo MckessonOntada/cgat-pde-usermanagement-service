@@ -47,7 +47,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			                    m.ndc_number as ndc, m.strength, m.dosage, m.channel_Type,  m.trade_name, m.manufacturer_name, m.generic_name
 			             FROM catalog.material m
 			             JOIN catalog.crosswalk cw
-			                 ON cw.bnb_material_number = m.material_number
+			                 ON cw.bnb_ndc_number = m.ndc_number
 			             JOIN catalog.catalog_price cp
 			                 ON cp.sap_material = cw.sp_product_id
 			             JOIN usermanagement.account ac
@@ -109,7 +109,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 							 SELECT m.id, m.material_number as material_number, m.material_description as material_description,
 					                  m.ndc_number as ndc, m.strength, m.dosage, m.channel_Type,  m.trade_name, m.manufacturer_name, m.generic_name
 					         FROM catalog.material m
-					         JOIN catalog.crosswalk cw ON cw.bnb_material_number = m.material_number
+					         JOIN catalog.crosswalk cw ON cw.bnb_ndc_number = m.ndc_number
 					         JOIN catalog.catalog_price cp ON cp.sap_material = cw.sp_product_id
 					         JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
 					         JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
@@ -187,14 +187,12 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			@Param("channel") String channel, @Param("program") String program,
 			@Param("partnerFunction") String partnerFunction);
 
-	// Need to fix/test after column rename, under JOIN catalog.material m on m.ndc_number
-	// = cw.bnb_material_number, after deepaks merge
 	@Query(value = """
 			SELECT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2 as street2,
 						 ac.street_3 as street3, ac.telephone, ac.city, ac.district, ac.state, ac.country, ac.zip_code, false as isDefault,
 						 ac.sales_org, ac.company_code, ac.division, ac.distribution_channel as distChannel, ac.cgat_identifier, ac.channel_type
 				FROM catalog.crosswalk cw
-				JOIN catalog.material m on m.ndc_number = cw.bnb_material_number
+				JOIN catalog.material m on m.ndc_number = cw.bnb_ndc_number
 				JOIN catalog.catalog_price cp ON cp.sap_material = cw.sp_product_id
 				JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
 				JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
@@ -282,11 +280,10 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 	List<ProgramChannelProjectionDTO> findAllPrograms(@Param("userId") Long userId,
 			@Param("ndcNumber") String ndcNumber, @Param("partnerFunction") String partnerFunction, String channelType);
 
-	// to do : change the column name of cw.bnb_material_number
 	@Query(value = """
 				select cw.sp_product_id
 			 	FROM catalog.crosswalk cw
-			 	JOIN catalog.material m on m.ndc_number = cw.bnb_material_number
+			 	JOIN catalog.material m on m.ndc_number = cw.bnb_ndc_number
 				JOIN catalog.catalog_price cp ON cp.sap_material = cw.sp_product_id
 				JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
 				JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
