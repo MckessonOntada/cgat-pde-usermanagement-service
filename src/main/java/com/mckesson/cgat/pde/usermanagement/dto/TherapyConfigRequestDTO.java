@@ -10,9 +10,9 @@ import java.util.List;
 @Data
 public class TherapyConfigRequestDTO {
 
-	@NotNull(message = "Material numbers must not be null.")
-	@Size(min = 1, message = "Material numbers must not be empty.")
-	private List<String> materialNumbers;
+	@NotNull(message = "Ndc numbers must not be null.")
+	@Size(min = 1, message = "Ndc numbers must not be empty.")
+	private List<String> ndcNumbers;
 
 	private boolean isPatientInformationRequired;
 
