@@ -3,7 +3,6 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.TherapyGroupResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TradeCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
