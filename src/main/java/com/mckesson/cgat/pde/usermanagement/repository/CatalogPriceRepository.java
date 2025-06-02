@@ -24,7 +24,7 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 			 AND
 			     cp.ship_to_customer = :shipToAccountId
 			AND
-			    m.ndc_name = :ndcNumber
+			    m.ndc_number = :ndcNumber
 			  	AND
 				cp.variant is not null
 			AND
