@@ -6,7 +6,9 @@ import com.mckesson.cgat.pde.usermanagement.dto.TradeCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TradeCatalogResponseMapper {
 
@@ -33,11 +35,18 @@ public class TradeCatalogResponseMapper {
 		int maxLength = maxLength(ids, therapyNumbers, descriptions, ndcs, strengths, dosages, manufacturerNames,
 				genericNames);
 
-		List<TherapyDTO> result = new ArrayList<>(maxLength);
+		Map<String, TherapyDTO> therapyMap = new HashMap<>();
 
 		for (int i = 0; i < maxLength; i++) {
+			String id = safeGet(ids, i);
+
+			// Skip if id is null or already exists in the map
+			if (id == null || therapyMap.containsKey(id)) {
+				continue;
+			}
+
 			TherapyDTO dto = new TherapyDTO();
-			dto.setId(safeGet(ids, i));
+			dto.setId(id);
 			dto.setMaterialNumber(safeGet(therapyNumbers, i));
 			dto.setMaterialDescription(safeGet(descriptions, i));
 			dto.setNdc(safeGet(ndcs, i));
@@ -45,10 +54,12 @@ public class TradeCatalogResponseMapper {
 			dto.setDosage(safeGet(dosages, i));
 			dto.setManufacturerName(safeGet(manufacturerNames, i));
 			dto.setGenericName(safeGet(genericNames, i));
-			result.add(dto);
+
+			therapyMap.put(id, dto);
 		}
 
-		return result;
+		return new ArrayList<>(therapyMap.values());
+
 	}
 
 	private static String[] splitSafe(String value) {

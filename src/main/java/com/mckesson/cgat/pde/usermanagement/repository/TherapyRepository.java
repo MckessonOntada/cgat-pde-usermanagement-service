@@ -65,14 +65,14 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 							AND ac.is_active = 1
 			         )
 			         SELECT
-						com.trade_name as tradeName, com.channel_type AS channelType, STRING_AGG(DISTINCT com.id::text, ', ') AS id,
-						STRING_AGG(DISTINCT com.material_number, ', ') AS therapyId,
-						STRING_AGG(DISTINCT com.material_description, ', ') AS therapyDescription,
-						STRING_AGG(DISTINCT com.ndc, ', ') AS ndc,
-						STRING_AGG(DISTINCT com.strength, ', ') AS strength,
-						STRING_AGG(DISTINCT com.dosage, ', ') AS dosage,
-						STRING_AGG(DISTINCT com.manufacturer_name, ', ') AS manufacturerName,
-						STRING_AGG(DISTINCT com.generic_name, ', ') AS genericName
+						com.trade_name as tradeName, com.channel_type AS channelType, STRING_AGG(com.id::text, ', ') AS id,
+						STRING_AGG(com.material_number, ', ') AS therapyId,
+						STRING_AGG(com.material_description, ', ') AS therapyDescription,
+						STRING_AGG(com.ndc, ', ') AS ndc,
+						STRING_AGG(com.strength, ', ') AS strength,
+						STRING_AGG(com.dosage, ', ') AS dosage,
+						STRING_AGG(com.manufacturer_name, ', ') AS manufacturerName,
+						STRING_AGG(com.generic_name, ', ') AS genericName
 			         from COMBINED com
 					 where (
 						cast(:query as varchar) is null
