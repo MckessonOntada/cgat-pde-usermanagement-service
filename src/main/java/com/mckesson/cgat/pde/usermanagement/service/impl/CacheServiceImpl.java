@@ -3,6 +3,9 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.TherapyGroupResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.TradeCatalogResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.mapper.TradeCatalogResponseMapper;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.Questionnaire;
 import com.mckesson.cgat.pde.usermanagement.model.QuestionnaireConfigurationType;
@@ -26,6 +29,8 @@ import javax.cache.CacheManager;
 import java.util.List;
 
 import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.ALL;
+import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.getConsolidatedChannelType;
+import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.getConsolidatedStatus;
 
 @Service
 @Slf4j
@@ -48,12 +53,15 @@ public class CacheServiceImpl implements CacheService {
 	}
 
 	@Cacheable(value = "materialCache", key = "#query + '-' + #paging.pageNumber + '-' + #paging.pageSize")
-	public Page<TherapyCatalogResponseDTO> findAllGlobalTherapies(String query, Pageable paging) {
+	public Page<TradeCatalogResponseDTO> findAllGlobalTherapies(String query, Pageable paging) {
 		try {
 			log.info(" Inside method - findAllGlobalTherapies");
 			log.info("query: {}", StringUtils.toRootLowerCase(query));
-			return therapyRepository.findAllGlobalTherapies(StringUtils.toRootLowerCase(query), ALL,
-					ChannelType.BUY_AND_BILL.name(), paging, false);
+			Page<TherapyCatalogResponseDTO> projections = therapyRepository.findAllGlobalTherapies(
+					StringUtils.toRootLowerCase(query), ALL, ChannelType.BUY_AND_BILL.name(), paging, false);
+
+			Page<TradeCatalogResponseDTO> map = projections.map(TradeCatalogResponseMapper::mapToTradeCatalogResponse);
+			return map;
 		}
 		catch (Exception e) {
 			log.error("Exception occurred in findAllGlobalTherapies and exception details", e);
