@@ -319,17 +319,17 @@ public class TherapyServiceImpl implements TherapyService {
 
 	@Override
 	@Transactional
-	public void updateTherapyConfigs(List<String> materialNumbers, boolean isPatientInformationRequired,
+	public void updateTherapyConfigs(List<String> ndcNumbers, boolean isPatientInformationRequired,
 			boolean isCoiIdRequired, ChannelType channelType) {
 
-		List<TherapyConfig> existingConfigs = therapyConfigRepository
-			.findByMaterialNumberInAndChannelType(materialNumbers, channelType);
+		List<TherapyConfig> existingConfigs = therapyConfigRepository.findByNdcNumberInAndChannelType(ndcNumbers,
+				channelType);
 
 		Map<String, TherapyConfig> existingConfigMap = existingConfigs.stream()
-			.collect(Collectors.toMap(TherapyConfig::getMaterialNumber, Function.identity()));
+			.collect(Collectors.toMap(TherapyConfig::getNdcNumber, Function.identity()));
 
-		List<TherapyConfig> updatedConfigs = materialNumbers.stream().map(materialNumber -> {
-			TherapyConfig config = existingConfigMap.get(materialNumber);
+		List<TherapyConfig> updatedConfigs = ndcNumbers.stream().map(ndcNumber -> {
+			TherapyConfig config = existingConfigMap.get(ndcNumber);
 
 			if (config != null) {
 				config.setIsPatientInformationRequired(isPatientInformationRequired);
@@ -338,7 +338,7 @@ public class TherapyServiceImpl implements TherapyService {
 			}
 			else {
 				return TherapyConfig.builder()
-					.materialNumber(materialNumber)
+					.ndcNumber(ndcNumber)
 					.isPatientInformationRequired(isPatientInformationRequired)
 					.isCoiIdRequired(isCoiIdRequired)
 					.channelType(channelType)
@@ -395,14 +395,12 @@ public class TherapyServiceImpl implements TherapyService {
 
 	@Override
 	@Transactional
-	public void deleteConfigByMaterialNumber(String materialNumber, ChannelType channelType)
-			throws ResourceNotFoundException {
-		int deletedCount = therapyConfigRepository.removeTherapyConfigByMaterialNumberAndChannelType(materialNumber,
-				channelType);
+	public void deleteConfigByNdcNumber(String ndcNumber, ChannelType channelType) throws ResourceNotFoundException {
+		int deletedCount = therapyConfigRepository.removeTherapyConfigByNdcNumberAndChannelType(ndcNumber, channelType);
 
 		if (deletedCount == 0) {
 			throw new ResourceNotFoundException(
-					String.format("Therapy config not found with materialNumber: %s", materialNumber));
+					String.format("Therapy config not found with ndcNumber: %s", ndcNumber));
 		}
 	}
 

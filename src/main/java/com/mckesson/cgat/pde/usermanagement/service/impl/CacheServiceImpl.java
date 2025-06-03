@@ -91,7 +91,7 @@ public class CacheServiceImpl implements CacheService {
 	@Transactional
 	@CacheEvict(value = "singleMaterialCache", key = "#materialNumber")
 	public void deleteConfigByMaterialNumber(String materialNumber) throws ResourceNotFoundException {
-		int deletedCount = therapyConfigRepository.removeTherapyConfigByMaterialNumberAndChannelType(materialNumber,
+		int deletedCount = therapyConfigRepository.removeTherapyConfigByNdcNumberAndChannelType(materialNumber,
 				ChannelType.BUY_AND_BILL);
 
 		if (deletedCount == 0) {

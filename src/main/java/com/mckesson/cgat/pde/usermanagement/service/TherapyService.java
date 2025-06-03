@@ -50,13 +50,13 @@ public interface TherapyService {
 
 	List<Therapy> findByNdcNumber(String ndcNumber, ChannelType channelType) throws ResourceNotFoundException;
 
-	void updateTherapyConfigs(List<String> materialNumbers, boolean isPatientInformationRequired,
-			boolean isCoiIdRequired, ChannelType channelType);
+	void updateTherapyConfigs(List<String> ndcNumbers, boolean isPatientInformationRequired, boolean isCoiIdRequired,
+			ChannelType channelType);
 
-	List<MaterialDetailsResponseDTO> findTherapyDetailsWithConfigByTradeName(String materialNumber,
-			ChannelType channelType) throws ResourceNotFoundException;
+	List<MaterialDetailsResponseDTO> findTherapyDetailsWithConfigByTradeName(String tradeName, ChannelType channelType)
+			throws ResourceNotFoundException;
 
-	void deleteConfigByMaterialNumber(String materialNumber, ChannelType channelType) throws ResourceNotFoundException;
+	void deleteConfigByNdcNumber(String ndcNumber, ChannelType channelType) throws ResourceNotFoundException;
 
 	MaterialResponseDTO findTherapyDetailsByNdc(String ndcNumber, ChannelType channelType)
 			throws ResourceNotFoundException;

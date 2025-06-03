@@ -24,8 +24,8 @@ public class TherapyConfig implements Serializable {
 	private Long id;
 
 	@Size(max = 18)
-	@Column(name = "material_number", nullable = false, unique = true)
-	private String materialNumber;
+	@Column(name = "ndc_number", nullable = false, unique = true)
+	private String ndcNumber;
 
 	@Column(name = "is_coi_id_required", nullable = false)
 	private Boolean isCoiIdRequired;
