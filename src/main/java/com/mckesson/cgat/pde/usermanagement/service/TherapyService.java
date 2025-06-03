@@ -73,4 +73,6 @@ public interface TherapyService {
 
 	List<Therapy> findTherapyDetailsByTradeName(String tradeName, ChannelType channelType);
 
+	MaterialResponseDTO findTherapyDetailsById(Long id) throws ResourceNotFoundException;
+
 }
