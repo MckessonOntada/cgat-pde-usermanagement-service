@@ -426,8 +426,8 @@ public class TherapyServiceImpl implements TherapyService {
 					.format("SP Therapy not found with ndc: %s, soldToAccount: %s", ndcNumber, soldToAccount)));
 		}
 		return therapyRepository
-			.findTherapyAndConfigBySoldToAccountAndProgramAndNdc(soldToAccount, shipToAccount, mappedProgram, ndcNumber,
-					channelType)
+			.findTherapyAndConfigBySoldToAccountAndProgramAndNdc(soldToAccount, shipToAccount,
+					channelType.equals(channelType.SPECIALITY_PHARMA) ? null : mappedProgram, ndcNumber, channelType)
 			.orElseThrow(() -> new ResourceNotFoundException(
 					String.format("Therapy not found with ndc: %s, soldToAccount: %s, program: %s", ndcNumber,
 							soldToAccount, program)));
@@ -490,6 +490,12 @@ public class TherapyServiceImpl implements TherapyService {
 			throw e;
 		}
 
+	}
+
+	@Override
+	public MaterialResponseDTO findTherapyDetailsById(Long id) throws ResourceNotFoundException {
+		return therapyConfigRepository.findTherapyDetailsById(id)
+			.orElseThrow(() -> new ResourceNotFoundException("Therapy not found with id: " + id));
 	}
 
 }

@@ -155,6 +155,16 @@ public class GlobalTherapyController {
 
 	}
 
+	@GetMapping("/config/therapyId/{id}")
+	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.ADD_ORDERS, Permission.EDIT_ORDERS })
+	@Operation(summary = "Find Therapy details by Material Number")
+	public ResponseEntity<MaterialResponseDTO> findTherapyDetailsById(@PathVariable Long id)
+			throws ResourceNotFoundException {
+		log.debug("Fetching therapy details with materialNumber: {}", id);
+		return new ResponseEntity<>(therapyService.findTherapyDetailsById(id), HttpStatus.OK);
+
+	}
+
 	@GetMapping(value = "/download", produces = "text/csv")
 	@RequirePermissions({ Permission.MANAGE_SP_CATALOG, Permission.MANAGE_CROSSWALK })
 	@Operation(summary = "Download CSV file for materials based on channel type")
