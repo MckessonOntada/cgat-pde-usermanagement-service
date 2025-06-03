@@ -46,7 +46,7 @@ public interface TherapyConfigRepository extends JpaRepository<TherapyConfig, Lo
 			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,tc)
 			    FROM Therapy m
 			    LEFT JOIN TherapyConfig tc
-			    ON m.materialNumber = tc.materialNumber
+			    ON m.ndcNumber = tc.ndcNumber
 			    WHERE m.id = :id
 			""")
 	Optional<MaterialResponseDTO> findTherapyDetailsById(@Param("id") Long id);
