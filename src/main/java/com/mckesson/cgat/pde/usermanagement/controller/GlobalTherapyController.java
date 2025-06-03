@@ -97,8 +97,8 @@ public class GlobalTherapyController {
 	@RequirePermissions({ Permission.MANAGE_MATERIAL })
 	@Operation(summary = "Update Therapy Configurations")
 	public ResponseEntity<String> updateTherapyConfigs(@Valid @RequestBody TherapyConfigRequestDTO request) {
-		log.debug("Updating therapy configs for materialNumbers: {}", request.getMaterialNumbers());
-		therapyService.updateTherapyConfigs(request.getMaterialNumbers(), request.getIsPatientInformationRequired(),
+		log.debug("Updating therapy configs for ndcNumbers: {}", request.getNdcNumbers());
+		therapyService.updateTherapyConfigs(request.getNdcNumbers(), request.getIsPatientInformationRequired(),
 				request.getIsCoiIdRequired(), request.getChannelType());
 		return new ResponseEntity<>("Therapy configurations updated successfully", HttpStatus.OK);
 	}
@@ -115,16 +115,16 @@ public class GlobalTherapyController {
 
 	}
 
-	@DeleteMapping("/config/{materialNumber}")
+	@DeleteMapping("/config/ndc/{ndcNumber}")
 	@RequirePermissions({ Permission.MANAGE_MATERIAL })
-	@Operation(summary = "Delete Configuration by Material Number")
-	public ResponseEntity<String> deleteConfigByMaterialNumber(
-			@PathVariable @NotNull(message = "Material number cannot be null ") @NotEmpty(
-					message = "Material number cannot be empty") String materialNumber,
+	@Operation(summary = "Delete Configuration by Ndc Number")
+	public ResponseEntity<String> deleteConfigByNdcNumber(
+			@PathVariable @NotNull(message = "Ndc number cannot be null ") @NotEmpty(
+					message = "Ndc number cannot be empty") String ndcNumber,
 			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) throws ResourceNotFoundException {
 
-		therapyService.deleteConfigByMaterialNumber(materialNumber, channelType);
-		return new ResponseEntity<>(materialNumber, HttpStatus.OK);
+		therapyService.deleteConfigByNdcNumber(ndcNumber, channelType);
+		return new ResponseEntity<>(ndcNumber, HttpStatus.OK);
 	}
 
 	@GetMapping("/config/ndc/{ndcNumber}")
