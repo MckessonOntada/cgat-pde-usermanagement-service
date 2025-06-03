@@ -342,9 +342,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			                  WHERE
 			                      (
 			                          :query IS NULL
-			                          OR LOWER(m.material_number) LIKE %:query%
 			                          OR LOWER(m.ndc_number) LIKE %:query%
-			                          OR LOWER(m.material_description) LIKE %:query%
 			                          OR LOWER(m.generic_name) LIKE %:query%
 			                          OR LOWER(m.site_name) LIKE %:query%
 			                          OR LOWER(m.trade_name) LIKE %:query%
@@ -432,9 +430,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			               WHERE
 			                   (
 			                       :query IS NULL
-			                       OR LOWER(m.material_number) LIKE %:query%
 			                       OR LOWER(m.ndc_number) LIKE %:query%
-			                       OR LOWER(m.material_description) LIKE %:query%
 			                       OR LOWER(m.generic_name) LIKE %:query%
 			                       OR LOWER(m.site_name) LIKE %:query%
 			                       OR LOWER(m.trade_name) LIKE %:query%
