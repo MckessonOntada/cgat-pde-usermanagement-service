@@ -76,6 +76,11 @@ public class TherapyControllerTest {
 
 		TherapyCatalogResponseDTO therapy1 = new TherapyCatalogResponseDTO() {
 			@Override
+			public String getTradeName() {
+				return "";
+			}
+
+			@Override
 			public String getId() {
 				return "";
 			}
@@ -107,6 +112,16 @@ public class TherapyControllerTest {
 
 			@Override
 			public String getChannelType() {
+				return "";
+			}
+
+			@Override
+			public String getManufacturerName() {
+				return "";
+			}
+
+			@Override
+			public String getGenericName() {
 				return "";
 			}
 
@@ -299,7 +314,7 @@ public class TherapyControllerTest {
 		String shipToAccount = "103";
 		Page<VariantsResponseDTO> variantsList = getVariantsList();
 
-		when(therapyService.findAllVariantsLinkedToShipToAccountsForTherapy(anyString(), anyString(), anyString(),
+		when(therapyService.findAllVariantsLinkedToShipToAccountsForNDC(anyString(), anyString(), anyString(),
 				any(PageRequest.class), ChannelType.BUY_AND_BILL))
 			.thenReturn(variantsList);
 

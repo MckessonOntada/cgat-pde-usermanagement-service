@@ -14,28 +14,51 @@ import java.util.Optional;
 @Repository
 public interface TherapyConfigRepository extends JpaRepository<TherapyConfig, Long> {
 
-	List<TherapyConfig> findByMaterialNumberInAndChannelType(@Param("materialNumbers") List<String> materialNumbers,
+	List<TherapyConfig> findByNdcNumberInAndChannelType(@Param("ndcNumbers") List<String> ndcNumbers,
 			ChannelType channelType);
 
 	@Query("""
 			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,tc)
 			    FROM Therapy m
 			    LEFT JOIN TherapyConfig tc
-			    ON m.materialNumber = tc.materialNumber
+			    ON m.ndcNumber = tc.ndcNumber
+			    AND m.channelType = tc.channelType
+			    WHERE m.tradeName = :tradeName
+			    AND m.channelType = :channelType
+			""")
+	List<MaterialResponseDTO> findDetailesByTradeName(@Param("tradeName") String tradeName, ChannelType channelType);
+
+	@Query("""
+			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,tc)
+			    FROM Therapy m
+			    LEFT JOIN TherapyConfig tc
+			    ON m.ndcNumber = tc.ndcNumber
 			    AND m.channelType = tc.channelType
 			    WHERE m.materialNumber = :materialNumber
 			    AND m.channelType = :channelType
 			""")
-	Optional<MaterialResponseDTO> findDetailedByMaterialNumber(@Param("materialNumber") String materialNumber,
+	Optional<MaterialResponseDTO> findDetailesByMaterialNumber(@Param("materialNumber") String materialNumber,
 			ChannelType channelType);
 
-	int removeTherapyConfigByMaterialNumberAndChannelType(String materialNumber, ChannelType channelType);
+	int removeTherapyConfigByNdcNumberAndChannelType(String ndcNumber, ChannelType channelType);
 
 	@Query("""
 			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,tc)
 			    FROM Therapy m
 			    LEFT JOIN TherapyConfig tc
-			    ON m.materialNumber = tc.materialNumber
+			    ON m.ndcNumber = tc.ndcNumber
+			    WHERE m.ndcNumber = :ndcNumber
+			    and m.channelType = :channelType
+			    and m.itemStatus = 'A'
+			""")
+	Optional<MaterialResponseDTO> findTherapyDetailsByNdc(@Param("ndcNumber") String ndcNumber,
+			@Param("channelType") ChannelType channelType);
+
+	@Query("""
+			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,tc)
+			    FROM Therapy m
+			    LEFT JOIN TherapyConfig tc
+			    ON m.ndcNumber = tc.ndcNumber
 			    WHERE m.id = :id
 			""")
 	Optional<MaterialResponseDTO> findTherapyDetailsById(@Param("id") Long id);
