@@ -28,6 +28,18 @@ public interface TherapyConfigRepository extends JpaRepository<TherapyConfig, Lo
 			""")
 	List<MaterialResponseDTO> findDetailesByTradeName(@Param("tradeName") String tradeName, ChannelType channelType);
 
+	@Query("""
+			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,tc)
+			    FROM Therapy m
+			    LEFT JOIN TherapyConfig tc
+			    ON m.ndcNumber = tc.ndcNumber
+			    AND m.channelType = tc.channelType
+			    WHERE m.materialNumber = :materialNumber
+			    AND m.channelType = :channelType
+			""")
+	Optional<MaterialResponseDTO> findDetailesByMaterialNumber(@Param("materialNumber") String materialNumber,
+			ChannelType channelType);
+
 	int removeTherapyConfigByNdcNumberAndChannelType(String ndcNumber, ChannelType channelType);
 
 	@Query("""

@@ -129,6 +129,19 @@ public class GlobalTherapyController {
 
 	}
 
+	@GetMapping("/sp/config/{materialNumber}")
+	@RequirePermissions({ Permission.VIEW_SP_MATERIAL })
+	@Operation(summary = "Find SP Therapy details by Material Number")
+	public ResponseEntity<MaterialDetailsResponseDTO> findSPTherapyDetailsByMaterialNumber(
+			@PathVariable String materialNumber,
+			@RequestParam(defaultValue = "SPECIALITY_PHARMA") ChannelType channelType)
+			throws ResourceNotFoundException {
+		log.debug("Fetching therapy details with materialNumber: {}", materialNumber);
+		return new ResponseEntity<>(therapyService.findSPTherapyDetailsByMaterialNumber(materialNumber, channelType),
+				HttpStatus.OK);
+
+	}
+
 	@DeleteMapping("/config/ndc/{ndcNumber}")
 	@RequirePermissions({ Permission.MANAGE_MATERIAL })
 	@Operation(summary = "Delete Configuration by Ndc Number")
