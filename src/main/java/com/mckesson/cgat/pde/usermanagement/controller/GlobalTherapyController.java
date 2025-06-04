@@ -130,7 +130,7 @@ public class GlobalTherapyController {
 	}
 
 	@GetMapping("/sp/config/{materialNumber}")
-	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.EDIT_ORDERS, Permission.VIEW_SP_MATERIAL })
+	@RequirePermissions({ Permission.VIEW_SP_MATERIAL })
 	@Operation(summary = "Find SP Therapy details by Material Number")
 	public ResponseEntity<MaterialDetailsResponseDTO> findSPTherapyDetailsByMaterialNumber(
 			@PathVariable String materialNumber,
