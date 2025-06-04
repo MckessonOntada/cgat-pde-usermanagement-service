@@ -40,6 +40,8 @@ public interface TherapyService {
 	Page<TradeCatalogResponseDTO> findAllGlobalTherapies(String query, Pageable paging, List<ChannelType> channelTypes,
 			List<String> status, boolean ignoreCrosswalkedSP);
 
+	Page<Therapy> findAllGlobalSPTherapies(String query, Pageable paging, List<String> status);
+
 	Page<TradeCatalogResponseDTO> findNonCrosswalkedSPGlobalTherapies(String query, Pageable paging,
 			List<ChannelType> channelTypes, List<String> status, Boolean crosswalked);
 

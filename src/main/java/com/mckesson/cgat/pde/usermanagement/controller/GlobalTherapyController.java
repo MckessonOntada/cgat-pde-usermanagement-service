@@ -85,6 +85,20 @@ public class GlobalTherapyController {
 				HttpStatus.OK);
 	}
 
+	@GetMapping("/type/speciality-pharma")
+	@RequirePermissions({ Permission.VIEW_MATERIAL })
+	@Operation(summary = "Fetch all therapies.")
+	public ResponseEntity<Page<Therapy>> findAllSPTherapies(@RequestParam(defaultValue = "0") Integer pageNo,
+			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
+			@RequestParam(defaultValue = "material_number") String sortBy,
+			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) List<String> status) {
+		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
+				: Sort.by(sortBy).descending();
+		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
+
+		return new ResponseEntity<>(therapyService.findAllGlobalSPTherapies(query, paging, status), HttpStatus.OK);
+	}
+
 	@GetMapping("/{materialNumber}")
 	@Operation(summary = "Find Therapy by Material Number")
 	public ResponseEntity<Therapy> findByMaterialNumber(@PathVariable String materialNumber,
