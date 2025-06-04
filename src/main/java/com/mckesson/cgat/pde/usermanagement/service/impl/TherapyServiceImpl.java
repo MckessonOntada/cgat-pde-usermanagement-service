@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.util.*;
 import java.util.function.Function;
@@ -361,6 +362,31 @@ public class TherapyServiceImpl implements TherapyService {
 		}
 
 		return responseDTOList.stream().map(this::buildMaterialDetailsResponse).toList();
+	}
+
+	@Override
+	public MaterialDetailsResponseDTO findSPTherapyDetailsByMaterialNumber(String materialNumber,
+			ChannelType channelType) throws ResourceNotFoundException {
+		MaterialResponseDTO responseDTO = therapyConfigRepository
+			.findDetailesByMaterialNumber(materialNumber, channelType)
+			.orElseThrow(() -> new ResourceNotFoundException(
+					"Therapy config not found with materialNumber: " + materialNumber));
+		Crosswalk crosswalkDetails = null;
+		if (channelType.equals(ChannelType.SPECIALITY_PHARMA)
+				&& Boolean.TRUE.equals(responseDTO.getTherapy().getIsCrosswalked())) {
+			crosswalkDetails = materialCrossWalkConfigRepository.findBySpProductIdAndIsActive(materialNumber, true);
+		}
+
+		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
+				QuestionnaireConfigurationType.Material, "", "", "", "",
+				ObjectUtils.isEmpty(crosswalkDetails) ? channelType : ChannelType.BUY_AND_BILL,
+				ObjectUtils.isEmpty(crosswalkDetails) ? materialNumber : crosswalkDetails.getBnbNdcNumber());
+
+		return MaterialDetailsResponseDTO.builder()
+			.therapy(responseDTO.getTherapy())
+			.materialConfig(responseDTO.getMaterialConfig())
+			.questionnaires(questionnaires)
+			.build();
 	}
 
 	private MaterialDetailsResponseDTO buildMaterialDetailsResponse(MaterialResponseDTO responseDTO) {
