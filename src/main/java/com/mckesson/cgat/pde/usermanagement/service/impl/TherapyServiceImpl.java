@@ -461,13 +461,14 @@ public class TherapyServiceImpl implements TherapyService {
 		if (ChannelType.SPECIALITY_PHARMA.equals(channelType) && isCrossWalkedTherapySelected) {
 			return therapyRepository
 				.findSPTherapyAndConfigBySoldToAccountAndProgramAndNdc(soldToAccount, shipToAccount, ndcNumber,
-						channelType)
+						channelType, AccountPartnerFunction.SOLD_TO)
 				.orElseThrow(() -> new ResourceNotFoundException(String
 					.format("SP Therapy not found with ndc: %s, soldToAccount: %s", ndcNumber, soldToAccount)));
 		}
 		return therapyRepository
 			.findTherapyAndConfigBySoldToAccountAndProgramAndNdc(soldToAccount, shipToAccount,
-					channelType.equals(channelType.SPECIALITY_PHARMA) ? null : mappedProgram, ndcNumber, channelType)
+					channelType.equals(channelType.SPECIALITY_PHARMA) ? null : mappedProgram, ndcNumber, channelType,
+					AccountPartnerFunction.SOLD_TO)
 			.orElseThrow(() -> new ResourceNotFoundException(
 					String.format("Therapy not found with ndc: %s, soldToAccount: %s, program: %s", ndcNumber,
 							soldToAccount, program)));
