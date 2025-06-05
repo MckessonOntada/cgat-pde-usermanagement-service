@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -512,6 +513,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					 JOIN Account ac ON ac.accountNumber = cp.soldToCustomer
 					 WHERE cp.soldToCustomer = :soldToAccount
 					 AND cp.shipToCustomer = :shipToAccount
+					 AND ac.partnerFunction  = :partnerFunction
 					 AND (:program IS NULL OR ac.cgatIdentifier = :program)
 					 AND m.ndcNumber = :ndcNumber
 				     AND cp.deleted = false
@@ -522,7 +524,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 	Optional<MaterialResponseDTO> findTherapyAndConfigBySoldToAccountAndProgramAndNdc(
 			@Param("soldToAccount") String soldToAccount, @Param("shipToAccount") String shipToAccount,
 			@Param("program") String program, @Param("ndcNumber") String ndcNumber,
-			@Param("channelType") ChannelType channelType);
+			@Param("channelType") ChannelType channelType,
+			@Param("partnerFunction") AccountPartnerFunction partnerFunction);
 
 	@Query("""
 			     SELECT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,tc)
@@ -530,8 +533,10 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 				 JOIN Therapy m ON m.materialNumber = cp.sapMaterial
 				 left JOIN TherapyConfig tc ON m.ndcNumber = tc.ndcNumber
 				 left JOIN Crosswalk cw on cw.spProductId  = cp.sapMaterial
+				 JOIN Account ac ON ac.accountNumber = cp.soldToCustomer
 				 WHERE cp.soldToCustomer = :soldToAccount
 				 AND cp.shipToCustomer = :shipToAccount
+				 AND ac.partnerFunction  = :partnerFunction
 				 AND cw.bnbNdcNumber = :ndcNumber
 			     AND cp.deleted = false
 				 AND m.channelType = :channelType
@@ -540,6 +545,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			""")
 	Optional<MaterialResponseDTO> findSPTherapyAndConfigBySoldToAccountAndProgramAndNdc(
 			@Param("soldToAccount") String soldToAccount, @Param("shipToAccount") String shipToAccount,
-			@Param("ndcNumber") String ndcNumber, @Param("channelType") ChannelType channelType);
+			@Param("ndcNumber") String ndcNumber, @Param("channelType") ChannelType channelType,
+			@Param("partnerFunction") AccountPartnerFunction partnerFunction);
 
 }
