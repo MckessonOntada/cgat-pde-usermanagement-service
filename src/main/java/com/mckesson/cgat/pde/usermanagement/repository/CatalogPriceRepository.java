@@ -24,15 +24,15 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 			 AND
 			     cp.ship_to_customer = :shipToAccountId
 			AND
-			    cp.sap_material = :therapyId
+			    m.ndc_number = :ndcNumber
 			  	AND
 				cp.variant is not null
 			AND
 				cp.deleted = false
 			""", nativeQuery = true)
-	Page<CatalogPrice> findAllCatalogPricesLinkedToShipToAccountsForTherapy(
+	Page<CatalogPrice> findAllCatalogPricesLinkedToShipToAccountsForNDC(
 			@Param("soldToAccountId") String soldToAccountId, @Param("shipToAccountId") String shipToAccountId,
-			@Param("therapyId") String therapyId, Pageable paging);
+			@Param("ndcNumber") String ndcNumber, Pageable paging);
 
 	@Query("""
 			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponse(cp, m.productLevelPricing)
@@ -43,7 +43,7 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 				 AND
 					 cp.shipToCustomer = :shipToAccountId
 				AND
-					cp.sapMaterial = :therapyId
+					m.ndcNumber = :ndcNumber
 			     AND
 				  cp.deleted = false
 				AND
@@ -52,9 +52,9 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 					 OR cp.variant = :variantType
 					)
 			""")
-	Page<CatalogPriceResponse> findPriceOfVariantLinkedToShipToAccountsForTherapy(
+	Page<CatalogPriceResponse> findPriceOfVariantLinkedToShipToAccountsForNdc(
 			@Param("soldToAccountId") String soldToAccountId, @Param("shipToAccountId") String shipToAccountId,
-			@Param("therapyId") String therapyId, @Param("variantType") String variantType, Pageable pageable);
+			@Param("ndcNumber") String ndcNumber, @Param("variantType") String variantType, Pageable pageable);
 
 	@Query(value = """
 			SELECT DISTINCT cp.*

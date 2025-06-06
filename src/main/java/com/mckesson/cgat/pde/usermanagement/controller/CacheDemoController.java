@@ -2,6 +2,9 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.TradeCatalogResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
@@ -21,6 +24,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(path = "/cache/therapies", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Cache Controller ", description = "Controller for cache demo.")
@@ -37,19 +42,21 @@ public class CacheDemoController {
 	@GetMapping
 	@RequirePermissions({ Permission.VIEW_MATERIAL })
 	@Operation(summary = "Fetch all therapies.")
-	public ResponseEntity<Page<Therapy>> findAllThreapies(@RequestParam(defaultValue = "0") Integer pageNo,
-			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query) {
+	public ResponseEntity<Page<TradeCatalogResponseDTO>> findAllThreapies(
+			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize,
+			@RequestParam(required = false) String query) {
 		Pageable paging = PageRequest.of(pageNo, pageSize);
 		return new ResponseEntity<>(cacheService.findAllGlobalTherapies(query, paging), HttpStatus.OK);
 	}
 
-	@GetMapping("/config/{materialNumber}")
-	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.EDIT_ORDERS })
-	@Operation(summary = "Find Therapy details by Material Number")
-	public ResponseEntity<MaterialDetailsResponseDTO> findTherapyDetailsByMaterialNumber(
-			@PathVariable String materialNumber) throws ResourceNotFoundException {
-		log.debug("Fetching therapy details with materialNumber: {}", materialNumber);
-		return new ResponseEntity<>(cacheService.findTherapyDetailsByMaterialNumber(materialNumber), HttpStatus.OK);
+	@GetMapping("/config/{tradeName}")
+	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.EDIT_ORDERS, Permission.VIEW_SP_MATERIAL })
+	@Operation(summary = "Find Therapy details by Trade Name")
+	public ResponseEntity<List<MaterialDetailsResponseDTO>> findTherapyDetailsByTradeName(
+			@PathVariable String tradeName, @RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType)
+			throws ResourceNotFoundException {
+		log.debug("Fetching therapy details with tradeName: {}", tradeName);
+		return new ResponseEntity<>(cacheService.findTherapyDetailsByTradeName(tradeName, channelType), HttpStatus.OK);
 
 	}
 
