@@ -506,7 +506,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			@Param("channelType") String channelType, @Param("userId") Long userId);
 
 	@Query("""
-				     SELECT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,tc)
+				     SELECT DISTINCT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,tc)
 					 FROM CatalogPrice cp
 					 JOIN Therapy m ON m.materialNumber = cp.sapMaterial
 					 left JOIN TherapyConfig tc ON m.ndcNumber = tc.ndcNumber
@@ -528,7 +528,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			@Param("partnerFunction") AccountPartnerFunction partnerFunction);
 
 	@Query("""
-			     SELECT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,tc)
+			     SELECT DISTINCT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,tc)
 				 FROM CatalogPrice cp
 				 JOIN Therapy m ON m.materialNumber = cp.sapMaterial
 				 left JOIN TherapyConfig tc ON m.ndcNumber = tc.ndcNumber
