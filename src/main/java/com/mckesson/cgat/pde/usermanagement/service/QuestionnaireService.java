@@ -41,4 +41,6 @@ public interface QuestionnaireService {
 			String sapMaterial, String soldToCustomer, String shipToCustomer, String variant, ChannelType channelType,
 			String materialOrNdcNumber);
 
+	void reactivateQuestionnaires(List<Long> questionnaireIds) throws ResourceNotFoundException;
+
 }
