@@ -554,8 +554,9 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 
 	@Query("""
 			    SELECT DISTINCT m.manufacturerName
-			    FROM Material m
+			    FROM Therapy m
 			    WHERE m.channelType = :channelType
+			      AND m.manufacturerName IS NOT NULL
 			      AND (
 			            :itemStatus = 'ALL'
 			            OR (:itemStatus = 'ACTIVE' AND m.itemStatus = 'A')
