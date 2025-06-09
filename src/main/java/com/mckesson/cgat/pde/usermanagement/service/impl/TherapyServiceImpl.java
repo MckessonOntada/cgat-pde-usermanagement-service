@@ -302,13 +302,12 @@ public class TherapyServiceImpl implements TherapyService {
 
 	}
 
-	public Page<Therapy> findAllGlobalSPTherapies(String query, Pageable paging, List<String> status,
-			String manufacturer) {
+	public Page<Therapy> findAllGlobalSPTherapies(String query, Pageable paging, Status status, String manufacturer) {
 		try {
 			log.info(" Inside method - findAllGlobalSPTherapies");
 			log.info("query: {}", StringUtils.toRootLowerCase(query));
-			return therapyRepository.findAllGlobalSPTherapies(StringUtils.toRootLowerCase(query),
-					getConsolidatedStatus(status), paging, StringUtils.isNotEmpty(manufacturer) ? manufacturer : "ALL");
+			return therapyRepository.findAllGlobalSPTherapies(StringUtils.toRootLowerCase(query), status.name(), paging,
+					StringUtils.isNotEmpty(manufacturer) ? manufacturer : "ALL");
 		}
 		catch (Exception e) {
 			log.error("Exception occurred in findAllGlobalSPTherapies and exception details", e);
@@ -541,8 +540,8 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	@Override
-	public List<String> getUniqueManufacturersByStatus(ChannelType channelType, List<String> itemStatus) {
-		return therapyRepository.findDistinctManufacturerNames(channelType, getConsolidatedStatus(itemStatus));
+	public List<String> getUniqueManufacturersByStatus(ChannelType channelType, Status itemStatus) {
+		return therapyRepository.findDistinctManufacturerNames(channelType, itemStatus.name());
 	}
 
 }

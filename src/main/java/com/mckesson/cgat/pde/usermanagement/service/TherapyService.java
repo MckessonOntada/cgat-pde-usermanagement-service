@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.mckesson.cgat.pde.usermanagement.dto.*;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
+import com.mckesson.cgat.pde.usermanagement.model.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public interface TherapyService {
 	Page<TradeCatalogResponseDTO> findAllGlobalTherapies(String query, Pageable paging, List<ChannelType> channelTypes,
 			List<String> status, boolean ignoreCrosswalkedSP);
 
-	Page<Therapy> findAllGlobalSPTherapies(String query, Pageable paging, List<String> status, String manufacturer);
+	Page<Therapy> findAllGlobalSPTherapies(String query, Pageable paging, Status status, String manufacturer);
 
 	Page<TradeCatalogResponseDTO> findNonCrosswalkedSPGlobalTherapies(String query, Pageable paging,
 			List<ChannelType> channelTypes, List<String> status, Boolean crosswalked);
@@ -80,6 +81,6 @@ public interface TherapyService {
 	MaterialDetailsResponseDTO findSPTherapyDetailsByMaterialNumber(String materialNumber, ChannelType channelType)
 			throws ResourceNotFoundException;
 
-	List<String> getUniqueManufacturersByStatus(ChannelType channelType, List<String> itemStatus);
+	List<String> getUniqueManufacturersByStatus(ChannelType channelType, Status itemStatus);
 
 }
