@@ -15,7 +15,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponse;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelProjectionDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
@@ -386,7 +385,6 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			    OR LOWER(m.ndc_number) LIKE %:query%
 			    OR LOWER(m.material_description) LIKE %:query%
 			    OR LOWER(m.generic_name) LIKE %:query%
-			    OR LOWER(m.site_name) LIKE %:query%
 			    OR LOWER(m.trade_name) LIKE %:query%
 			)
 			AND
@@ -396,9 +394,15 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			    OR (:statusActive = 'INACTIVE' AND m.item_status = 'V')
 			)
 			AND
+			 (
+			        :manufacturer = 'ALL'
+			        OR m.manufacturer_name = :manufacturer
+			    )
+			AND
 			    m.channel_type = 'SPECIALITY_PHARMA'
 			""", nativeQuery = true)
-	Page<Therapy> findAllGlobalSPTherapies(@Param("query") String query, String statusActive, Pageable paging);
+	Page<Therapy> findAllGlobalSPTherapies(@Param("query") String query, String statusActive, Pageable paging,
+			String manufacturer);
 
 	List<Therapy> findByMaterialNumberInAndChannelTypeAndItemStatus(Set<String> productIds, ChannelType channelType,
 			String itemStatus);
@@ -547,5 +551,18 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			@Param("soldToAccount") String soldToAccount, @Param("shipToAccount") String shipToAccount,
 			@Param("ndcNumber") String ndcNumber, @Param("channelType") ChannelType channelType,
 			@Param("partnerFunction") AccountPartnerFunction partnerFunction);
+
+	@Query("""
+			    SELECT DISTINCT m.manufacturerName
+			    FROM Material m
+			    WHERE m.channelType = :channelType
+			      AND (
+			            :itemStatus = 'ALL'
+			            OR (:itemStatus = 'ACTIVE' AND m.itemStatus = 'A')
+			            OR (:itemStatus = 'INACTIVE' AND m.itemStatus = 'V')
+			          )
+			""")
+	List<String> findDistinctManufacturerNames(@Param("channelType") ChannelType channelType,
+			@Param("itemStatus") String itemStatus);
 
 }
