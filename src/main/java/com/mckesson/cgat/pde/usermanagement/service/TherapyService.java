@@ -40,7 +40,7 @@ public interface TherapyService {
 	Page<TradeCatalogResponseDTO> findAllGlobalTherapies(String query, Pageable paging, List<ChannelType> channelTypes,
 			List<String> status, boolean ignoreCrosswalkedSP);
 
-	Page<Therapy> findAllGlobalSPTherapies(String query, Pageable paging, List<String> status);
+	Page<Therapy> findAllGlobalSPTherapies(String query, Pageable paging, List<String> status, String manufacturer);
 
 	Page<TradeCatalogResponseDTO> findNonCrosswalkedSPGlobalTherapies(String query, Pageable paging,
 			List<ChannelType> channelTypes, List<String> status, Boolean crosswalked);
@@ -79,5 +79,7 @@ public interface TherapyService {
 
 	MaterialDetailsResponseDTO findSPTherapyDetailsByMaterialNumber(String materialNumber, ChannelType channelType)
 			throws ResourceNotFoundException;
+
+	List<String> getUniqueManufacturersByStatus(ChannelType channelType, List<String> itemStatus);
 
 }
