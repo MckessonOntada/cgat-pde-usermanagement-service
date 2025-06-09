@@ -99,6 +99,14 @@ public class QuestionnaireController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
+	@PatchMapping("/reactivate")
+	@Operation(summary = "reactivate multiple questionnaires by IDs")
+	public ResponseEntity<Void> reactivateQuestionnaires(@RequestBody List<Long> questionnaireIds)
+			throws ResourceNotFoundException {
+		questionnaireService.reactivateQuestionnaires(questionnaireIds);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
 	@GetMapping("/{questionnaireId}")
 	@Operation(summary = "Get questionnaire by Id")
 	public ResponseEntity<Questionnaire> getQuestionnaireById(@PathVariable Long questionnaireId)

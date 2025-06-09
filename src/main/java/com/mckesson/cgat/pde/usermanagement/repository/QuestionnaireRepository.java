@@ -37,4 +37,6 @@ public interface QuestionnaireRepository extends JpaRepository<Questionnaire, Lo
 
 	List<Questionnaire> findByIdInAndIsActiveTrue(List<Long> questionnaireIds);
 
+	List<Questionnaire> findByIdInAndIsActiveFalse(List<Long> questionnaireIds);
+
 }
