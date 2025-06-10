@@ -25,8 +25,7 @@ public interface MaterialCrossWalkConfigRepository extends JpaRepository<Crosswa
 	@Query(value = """
 			SELECT
 			 	cw.id,
-			 	m1.material_number as bnbMaterialNumber,
-			    m1.material_description as bnbMaterialDescription,
+			 	m1.trade_name as trade_name,
 				m1.ndc_number as bnbNdc,
 				m2.material_number as spProductId,
 			    m2.material_description as spProductName,
