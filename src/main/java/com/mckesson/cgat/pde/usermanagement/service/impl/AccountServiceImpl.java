@@ -100,7 +100,6 @@ public class AccountServiceImpl implements AccountService {
 		account.getAddress().setStreet2(accountDto.getAddress().getAddress2());
 		account.getAddress().setCity(accountDto.getAddress().getCity());
 		account.getAddress().setState(accountDto.getAddress().getState());
-		account.getAddress().setCountry(accountDto.getAddress().getCountry());
 		account.getAddress().setZipCode(accountDto.getAddress().getZip());
 		account.getAddress().setEmail(accountDto.getContact().getEmail());
 		account.getAddress().setTelephone(accountDto.getContact().getPhone());
