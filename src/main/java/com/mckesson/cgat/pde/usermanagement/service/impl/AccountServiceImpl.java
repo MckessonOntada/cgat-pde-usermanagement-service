@@ -92,15 +92,20 @@ public class AccountServiceImpl implements AccountService {
 		Account account = getAccount(accountId);
 		if (account == null)
 			throw new ResourceNotFoundException("Account not found with id: " + accountId);
-		account = accountMapper.mapToModel(accountDto);
-
 		account.setAccountName(accountDto.getAccountName());
 		account.getName().setFirstName(accountDto.getFirstName());
 		account.getName().setMiddleName(accountDto.getMiddleName());
 		account.getName().setLastName(accountDto.getLastName());
+		account.getAddress().setStreet(accountDto.getAddress().getAddress1());
+		account.getAddress().setStreet2(accountDto.getAddress().getAddress2());
+		account.getAddress().setCity(accountDto.getAddress().getCity());
+		account.getAddress().setState(accountDto.getAddress().getState());
+		account.getAddress().setCountry(accountDto.getAddress().getCountry());
+		account.getAddress().setZipCode(accountDto.getAddress().getZip());
 		account.getAddress().setEmail(accountDto.getContact().getEmail());
 		account.getAddress().setTelephone(accountDto.getContact().getPhone());
 		account.getAddress().setFax(accountDto.getContact().getFax());
+
 		return accountRepository.save(account);
 	}
 
