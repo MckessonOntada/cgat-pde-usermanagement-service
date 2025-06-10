@@ -83,4 +83,7 @@ public interface TherapyService {
 
 	List<String> getUniqueManufacturersByStatus(ChannelType channelType, Status itemStatus);
 
+	List<Therapy> findTherapyDetailsByNdcNumber(String ndcNumber, ChannelType channelType)
+			throws ResourceNotFoundException;
+
 }

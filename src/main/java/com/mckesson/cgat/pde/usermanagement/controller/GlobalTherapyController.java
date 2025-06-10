@@ -2,7 +2,6 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyConfigRequestDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TradeCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.*;
@@ -243,6 +242,18 @@ public class GlobalTherapyController {
 				status);
 
 		return new ResponseEntity<>(manufacturerNames, HttpStatus.OK);
+	}
+
+	@GetMapping("/therapy/{ndcNumber}")
+	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.EDIT_ORDERS, Permission.VIEW_SP_MATERIAL })
+	@Operation(summary = "Find Therapy details by NDC Number")
+	public ResponseEntity<List<Therapy>> findTherapyDetailsByNdcNumber(
+			@PathVariable @NotNull(message = "Ndc number cannot be null ") @NotEmpty(
+					message = "Ndc number cannot be empty") String ndcNumber,
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) throws ResourceNotFoundException {
+		log.debug("Fetching therapy details with ndcNumber: {}", ndcNumber);
+		return new ResponseEntity<>(therapyService.findTherapyDetailsByNdcNumber(ndcNumber, channelType),
+				HttpStatus.OK);
 	}
 
 }
