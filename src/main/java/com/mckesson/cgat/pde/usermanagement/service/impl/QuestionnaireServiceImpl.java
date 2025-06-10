@@ -233,6 +233,18 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 	}
 
 	@Override
+	public void reactivateQuestionnaires(List<Long> questionnaireIds) throws ResourceNotFoundException {
+		List<Questionnaire> questionnaires = questionnaireRepository.findByIdInAndIsActiveFalse(questionnaireIds);
+		if (questionnaires.size() != questionnaireIds.size()) {
+			throw new ResourceNotFoundException("One or more questionnaire not found");
+		}
+		for (Questionnaire q : questionnaires) {
+			q.setActive(true);
+		}
+		questionnaireRepository.saveAll(questionnaires);
+	}
+
+	@Override
 	public Questionnaire fetchQuestionnaireById(Long questionnaireId) throws ResourceNotFoundException {
 		return questionnaireRepository.findById(questionnaireId)
 			.orElseThrow(() -> new ResourceNotFoundException("Questionnaire not found with Id: " + questionnaireId));

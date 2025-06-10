@@ -5,10 +5,7 @@ import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyConfigRequestDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TradeCatalogResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
-import com.mckesson.cgat.pde.usermanagement.model.Permission;
-import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
-import com.mckesson.cgat.pde.usermanagement.model.Therapy;
+import com.mckesson.cgat.pde.usermanagement.model.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -91,12 +88,15 @@ public class GlobalTherapyController {
 	public ResponseEntity<Page<Therapy>> findAllSPTherapies(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
 			@RequestParam(defaultValue = "material_number") String sortBy,
-			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) List<String> status) {
+			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam Status status,
+			@RequestParam(required = false) String manufacturer) {
+
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 
-		return new ResponseEntity<>(therapyService.findAllGlobalSPTherapies(query, paging, status), HttpStatus.OK);
+		return new ResponseEntity<>(therapyService.findAllGlobalSPTherapies(query, paging, status, manufacturer),
+				HttpStatus.OK);
 	}
 
 	@GetMapping("/{materialNumber}")
@@ -230,6 +230,19 @@ public class GlobalTherapyController {
 			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
 			.contentType(MediaType.parseMediaType("text/csv"))
 			.body(stream);
+	}
+
+	@GetMapping("/manufacturers")
+	@RequirePermissions({ Permission.VIEW_SP_MATERIAL })
+	@Operation(summary = "Get unique manufacturer names for Speciality Pharma therapies by status")
+	public ResponseEntity<List<String>> getUniqueManufacturersByStatus(@RequestParam Status status) {
+
+		log.debug("Fetching unique manufacturers for channelType=SPECIALITY_PHARMA and itemStatus={}", status);
+
+		List<String> manufacturerNames = therapyService.getUniqueManufacturersByStatus(ChannelType.SPECIALITY_PHARMA,
+				status);
+
+		return new ResponseEntity<>(manufacturerNames, HttpStatus.OK);
 	}
 
 }
