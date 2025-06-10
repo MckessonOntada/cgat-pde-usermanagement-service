@@ -544,4 +544,16 @@ public class TherapyServiceImpl implements TherapyService {
 		return therapyRepository.findDistinctManufacturerNames(channelType, itemStatus.name());
 	}
 
+	public List<Therapy> findTherapyDetailsByNdcNumber(String ndcNumber, ChannelType channelType)
+			throws ResourceNotFoundException {
+
+		List<Therapy> responseDTOList = therapyConfigRepository.findDetailesByNdcNumber(ndcNumber, channelType);
+
+		if (CollectionUtils.isEmpty(responseDTOList)) {
+			throw new ResourceNotFoundException("Therapy details not found with NDC number: " + ndcNumber);
+		}
+
+		return responseDTOList;
+	}
+
 }

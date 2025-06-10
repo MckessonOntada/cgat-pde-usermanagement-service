@@ -4,9 +4,7 @@ public interface CrosswalkResponseDTO {
 
 	Long getId();
 
-	String getBnbMaterialNumber();
-
-	String getBnbMaterialDescription();
+	String getTradeName();
 
 	String getBnbNdc();
 
