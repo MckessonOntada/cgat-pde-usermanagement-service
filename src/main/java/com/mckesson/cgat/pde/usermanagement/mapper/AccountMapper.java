@@ -16,7 +16,6 @@ public interface AccountMapper {
 	@Mapping(source = "lastName", target = "name.lastName")
 	@Mapping(source = "address.address1", target = "address.street")
 	@Mapping(source = "address.address2", target = "address.street2")
-	@Mapping(source = "address.state", target = "address.country")
 	@Mapping(source = "address.city", target = "address.city")
 	@Mapping(source = "address.state", target = "address.state")
 	@Mapping(source = "address.zip", target = "address.zipCode")
