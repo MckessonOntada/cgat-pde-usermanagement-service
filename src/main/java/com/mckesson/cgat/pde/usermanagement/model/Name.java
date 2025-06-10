@@ -26,19 +26,21 @@ public class Name implements Serializable {
 
 	@NotEmpty(message = "First Name is required.", groups = BasicInfo.class)
 	@Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters", groups = BasicInfo.class)
-	@Pattern(regexp = "^(?!\\p{Zs})(?!.*\\p{Zs}$)[\\p{L}\\p{Zs}.-]+$",
-			message = "First Name can only contain alphabets, spaces, '.', and '-', and cannot start or end with space.",
+	@Pattern(regexp = "^[\\p{L}\\p{P}\\p{S}\\p{Zs}\\p{N}]+$",
+			message = "First Name allows alphabets, Numbers, special, accented or space characters only.",
 			groups = BasicInfo.class)
 	private String firstName;
 
-	@Size(max = 50, message = "Middle Name must not exceed 50 characters.", groups = BasicInfo.class)
-	@Pattern(regexp = "^(|[\\p{L}.\u2026]{0,50})$", message = "Middle Name can only contain alphabets and '.'.",
+	@Size(max = 50, message = "Middle name must be at most 50 characters", groups = BasicInfo.class)
+	@Pattern(regexp = "^(?!\\s+$)[\\p{L}\\p{P}\\p{S}\\p{Zs}\\p{N}]*$",
+			message = "Middle Name allows alphabets, Numbers, special, accented or space characters or empty.",
 			groups = BasicInfo.class)
 	private String middleName;
 
-	@NotEmpty(message = "Last Name is required.", groups = BasicInfo.class)
+	@NotEmpty(message = "Last Name is required", groups = BasicInfo.class)
 	@Size(min = 2, max = 50, message = "Last name must be between 2 and 50 characters", groups = BasicInfo.class)
-	@Pattern(regexp = "^\\p{L}+$", message = "Last Name can only contain alphabets with no spaces.",
+	@Pattern(regexp = "^[\\p{L}\\p{P}\\p{S}\\p{Zs}\\p{N}]+$",
+			message = "Last Name allows alphabets, Numbers, special, accented or space characters only.",
 			groups = BasicInfo.class)
 	private String lastName;
 
