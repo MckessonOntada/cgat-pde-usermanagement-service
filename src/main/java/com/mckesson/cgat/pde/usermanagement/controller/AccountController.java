@@ -137,7 +137,7 @@ public class AccountController {
 
 	}
 
-	@RequirePermissions({ Permission.ADD_SP_ACCOUNT })
+	@RequirePermissions({ Permission.ADD_SP_ACCOUNT , Permission.MANAGE_LINKED_ACCOUNTS })
 	@PatchMapping("/{accountId}/providers")
 	@Operation(summary = "Link Account with multiple providers.")
 	public Account linkAccountToProviders(@PathVariable @NotNull(message = "Account ID cannot be null") Long accountId,
