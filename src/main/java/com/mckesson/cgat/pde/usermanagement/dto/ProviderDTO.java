@@ -5,7 +5,6 @@ import com.mckesson.cgat.pde.usermanagement.model.Name;
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
 import jakarta.persistence.Column;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -65,8 +64,8 @@ public class ProviderDTO {
 	@Column(name = "email", nullable = false)
 	private String email;
 
-	@Size(min = 1, max = 20, message = "Fax number should not exceed 20 digits.", groups = BasicInfo.class)
-	@Pattern(regexp = "\\d+", message = "Only numeric values are allowed in the Fax number.", groups = BasicInfo.class)
+	@Size(max = 20, message = "Fax number should not exceed 20 digits.", groups = BasicInfo.class)
+	@Pattern(regexp = "\\d*", message = "Only numeric values are allowed in the Fax number.", groups = BasicInfo.class)
 	@Column(name = "fax")
 	private String fax;
 

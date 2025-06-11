@@ -110,8 +110,8 @@ public class Provider extends AuditColumns implements Serializable {
 	@Column(name = "email", nullable = false)
 	private String email;
 
-	@Size(min = 1, max = 20, message = "Fax number should not exceed 20 digits.", groups = BasicInfo.class)
-	@Pattern(regexp = "\\d+", message = "Only numeric values are allowed in the Fax number.", groups = BasicInfo.class)
+	@Size(max = 20, message = "Fax number should not exceed 20 digits.", groups = BasicInfo.class)
+	@Pattern(regexp = "\\d*", message = "Only numeric values are allowed in the Fax number.", groups = BasicInfo.class)
 	@Column(name = "fax")
 	private String fax;
 
