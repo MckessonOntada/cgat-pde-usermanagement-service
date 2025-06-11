@@ -10,8 +10,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.hibernate.type.NumericBooleanConverter;
@@ -87,5 +88,31 @@ public class Provider extends AuditColumns implements Serializable {
 			inverseJoinColumns = @JoinColumn(name = "account_id"))
 	@JsonIgnore
 	private Set<Account> accounts;
+
+	@NotBlank(message = "Please enter the TIN", groups = BasicInfo.class)
+	@Size(min = 9, max = 9, message = "TIN must be exactly 9 digits", groups = BasicInfo.class)
+	@Pattern(regexp = "\\d{9}", message = "TIN must only contain numeric values", groups = BasicInfo.class)
+	@Column(name = "tin", length = 9, nullable = false)
+	private String tin;
+
+	@NotBlank(message = "Please enter the Medicaid Number", groups = BasicInfo.class)
+	@Size(min = 6, max = 6, message = "Medicaid Number must be exactly 6 digits", groups = BasicInfo.class)
+	@Pattern(regexp = "\\d{6}", message = "Medicaid Number must contain only numeric Values", groups = BasicInfo.class)
+	@Column(name = "medicaid_number", length = 6, nullable = false)
+	private String medicaidNumber;
+
+	private String licenseState;
+
+	@NotNull(message = "Please enter your Email ID", groups = BasicInfo.class)
+	@Size(min = 1, max = 50, message = "Email ID should not exceed 50 characters.", groups = BasicInfo.class)
+	@Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$",
+			message = "Please enter a valid email address (e.g., name@example.com).", groups = BasicInfo.class)
+	@Column(name = "email", nullable = false)
+	private String email;
+
+	@Size(min = 1, max = 20, message = "Fax number should not exceed 20 digits.", groups = BasicInfo.class)
+	@Pattern(regexp = "\\d+", message = "Only numeric values are allowed in the Fax number.", groups = BasicInfo.class)
+	@Column(name = "fax")
+	private String fax;
 
 }
