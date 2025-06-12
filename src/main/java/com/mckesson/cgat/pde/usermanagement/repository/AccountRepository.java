@@ -3,11 +3,13 @@ package com.mckesson.cgat.pde.usermanagement.repository;
 import java.util.List;
 import java.util.Set;
 
+import com.mckesson.cgat.pde.usermanagement.dto.SpecialtyPharmaAccountDto;
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -269,5 +271,62 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	Page<Account> findUnlinkedAccountsOfProviderIds(@Param("query") String query, @Param("practiceId") Long practiceId,
 			@Param("providerIds") List<Long> providerIds, @Param("channelType") String channelType, Pageable paging,
 			@Param("providerCount") int providerCount);
+
+	@Modifying
+	@Query(nativeQuery = true, value = """
+			UPDATE catalog.catalog_price
+			SET deleted = true, updated_at = CURRENT_TIMESTAMP
+			WHERE sold_to_customer = :accountNumber
+			AND channel_type = 'SPECIALITY_PHARMA'
+			""")
+	int unlinkSpecialtyPharmaAccount(@Param("accountNumber") String accountNumber);
+
+	@Query(nativeQuery = true, value = """
+			SELECT DISTINCT
+			    cp.sold_to_customer as accountNumber,
+			    cp.sold_to_customer_name as accountName,
+			    cp.sales_org as salesOrg,
+			    cp.sap_material as sapMaterial,
+			    a.house_number as houseNumber,
+			    a.street as street,
+			    a.street_2 as street2,
+			    a.street_3 as street3,
+			    a.city as city,
+			    a.district as district,
+			    a.state as state,
+			    a.zip_code as zipCode,
+			    a.country as country,
+			    a.telephone as telephone,
+			    a.email as email,
+			    a.fax as fax,
+			    a.is_active as isActive
+			FROM catalog.catalog_price cp
+			INNER JOIN usermanagement.account a ON cp.sold_to_customer = a.sap_customer
+			WHERE cp.channel_type = 'SPECIALITY_PHARMA'
+			AND cp.sap_material = :sapMaterial
+			AND (cp.deleted IS NULL OR cp.deleted = false)
+			AND (
+			    :query IS NULL
+			    OR LOWER(cp.sold_to_customer_name) LIKE LOWER(CONCAT('%', :query, '%'))
+			    OR LOWER(cp.sold_to_customer) LIKE LOWER(CONCAT('%', :query, '%'))
+			)
+			AND (
+			    COALESCE(:salesOrgs) IS NULL
+			    OR cp.sales_org IN (:salesOrgs)
+			)
+			""")
+	Page<SpecialtyPharmaAccountDto> findSpecialtyPharmaAccountsBySapMaterial(@Param("sapMaterial") String sapMaterial,
+			@Param("query") String query, @Param("salesOrgs") List<String> salesOrgs, Pageable pageable);
+
+	@Modifying
+	@Query(nativeQuery = true, value = """
+			UPDATE catalog.catalog_price
+			SET deleted = true, updated_at = CURRENT_TIMESTAMP
+			WHERE sap_material = :sapMaterial
+			AND sold_to_customer = :accountNumber
+			AND channel_type = 'SPECIALITY_PHARMA'
+			""")
+	int unlinkSpecialtyPharmaAccount(@Param("sapMaterial") String sapMaterial,
+			@Param("accountNumber") String accountNumber);
 
 }

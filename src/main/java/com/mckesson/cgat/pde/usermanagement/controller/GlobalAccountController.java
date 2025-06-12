@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.OutputStreamWriter;
 import java.util.List;
 
+import com.mckesson.cgat.pde.usermanagement.dto.SpecialtyPharmaAccountDto;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.*;
 import org.springframework.data.domain.Page;
@@ -52,6 +53,42 @@ public class GlobalAccountController {
 				salesOrg, distChannels, ChannelType.BUY_AND_BILL);
 
 		return new ResponseEntity<>(accounts, HttpStatus.OK);
+	}
+
+	@GetMapping("/specialty-pharma/material/{sapMaterial}")
+	@RequirePermissions({ Permission.VIEW_SP_CATALOG, Permission.MANAGE_SP_CATALOG })
+	@Operation(summary = "Fetch all Specialty Pharma accounts linked to a specific SAP material")
+	public ResponseEntity<Page<SpecialtyPharmaAccountDto>> getSpecialtyPharmaAccountsBySapMaterial(
+			@PathVariable String sapMaterial, @RequestParam(defaultValue = "0") Integer pageNo,
+			@RequestParam(defaultValue = "20") Integer pageSize,
+			@RequestParam(defaultValue = "accountNumber") String sortBy,
+			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
+			@RequestParam(required = false) List<String> salesOrgs) {
+
+		Sort sort = "asc".equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
+
+		Page<SpecialtyPharmaAccountDto> accounts = accountService.getSpecialtyPharmaAccountsBySapMaterial(sapMaterial,
+				paging, query, salesOrgs);
+
+		return new ResponseEntity<>(accounts, HttpStatus.OK);
+	}
+
+	@PutMapping("/specialty-pharma/material/{sapMaterial}/account/{accountNumber}/unlink")
+	@RequirePermissions({ Permission.MANAGE_SP_CATALOG })
+	@Operation(summary = "Unlink a specific account from a SAP material by setting deleted flag to true")
+	public ResponseEntity<String> unlinkSpecialtyPharmaAccount(@PathVariable String sapMaterial,
+			@PathVariable String accountNumber) {
+		try {
+			accountService.unlinkSpecialtyPharmaAccount(sapMaterial, accountNumber);
+			return ResponseEntity.ok("Account unlinked successfully");
+		}
+		catch (ResourceNotFoundException e) {
+			return ResponseEntity.notFound().build();
+		}
+		catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error unlinking account");
+		}
 	}
 
 	@RequirePermissions({ Permission.VIEW_SP_CATALOG, Permission.MANAGE_SP_CATALOG })
