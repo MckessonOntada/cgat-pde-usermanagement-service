@@ -18,6 +18,7 @@ public interface AccountMapper {
 	@Mapping(source = "address.address2", target = "address.street2")
 	@Mapping(source = "address.city", target = "address.city")
 	@Mapping(source = "address.state", target = "address.state")
+	@Mapping(source = "address.state", target = "address.country")
 	@Mapping(source = "address.zip", target = "address.zipCode")
 	Account mapToModel(AccountDTO accountDto);
 

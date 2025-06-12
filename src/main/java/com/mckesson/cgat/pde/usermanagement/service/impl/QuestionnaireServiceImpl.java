@@ -129,7 +129,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 			.computeIfAbsent(config.getEntityId(), k -> new HashSet<>())
 			.add(config));
 
-		return questionnaireList.stream().flatMap(questionnaire -> configEntityIds.stream().map(entityId -> {
+		return questionnaireList.stream().flatMap(questionnaire -> configEntityIds.stream().distinct().map(entityId -> {
 
 			Map<String, Set<QuestionnaireConfiguration>> entityMap = existingMap.getOrDefault(channelType,
 					Collections.emptyMap());
