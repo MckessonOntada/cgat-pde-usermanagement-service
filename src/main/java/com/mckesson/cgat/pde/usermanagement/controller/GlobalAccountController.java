@@ -63,7 +63,7 @@ public class GlobalAccountController {
 			@RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(defaultValue = "accountNumber") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
-			@RequestParam(required = false) List<String> salesOrgs) {
+			@RequestParam(required = false) String salesOrgs) {
 
 		Sort sort = "asc".equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);

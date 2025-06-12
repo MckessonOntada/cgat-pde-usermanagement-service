@@ -290,7 +290,7 @@ public class AccountServiceImpl implements AccountService {
 
 	@Override
 	public Page<SpecialtyPharmaAccountDto> getSpecialtyPharmaAccountsBySapMaterial(String sapMaterial,
-			Pageable pageable, String query, List<String> salesOrgs) {
+			Pageable pageable, String query, String salesOrgs) {
 		return accountRepository.findSpecialtyPharmaAccountsBySapMaterial(sapMaterial, query, salesOrgs, pageable);
 	}
 

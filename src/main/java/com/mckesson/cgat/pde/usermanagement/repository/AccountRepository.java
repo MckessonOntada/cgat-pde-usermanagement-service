@@ -308,7 +308,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 			  )
 			""")
 	Page<SpecialtyPharmaAccountDto> findSpecialtyPharmaAccountsBySapMaterial(@Param("sapMaterial") String sapMaterial,
-			@Param("query") String query, @Param("salesOrgs") List<String> salesOrgs, Pageable pageable);
+			@Param("query") String query, @Param("salesOrgs") String salesOrgs, Pageable pageable);
 
 	@Modifying
 	@Query(nativeQuery = true, value = """

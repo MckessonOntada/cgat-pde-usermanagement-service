@@ -61,7 +61,7 @@ public interface AccountService {
 			Pageable paging) throws ResourceNotFoundException;
 
 	Page<SpecialtyPharmaAccountDto> getSpecialtyPharmaAccountsBySapMaterial(String sapMaterial, Pageable pageable,
-			String query, List<String> salesOrgs);
+			String query, String salesOrgs);
 
 	void unlinkSpecialtyPharmaAccount(String sapMaterial, String accountNumber) throws ResourceNotFoundException;
 
