@@ -313,6 +313,11 @@ public class ProviderServiceImpl implements ProviderService {
 		provider.setDea(model.getDea());
 		provider.setNpi(model.getNpi());
 		provider.setName(model.getName());
+		provider.setEmail(model.getEmail());
+		provider.setFax(model.getFax());
+		provider.setLicenseState(model.getLicenseState());
+		provider.setMedicaidNumber(model.getMedicaidNumber());
+		provider.setTin(model.getTin());
 		validateProvider(provider);
 		return providerRepository.save(provider);
 	}
