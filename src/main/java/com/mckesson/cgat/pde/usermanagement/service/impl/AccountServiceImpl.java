@@ -304,4 +304,22 @@ public class AccountServiceImpl implements AccountService {
 		}
 	}
 
+	public Page<Account> findAccountsByProviderId(String query, Long practiceId, Long providerId, Pageable paging)
+			throws ResourceNotFoundException {
+		query = StringUtils.toRootLowerCase(query);
+
+		providerRepository.findById(providerId)
+			.orElseThrow(() -> new ResourceNotFoundException("Provider not found with id:" + providerId.toString()));
+		return accountRepository.findAccountsByProviderId(query, practiceId, providerId,
+				ChannelType.SPECIALITY_PHARMA.name(), paging);
+	}
+
+	public Page<Account> findUnlinkedAccountsOfProviderIds(String query, Long practiceId, List<Long> providerIds,
+			Pageable paging) throws ResourceNotFoundException {
+		query = StringUtils.toRootLowerCase(query);
+
+		return accountRepository.findUnlinkedAccountsOfProviderIds(query, practiceId, providerIds,
+				ChannelType.SPECIALITY_PHARMA.name(), paging, providerIds.size());
+	}
+
 }
