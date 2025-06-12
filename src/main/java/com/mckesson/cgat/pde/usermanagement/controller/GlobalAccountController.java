@@ -56,7 +56,7 @@ public class GlobalAccountController {
 	}
 
 	@GetMapping("/specialty-pharma/linked-accounts/{sapMaterial}")
-	@RequirePermissions({ Permission.VIEW_SP_CATALOG, Permission.MANAGE_SP_CATALOG })
+	@RequirePermissions({ Permission.VIEW_SP_MATERIAL })
 	@Operation(summary = "Fetch all Specialty Pharma accounts linked to a specific SAP material")
 	public ResponseEntity<Page<SpecialtyPharmaAccountDto>> getSpecialtyPharmaAccountsBySapMaterial(
 			@PathVariable String sapMaterial, @RequestParam(defaultValue = "0") Integer pageNo,
@@ -75,7 +75,7 @@ public class GlobalAccountController {
 	}
 
 	@PutMapping("/specialty-pharma/material/{sapMaterial}/account/{accountNumber}/unlink")
-	@RequirePermissions({ Permission.MANAGE_SP_CATALOG })
+	@RequirePermissions({ Permission.VIEW_SP_MATERIAL })
 	@Operation(summary = "Unlink a specific account from a SAP material by setting deleted flag to true")
 	public ResponseEntity<String> unlinkSpecialtyPharmaAccount(@PathVariable String sapMaterial,
 			@PathVariable String accountNumber) throws ResourceNotFoundException {

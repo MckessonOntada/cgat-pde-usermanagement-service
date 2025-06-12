@@ -303,8 +303,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 			      OR LOWER(cp.sold_to_customer) LIKE LOWER(CONCAT('%', :query, '%'))
 			  )
 			  AND (
-			      COALESCE(:salesOrgs) IS NULL
-			      OR cp.sales_org IN (:salesOrgs)
+			      :salesOrgs IS NULL
+			      OR cp.sales_org = :salesOrgs
 			  )
 			""")
 	Page<SpecialtyPharmaAccountDto> findSpecialtyPharmaAccountsBySapMaterial(@Param("sapMaterial") String sapMaterial,
