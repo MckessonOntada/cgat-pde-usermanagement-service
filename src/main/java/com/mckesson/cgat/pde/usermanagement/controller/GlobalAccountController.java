@@ -55,7 +55,7 @@ public class GlobalAccountController {
 		return new ResponseEntity<>(accounts, HttpStatus.OK);
 	}
 
-	@GetMapping("/specialty-pharma/material/{sapMaterial}")
+	@GetMapping("/specialty-pharma/linked-accounts/{sapMaterial}")
 	@RequirePermissions({ Permission.VIEW_SP_CATALOG, Permission.MANAGE_SP_CATALOG })
 	@Operation(summary = "Fetch all Specialty Pharma accounts linked to a specific SAP material")
 	public ResponseEntity<Page<SpecialtyPharmaAccountDto>> getSpecialtyPharmaAccountsBySapMaterial(
@@ -79,16 +79,9 @@ public class GlobalAccountController {
 	@Operation(summary = "Unlink a specific account from a SAP material by setting deleted flag to true")
 	public ResponseEntity<String> unlinkSpecialtyPharmaAccount(@PathVariable String sapMaterial,
 			@PathVariable String accountNumber) {
-		try {
-			accountService.unlinkSpecialtyPharmaAccount(sapMaterial, accountNumber);
-			return ResponseEntity.ok("Account unlinked successfully");
-		}
-		catch (ResourceNotFoundException e) {
-			return ResponseEntity.notFound().build();
-		}
-		catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error unlinking account");
-		}
+		accountService.unlinkSpecialtyPharmaAccount(sapMaterial, accountNumber);
+		return ResponseEntity.ok("Account unlinked successfully");
+
 	}
 
 	@RequirePermissions({ Permission.VIEW_SP_CATALOG, Permission.MANAGE_SP_CATALOG })
