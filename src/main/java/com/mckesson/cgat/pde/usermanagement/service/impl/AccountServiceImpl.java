@@ -297,7 +297,11 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public void unlinkSpecialtyPharmaAccount(String sapMaterial, String accountNumber)
 			throws ResourceNotFoundException {
-		accountRepository.unlinkSpecialtyPharmaAccount(sapMaterial, accountNumber);
+		int rowsAffected = accountRepository.unlinkSpecialtyPharmaAccount(sapMaterial, accountNumber);
+		if (rowsAffected == 0) {
+			throw new ResourceNotFoundException(String.format(
+					"No Specialty Pharma account found with number: %s for material: %s", accountNumber, sapMaterial));
+		}
 	}
 
 	public Page<Account> findAccountsByProviderId(String query, Long practiceId, Long providerId, Pageable paging)

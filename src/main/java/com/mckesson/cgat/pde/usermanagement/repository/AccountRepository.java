@@ -318,7 +318,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 			AND sold_to_customer = :accountNumber
 			AND channel_type = 'SPECIALITY_PHARMA'
 			""")
-	void unlinkSpecialtyPharmaAccount(@Param("sapMaterial") String sapMaterial,
+	int unlinkSpecialtyPharmaAccount(@Param("sapMaterial") String sapMaterial,
 			@Param("accountNumber") String accountNumber);
 
 }
