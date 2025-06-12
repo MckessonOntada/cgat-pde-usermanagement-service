@@ -295,7 +295,8 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public void unlinkSpecialtyPharmaAccount(String sapMaterial, String accountNumber) {
+	public void unlinkSpecialtyPharmaAccount(String sapMaterial, String accountNumber)
+			throws ResourceNotFoundException {
 		accountRepository.unlinkSpecialtyPharmaAccount(sapMaterial, accountNumber);
 	}
 

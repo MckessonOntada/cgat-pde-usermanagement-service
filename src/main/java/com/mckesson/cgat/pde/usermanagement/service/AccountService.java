@@ -63,6 +63,6 @@ public interface AccountService {
 	Page<SpecialtyPharmaAccountDto> getSpecialtyPharmaAccountsBySapMaterial(String sapMaterial, Pageable pageable,
 			String query, List<String> salesOrgs);
 
-	void unlinkSpecialtyPharmaAccount(String sapMaterial, String accountNumber);
+	void unlinkSpecialtyPharmaAccount(String sapMaterial, String accountNumber) throws ResourceNotFoundException;
 
 }

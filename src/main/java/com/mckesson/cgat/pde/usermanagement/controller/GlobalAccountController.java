@@ -78,7 +78,7 @@ public class GlobalAccountController {
 	@RequirePermissions({ Permission.MANAGE_SP_CATALOG })
 	@Operation(summary = "Unlink a specific account from a SAP material by setting deleted flag to true")
 	public ResponseEntity<String> unlinkSpecialtyPharmaAccount(@PathVariable String sapMaterial,
-			@PathVariable String accountNumber) {
+			@PathVariable String accountNumber) throws ResourceNotFoundException {
 		accountService.unlinkSpecialtyPharmaAccount(sapMaterial, accountNumber);
 		return ResponseEntity.ok("Account unlinked successfully");
 
