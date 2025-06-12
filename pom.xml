@@ -19,6 +19,7 @@
         <auth-module.version>2.0.4</auth-module.version>
         <springdoc-starter-webmvc.version>2.5.0</springdoc-starter-webmvc.version>
         <hibernate-core.version>6.6.0.CR1</hibernate-core.version>
+        <cgat-pde-usermanagement-services.version>1.0.0-SNAPSHOT</cgat-pde-usermanagement-services.version>
     </properties>
     <dependencies>
         <dependency>
