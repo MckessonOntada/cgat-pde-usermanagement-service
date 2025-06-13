@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.mckesson.cgat.pde.usermanagement.dto.SpecialtyPharmaAccountDto;
 import com.mckesson.cgat.pde.usermanagement.model.Provider;
 import com.mckesson.cgat.pde.usermanagement.repository.ProviderRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -284,6 +286,22 @@ public class AccountServiceImpl implements AccountService {
 		query = StringUtils.toRootLowerCase(query);
 		return accountRepository.findAllOrganizations(query, CustomUtils.getConsolidatedStatus(status), paging,
 				practiceIdList, partnerFunction.getPartnerFunctionType(), salesOrg, distChannels, channelType.name());
+	}
+
+	@Override
+	public Page<SpecialtyPharmaAccountDto> getSpecialtyPharmaAccountsBySapMaterial(String sapMaterial,
+			Pageable pageable, String query, String salesOrgs) {
+		return accountRepository.findSpecialtyPharmaAccountsBySapMaterial(sapMaterial, query, salesOrgs, pageable);
+	}
+
+	@Override
+	public void unlinkSpecialtyPharmaAccount(String sapMaterial, String accountNumber)
+			throws ResourceNotFoundException {
+		int rowsAffected = accountRepository.unlinkSpecialtyPharmaAccount(sapMaterial, accountNumber);
+		if (rowsAffected == 0) {
+			throw new ResourceNotFoundException(String.format(
+					"No Specialty Pharma account found with number: %s for material: %s", accountNumber, sapMaterial));
+		}
 	}
 
 	public Page<Account> findAccountsByProviderId(String query, Long practiceId, Long providerId, Pageable paging)
