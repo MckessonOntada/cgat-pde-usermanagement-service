@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.mckesson.cgat.pde.usermanagement.dto.SpecialtyPharmaAccountDto;
+import com.mckesson.cgat.pde.usermanagement.dto.SpecialtyPharmaAccountProjection;
 import com.mckesson.cgat.pde.usermanagement.model.Provider;
 import com.mckesson.cgat.pde.usermanagement.repository.ProviderRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +15,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -291,7 +292,31 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public Page<SpecialtyPharmaAccountDto> getSpecialtyPharmaAccountsBySapMaterial(String sapMaterial,
 			Pageable pageable, String query, String salesOrgs) {
-		return accountRepository.findSpecialtyPharmaAccountsBySapMaterial(sapMaterial, query, salesOrgs, pageable);
+
+		Page<SpecialtyPharmaAccountProjection> projectionPage = accountRepository
+			.findSpecialtyPharmaAccountsBySapMaterial(sapMaterial, query, salesOrgs, pageable);
+
+		List<SpecialtyPharmaAccountDto> dtoList = projectionPage.getContent().stream().map(projection -> {
+			SpecialtyPharmaAccountDto dto = new SpecialtyPharmaAccountDto();
+			dto.setAccountNumber(projection.getAccountNumber());
+			dto.setAccountName(projection.getAccountName());
+			dto.setSalesOrg(projection.getSalesOrg());
+			dto.setHouseNumber(projection.getHouseNumber());
+			dto.setStreet(projection.getStreet());
+			dto.setStreet2(projection.getStreet2());
+			dto.setStreet3(projection.getStreet3());
+			dto.setCity(projection.getCity());
+			dto.setDistrict(projection.getDistrict());
+			dto.setState(projection.getState());
+			dto.setZipCode(projection.getZipCode());
+			dto.setCountry(projection.getCountry());
+			dto.setTelephone(projection.getTelephone());
+			dto.setEmail(projection.getEmail());
+			dto.setFax(projection.getFax());
+			return dto;
+		}).collect(Collectors.toList());
+
+		return new PageImpl<>(dtoList, pageable, projectionPage.getTotalElements());
 	}
 
 	@Override
