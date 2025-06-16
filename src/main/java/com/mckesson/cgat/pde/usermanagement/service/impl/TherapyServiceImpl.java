@@ -474,7 +474,8 @@ public class TherapyServiceImpl implements TherapyService {
 				AccountPartnerFunction.SOLD_TO);
 		if (therapies.isEmpty()) {
 			throw new ResourceNotFoundException(
-					String.format("SP Therapy not found with ndc: %s, soldToAccount: %s", ndcNumber, soldToAccount));
+					String.format("Therapy not found with ndc: %s, soldToAccount: %s, program: %s", ndcNumber,
+							soldToAccount, program));
 		}
 		return therapies;
 	}
