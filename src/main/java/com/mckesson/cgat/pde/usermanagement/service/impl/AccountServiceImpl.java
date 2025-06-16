@@ -343,7 +343,7 @@ public class AccountServiceImpl implements AccountService {
 			Set<String> accountNames = new HashSet<>();
 			Set<AccountDTO> accountDataList = parseAndValidateCSVData(csvParser, errorRecords, accountNames);
 
-			Map<String, Account> accountMap = getAccountMap(accountNames, practiceId);
+			Map<String, Account> accountMap = getAccountMap(accountNames);
 
 			List<Account> accountsToUpdate = new ArrayList<>();
 			processAccountActions(accountDataList, accountMap, accountsToUpdate, practiceId, errorRecords);
@@ -390,6 +390,12 @@ public class AccountServiceImpl implements AccountService {
 						"Duplicate account found with same name. Unable to process." });
 
 			}
+			else if (account.getPracticeId() != null && !account.getPracticeId().equals((long) practiceId)) {
+				errorRecords.add(new String[] { accountName, addressDTO.getAddress1(), addressDTO.getAddress2(),
+						addressDTO.getZip(), addressDTO.getCity(), addressDTO.getState(), contactDTO.getEmail(),
+						contactDTO.getPhone(), contactDTO.getFax(),
+						"Account is already linked to another organization. Unable to process." });
+			}
 			else {
 				AccountAddress accAddress = account.getAddress();
 				accAddress.setStreet(addressDTO.getAddress1());
@@ -401,6 +407,7 @@ public class AccountServiceImpl implements AccountService {
 				accAddress.setTelephone(contactDTO.getPhone());
 				accAddress.setFax(contactDTO.getFax());
 				account.setIsActive(true);
+				account.setPracticeId((long) practiceId);
 				accountsToUpdate.add(account);
 			}
 		}
@@ -486,9 +493,9 @@ public class AccountServiceImpl implements AccountService {
 		return accountsDataList;
 	}
 
-	private Map<String, Account> getAccountMap(Set<String> accountNames, int practiceId) {
-		List<Account> accounts = accountRepository.findByAccountNameInAndChannelTypeAndPracticeId(accountNames,
-				ChannelType.SPECIALITY_PHARMA, practiceId);
+	private Map<String, Account> getAccountMap(Set<String> accountNames) {
+		List<Account> accounts = accountRepository.findByAccountNameInAndChannelType(accountNames,
+				ChannelType.SPECIALITY_PHARMA);
 
 		Map<String, List<Account>> grouped = accounts.stream().collect(Collectors.groupingBy(Account::getAccountName));
 
