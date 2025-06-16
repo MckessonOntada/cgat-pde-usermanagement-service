@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.mckesson.cgat.pde.usermanagement.dto.SpecialtyPharmaAccountDto;
 import com.mckesson.cgat.pde.usermanagement.model.Provider;
 import com.mckesson.cgat.pde.usermanagement.repository.ProviderRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -92,14 +94,19 @@ public class AccountServiceImpl implements AccountService {
 		Account account = getAccount(accountId);
 		if (account == null)
 			throw new ResourceNotFoundException("Account not found with id: " + accountId);
-
 		account.setAccountName(accountDto.getAccountName());
 		account.getName().setFirstName(accountDto.getFirstName());
 		account.getName().setMiddleName(accountDto.getMiddleName());
 		account.getName().setLastName(accountDto.getLastName());
+		account.getAddress().setStreet(accountDto.getAddress().getAddress1());
+		account.getAddress().setStreet2(accountDto.getAddress().getAddress2());
+		account.getAddress().setCity(accountDto.getAddress().getCity());
+		account.getAddress().setState(accountDto.getAddress().getState());
+		account.getAddress().setZipCode(accountDto.getAddress().getZip());
 		account.getAddress().setEmail(accountDto.getContact().getEmail());
 		account.getAddress().setTelephone(accountDto.getContact().getPhone());
 		account.getAddress().setFax(accountDto.getContact().getFax());
+
 		return accountRepository.save(account);
 	}
 
@@ -219,14 +226,9 @@ public class AccountServiceImpl implements AccountService {
 
 		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
 				QuestionnaireConfigurationType.Account, "", account.getAccountNumber(), "", "",
-				account.getChannelType());
+				account.getChannelType(), "");
 
-		AccountDetailsResponseDTO detailsResponseDTO = AccountDetailsResponseDTO.builder()
-			.account(account)
-			.questionnaireList(questionnaires)
-			.build();
-
-		return detailsResponseDTO;
+		return AccountDetailsResponseDTO.builder().account(account).questionnaireList(questionnaires).build();
 	}
 
 	@Transactional
@@ -285,6 +287,22 @@ public class AccountServiceImpl implements AccountService {
 		return accountRepository.findAllOrganizations(query, CustomUtils.getConsolidatedStatus(status), paging,
 				practiceIdList, partnerFunction.getPartnerFunctionType(), salesOrg, distChannels, channelType.name(),
 				allAccounts);
+	}
+
+	@Override
+	public Page<SpecialtyPharmaAccountDto> getSpecialtyPharmaAccountsBySapMaterial(String sapMaterial,
+			Pageable pageable, String query, String salesOrgs) {
+		return accountRepository.findSpecialtyPharmaAccountsBySapMaterial(sapMaterial, query, salesOrgs, pageable);
+	}
+
+	@Override
+	public void unlinkSpecialtyPharmaAccount(String sapMaterial, String accountNumber)
+			throws ResourceNotFoundException {
+		int rowsAffected = accountRepository.unlinkSpecialtyPharmaAccount(sapMaterial, accountNumber);
+		if (rowsAffected == 0) {
+			throw new ResourceNotFoundException(String.format(
+					"No Specialty Pharma account found with number: %s for material: %s", accountNumber, sapMaterial));
+		}
 	}
 
 	public Page<Account> findAccountsByProviderId(String query, Long practiceId, Long providerId, Pageable paging)

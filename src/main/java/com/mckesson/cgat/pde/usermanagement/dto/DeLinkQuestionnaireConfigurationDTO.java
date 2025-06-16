@@ -12,7 +12,7 @@ public class DeLinkQuestionnaireConfigurationDTO {
 	@NotNull
 	private Long questionnaireId;
 
-	private String materialNumber;
+	private String materialOrNdcNumber;
 
 	private String accountNumber;
 

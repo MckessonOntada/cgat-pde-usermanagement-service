@@ -85,10 +85,10 @@ public class QuestionnaireController {
 	@Operation(summary = "Fetch all configured questionnaire for the data")
 	public ResponseEntity<List<Questionnaire>> getAllConfiguredQuestionnaires(@RequestParam String soldToCustomer,
 			@RequestParam String shipToCustomer, @RequestParam String sapMaterial,
-			@RequestParam(required = false) String variant,
-			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) throws ResourceNotFoundException {
+			@RequestParam(required = false) String variant, @RequestParam String materialOrNdcNumber,
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) {
 		return new ResponseEntity<>(questionnaireService.getAllConfiguredQuestionnaires(sapMaterial, soldToCustomer,
-				shipToCustomer, variant, channelType), HttpStatus.OK);
+				shipToCustomer, variant, channelType, materialOrNdcNumber), HttpStatus.OK);
 	}
 
 	@PatchMapping("/deactivate")
@@ -96,6 +96,14 @@ public class QuestionnaireController {
 	public ResponseEntity<Void> deactivateQuestionnaires(@RequestBody List<Long> questionnaireIds)
 			throws ResourceNotFoundException {
 		questionnaireService.deactivateQuestionnaires(questionnaireIds);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	@PatchMapping("/reactivate")
+	@Operation(summary = "reactivate multiple questionnaires by IDs")
+	public ResponseEntity<Void> reactivateQuestionnaires(@RequestBody List<Long> questionnaireIds)
+			throws ResourceNotFoundException {
+		questionnaireService.reactivateQuestionnaires(questionnaireIds);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 

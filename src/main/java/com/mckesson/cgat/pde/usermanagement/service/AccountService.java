@@ -5,9 +5,11 @@ import java.util.Set;
 
 import com.mckesson.cgat.pde.usermanagement.dto.AccountDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.AccountDetailsResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.SpecialtyPharmaAccountDto;
 import com.mckesson.cgat.pde.usermanagement.model.Provider;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
@@ -57,5 +59,10 @@ public interface AccountService {
 
 	Page<Account> findUnlinkedAccountsOfProviderIds(String query, Long practiceId, List<Long> providerIds,
 			Pageable paging) throws ResourceNotFoundException;
+
+	Page<SpecialtyPharmaAccountDto> getSpecialtyPharmaAccountsBySapMaterial(String sapMaterial, Pageable pageable,
+			String query, String salesOrgs);
+
+	void unlinkSpecialtyPharmaAccount(String sapMaterial, String accountNumber) throws ResourceNotFoundException;
 
 }

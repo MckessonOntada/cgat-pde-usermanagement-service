@@ -2,6 +2,9 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.TradeCatalogResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.mapper.TradeCatalogResponseMapper;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.Questionnaire;
 import com.mckesson.cgat.pde.usermanagement.model.QuestionnaireConfigurationType;
@@ -25,6 +28,8 @@ import javax.cache.CacheManager;
 import java.util.List;
 
 import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.ALL;
+import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.getConsolidatedChannelType;
+import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.getConsolidatedStatus;
 
 @Service
 @Slf4j
@@ -47,12 +52,15 @@ public class CacheServiceImpl implements CacheService {
 	}
 
 	@Cacheable(value = "materialCache", key = "#query + '-' + #paging.pageNumber + '-' + #paging.pageSize")
-	public Page<Therapy> findAllGlobalTherapies(String query, Pageable paging) {
+	public Page<TradeCatalogResponseDTO> findAllGlobalTherapies(String query, Pageable paging) {
 		try {
 			log.info(" Inside method - findAllGlobalTherapies");
 			log.info("query: {}", StringUtils.toRootLowerCase(query));
-			return therapyRepository.findAllGlobalTherapies(StringUtils.toRootLowerCase(query), ALL,
-					ChannelType.BUY_AND_BILL.name(), paging, false);
+			Page<TherapyCatalogResponseDTO> projections = therapyRepository.findAllGlobalTherapies(
+					StringUtils.toRootLowerCase(query), ALL, ChannelType.BUY_AND_BILL.name(), paging, false);
+
+			Page<TradeCatalogResponseDTO> map = projections.map(TradeCatalogResponseMapper::mapToTradeCatalogResponse);
+			return map;
 		}
 		catch (Exception e) {
 			log.error("Exception occurred in findAllGlobalTherapies and exception details", e);
@@ -62,29 +70,28 @@ public class CacheServiceImpl implements CacheService {
 
 	@Override
 	@Cacheable(value = "singleMaterialCache", key = "#materialNumber")
-	public MaterialDetailsResponseDTO findTherapyDetailsByMaterialNumber(String materialNumber)
+	public List<MaterialDetailsResponseDTO> findTherapyDetailsByTradeName(String tradeName, ChannelType channelType)
 			throws ResourceNotFoundException {
-		MaterialResponseDTO responseDTO = therapyConfigRepository
-			.findDetailedByMaterialNumber(materialNumber, ChannelType.BUY_AND_BILL)
-			.orElseThrow(() -> new ResourceNotFoundException(
-					"Therapy config not found with materialNumber: " + materialNumber));
+		List<MaterialResponseDTO> responseDTOList = therapyConfigRepository.findDetailesByTradeName(tradeName,
+				channelType);
 
 		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
-				QuestionnaireConfigurationType.Material, materialNumber, "", "", "", ChannelType.BUY_AND_BILL);
+				QuestionnaireConfigurationType.Material, "", "", "", "", ChannelType.BUY_AND_BILL,
+				responseDTOList.get(0).getTherapy().getNdcNumber());
 
 		MaterialDetailsResponseDTO materialDetailsResponseDTO = MaterialDetailsResponseDTO.builder()
 			.questionnaires(questionnaires)
 			.build();
-		materialDetailsResponseDTO.setTherapy(responseDTO.getTherapy());
-		materialDetailsResponseDTO.setMaterialConfig(responseDTO.getMaterialConfig());
-		return materialDetailsResponseDTO;
+		materialDetailsResponseDTO.setTherapy(responseDTOList.get(0).getTherapy());
+		materialDetailsResponseDTO.setMaterialConfig(responseDTOList.get(0).getMaterialConfig());
+		return List.of(materialDetailsResponseDTO);
 	}
 
 	@Override
 	@Transactional
 	@CacheEvict(value = "singleMaterialCache", key = "#materialNumber")
 	public void deleteConfigByMaterialNumber(String materialNumber) throws ResourceNotFoundException {
-		int deletedCount = therapyConfigRepository.removeTherapyConfigByMaterialNumberAndChannelType(materialNumber,
+		int deletedCount = therapyConfigRepository.removeTherapyConfigByNdcNumberAndChannelType(materialNumber,
 				ChannelType.BUY_AND_BILL);
 
 		if (deletedCount == 0) {

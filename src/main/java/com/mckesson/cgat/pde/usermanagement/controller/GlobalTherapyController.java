@@ -3,11 +3,10 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyConfigRequestDTO;
-import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
-import com.mckesson.cgat.pde.usermanagement.model.Permission;
-import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
-import com.mckesson.cgat.pde.usermanagement.model.Therapy;
+import com.mckesson.cgat.pde.usermanagement.dto.TradeCatalogResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.model.*;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
@@ -57,9 +56,9 @@ public class GlobalTherapyController {
 	@GetMapping
 	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.VIEW_SP_MATERIAL, Permission.ADD_CROSSWALK })
 	@Operation(summary = "Fetch all therapies.")
-	public ResponseEntity<Page<Therapy>> findAllTherapies(@RequestParam(defaultValue = "0") Integer pageNo,
-			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
-			@RequestParam(defaultValue = "material_number") String sortBy,
+	public ResponseEntity<Page<TradeCatalogResponseDTO>> findAllTherapies(
+			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize,
+			@RequestParam(required = false) String query, @RequestParam(defaultValue = "trade_name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder,
 			@RequestParam(required = false) List<ChannelType> channelTypes,
 			@RequestParam(required = false) List<String> status,
@@ -82,6 +81,23 @@ public class GlobalTherapyController {
 				HttpStatus.OK);
 	}
 
+	@GetMapping("/type/speciality-pharma")
+	@RequirePermissions({ Permission.VIEW_MATERIAL })
+	@Operation(summary = "Fetch all therapies.")
+	public ResponseEntity<Page<Therapy>> findAllSPTherapies(@RequestParam(defaultValue = "0") Integer pageNo,
+			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
+			@RequestParam(defaultValue = "material_number") String sortBy,
+			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam Status status,
+			@RequestParam(required = false) String manufacturer) {
+
+		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
+				: Sort.by(sortBy).descending();
+		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
+
+		return new ResponseEntity<>(therapyService.findAllGlobalSPTherapies(query, paging, status, manufacturer),
+				HttpStatus.OK);
+	}
+
 	@GetMapping("/{materialNumber}")
 	@Operation(summary = "Find Therapy by Material Number")
 	public ResponseEntity<Therapy> findByMaterialNumber(@PathVariable String materialNumber,
@@ -94,34 +110,75 @@ public class GlobalTherapyController {
 	@RequirePermissions({ Permission.MANAGE_MATERIAL })
 	@Operation(summary = "Update Therapy Configurations")
 	public ResponseEntity<String> updateTherapyConfigs(@Valid @RequestBody TherapyConfigRequestDTO request) {
-		log.debug("Updating therapy configs for materialNumbers: {}", request.getMaterialNumbers());
-		therapyService.updateTherapyConfigs(request.getMaterialNumbers(), request.getIsPatientInformationRequired(),
+		log.debug("Updating therapy configs for ndcNumbers: {}", request.getNdcNumbers());
+		therapyService.updateTherapyConfigs(request.getNdcNumbers(), request.getIsPatientInformationRequired(),
 				request.getIsCoiIdRequired(), request.getChannelType());
 		return new ResponseEntity<>("Therapy configurations updated successfully", HttpStatus.OK);
 	}
 
-	@GetMapping("/config/{materialNumber}")
+	@GetMapping("/config/{tradeName}")
 	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.EDIT_ORDERS, Permission.VIEW_SP_MATERIAL })
-	@Operation(summary = "Find Therapy details by Material Number")
-	public ResponseEntity<MaterialDetailsResponseDTO> findTherapyDetailsByMaterialNumber(
-			@PathVariable String materialNumber, @RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType)
+	@Operation(summary = "Find Therapy details by Trade Name")
+	public ResponseEntity<List<MaterialDetailsResponseDTO>> findTherapyDetailsByTradeName(
+			@PathVariable String tradeName, @RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType)
 			throws ResourceNotFoundException {
-		log.debug("Fetching therapy details with materialNumber: {}", materialNumber);
-		return new ResponseEntity<>(therapyService.findTherapyDetailsByMaterialNumber(materialNumber, channelType),
+		log.debug("Fetching therapy details with tradeName: {}", tradeName);
+		return new ResponseEntity<>(therapyService.findTherapyDetailsWithConfigByTradeName(tradeName, channelType),
 				HttpStatus.OK);
 
 	}
 
-	@DeleteMapping("/config/{materialNumber}")
+	@GetMapping("/sp/config/{materialNumber}")
+	@RequirePermissions({ Permission.VIEW_SP_MATERIAL })
+	@Operation(summary = "Find SP Therapy details by Material Number")
+	public ResponseEntity<MaterialDetailsResponseDTO> findSPTherapyDetailsByMaterialNumber(
+			@PathVariable String materialNumber,
+			@RequestParam(defaultValue = "SPECIALITY_PHARMA") ChannelType channelType)
+			throws ResourceNotFoundException {
+		log.debug("Fetching therapy details with materialNumber: {}", materialNumber);
+		return new ResponseEntity<>(therapyService.findSPTherapyDetailsByMaterialNumber(materialNumber, channelType),
+				HttpStatus.OK);
+
+	}
+
+	@DeleteMapping("/config/ndc/{ndcNumber}")
 	@RequirePermissions({ Permission.MANAGE_MATERIAL })
-	@Operation(summary = "Delete Configuration by Material Number")
-	public ResponseEntity<String> deleteConfigByMaterialNumber(
-			@PathVariable @NotNull(message = "Material number cannot be null ") @NotEmpty(
-					message = "Material number cannot be empty") String materialNumber,
+	@Operation(summary = "Delete Configuration by Ndc Number")
+	public ResponseEntity<String> deleteConfigByNdcNumber(
+			@PathVariable @NotNull(message = "Ndc number cannot be null ") @NotEmpty(
+					message = "Ndc number cannot be empty") String ndcNumber,
 			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) throws ResourceNotFoundException {
 
-		therapyService.deleteConfigByMaterialNumber(materialNumber, channelType);
-		return new ResponseEntity<>(materialNumber, HttpStatus.OK);
+		therapyService.deleteConfigByNdcNumber(ndcNumber, channelType);
+		return new ResponseEntity<>(ndcNumber, HttpStatus.OK);
+	}
+
+	@GetMapping("/config/ndc/{ndcNumber}")
+	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.ADD_ORDERS, Permission.EDIT_ORDERS })
+	@Operation(summary = "Find Therapy details by Ndc Number")
+	public ResponseEntity<MaterialResponseDTO> findTherapyDetailsByNdc(
+			@PathVariable @NotNull(message = "Ndc number cannot be null ") @NotEmpty(
+					message = "Ndc number cannot be empty") String ndcNumber,
+			@RequestParam ChannelType channelType) throws ResourceNotFoundException {
+		log.debug("Fetching therapy details by Ndc number: {}, channel Type: {}", ndcNumber, channelType);
+		return new ResponseEntity<>(therapyService.findTherapyDetailsByNdc(ndcNumber, channelType), HttpStatus.OK);
+
+	}
+
+	@GetMapping("/config/ndc/{ndcNumber}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/therapy")
+	@RequirePermissions({ Permission.ADD_ORDERS, Permission.EDIT_ORDERS })
+	@Operation(summary = "Find Therapy details by Ndc Number and soldTo account")
+	public ResponseEntity<MaterialResponseDTO> findTherapyDetailsByNdcAndSoldToAccount(
+			@PathVariable @NotBlank(message = "Ndc number is required") String ndcNumber,
+			@PathVariable @NotBlank(message = "Sold To Account is required") String soldToAccountId,
+			@PathVariable @NotBlank(message = "Ship To Account is required") String shipToAccountId,
+			@RequestParam(required = false) String program, @RequestParam ChannelType ndcChannelType,
+			@RequestParam ChannelType channelType) throws ResourceNotFoundException {
+		log.debug("Fetching therapy details by Ndc number: {}, channel Type: {}, soldTo: {}, shipTo: {}, program: {}",
+				ndcNumber, channelType, soldToAccountId, shipToAccountId, program);
+		return new ResponseEntity<>(therapyService.findTherapyDetailsByNdcAndSoldToAndProgram(ndcNumber,
+				soldToAccountId, shipToAccountId, program, ndcChannelType, channelType), HttpStatus.OK);
+
 	}
 
 	@GetMapping("/config/therapyId/{id}")
@@ -172,6 +229,31 @@ public class GlobalTherapyController {
 			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
 			.contentType(MediaType.parseMediaType("text/csv"))
 			.body(stream);
+	}
+
+	@GetMapping("/manufacturers")
+	@RequirePermissions({ Permission.VIEW_SP_MATERIAL })
+	@Operation(summary = "Get unique manufacturer names for Speciality Pharma therapies by status")
+	public ResponseEntity<List<String>> getUniqueManufacturersByStatus(@RequestParam Status status) {
+
+		log.debug("Fetching unique manufacturers for channelType=SPECIALITY_PHARMA and itemStatus={}", status);
+
+		List<String> manufacturerNames = therapyService.getUniqueManufacturersByStatus(ChannelType.SPECIALITY_PHARMA,
+				status);
+
+		return new ResponseEntity<>(manufacturerNames, HttpStatus.OK);
+	}
+
+	@GetMapping("/therapy/{ndcNumber}")
+	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.EDIT_ORDERS, Permission.VIEW_SP_MATERIAL })
+	@Operation(summary = "Find Therapy details by NDC Number")
+	public ResponseEntity<List<Therapy>> findTherapyDetailsByNdcNumber(
+			@PathVariable @NotNull(message = "Ndc number cannot be null ") @NotEmpty(
+					message = "Ndc number cannot be empty") String ndcNumber,
+			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) throws ResourceNotFoundException {
+		log.debug("Fetching therapy details with ndcNumber: {}", ndcNumber);
+		return new ResponseEntity<>(therapyService.findTherapyDetailsByNdcNumber(ndcNumber, channelType),
+				HttpStatus.OK);
 	}
 
 }

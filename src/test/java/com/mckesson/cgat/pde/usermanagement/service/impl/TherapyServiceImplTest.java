@@ -200,12 +200,12 @@ public class TherapyServiceImplTest {
 		String shipToAccount = "103";
 		String therapyId = "18";
 		Mockito
-			.when(catalogPriceRepository.findAllCatalogPricesLinkedToShipToAccountsForTherapy(anyString(), anyString(),
+			.when(catalogPriceRepository.findAllCatalogPricesLinkedToShipToAccountsForNDC(anyString(), anyString(),
 					anyString(), any(Pageable.class)))
 			.thenReturn(getAllVariantsLinkedToShipToAccounts());
-		therapyService.findAllVariantsLinkedToShipToAccountsForTherapy(soldToAccount, shipToAccount, therapyId, paging,
+		therapyService.findAllVariantsLinkedToShipToAccountsForNDC(soldToAccount, shipToAccount, therapyId, paging,
 				ChannelType.BUY_AND_BILL);
-		verify(catalogPriceRepository, times(1)).findAllCatalogPricesLinkedToShipToAccountsForTherapy(soldToAccount,
+		verify(catalogPriceRepository, times(1)).findAllCatalogPricesLinkedToShipToAccountsForNDC(soldToAccount,
 				shipToAccount, therapyId, paging);
 	}
 

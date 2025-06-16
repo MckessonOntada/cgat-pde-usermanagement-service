@@ -127,6 +127,11 @@ public class ProviderServiceImpl implements ProviderService {
 		}
 		existingProvider.setPhone(newProvider.getPhone());
 		existingProvider.setIsActive(newProvider.getIsActive());
+		existingProvider.setTin(newProvider.getTin());
+		existingProvider.setMedicaidNumber(newProvider.getMedicaidNumber());
+		existingProvider.setLicenseState(newProvider.getLicenseState());
+		existingProvider.setEmail(newProvider.getEmail());
+		existingProvider.setFax(newProvider.getFax());
 	}
 
 	private void validateProvider(Provider provider) {
@@ -180,7 +185,8 @@ public class ProviderServiceImpl implements ProviderService {
 
 	private void validateProviderHeaders(Map<String, Integer> headerMap) {
 		List<String> expectedHeaders = List.of("First Name", "Middle Name", "Last Name", "DEA Number", "NPI Number",
-				"Address 1", "Address 2", "City", "Zip", "State", "Phone Number", "Status");
+				"Address 1", "Address 2", "City", "Zip", "State", "Phone Number", "Status", "Tin", "Medicaid Number",
+				"License State", "Email ID", "Fax");
 
 		// Check for missing headers
 		List<String> missingHeaders = expectedHeaders.stream()
@@ -225,6 +231,11 @@ public class ProviderServiceImpl implements ProviderService {
 				.state(providerData.get(9))
 				.build())
 			.phone(providerData.get(10))
+			.tin(providerData.get(12))
+			.medicaidNumber(providerData.get(13))
+			.licenseState(providerData.get(14))
+			.email(providerData.get(15))
+			.fax(providerData.get(16))
 			.build();
 
 		try {
@@ -244,7 +255,8 @@ public class ProviderServiceImpl implements ProviderService {
 				CSVPrinter csvPrinter = new CSVPrinter(writer,
 						CSVFormat.DEFAULT.withHeader("First Name", "Middle Name", "Last Name", "DEA Number",
 								"NPI Number", "Address 1", "Address 2", "City", "Zip", "State", "Phone Number",
-								"Status", "Error Reason"))) {
+								"Status", "Tin", "Medicaid Number", "License State", "Email ID", "Fax",
+								"Error Reason"))) {
 
 			for (Map.Entry<Provider, String> e : failedProvider.entrySet()) {
 				Provider provider = e.getKey();
@@ -268,6 +280,11 @@ public class ProviderServiceImpl implements ProviderService {
 						provider.getAddress() != null ? provider.getAddress().getCity() : "",
 						provider.getAddress() != null ? provider.getAddress().getZip() : "",
 						provider.getAddress() != null ? provider.getAddress().getState() : "",
+						provider.getTin() != null ? provider.getTin() : "",
+						provider.getMedicaidNumber() != null ? provider.getMedicaidNumber() : "",
+						provider.getLicenseState() != null ? provider.getLicenseState() : "",
+						provider.getEmail() != null ? provider.getEmail() : "",
+						provider.getFax() != null ? provider.getFax() : "",
 						provider.getPhone() != null ? provider.getPhone() : "", rawStatus, error != null ? error : "");
 			}
 		}
@@ -313,6 +330,11 @@ public class ProviderServiceImpl implements ProviderService {
 		provider.setDea(model.getDea());
 		provider.setNpi(model.getNpi());
 		provider.setName(model.getName());
+		provider.setEmail(model.getEmail());
+		provider.setFax(model.getFax());
+		provider.setLicenseState(model.getLicenseState());
+		provider.setMedicaidNumber(model.getMedicaidNumber());
+		provider.setTin(model.getTin());
 		validateProvider(provider);
 		return providerRepository.save(provider);
 	}
