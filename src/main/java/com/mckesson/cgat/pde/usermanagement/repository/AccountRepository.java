@@ -340,4 +340,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	int unlinkSpecialtyPharmaAccount(@Param("sapMaterial") String sapMaterial,
 			@Param("accountNumber") String accountNumber);
 
+	List<Account> findByAccountNameInAndChannelType(Set<String> accountNames, ChannelType channelType);
+
 }

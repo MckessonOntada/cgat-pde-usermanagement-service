@@ -3,22 +3,22 @@ package com.mckesson.cgat.pde.usermanagement.dto;
 import com.mckesson.cgat.pde.usermanagement.model.Address;
 import com.mckesson.cgat.pde.usermanagement.model.Contact;
 
+import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@EqualsAndHashCode
 public class AccountDTO {
 
 	@Size(min = 1, max = 100, message = "Account name must not exceed 100 characters.")
+	@NotEmpty(message = "Account Name is required.", groups = BasicInfo.class)
 	@Pattern(regexp = "^(?![&\\-])[A-Za-z0-9 &\\-]*(?<![&\\-])$",
 			message = "Account Name: Alpha-numerics, spaces, '&', and '-' are allowed, and no starts/ending with '&' or '-'")
 	private String accountName;

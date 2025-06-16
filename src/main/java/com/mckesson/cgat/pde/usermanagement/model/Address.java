@@ -48,6 +48,7 @@ public class Address implements Serializable {
 	@Pattern(regexp = "^(?! )[A-Za-z ]*(?<! )$",
 			message = "State must contain only alphabetic characters and spaces, and cannot start or end with a space.",
 			groups = BasicInfo.class)
+	@ValidState(message = "State must be a valid U.S. state or territory.", groups = BasicInfo.class)
 	private String state;
 
 	@NotEmpty(message = "ZIP code is required.", groups = BasicInfo.class)
