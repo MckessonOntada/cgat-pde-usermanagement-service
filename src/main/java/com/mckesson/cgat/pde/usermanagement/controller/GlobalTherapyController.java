@@ -168,7 +168,7 @@ public class GlobalTherapyController {
 	@GetMapping("/config/ndc/{ndcNumber}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/therapy")
 	@RequirePermissions({ Permission.ADD_ORDERS, Permission.EDIT_ORDERS })
 	@Operation(summary = "Find Therapy details by Ndc Number and soldTo account")
-	public ResponseEntity<MaterialResponseDTO> findTherapyDetailsByNdcAndSoldToAccount(
+	public ResponseEntity<List<MaterialResponseDTO>> findTherapyDetailsByNdcAndSoldToAccount(
 			@PathVariable @NotBlank(message = "Ndc number is required") String ndcNumber,
 			@PathVariable @NotBlank(message = "Sold To Account is required") String soldToAccountId,
 			@PathVariable @NotBlank(message = "Ship To Account is required") String shipToAccountId,

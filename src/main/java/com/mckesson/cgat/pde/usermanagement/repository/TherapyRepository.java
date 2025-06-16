@@ -525,7 +525,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					 AND cp.channelType = :channelType
 					 AND m.itemStatus = 'A'
 			""")
-	Optional<MaterialResponseDTO> findTherapyAndConfigBySoldToAccountAndProgramAndNdc(
+	List<MaterialResponseDTO> findTherapyAndConfigBySoldToAccountAndProgramAndNdc(
 			@Param("soldToAccount") String soldToAccount, @Param("shipToAccount") String shipToAccount,
 			@Param("program") String program, @Param("ndcNumber") String ndcNumber,
 			@Param("channelType") ChannelType channelType,
@@ -547,7 +547,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 				 AND cp.channelType = :channelType
 				 AND m.itemStatus = 'A'
 			""")
-	Optional<MaterialResponseDTO> findSPTherapyAndConfigBySoldToAccountAndProgramAndNdc(
+	List<MaterialResponseDTO> findSPTherapyAndConfigBySoldToAccountAndProgramAndNdc(
 			@Param("soldToAccount") String soldToAccount, @Param("shipToAccount") String shipToAccount,
 			@Param("ndcNumber") String ndcNumber, @Param("channelType") ChannelType channelType,
 			@Param("partnerFunction") AccountPartnerFunction partnerFunction);
