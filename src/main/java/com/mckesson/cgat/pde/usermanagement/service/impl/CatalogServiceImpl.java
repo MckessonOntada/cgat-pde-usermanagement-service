@@ -37,6 +37,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.mckesson.cgat.pde.usermanagement.utils.CsvFileValidationUtils.validateCSVFile;
 import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.*;
 
 @Service
@@ -267,25 +268,6 @@ public class CatalogServiceImpl implements CatalogService {
 		Pair<String, String> key = Pair.of(accountNumber, productId);
 		CatalogPrice existing = existingCatalogMap.get(key);
 		handleLink(account, therapy, existing, catalogToUpdate);
-	}
-
-	private void validateCSVFile(MultipartFile file) {
-		String contentType = file.getContentType();
-		String originalFilename = file.getOriginalFilename();
-
-		boolean isValidType = StringUtils.isNotEmpty(contentType)
-				&& (contentType.equals("text/csv") || contentType.equals("application/vnd.ms-excel"));
-
-		boolean isValidExtension = StringUtils.isNotEmpty(originalFilename)
-				&& originalFilename.toLowerCase().endsWith(".csv");
-
-		if (!isValidType || !isValidExtension) {
-			throw new CsvFileNotValidException(List.of("invalid.csv.file.type"));
-		}
-
-		if (file.isEmpty()) {
-			throw new CsvFileNotValidException(List.of("invalid.csv.file.empty"));
-		}
 	}
 
 	private Set<SPCatalogLinkDTO> parseAndValidateCSVData(CSVParser csvParser, List<String[]> errorRecords,

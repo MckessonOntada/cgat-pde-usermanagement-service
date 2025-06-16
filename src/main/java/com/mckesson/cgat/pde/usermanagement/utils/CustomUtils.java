@@ -72,6 +72,27 @@ public class CustomUtils {
 	public static final List<String> REQUIRED_HEADERS = List.of(HEADER_ACCOUNT_NUMBER, HEADER_PRODUCT_ID,
 			HEADER_STATUS);
 
+	public static final String HEADER_ACCOUNT_NAME = "Account Name";
+
+	public static final String HEADER_ADDRESS_1 = "Address1";
+
+	public static final String HEADER_ADDRESS_2 = "Address2";
+
+	public static final String HEADER_ZIP = "Zip";
+
+	public static final String HEADER_CITY = "City";
+
+	public static final String HEADER_STATE = "State";
+
+	public static final String HEADER_EMAIL = "Email";
+
+	public static final String HEADER_PHONE = "Phone";
+
+	public static final String HEADER_FAX = "Fax";
+
+	public static final List<String> SP_ACCOUNT_REQUIRED_HEADERS = List.of(HEADER_ACCOUNT_NAME, HEADER_ADDRESS_1,
+			HEADER_ADDRESS_2, HEADER_ZIP, HEADER_CITY, HEADER_STATE, HEADER_EMAIL, HEADER_PHONE, HEADER_FAX);
+
 	public static final String CATALOG_ACTION_STATUS_LINK = "Link";
 
 	public static final String CATALOG_ACTION_STATUS_UNLINK = "Unlink";

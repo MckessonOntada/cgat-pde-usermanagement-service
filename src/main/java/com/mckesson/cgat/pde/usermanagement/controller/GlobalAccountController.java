@@ -5,8 +5,11 @@ import java.io.OutputStreamWriter;
 import java.util.List;
 
 import com.mckesson.cgat.pde.usermanagement.dto.SpecialtyPharmaAccountDto;
+import com.mckesson.cgat.pde.usermanagement.dto.CSVProcessingResult;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.*;
+import org.flywaydb.core.internal.util.CollectionsUtils;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +26,7 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 @RestController
@@ -125,6 +129,23 @@ public class GlobalAccountController {
 			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "SPAccounts.csv")
 			.contentType(MediaType.parseMediaType("text/csv"))
 			.body(stream);
+	}
+
+	@PostMapping(value = "/for-practice/{practiceId}/upload", consumes = { "multipart/form-data" })
+	@RequirePermissions({ Permission.MANAGE_SP_ACCOUNT })
+	@Operation(summary = "Upload bulk SP accounts")
+	public ResponseEntity<?> uploadSPAccountCsv(@RequestPart("accountsData") MultipartFile accountsData,
+			@PathVariable int practiceId) {
+		CSVProcessingResult result = accountService.uploadSPAccounts(accountsData, practiceId);
+
+		if (CollectionsUtils.hasItems(result.getErrors())) {
+			ByteArrayResource resource = new ByteArrayResource(result.getErrorFileContent());
+			return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
+				.contentType(MediaType.parseMediaType("text/csv"))
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=error_report.csv")
+				.body(resource);
+		}
+		return ResponseEntity.ok("File processed successfully, No errors were found.");
 	}
 
 }
