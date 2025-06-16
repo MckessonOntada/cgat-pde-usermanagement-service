@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -320,5 +321,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 			""")
 	int unlinkSpecialtyPharmaAccount(@Param("sapMaterial") String sapMaterial,
 			@Param("accountNumber") String accountNumber);
+
+	List<Account> findByAccountNameInAndChannelTypeAndPracticeId(Set<String> accountNames, ChannelType channelType,
+			int practiceId);
 
 }
