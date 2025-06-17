@@ -3,7 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.repository;
 import java.util.List;
 import java.util.Set;
 
-import com.mckesson.cgat.pde.usermanagement.dto.SpecialtyPharmaAccountDto;
+import com.mckesson.cgat.pde.usermanagement.dto.SpecialtyPharmaAccountProjection;
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 
@@ -306,9 +306,28 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 			      :salesOrgs IS NULL
 			      OR cp.sales_org = :salesOrgs
 			  )
+			""", countQuery = """
+			SELECT COUNT(DISTINCT cp.sold_to_customer)
+			FROM catalog.catalog_price cp
+			INNER JOIN usermanagement.account a
+			    ON cp.sold_to_customer = a.sap_customer
+			    AND a.channel_type = 'SPECIALITY_PHARMA'
+			WHERE cp.channel_type = 'SPECIALITY_PHARMA'
+			  AND cp.sap_material = :sapMaterial
+			  AND cp.deleted = false
+			  AND (
+			      :query IS NULL
+			      OR LOWER(cp.sold_to_customer_name) LIKE LOWER(CONCAT('%', :query, '%'))
+			      OR LOWER(cp.sold_to_customer) LIKE LOWER(CONCAT('%', :query, '%'))
+			  )
+			  AND (
+			      :salesOrgs IS NULL
+			      OR cp.sales_org = :salesOrgs
+			  )
 			""")
-	Page<SpecialtyPharmaAccountDto> findSpecialtyPharmaAccountsBySapMaterial(@Param("sapMaterial") String sapMaterial,
-			@Param("query") String query, @Param("salesOrgs") String salesOrgs, Pageable pageable);
+	Page<SpecialtyPharmaAccountProjection> findSpecialtyPharmaAccountsBySapMaterial(
+			@Param("sapMaterial") String sapMaterial, @Param("query") String query,
+			@Param("salesOrgs") String salesOrgs, Pageable pageable);
 
 	@Modifying
 	@Query(nativeQuery = true, value = """
