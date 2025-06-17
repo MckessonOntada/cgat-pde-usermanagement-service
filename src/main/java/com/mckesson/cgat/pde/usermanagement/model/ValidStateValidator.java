@@ -7,7 +7,7 @@ import java.util.Set;
 
 public class ValidStateValidator implements ConstraintValidator<ValidState, String> {
 
-	private static final Set<String> VALID_STATES = Set.of("alabama", "alaska", "arizona", "arkansas", "california",
+	public static final Set<String> VALID_US_STATES = Set.of("alabama", "alaska", "arizona", "arkansas", "california",
 			"colorado", "connecticut", "delaware", "florida", "georgia", "hawaii", "idaho", "illinois", "indiana",
 			"iowa", "kansas", "kentucky", "louisiana", "maine", "maryland", "massachusetts", "michigan", "minnesota",
 			"mississippi", "missouri", "montana", "nebraska", "nevada", "new hampshire", "new jersey", "new mexico",
@@ -22,7 +22,7 @@ public class ValidStateValidator implements ConstraintValidator<ValidState, Stri
 		if (value == null || value.trim().isEmpty())
 			return false;
 
-		return VALID_STATES.contains(value.trim().toLowerCase());
+		return VALID_US_STATES.contains(value.trim().toLowerCase());
 	}
 
 }

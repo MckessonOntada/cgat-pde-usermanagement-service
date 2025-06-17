@@ -37,6 +37,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import static com.mckesson.cgat.pde.usermanagement.model.ValidStateValidator.VALID_US_STATES;
 import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 
 @Entity
@@ -90,6 +91,8 @@ public class Account extends AuditColumns implements Serializable {
 			this.division = "NA";
 			this.companyCode = "NA";
 			this.isActive = true;
+			this.address
+				.setCountry(VALID_US_STATES.contains(this.address.getState().trim().toLowerCase()) ? "US" : "NA");
 		}
 	}
 
