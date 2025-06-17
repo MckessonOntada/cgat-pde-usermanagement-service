@@ -337,6 +337,7 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
+	@Transactional
 	public void unlinkSpecialtyPharmaAccount(String sapMaterial, String accountNumber)
 			throws ResourceNotFoundException {
 		int rowsAffected = accountRepository.unlinkSpecialtyPharmaAccount(sapMaterial, accountNumber);
