@@ -64,7 +64,7 @@ public interface TherapyService {
 	MaterialResponseDTO findTherapyDetailsByNdc(String ndcNumber, ChannelType channelType)
 			throws ResourceNotFoundException;
 
-	MaterialResponseDTO findTherapyDetailsByNdcAndSoldToAndProgram(String ndcNumber, String soldToAccount,
+	List<MaterialResponseDTO> findTherapyDetailsByNdcAndSoldToAndProgram(String ndcNumber, String soldToAccount,
 			String shipToAccount, String program, ChannelType ndcChannelType, ChannelType channelType)
 			throws ResourceNotFoundException;
 
