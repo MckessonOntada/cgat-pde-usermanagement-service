@@ -5,11 +5,11 @@ import java.util.Set;
 
 import com.mckesson.cgat.pde.usermanagement.dto.AccountDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.AccountDetailsResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.CSVProcessingResult;
 import com.mckesson.cgat.pde.usermanagement.dto.SpecialtyPharmaAccountDto;
 import com.mckesson.cgat.pde.usermanagement.model.Provider;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
@@ -18,6 +18,7 @@ import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public interface AccountService {
@@ -64,5 +65,7 @@ public interface AccountService {
 			String query, String salesOrgs);
 
 	void unlinkSpecialtyPharmaAccount(String sapMaterial, String accountNumber) throws ResourceNotFoundException;
+
+	CSVProcessingResult uploadSPAccounts(MultipartFile accountsData, int practiceId);
 
 }
