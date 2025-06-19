@@ -280,12 +280,13 @@ public class ProviderServiceImpl implements ProviderService {
 						provider.getAddress() != null ? provider.getAddress().getCity() : "",
 						provider.getAddress() != null ? provider.getAddress().getZip() : "",
 						provider.getAddress() != null ? provider.getAddress().getState() : "",
+						provider.getPhone() != null ? provider.getPhone() : "", rawStatus,
 						provider.getTin() != null ? provider.getTin() : "",
 						provider.getMedicaidNumber() != null ? provider.getMedicaidNumber() : "",
 						provider.getLicenseState() != null ? provider.getLicenseState() : "",
 						provider.getEmail() != null ? provider.getEmail() : "",
-						provider.getFax() != null ? provider.getFax() : "",
-						provider.getPhone() != null ? provider.getPhone() : "", rawStatus, error != null ? error : "");
+						provider.getFax() != null ? provider.getFax() : "", error != null ? error : "");
+
 			}
 		}
 		catch (IOException e) {
