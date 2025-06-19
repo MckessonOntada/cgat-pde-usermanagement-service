@@ -1,3 +1,9 @@
+delete from ROLE
+where id=3;
+
+delete from ROLE_PERMISSIONS_MAPPING
+where ROLE_ID=3;
+
 INSERT INTO ROLE (ID,  NAME, DESCRIPTION, IS_ACTIVE, CREATED_BY, UPDATED_BY) VALUES ('3', 'Treatment centre Executive', 'Treatment centre Executive', 1, 'SYSTEM', 'SYSTEM');
 
 INSERT INTO ROLE_PERMISSIONS_MAPPING (ROLE_ID, PERMISSION) VALUES
