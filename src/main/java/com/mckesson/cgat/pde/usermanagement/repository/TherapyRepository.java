@@ -346,6 +346,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			                          OR LOWER(m.generic_name) LIKE %:query%
 			                          OR LOWER(m.site_name) LIKE %:query%
 			                          OR LOWER(m.trade_name) LIKE %:query%
+			                          OR LOWER(m.dosage) LIKE %:query%
+			                          OR LOWER(m.strength) LIKE %:query%
 			                      )
 			                      AND (
 			                          :statusActive = 'ALL'
