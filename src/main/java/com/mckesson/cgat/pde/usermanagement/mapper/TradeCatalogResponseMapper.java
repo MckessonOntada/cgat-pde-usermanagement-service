@@ -5,10 +5,7 @@ import com.mckesson.cgat.pde.usermanagement.dto.TherapyDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.TradeCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class TradeCatalogResponseMapper {
 
@@ -36,26 +33,30 @@ public class TradeCatalogResponseMapper {
 				genericNames);
 
 		Map<String, TherapyDTO> therapyMap = new HashMap<>();
+		Set<String> addedNdcs = new HashSet<>();
 
 		for (int i = 0; i < maxLength; i++) {
 			String id = safeGet(ids, i);
+			String ndc = safeGet(ndcs, i);
 
 			// Skip if id is null or already exists in the map
-			if (id == null || therapyMap.containsKey(id)) {
+			if (id == null || therapyMap.containsKey(id) || ndc == null || addedNdcs.contains(ndc)) {
 				continue;
 			}
+			addedNdcs.add(ndc);
 
 			TherapyDTO dto = new TherapyDTO();
 			dto.setId(id);
 			dto.setMaterialNumber(safeGet(therapyNumbers, i));
 			dto.setMaterialDescription(safeGet(descriptions, i));
-			dto.setNdc(safeGet(ndcs, i));
+			dto.setNdc(ndc);
 			dto.setStrength(safeGet(strengths, i));
 			dto.setDosage(safeGet(dosages, i));
 			dto.setManufacturerName(safeGet(manufacturerNames, i));
 			dto.setGenericName(safeGet(genericNames, i));
 
 			therapyMap.put(id, dto);
+
 		}
 
 		return new ArrayList<>(therapyMap.values());
