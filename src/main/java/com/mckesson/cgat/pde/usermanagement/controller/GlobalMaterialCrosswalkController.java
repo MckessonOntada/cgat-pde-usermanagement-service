@@ -95,11 +95,11 @@ public class GlobalMaterialCrosswalkController {
 	@Operation(summary = "Fetch all CrossWalks based on filter provided with pagination capabilities.")
 	public ResponseEntity<Page<CrosswalkResponseDTO>> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize,
-			@RequestParam(defaultValue = "bnbMaterialDesc") String sortBy,
-			@RequestParam(defaultValue = "desc") String sortOrder, @RequestParam(required = false) String query,
+			@RequestParam(defaultValue = "trade_name") String sortBy,
+			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
 			@RequestParam(required = false) List<String> status)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
-		String mappedSortBy = crosswalk_sortby_columns.getOrDefault(sortBy, "m1.material_description");
+		String mappedSortBy = crosswalk_sortby_columns.getOrDefault(sortBy, "m1.trade_name");
 
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(mappedSortBy).ascending()
 				: Sort.by(mappedSortBy).descending();
