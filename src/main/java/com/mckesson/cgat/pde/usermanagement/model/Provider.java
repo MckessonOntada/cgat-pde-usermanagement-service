@@ -57,8 +57,8 @@ public class Provider extends AuditColumns implements Serializable {
 
 	@NotBlank(message = "DEA Number is required", groups = BasicInfo.class)
 	@Size(min = 9, max = 9, message = "DEA Number must be exactly 9 characters", groups = BasicInfo.class)
-	@Pattern(regexp = "^[A-Za-z]{2}\\d{7}$",
-			message = "DEA Number must start with 2 letters followed by 7 digits (e.g., AB1234567)",
+	@Pattern(regexp = "^[A-Za-z][A-Za-z0-9]\\d{7}$",
+			message = "DEA Number must start with a letter, followed by a letter or digit, and end with 7 digits (e.g., A12345678 or AB1234567)",
 			groups = BasicInfo.class)
 	@Column(name = "dea", length = 9, nullable = false)
 	private String dea;
