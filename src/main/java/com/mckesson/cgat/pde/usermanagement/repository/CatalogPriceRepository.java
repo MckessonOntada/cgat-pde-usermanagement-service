@@ -83,8 +83,8 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 			""", nativeQuery = true)
 	Page<CatalogPrice> findAllGlobalCatalogs(@Param("accountIds") List<String> accountIds,
 			@Param("partnerFunction") String partnerFunction, @Param("query") String query, Pageable paging,
-			@Param("channelType") String channelType, List<Integer> practiceIdList, boolean allSPCatalogs,
-			int practiceIdListSize);
+			@Param("channelType") String channelType, List<Integer> practiceIdList,
+			int practiceIdListSize, int accountsListSize);
 
 	Optional<CatalogPrice> findBySapMaterialAndSoldToCustomerAndChannelType(String sapMaterial, String soldToCustomer,
 			ChannelType channelType);

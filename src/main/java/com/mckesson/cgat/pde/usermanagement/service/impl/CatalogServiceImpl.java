@@ -243,7 +243,7 @@ public class CatalogServiceImpl implements CatalogService {
 
 				List<CatalogPrice> allCatalogs = catalogPriceRepository
 					.findAllGlobalCatalogs(accountNumbers, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(),
-							query, paging, ChannelType.SPECIALITY_PHARMA.name(), Collections.emptyList(), false, 0)
+							query, paging, ChannelType.SPECIALITY_PHARMA.name(), Collections.emptyList(), 0 , 0)
 					.getContent();
 
 				for (CatalogPrice cp : allCatalogs) {

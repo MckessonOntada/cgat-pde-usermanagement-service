@@ -57,14 +57,13 @@ public class GlobalCatalogController {
 			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType,
 			@RequestParam(defaultValue = "sap_material") String sortBy,
 			@RequestParam(defaultValue = "desc") String sortOrder,
-			@RequestParam(required = false) List<Integer> practiceIdList,
-			@RequestParam(defaultValue = "false") boolean allCatalogs) {
+			@RequestParam(required = false) List<Integer> practiceIdList) {
 
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 		return new ResponseEntity<>(therapyService.findAllGlobalCatalogs(accountNumbers, query, paging, channelType,
-				practiceIdList, allCatalogs), HttpStatus.OK);
+				practiceIdList), HttpStatus.OK);
 	}
 
 	@RequirePermissions({ Permission.MANAGE_CATALOG })

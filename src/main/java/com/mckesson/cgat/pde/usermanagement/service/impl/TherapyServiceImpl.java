@@ -318,17 +318,21 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	public Page<CatalogPrice> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging,
-			ChannelType channelType, List<Integer> practiceIdList, boolean allCatalogs) {
+			ChannelType channelType, List<Integer> practiceIdList) {
 		try {
 			log.info(" Inside method - findAllGlobalCatalogs");
 			log.info("accountIds : {}, query: {}", accountIds, StringUtils.toRootLowerCase(query));
-			int size = 0;
+			int practiceIdListSize = 0;
+			int accountIdListSize = 0;
 			if (CollectionsUtils.hasItems(practiceIdList)) {
-				size = practiceIdList.size();
+				practiceIdListSize = practiceIdList.size();
 			}
-			return catalogPriceRepository.findAllGlobalCatalogs(accountIds,
+			if (CollectionsUtils.hasItems(accountIds)) {
+				accountIdListSize = accountIds.size();
+			}
+			return catalogPriceRepository.findAllGlobalCatalogs(accountIdListSize == 0 ? Collections.emptyList() : accountIds,
 					AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), StringUtils.toRootLowerCase(query), paging,
-					channelType.name(), size == 0 ? Collections.emptyList() : practiceIdList, allCatalogs, size);
+					channelType.name(), practiceIdListSize == 0 ? Collections.emptyList() : practiceIdList, practiceIdListSize , accountIdListSize);
 		}
 		catch (Exception e) {
 			log.error("Exception occurred in findAllGlobalCatalogs and exception details", e);
