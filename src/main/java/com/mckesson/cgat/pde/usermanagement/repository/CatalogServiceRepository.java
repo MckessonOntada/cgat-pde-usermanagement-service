@@ -15,7 +15,7 @@ import java.util.Optional;
 public interface CatalogServiceRepository extends JpaRepository<CatalogConfiguration, CatalogConfigId> {
 
 	@Query("""
-			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.CatalogResponseDTO(c, p , m.siteName)
+			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.CatalogResponseDTO(c, p)
 			    FROM CatalogPrice p
 			      JOIN Therapy m
 			   ON m.materialNumber = p.sapMaterial
