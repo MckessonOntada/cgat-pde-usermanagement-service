@@ -129,10 +129,6 @@ public class Therapy implements Serializable {
 	@Column(name = "material_number")
 	private String materialNumber;
 
-	@Size(max = 50)
-	@Column(name = "site_name")
-	private String siteName;
-
 	// @Size(max = 20)
 	@Column(name = "channel_type")
 	@Enumerated(EnumType.STRING)
@@ -389,6 +385,15 @@ public class Therapy implements Serializable {
 
 	@Column(name = "trade_name")
 	private String tradeName;
+
+	@Column(name = "package_quantity")
+	private BigDecimal packageQuantity;
+
+	@Column(name = "package_quantity_each")
+	private BigDecimal packageQuantityEach;
+
+	@Column(name = "drug_storage_type")
+	private String drugStorageType;
 
 	@PostLoad
 	public void postLoad() {
