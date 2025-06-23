@@ -301,10 +301,7 @@ public class UserServiceImpl implements UserService {
 					attachAccounts(user, userData.get(12).trim());
 					users.add(user);
 				}
-				catch (ResourceNotFoundException e) {
-					failedUser.put(user, e.getMessage());
-				}
-				catch (IllegalArgumentException e) {
+				catch (ResourceNotFoundException | IllegalArgumentException e) {
 					failedUser.put(user, e.getMessage());
 				}
 
@@ -411,12 +408,12 @@ public class UserServiceImpl implements UserService {
 	private void createOutputCSV(OutputStream outputStream, Map<User, String> failedUser) {
 		try (OutputStreamWriter writer = new OutputStreamWriter(outputStream);
 				CSVPrinter csvPrinter = new CSVPrinter(writer,
-						CSVFormat.DEFAULT.withHeader("First Name", "Phone", "Email", "Message"))) {
+						CSVFormat.DEFAULT.withHeader("First Name", "Phone", "Email", "State", "Message"))) {
 
 			for (Map.Entry<User, String> e : failedUser.entrySet()) {
 				User user = e.getKey();
 				csvPrinter.printRecord(user.getName().getFirstName(), user.getContact().getPhone(),
-						user.getContact().getEmail(), e.getValue());
+						user.getContact().getEmail(), user.getAddress().getState(), e.getValue());
 			}
 		}
 		catch (IOException e) {
