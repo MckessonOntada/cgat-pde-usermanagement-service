@@ -186,11 +186,11 @@ public class TherapyServiceImplTest {
 			.when(catalogPriceRepository.findAllGlobalCatalogs(anyList(), anyString(), anyString(), any(Pageable.class),
 					ChannelType.BUY_AND_BILL.name(), Collections.emptyList(), false, 0))
 			.thenReturn(getAllGlobalCatalogs());
-		therapyService.findAllGlobalCatalogs(accounts, query, paging, ChannelType.BUY_AND_BILL, Collections.emptyList()
-        );
+		therapyService.findAllGlobalCatalogs(accounts, query, paging, ChannelType.BUY_AND_BILL,
+				Collections.emptyList());
 		verify(catalogPriceRepository).findAllGlobalCatalogs(accounts,
 				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), query, paging, ChannelType.BUY_AND_BILL.name(),
-				Collections.emptyList(), false, 0);
+				Collections.emptyList(), 0, 0);
 	}
 
 	@DisplayName("Test : FindAll Variants linked to soldToAccount, ShipToAccounts and TherapyId")

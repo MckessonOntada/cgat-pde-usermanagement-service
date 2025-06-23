@@ -302,7 +302,7 @@ public class AccountServiceImpl implements AccountService {
 			List<Long> practiceIdList, AccountPartnerFunction partnerFunction, List<String> salesOrg,
 			List<String> distChannels, ChannelType channelType, boolean allAccounts) {
 		query = StringUtils.toRootLowerCase(query);
-		return accountRepository.findAllOrganizations(query, CustomUtils.getConsolidatedStatus(status), paging,
+		return accountRepository.findAllByOrganization(query, CustomUtils.getConsolidatedStatus(status), paging,
 				practiceIdList, partnerFunction.getPartnerFunctionType(), salesOrg, distChannels, channelType.name(),
 				allAccounts);
 	}

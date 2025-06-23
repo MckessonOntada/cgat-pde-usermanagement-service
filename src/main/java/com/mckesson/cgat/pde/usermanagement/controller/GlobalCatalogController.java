@@ -62,8 +62,9 @@ public class GlobalCatalogController {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-		return new ResponseEntity<>(therapyService.findAllGlobalCatalogs(accountNumbers, query, paging, channelType,
-				practiceIdList), HttpStatus.OK);
+		return new ResponseEntity<>(
+				therapyService.findAllGlobalCatalogs(accountNumbers, query, paging, channelType, practiceIdList),
+				HttpStatus.OK);
 	}
 
 	@RequirePermissions({ Permission.MANAGE_CATALOG })
