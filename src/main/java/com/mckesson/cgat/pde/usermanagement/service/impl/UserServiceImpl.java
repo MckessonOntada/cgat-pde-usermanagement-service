@@ -172,6 +172,7 @@ public class UserServiceImpl implements UserService {
 		boolean removed = user.getAccounts().remove(account);
 
 		if (removed) {
+			userRepository.delinkUserFromAccount(userId, accountId);
 			userRepository.save(user); // Triggers Hibernate Envers auditing
 		}
 		else {
