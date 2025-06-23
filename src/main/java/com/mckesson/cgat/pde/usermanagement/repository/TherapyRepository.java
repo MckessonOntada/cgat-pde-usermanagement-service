@@ -427,7 +427,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 	List<Therapy> findAllByChannelTypeAndItemStatus(ChannelType channelType, String itemStatus);
 
 	@Query(value = """
-			    SELECT m.*
+			    SELECT distinct m.*
 			    FROM catalog.material m
 			    JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material
 			    JOIN catalog.crosswalk cw ON cp.sap_material = cw.sp_product_id
