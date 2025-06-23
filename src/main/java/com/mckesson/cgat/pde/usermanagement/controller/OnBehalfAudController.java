@@ -19,7 +19,6 @@ public class OnBehalfAudController {
 	@Autowired
 	private OnBehalfAuidtService auditService;
 
-	@RequirePermissions({ Permission.ON_BEHALF_OF_USER })
 	@PostMapping
 	@Operation(summary = "Audit log for User and Impersonated User along with sending email about the login.")
 	public ResponseEntity<String> logImpersonation() {
