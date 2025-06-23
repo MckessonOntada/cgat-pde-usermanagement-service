@@ -13,6 +13,7 @@ import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.flywaydb.core.internal.util.CollectionsUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -317,13 +318,23 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	public Page<CatalogPrice> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging,
-			ChannelType channelType) {
+			ChannelType channelType, List<Integer> practiceIdList) {
 		try {
 			log.info(" Inside method - findAllGlobalCatalogs");
 			log.info("accountIds : {}, query: {}", accountIds, StringUtils.toRootLowerCase(query));
-			return catalogPriceRepository.findAllGlobalCatalogs(accountIds,
+			int practiceIdListSize = 0;
+			int accountIdListSize = 0;
+			if (CollectionsUtils.hasItems(practiceIdList)) {
+				practiceIdListSize = practiceIdList.size();
+			}
+			if (CollectionsUtils.hasItems(accountIds)) {
+				accountIdListSize = accountIds.size();
+			}
+			return catalogPriceRepository.findAllGlobalCatalogs(
+					accountIdListSize == 0 ? Collections.emptyList() : accountIds,
 					AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), StringUtils.toRootLowerCase(query), paging,
-					channelType.name());
+					channelType.name(), practiceIdListSize == 0 ? Collections.emptyList() : practiceIdList,
+					practiceIdListSize, accountIdListSize);
 		}
 		catch (Exception e) {
 			log.error("Exception occurred in findAllGlobalCatalogs and exception details", e);

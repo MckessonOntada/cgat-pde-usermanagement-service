@@ -71,15 +71,23 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 						or LOWER(cp.sold_to_customer) like %:query%
 						or LOWER(cp.material_description_in_language_en) like %:query%
 					)
-					AND cp.sold_to_customer IN :accountIds
-					AND ac.partner_function = :partnerFunction
+			AND (
+			          (:accountsListSize > 0 AND cp.sold_to_customer IN :accountIds)
+			       OR (:accountsListSize = 0 AND (
+			              (:practiceIdListSize = 0 AND cp.tenant_id IS NOT NULL)
+			           OR (:practiceIdListSize > 0 AND cp.tenant_id IN :practiceIdList)
+			          ))
+			      )
+			        AND ac.partner_function = :partnerFunction
+			        AND ac.is_active = 1
 					AND cp.deleted = false
 			        	AND (:channelType = 'ALL' OR cp.channel_type = :channelType)
-			                                       				)
+			       )
 			""", nativeQuery = true)
 	Page<CatalogPrice> findAllGlobalCatalogs(@Param("accountIds") List<String> accountIds,
 			@Param("partnerFunction") String partnerFunction, @Param("query") String query, Pageable paging,
-			@Param("channelType") String channelType);
+			@Param("channelType") String channelType, List<Integer> practiceIdList, int practiceIdListSize,
+			int accountsListSize);
 
 	Optional<CatalogPrice> findBySapMaterialAndSoldToCustomerAndChannelType(String sapMaterial, String soldToCustomer,
 			ChannelType channelType);

@@ -182,13 +182,15 @@ public class TherapyServiceImplTest {
 	public void findAllGlobalCatalogsTest() {
 		String query = "";
 		List<String> accounts = new ArrayList<>();
-		Mockito.when(catalogPriceRepository.findAllGlobalCatalogs(anyList(), anyString(), anyString(),
-				any(Pageable.class), ChannelType.BUY_AND_BILL.name()))
+		Mockito
+			.when(catalogPriceRepository.findAllGlobalCatalogs(anyList(), anyString(), anyString(), any(Pageable.class),
+					ChannelType.BUY_AND_BILL.name(), Collections.emptyList(), false, 0))
 			.thenReturn(getAllGlobalCatalogs());
-		therapyService.findAllGlobalCatalogs(accounts, query, paging, ChannelType.BUY_AND_BILL);
+		therapyService.findAllGlobalCatalogs(accounts, query, paging, ChannelType.BUY_AND_BILL,
+				Collections.emptyList());
 		verify(catalogPriceRepository).findAllGlobalCatalogs(accounts,
-				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), query, paging,
-				ChannelType.BUY_AND_BILL.name());
+				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), query, paging, ChannelType.BUY_AND_BILL.name(),
+				Collections.emptyList(), 0, 0);
 	}
 
 	@DisplayName("Test : FindAll Variants linked to soldToAccount, ShipToAccounts and TherapyId")

@@ -99,12 +99,13 @@ public class GlobalAccountController {
 			@RequestParam(required = false) List<String> distChannels,
 			@RequestParam AccountPartnerFunction partnerFunction,
 			@RequestParam(defaultValue = "SPECIALITY_PHARMA") ChannelType channelType,
-			@RequestParam List<Long> practiceIdList) throws UnauthorizedAccessException {
+			@RequestParam List<Long> practiceIdList, @RequestParam(defaultValue = "false") boolean allAccounts)
+			throws UnauthorizedAccessException {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 		return accountService.findAllByOrganization(paging, query, status, practiceIdList, partnerFunction, salesOrg,
-				distChannels, channelType);
+				distChannels, channelType, allAccounts);
 	}
 
 	@GetMapping(value = "/download", produces = "text/csv")
