@@ -15,6 +15,4 @@ public class CatalogResponseDTO {
 
 	private CatalogPrice catalogPrice;
 
-	private String siteName;
-
 }

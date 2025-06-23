@@ -146,8 +146,8 @@ public class ProviderServiceImpl implements ProviderService {
 			errorMessage.append("Invalid status value; ");
 		}
 
-		if (errorMessage.length() > 0) {
-			throw new IllegalArgumentException("Validation errors: " + errorMessage.toString());
+		if (!errorMessage.isEmpty()) {
+			throw new IllegalArgumentException("Validation errors: " + errorMessage);
 		}
 	}
 
