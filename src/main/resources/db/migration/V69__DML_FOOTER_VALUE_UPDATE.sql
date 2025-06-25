@@ -1,0 +1,3 @@
+DELETE FROM usermanagement.footer_config WHERE id = 1;
+INSERT INTO usermanagement.footer_config (id, config_json)
+VALUES (1, '{ "sections": [ { "links": [ { "url": "https://inspirogene.com/privacy-notice/", "text": "footer.privacy" }, { "url": "https://privacyportal.onetrust.com/webform/599133ba-bafa-4e24-8173-6e59b6c96dab/f081c4ff-0e3b-4d07-a79f-30effc0fc255", "text": "footer.info" } ], "heading": "footer.terms" }, { "links": [ { "url": "https://patientportal.help.ontada.com/kb/en/", "text": "footer.help.content" }, { "url": "https://inspirogene.com/site-map/", "text": "footer.siteMap" } ], "heading": "footer.help" }, { "links": [ { "url": "https://inspirogene.com/contact/", "text": "1800-SUPPORT-NUMBER" } ], "heading": "footer.contant" } ] }');
