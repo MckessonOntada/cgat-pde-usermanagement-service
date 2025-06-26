@@ -82,7 +82,7 @@ public class GlobalTherapyController {
 	}
 
 	@GetMapping("/type/speciality-pharma")
-	@RequirePermissions({ Permission.VIEW_MATERIAL })
+	@RequirePermissions({ Permission.VIEW_SP_MATERIAL })
 	@Operation(summary = "Fetch all therapies.")
 	public ResponseEntity<Page<Therapy>> findAllSPTherapies(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
