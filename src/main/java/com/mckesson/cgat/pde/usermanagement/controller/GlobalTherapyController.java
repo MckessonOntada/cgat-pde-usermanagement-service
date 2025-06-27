@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -86,13 +87,17 @@ public class GlobalTherapyController {
 	@Operation(summary = "Fetch all therapies.")
 	public ResponseEntity<Page<Therapy>> findAllSPTherapies(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
-			@RequestParam(defaultValue = "material_number") String sortBy,
-			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam Status status,
-			@RequestParam(required = false) String manufacturer) {
-
-		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
-				: Sort.by(sortBy).descending();
-		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
+			@RequestParam(required = false) String sortBy, @RequestParam(defaultValue = "asc") String sortOrder,
+			@RequestParam Status status, @RequestParam(required = false) String manufacturer) {
+		Pageable paging;
+		if (StringUtils.isNotBlank(sortBy)) {
+			Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
+					: Sort.by(sortBy).descending();
+			paging = PageRequest.of(pageNo, pageSize, sort);
+		}
+		else {
+			paging = PageRequest.of(pageNo, pageSize);
+		}
 
 		return new ResponseEntity<>(therapyService.findAllGlobalSPTherapies(query, paging, status, manufacturer),
 				HttpStatus.OK);
