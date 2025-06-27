@@ -17,9 +17,6 @@ public interface CatalogServiceRepository extends JpaRepository<CatalogConfigura
 	@Query("""
 			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.CatalogResponseDTO(c, p)
 			    FROM CatalogPrice p
-			      JOIN Therapy m
-			   ON m.materialNumber = p.sapMaterial
-			  AND m.channelType = :channelType
 			    LEFT JOIN CatalogConfiguration c
 			    ON c.id.materialId = p.sapMaterial
 			    AND c.id.soldToAccount = p.soldToCustomer
