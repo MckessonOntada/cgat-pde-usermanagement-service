@@ -13,7 +13,6 @@ import com.mckesson.cgat.pde.usermanagement.model.Provider;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.mckesson.cgat.pde.usermanagement.dto.*;
@@ -22,6 +21,7 @@ import com.mckesson.cgat.pde.usermanagement.exception.custom.CsvFileNotValidExce
 import com.mckesson.cgat.pde.usermanagement.model.*;
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
 import com.mckesson.cgat.pde.usermanagement.repository.ProviderRepository;
+import com.mckesson.cgat.pde.usermanagement.utils.SalesOrgUtils;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import jakarta.validation.groups.Default;
@@ -165,29 +165,41 @@ public class AccountServiceImpl implements AccountService {
 				statusActive = CustomUtils.object_status.ACTIVE.name().equals(statusActive)
 						? CustomUtils.object_status.ALL.name() : CustomUtils.object_status.INACTIVE.name();
 		}
+
+		List<String> salesOrgForQuery = null;
+		boolean include3PLPattern = false;
+
+		if (!CollectionUtils.isEmpty(salesOrg)) {
+			salesOrgForQuery = SalesOrgUtils.convertNamesToQueryCodes(salesOrg);
+			include3PLPattern = salesOrg.contains("3PL");
+		}
+
 		if (userId != null) {
 			Optional<User> user = userRepository.findById(userId);
 			if (!user.isPresent())
 				throw new ResourceNotFoundException("User not found with id: " + userId);
 			return accountRepository
 				.findAccountsByUser(userId, query, statusActive, paging, practiceId,
-						partnerFunction.getPartnerFunctionType(), salesOrg, distChannels, channelType.name())
+						partnerFunction.getPartnerFunctionType(), salesOrgForQuery, distChannels, channelType.name(),
+						include3PLPattern)
 				.map(account -> {
-					return convertingCGATIdentifierFrom340T0340B(account);
+					return convertingSalesOrgAndCGATIdentifierFrom340T0340B(account);
 				});
 		}
 		return accountRepository
 			.findAllByQueryText(query, statusActive, paging, practiceId, partnerFunction.getPartnerFunctionType(),
-					salesOrg, distChannels, channelType.name())
+					salesOrgForQuery, distChannels, channelType.name(), include3PLPattern)
 			.map(account -> {
-				return convertingCGATIdentifierFrom340T0340B(account);
+				return convertingSalesOrgAndCGATIdentifierFrom340T0340B(account);
 			});
 	}
 
-	private static Account convertingCGATIdentifierFrom340T0340B(Account account) {
+	private static Account convertingSalesOrgAndCGATIdentifierFrom340T0340B(Account account) {
 		if (StringUtils.isNotEmpty(account.getCgatIdentifier()) && "340".equals(account.getCgatIdentifier())) {
 			account.setCgatIdentifier(account.getCgatIdentifier().concat("B"));
 		}
+
+		account.setSalesOrg(SalesOrgUtils.getNameByCode(account.getSalesOrg()));
 		return account;
 	}
 
@@ -240,7 +252,7 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public AccountDetailsResponseDTO getAccountDetails(Long accountId) throws ResourceNotFoundException {
 		Account account = getAccount(accountId);
-		convertingCGATIdentifierFrom340T0340B(account);
+		convertingSalesOrgAndCGATIdentifierFrom340T0340B(account);
 
 		List<Questionnaire> questionnaires = questionnaireService.getAllConfiguredQuestionnairesForSpecificType(
 				QuestionnaireConfigurationType.Account, "", account.getAccountNumber(), "", "",
@@ -302,9 +314,16 @@ public class AccountServiceImpl implements AccountService {
 			List<Long> practiceIdList, AccountPartnerFunction partnerFunction, List<String> salesOrg,
 			List<String> distChannels, ChannelType channelType, boolean allAccounts) {
 		query = StringUtils.toRootLowerCase(query);
+		boolean include3PLPattern = false;
+
+		List<String> salesOrgForQuery = null;
+		if (!CollectionUtils.isEmpty(salesOrg)) {
+			salesOrgForQuery = SalesOrgUtils.convertNamesToQueryCodes(salesOrg);
+			include3PLPattern = salesOrg.contains("3PL");
+		}
 		return accountRepository.findAllByOrganization(query, CustomUtils.getConsolidatedStatus(status), paging,
-				practiceIdList, partnerFunction.getPartnerFunctionType(), salesOrg, distChannels, channelType.name(),
-				allAccounts);
+				practiceIdList, partnerFunction.getPartnerFunctionType(), salesOrgForQuery, distChannels,
+				channelType.name(), allAccounts, include3PLPattern);
 	}
 
 	@Override
