@@ -138,11 +138,9 @@ public class Therapy implements Serializable {
 	@Column(name = "ndc_number")
 	private String ndcNumber;
 
-	@Size(max = 10)
 	@Column(name = "strength")
 	private String strength;
 
-	@Size(max = 10)
 	@Column(name = "dosage")
 	private String dosage;
 
