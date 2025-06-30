@@ -260,14 +260,6 @@ public class TherapyServiceImpl implements TherapyService {
 		else {
 			List<Therapy> therapies = findByNdcNumber(ndcNumber, channelType);
 			isCrosswalkMaterial = therapies.stream().anyMatch(Therapy::getIsCrosswalked);
-
-			// case : when program-channel for bnb is empty, i.e. either bnb account not
-			// accessible or config set-up issue
-			if (isCrosswalkMaterial && channelType.equals(ChannelType.BUY_AND_BILL))
-				return ProgramChannelResponseDTO.builder()
-					.channels(Collections.singleton(ChannelType.SPECIALITY_PHARMA.name()))
-					.programs(new HashSet<>())
-					.build();
 		}
 
 		List<String> crossWalkedSPs = new ArrayList<>();
