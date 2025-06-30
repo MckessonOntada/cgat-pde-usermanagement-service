@@ -46,6 +46,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 					COALESCE(:salesOrg) is null
 					or
 					sales_org IN (:salesOrg)
+				    or (:include3PLPattern = true AND sales_org LIKE '2%')
 				)
 				AND
 				(
@@ -63,7 +64,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 			)""")
 	Page<Account> findAllByQueryText(@Param("query") String query, @Param("status") String status, Pageable paging,
 			@Param("practiceId") Long practiceId, String partnerFunction, @Param("salesOrg") List<String> salesOrg,
-			@Param("distChannels") List<String> distChannels, @Param("channelType") String channelType);
+			@Param("distChannels") List<String> distChannels, @Param("channelType") String channelType,
+			boolean include3PLPattern);
 
 	Set<Account> findByPracticeId(Long practiceId);
 
@@ -96,6 +98,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 					COALESCE(:salesOrg) is null
 					or
 					ua.sales_org IN (:salesOrg)
+				    or (:include3PLPattern = true AND ua.sales_org LIKE '2%')
 				)
 				AND
 				(
@@ -114,7 +117,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	Page<Account> findAccountsByUser(@Param("userId") Long userId, @Param("query") String query,
 			@Param("status") String status, Pageable pageable, @Param("practiceId") Long practiceId,
 			String partnerFunction, @Param("salesOrg") List<String> salesOrg,
-			@Param("distChannels") List<String> distChannels, @Param("channelType") String channelType);
+			@Param("distChannels") List<String> distChannels, @Param("channelType") String channelType,
+			boolean include3PLPattern);
 
 	@Query("select a FROM Account a WHERE a.accountNumber = :accountNumber AND a.partnerFunction = :partnerFunction")
 	Set<Account> findByAccountNumber(String accountNumber, AccountPartnerFunction partnerFunction);
@@ -192,6 +196,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 							COALESCE(:salesOrg) is null
 							or
 							sales_org IN (:salesOrg)
+						    or (:include3PLPattern = true AND ua.sales_org LIKE '2%')
 						)
 						AND
 						(
@@ -209,7 +214,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 					)""")
 	Page<Account> findAllByOrganization(String query, String status, Pageable paging, List<Long> practiceIdList,
 			String partnerFunction, List<String> salesOrg, List<String> distChannels, String channelType,
-			boolean allSPAccounts);
+			boolean allSPAccounts, boolean include3PLPattern);
 
 	@Query(nativeQuery = true, value = """
 			select *

@@ -37,7 +37,6 @@ import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import com.mckesson.cgat.pde.usermanagement.model.Address;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.Contact;
-import com.mckesson.cgat.pde.usermanagement.model.DistributionChannel;
 import com.mckesson.cgat.pde.usermanagement.model.Name;
 import com.mckesson.cgat.pde.usermanagement.model.Practice;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
@@ -143,7 +142,7 @@ class AccountServiceImplTest {
 		Page<Account> accountPage = getAccountList();
 		Pageable paging = PageRequest.of(0, 20, Sort.by("name").ascending());
 		when(accountRepository.findAllByQueryText(anyString(), anyString(), any(PageRequest.class), anyLong(),
-				anyString(), anyList(), anyList(), anyString()))
+				anyString(), anyList(), anyList(), anyString(), false))
 			.thenReturn(accountPage);
 		// Page<Account> result = accountService.findAll(paging, "", List.of("ALL"), null,
 		// 1L,
@@ -153,7 +152,7 @@ class AccountServiceImplTest {
 		// assertEquals(accountPage, result);
 		verify(accountRepository, times(1)).findAllByQueryText("", "ALL", paging, 1L,
 				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), new ArrayList<>(), new ArrayList<>(),
-				ChannelType.BUY_AND_BILL.name());
+				ChannelType.BUY_AND_BILL.name(), false);
 	}
 
 	@DisplayName("UserNotFoundException : GetUser")
