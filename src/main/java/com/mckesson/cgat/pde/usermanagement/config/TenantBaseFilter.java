@@ -84,6 +84,7 @@ public class TenantBaseFilter extends CGATBaseFilter {
 	public static boolean isUserAuthorized(LoggedInUserDetails loggedInUser, Long tenantIdFromRequest) {
 		return (UserRequestAuthorizationValidator.isSystemAdmin(loggedInUser)
 				|| UserRequestAuthorizationValidator.isCustomerCentreUser(loggedInUser)
+				|| UserRequestAuthorizationValidator.isTreatmentCentreExecutiveUser(loggedInUser)
 				|| loggedInUser.getPracticeId() == tenantIdFromRequest);
 	}
 

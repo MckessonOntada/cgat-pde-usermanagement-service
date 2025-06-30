@@ -68,6 +68,7 @@ jobs:
         OKTA_AUTHSERVERID: ${{ secrets.OKTA_AUTHSERVERID }}
         OKTA_CLIENTID: ${{ secrets.OKTA_CLIENTID }}
         OKTA_BASEURL: ${{ vars.OKTA_BASEURL }}
+        NOTIFICATION_SUPPORT_CONTACT: ${{ secrets.NOTIFICATION_SUPPORT_CONTACT }}
 
       run: |
         # Setting up cluster configurations, config files are in the kubectl image
@@ -75,7 +76,7 @@ jobs:
         source /gke/gke-clusters.config
         source /aks/aks-clusters.config
 
-        if [ "$ENV" = "prod" ] || [ "$ENV" = "stage" ]; then
+        if [ "$ENV" = "prod" ]; then
           PROD=$(eval "echo \${CLUSTER_TYPE}_\${CLUSTER_REGION}PROD")
           SHARED_CLUSTER="\$${PROD}"
         elif [ "$ENV" = "prod-dr" ]; then
