@@ -196,7 +196,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 							COALESCE(:salesOrg) is null
 							or
 							sales_org IN (:salesOrg)
-						    or (:include3PLPattern = true AND ua.sales_org LIKE '2%')
+						    or (:include3PLPattern = true AND sales_org LIKE '2%')
 						)
 						AND
 						(
