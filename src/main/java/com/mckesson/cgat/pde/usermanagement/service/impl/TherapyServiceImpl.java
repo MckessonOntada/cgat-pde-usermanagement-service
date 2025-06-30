@@ -268,8 +268,6 @@ public class TherapyServiceImpl implements TherapyService {
 					.channels(Collections.singleton(ChannelType.SPECIALITY_PHARMA.name()))
 					.programs(new HashSet<>())
 					.build();
-
-			isCrosswalkMaterial = !isCrosswalkMaterial;
 		}
 
 		List<String> crossWalkedSPs = new ArrayList<>();
