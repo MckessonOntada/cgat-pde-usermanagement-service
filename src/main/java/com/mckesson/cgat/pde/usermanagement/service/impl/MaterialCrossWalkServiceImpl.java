@@ -398,13 +398,13 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 
 			// 3. All inputs valid, create crosswalks for the current request
 			List<Crosswalk> newCrosswalks = spTherapyMap.values()
-					.stream()
-					.map(spTherapy -> Crosswalk.builder()
-							.bnbNdcNumber(bnbNdc)
-							.spProductId(spTherapy.getMaterialNumber())
-							.isActive(true)
-							.build())
-					.toList();
+				.stream()
+				.map(spTherapy -> Crosswalk.builder()
+					.bnbNdcNumber(bnbNdc)
+					.spProductId(spTherapy.getMaterialNumber())
+					.isActive(true)
+					.build())
+				.toList();
 
 			materialCrossWalkConfigRepository.saveAll(newCrosswalks);
 			log.debug("Created {} new crosswalk entities for BNB NDC: {}", newCrosswalks.size(), bnbNdc);
