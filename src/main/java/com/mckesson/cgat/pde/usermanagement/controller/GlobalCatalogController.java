@@ -5,6 +5,7 @@ import java.util.List;
 import com.mckesson.cgat.pde.usermanagement.dto.*;
 import com.mckesson.cgat.pde.usermanagement.model.*;
 import com.mckesson.cgat.pde.usermanagement.service.CatalogService;
+import com.mckesson.cgat.pde.usermanagement.service.impl.utils.FileValidationUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -136,6 +137,8 @@ public class GlobalCatalogController {
 	@RequirePermissions({ Permission.MANAGE_SP_CATALOG })
 	@Operation(summary = "Upload bulk SP catalogs")
 	public ResponseEntity<?> uploadSPCatalogCsv(@RequestPart("catalogsData") MultipartFile catalogsData) {
+		FileValidationUtils.validateMultiPartFile(catalogsData);
+
 		CSVProcessingResult result = catalogService.uploadSPCatalog(catalogsData);
 
 		if (CollectionsUtils.hasItems(result.getErrors())) {

@@ -2,12 +2,12 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import com.mckesson.cgat.pde.usermanagement.dto.CrosswalkRequestDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.CrosswalkResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.exception.custom.CsvFileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
 import com.mckesson.cgat.pde.usermanagement.service.MaterialCrossWalkService;
+import com.mckesson.cgat.pde.usermanagement.service.impl.utils.FileValidationUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,7 +24,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -56,10 +55,7 @@ public class GlobalMaterialCrosswalkController {
 	public ResponseEntity<byte[]> uploadCrossWalks(@RequestPart("crossWalkData") MultipartFile crossWalkData)
 			throws FileNotValidException, UnauthorizedAccessException {
 
-		if (crossWalkData == null
-				|| !StringUtils.getFilenameExtension(crossWalkData.getOriginalFilename()).equalsIgnoreCase("csv")) {
-			throw new CsvFileNotValidException(List.of("invalid.csv.file.type"));
-		}
+		FileValidationUtils.validateMultiPartFile(crossWalkData);
 
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		boolean uploadStatus = materialCrossWalkService.uploadCrossWalks(crossWalkData, outputStream);

@@ -2,21 +2,21 @@ package com.mckesson.cgat.pde.usermanagement.exception.custom;
 
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
-public class FileNotValidException extends RuntimeException {
-
-	private static final long serialVersionUID = 1L;
-
-	private Throwable ex;
+public class FileNotValidException extends RuntimeException implements FileValidationError {
 
 	private String errorMessage;
 
-	public FileNotValidException(String errorMessage, Throwable ex) {
-		super(errorMessage, ex);
+	public FileNotValidException(String errorMessage) {
+		super("The file you uploaded isn’t supported. Please upload a Valid file.");
+		this.errorMessage = errorMessage;
 	}
 
-	public FileNotValidException(String errorMessage) {
-		super(errorMessage, null);
+	@Override
+	public List<String> getErrorCodes() {
+		return List.of(errorMessage);
 	}
 
 }
