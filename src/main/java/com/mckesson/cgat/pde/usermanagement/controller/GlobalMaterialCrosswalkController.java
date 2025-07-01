@@ -80,9 +80,9 @@ public class GlobalMaterialCrosswalkController {
 	@RequirePermissions({ Permission.ADD_CROSSWALK })
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(summary = "Create Crosswalk")
-	public ResponseEntity<Integer> createCrosswalks(@Valid @RequestBody CrosswalkRequestDTO crosswalk)
+	public ResponseEntity<Integer> createCrosswalks(@Valid @RequestBody List<CrosswalkRequestDTO> crosswalks)
 			throws UnauthorizedAccessException, ResourceNotFoundException {
-		int count = materialCrossWalkService.createCrosswalks(crosswalk);
+		int count = materialCrossWalkService.createCrosswalks(crosswalks);
 		return ResponseEntity.ok(count);
 	}
 

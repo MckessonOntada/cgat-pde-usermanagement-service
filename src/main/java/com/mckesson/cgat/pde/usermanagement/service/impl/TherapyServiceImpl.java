@@ -259,7 +259,7 @@ public class TherapyServiceImpl implements TherapyService {
 		}
 		else {
 			List<Therapy> therapies = findByNdcNumber(ndcNumber, channelType);
-			isCrosswalkMaterial = !therapies.stream().anyMatch(Therapy::getIsCrosswalked);
+			isCrosswalkMaterial = therapies.stream().anyMatch(Therapy::getIsCrosswalked);
 		}
 
 		List<String> crossWalkedSPs = new ArrayList<>();
