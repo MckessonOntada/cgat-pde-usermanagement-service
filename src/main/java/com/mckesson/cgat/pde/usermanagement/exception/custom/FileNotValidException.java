@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class FileNotValidException extends RuntimeException implements FileValidationError {
+public class FileNotValidException extends RuntimeException {
 
 	private String errorMessage;
 
@@ -14,7 +14,6 @@ public class FileNotValidException extends RuntimeException implements FileValid
 		this.errorMessage = errorMessage;
 	}
 
-	@Override
 	public List<String> getErrorCodes() {
 		return List.of(errorMessage);
 	}

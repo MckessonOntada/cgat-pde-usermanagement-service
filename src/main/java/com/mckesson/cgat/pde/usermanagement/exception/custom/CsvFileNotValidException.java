@@ -2,7 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.exception.custom;
 
 import java.util.List;
 
-public class CsvFileNotValidException extends RuntimeException implements FileValidationError {
+public class CsvFileNotValidException extends FileNotValidException {
 
 	private final List<String> errorCodes;
 
@@ -11,7 +11,6 @@ public class CsvFileNotValidException extends RuntimeException implements FileVa
 		this.errorCodes = errorCodes;
 	}
 
-	@Override
 	public List<String> getErrorCodes() {
 		return errorCodes;
 	}

@@ -315,11 +315,11 @@ public class UserServiceImpl implements UserService {
 		}
 		catch (IOException e) {
 			log.error("Unable to read User Data CSV");
-			throw new CsvFileNotValidException(List.of("invalid.csv.file.headers.unstructured"));
+			throw new CsvFileNotValidException(List.of("invalid.csv.file.read.error"));
 		}
 		catch (IndexOutOfBoundsException e) {
 			log.error("Invalid User Data file, some columns are missing");
-			throw new CsvFileNotValidException(List.of("invalid.csv.file.headers.unstructured"));
+			throw new CsvFileNotValidException(List.of("invalid.csv.file.columns.missing"));
 		}
 	}
 

@@ -127,7 +127,7 @@ public class ServiceExceptionHandler {
 	}
 
 	@ExceptionHandler({ CsvFileNotValidException.class, FileNotValidException.class })
-	public ResponseEntity<?> handleCsvFileNotValidException(FileValidationError ex) {
+	public ResponseEntity<?> handleCsvFileNotValidException(FileNotValidException ex) {
 		log.error("invalid csv file error: {}", ex.getErrorCodes());
 
 		Map<String, Object> errorResponse = new HashMap<>();
