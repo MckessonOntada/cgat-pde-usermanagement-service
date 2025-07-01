@@ -105,7 +105,7 @@ public class Provider extends AuditColumns implements Serializable {
 
 	@NotNull(message = "Please enter your Email ID", groups = BasicInfo.class)
 	@Size(min = 1, max = 50, message = "Email ID should not exceed 50 characters.", groups = BasicInfo.class)
-	@Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$",
+	@Pattern(regexp = "^(?!.*\\.\\.)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$",
 			message = "Please enter a valid email address (e.g., name@example.com).", groups = BasicInfo.class)
 	@Column(name = "email", nullable = false)
 	private String email;
