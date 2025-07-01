@@ -8,6 +8,7 @@ import com.mckesson.cgat.pde.usermanagement.dto.SpecialtyPharmaAccountDto;
 import com.mckesson.cgat.pde.usermanagement.dto.CSVProcessingResult;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.model.*;
+import com.mckesson.cgat.pde.usermanagement.service.impl.utils.FileValidationUtils;
 import org.flywaydb.core.internal.util.CollectionsUtils;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
@@ -137,6 +138,9 @@ public class GlobalAccountController {
 	@Operation(summary = "Upload bulk SP accounts")
 	public ResponseEntity<?> uploadSPAccountCsv(@RequestPart("accountsData") MultipartFile accountsData,
 			@PathVariable int practiceId) {
+
+		FileValidationUtils.validateMultiPartFile(accountsData);
+
 		CSVProcessingResult result = accountService.uploadSPAccounts(accountsData, practiceId);
 
 		if (CollectionsUtils.hasItems(result.getErrors())) {

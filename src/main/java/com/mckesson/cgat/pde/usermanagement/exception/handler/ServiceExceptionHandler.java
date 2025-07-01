@@ -1,9 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.exception.handler;
 
-import com.mckesson.cgat.pde.usermanagement.exception.custom.CsvFileNotValidException;
-import com.mckesson.cgat.pde.usermanagement.exception.custom.ForbiddenActionException;
-import com.mckesson.cgat.pde.usermanagement.exception.custom.ResourceConflictException;
-import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
+import com.mckesson.cgat.pde.usermanagement.exception.custom.*;
 import com.mckesson.jbat.auth.module.exception.BadRequestException;
 import com.mckesson.jbat.auth.module.exception.JWTNotFoundException;
 import com.mckesson.jbat.auth.module.exception.UserAuthenticationException;
@@ -129,16 +126,16 @@ public class ServiceExceptionHandler {
 		return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
 	}
 
-	@ExceptionHandler(CsvFileNotValidException.class)
-	public ResponseEntity<?> handleCsvFileNotValidException(CsvFileNotValidException ex) {
+	@ExceptionHandler({ CsvFileNotValidException.class, FileNotValidException.class })
+	public ResponseEntity<?> handleCsvFileNotValidException(FileNotValidException ex) {
 		log.error("invalid csv file error: {}", ex.getErrorCodes());
 
 		Map<String, Object> errorResponse = new HashMap<>();
-		errorResponse.put("status", HttpStatus.BAD_REQUEST.value());
-		errorResponse.put("message", ex.getMessage());
+		errorResponse.put("status", HttpStatus.UNSUPPORTED_MEDIA_TYPE.value());
+		errorResponse.put("message", ((RuntimeException) ex).getMessage());
 		errorResponse.put("errorCodes", ex.getErrorCodes());
 
-		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(errorResponse, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
 	}
 
 }

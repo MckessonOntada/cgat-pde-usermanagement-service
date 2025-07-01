@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import com.mckesson.cgat.pde.usermanagement.service.impl.utils.FileValidationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -53,10 +54,13 @@ public class PracticeServiceImpl implements PracticeService {
 			isCreatePractice = true;
 		Practice savedPractice = practiceRepository.save(practice);
 		if (null != logo && !logo.isEmpty()) {
+			if (!FileValidationUtils.isImageValid(logo))
+				throw new FileNotValidException("Invalid file format");
 			String logoURL = practiceUtils.uploadLogo(logo, savedPractice.getId());
 			savedPractice.setLogoUrl(logoURL);
 			practiceRepository.save(savedPractice);
 		}
+
 		if (isCreatePractice) {
 			Role adminRole = Role.builder()
 				.name(CustomUtils.ORG_ADMIN_ROLE_NAME)
