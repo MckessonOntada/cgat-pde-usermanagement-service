@@ -7,6 +7,7 @@ import java.util.Objects;
 
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CGATHttpException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
+import com.mckesson.cgat.pde.usermanagement.service.impl.utils.FileValidationUtils;
 import com.mckesson.jbat.auth.module.exception.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -88,6 +89,8 @@ public class UserController {
 			@NotNull(message = "Practice Id is Required") @PathVariable Long practiceId)
 			throws FileNotValidException, UnauthorizedAccessException {
 		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
+
+		FileValidationUtils.validateMultiPartFile(userData);
 
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		Boolean uploadStatus = userService.uploadUsers(userData, userType, practiceId, outputStream);

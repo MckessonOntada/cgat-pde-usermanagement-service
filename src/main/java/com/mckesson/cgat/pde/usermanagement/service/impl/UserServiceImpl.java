@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 import java.io.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.mckesson.cgat.pde.usermanagement.exception.custom.CsvFileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
@@ -307,14 +308,18 @@ public class UserServiceImpl implements UserService {
 				}
 
 			}
+			if (users.isEmpty() && failedUser.isEmpty()) {
+				log.error("The uploaded file is empty or contains no data.");
+				throw new CsvFileNotValidException(List.of("invalid.csv.file.empty"));
+			}
 		}
 		catch (IOException e) {
 			log.error("Unable to read User Data CSV");
-			throw new FileNotValidException("Unable to read User Data CSV");
+			throw new CsvFileNotValidException(List.of("invalid.csv.file.read.error"));
 		}
 		catch (IndexOutOfBoundsException e) {
 			log.error("Invalid User Data file, some columns are missing");
-			throw new FileNotValidException("Invalid User Data file, some columns are missing");
+			throw new CsvFileNotValidException(List.of("invalid.csv.file.columns.missing"));
 		}
 	}
 
