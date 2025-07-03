@@ -20,12 +20,11 @@ public class ProviderDTO {
 	@Valid
 	private Name name;
 
-	@NotBlank(message = "DEA Number is required", groups = BasicInfo.class)
 	@Size(min = 9, max = 9, message = "DEA Number must be exactly 9 characters", groups = BasicInfo.class)
 	@Pattern(regexp = "^[A-Za-z][A-Za-z0-9]\\d{7}$",
 			message = "DEA Number must start with a letter, followed by a letter or digit, and end with 7 digits (e.g., A12345678 or AB1234567)",
 			groups = BasicInfo.class)
-	@Column(name = "dea", length = 9, nullable = false)
+	@Column(name = "dea", length = 9)
 	private String dea;
 
 	@NotBlank(message = "NPI Number is required", groups = BasicInfo.class)
@@ -49,10 +48,9 @@ public class ProviderDTO {
 	@Column(name = "tin", length = 9, nullable = false)
 	private String tin;
 
-	@NotBlank(message = "Please enter the Medicaid Number", groups = BasicInfo.class)
 	@Size(min = 6, max = 6, message = "Medicaid Number must be exactly 6 digits", groups = BasicInfo.class)
 	@Pattern(regexp = "\\d{6}", message = "Medicaid Number must contain only numeric Values", groups = BasicInfo.class)
-	@Column(name = "medicaid_number", length = 6, nullable = false)
+	@Column(name = "medicaid_number", length = 6)
 	private String medicaidNumber;
 
 	private String licenseState;
