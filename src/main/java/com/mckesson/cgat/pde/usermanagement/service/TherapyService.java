@@ -86,4 +86,6 @@ public interface TherapyService {
 	List<Therapy> findTherapyDetailsByNdcNumber(String ndcNumber, ChannelType channelType)
 			throws ResourceNotFoundException;
 
+	void updateSPTherapyConfigs(SPTherapyConfigRequestDTO request);
+
 }
