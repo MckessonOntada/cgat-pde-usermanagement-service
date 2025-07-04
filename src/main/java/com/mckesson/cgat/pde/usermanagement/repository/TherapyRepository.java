@@ -541,15 +541,14 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 				 AND cp.shipToCustomer = :shipToAccount
 				 AND ac.partnerFunction  = :partnerFunction
 			     AND cp.deleted = false
-				 AND m.channelType = :channelType
-				 AND cp.channelType = :channelType
+				 AND m.channelType = 'SPECIALITY_PHARMA'
+				 AND cp.channelType = 'SPECIALITY_PHARMA'
 				 AND m.itemStatus = 'A'
 				 and m.ndcNumber = :ndcNumber
 			""")
 	List<MaterialResponseDTO> findSPTherapyAndConfigBySoldToAccountAndProgramAndNdc(
 			@Param("soldToAccount") String soldToAccount, @Param("shipToAccount") String shipToAccount,
-			@Param("ndcNumber") String ndcNumber, @Param("channelType") ChannelType channelType,
-			@Param("partnerFunction") AccountPartnerFunction partnerFunction);
+			@Param("ndcNumber") String ndcNumber, @Param("partnerFunction") AccountPartnerFunction partnerFunction);
 
 	@Query("""
 			     SELECT DISTINCT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,stc)
@@ -563,14 +562,13 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 				 AND ac.partnerFunction  = :partnerFunction
 				 AND cw.bnbNdcNumber = :ndcNumber
 			     AND cp.deleted = false
-				 AND m.channelType = :channelType
-				 AND cp.channelType = :channelType
+				 AND m.channelType = 'SPECIALITY_PHARMA'
+				 AND cp.channelType = 'SPECIALITY_PHARMA'
 				 AND m.itemStatus = 'A'
 			""")
 	List<MaterialResponseDTO> findCrossWalkedSPTherapyAndConfigBySoldToAccountAndProgramAndNdc(
 			@Param("soldToAccount") String soldToAccount, @Param("shipToAccount") String shipToAccount,
-			@Param("ndcNumber") String ndcNumber, @Param("channelType") ChannelType channelType,
-			@Param("partnerFunction") AccountPartnerFunction partnerFunction);
+			@Param("ndcNumber") String ndcNumber, @Param("partnerFunction") AccountPartnerFunction partnerFunction);
 
 	@Query("""
 			    SELECT DISTINCT m.manufacturerName

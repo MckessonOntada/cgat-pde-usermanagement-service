@@ -497,12 +497,11 @@ public class TherapyServiceImpl implements TherapyService {
 
 			if (isCrossWalkedTherapySelected) {
 				therapies = therapyRepository.findCrossWalkedSPTherapyAndConfigBySoldToAccountAndProgramAndNdc(
-						soldToAccount, shipToAccount, ndcNumber, ChannelType.SPECIALITY_PHARMA,
-						AccountPartnerFunction.SOLD_TO);
+						soldToAccount, shipToAccount, ndcNumber, AccountPartnerFunction.SOLD_TO);
 			}
 			else {
 				therapies = therapyRepository.findSPTherapyAndConfigBySoldToAccountAndProgramAndNdc(soldToAccount,
-						shipToAccount, ndcNumber, ChannelType.SPECIALITY_PHARMA, AccountPartnerFunction.SOLD_TO);
+						shipToAccount, ndcNumber, AccountPartnerFunction.SOLD_TO);
 			}
 
 			if (therapies.isEmpty()) {
