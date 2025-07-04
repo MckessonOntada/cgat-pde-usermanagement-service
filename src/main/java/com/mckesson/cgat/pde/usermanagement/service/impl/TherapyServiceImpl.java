@@ -46,10 +46,13 @@ public class TherapyServiceImpl implements TherapyService {
 
 	private final MaterialCrossWalkConfigRepository materialCrossWalkConfigRepository;
 
+	private final SPTherapyConfigRepository spTherapyConfigRepository;
+
 	public TherapyServiceImpl(TherapyRepository therapyRepository, CatalogPriceRepository catalogPriceRepository,
 			CatalogPriceMapper catalogPriceMapper, TherapyConfigRepository therapyConfigRepository,
 			QuestionnaireService questionnaireService, ShippingLocationRepository shippingLocationRepository,
-			MaterialCrossWalkConfigRepository materialCrossWalkConfigRepository) {
+			MaterialCrossWalkConfigRepository materialCrossWalkConfigRepository,
+			SPTherapyConfigRepository spTherapyConfigRepository) {
 		this.therapyRepository = therapyRepository;
 		this.catalogPriceRepository = catalogPriceRepository;
 		this.catalogPriceMapper = catalogPriceMapper;
@@ -57,6 +60,7 @@ public class TherapyServiceImpl implements TherapyService {
 		this.questionnaireService = questionnaireService;
 		this.shippingLocationRepository = shippingLocationRepository;
 		this.materialCrossWalkConfigRepository = materialCrossWalkConfigRepository;
+		this.spTherapyConfigRepository = spTherapyConfigRepository;
 	}
 
 	public Page<TradeCatalogResponseDTO> findAllTherapies(Long userId, String query, List<String> salesOrg,
@@ -392,11 +396,21 @@ public class TherapyServiceImpl implements TherapyService {
 	@Override
 	public MaterialDetailsResponseDTO findSPTherapyDetailsByMaterialNumber(String materialNumber,
 			ChannelType channelType) throws ResourceNotFoundException {
-		MaterialResponseDTO responseDTO = therapyConfigRepository
-			.findDetailesByMaterialNumber(materialNumber, channelType)
-			.orElseThrow(() -> new ResourceNotFoundException(
-					"Therapy config not found with materialNumber: " + materialNumber));
+
 		Crosswalk crosswalkDetails = null;
+		MaterialResponseDTO responseDTO;
+
+		if (channelType.equals(ChannelType.SPECIALITY_PHARMA)) {
+			responseDTO = therapyConfigRepository.findSPDetailsByMaterialNumber(materialNumber, channelType)
+				.orElseThrow(() -> new ResourceNotFoundException(
+						"SP Therapy config not found with materialNumber: " + materialNumber));
+		}
+		else {
+			responseDTO = therapyConfigRepository.findDetailesByMaterialNumber(materialNumber, channelType)
+				.orElseThrow(() -> new ResourceNotFoundException(
+						"Therapy config not found with materialNumber: " + materialNumber));
+		}
+
 		if (channelType.equals(ChannelType.SPECIALITY_PHARMA)
 				&& Boolean.TRUE.equals(responseDTO.getTherapy().getIsCrosswalked())) {
 			crosswalkDetails = materialCrossWalkConfigRepository.findBySpProductIdAndIsActive(materialNumber, true);
@@ -410,6 +424,7 @@ public class TherapyServiceImpl implements TherapyService {
 		return MaterialDetailsResponseDTO.builder()
 			.therapy(responseDTO.getTherapy())
 			.materialConfig(responseDTO.getMaterialConfig())
+			.spTherapyConfig(responseDTO.getSpTherapyConfig())
 			.questionnaires(questionnaires)
 			.build();
 	}
@@ -470,9 +485,17 @@ public class TherapyServiceImpl implements TherapyService {
 		String mappedProgram = "340B".equals(program) ? "340" : program;
 		boolean isCrossWalkedTherapySelected = !ndcChannelType.equals(channelType);
 		List<MaterialResponseDTO> therapies;
-		if (ChannelType.SPECIALITY_PHARMA.equals(channelType) && isCrossWalkedTherapySelected) {
-			therapies = therapyRepository.findSPTherapyAndConfigBySoldToAccountAndProgramAndNdc(soldToAccount,
-					shipToAccount, ndcNumber, channelType, AccountPartnerFunction.SOLD_TO);
+		if (ChannelType.SPECIALITY_PHARMA.equals(channelType)) {
+
+			if (isCrossWalkedTherapySelected) {
+				therapies = therapyRepository.findCrossWalkedSPTherapyAndConfigBySoldToAccountAndProgramAndNdc(
+						soldToAccount, shipToAccount, ndcNumber, channelType, AccountPartnerFunction.SOLD_TO);
+			}
+			else {
+				therapies = therapyRepository.findSPTherapyAndConfigBySoldToAccountAndProgramAndNdc(soldToAccount,
+						shipToAccount, ndcNumber, channelType, AccountPartnerFunction.SOLD_TO);
+			}
+
 			if (therapies.isEmpty()) {
 				throw new ResourceNotFoundException(String
 					.format("SP Therapy not found with ndc: %s, soldToAccount: %s", ndcNumber, soldToAccount));
@@ -571,6 +594,35 @@ public class TherapyServiceImpl implements TherapyService {
 		}
 
 		return responseDTOList;
+	}
+
+	@Override
+	public void updateSPTherapyConfigs(SPTherapyConfigRequestDTO request) {
+		List<SPTherapyConfig> existingConfigs = spTherapyConfigRepository
+			.findBySpProductIdIn(request.getSpProductIds());
+
+		Map<String, SPTherapyConfig> existingConfigMap = existingConfigs.stream()
+			.collect(Collectors.toMap(SPTherapyConfig::getSpProductId, Function.identity()));
+
+		List<SPTherapyConfig> updatedConfigs = request.getSpProductIds().stream().map(spProductId -> {
+			SPTherapyConfig config = existingConfigMap.get(spProductId);
+
+			if (config != null) {
+				config.setIsCoiIdRequired(request.isCoiIdRequired());
+				config.setIsMRNRequired(request.isMrnRequired());
+				config.setIsPatientIdentifierRequired(request.isPatientIdentifierRequired());
+				return config;
+			}
+			else {
+				return SPTherapyConfig.builder()
+					.spProductId(spProductId)
+					.isPatientIdentifierRequired(request.isPatientIdentifierRequired())
+					.isCoiIdRequired(request.isCoiIdRequired())
+					.isMRNRequired(request.isMrnRequired())
+					.build();
+			}
+		}).collect(Collectors.toList());
+		spTherapyConfigRepository.saveAll(updatedConfigs);
 	}
 
 }

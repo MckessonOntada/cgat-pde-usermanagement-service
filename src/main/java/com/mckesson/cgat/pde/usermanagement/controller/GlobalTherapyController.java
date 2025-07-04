@@ -1,9 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
-import com.mckesson.cgat.pde.usermanagement.dto.MaterialDetailsResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.TherapyConfigRequestDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.TradeCatalogResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.*;
 import com.mckesson.cgat.pde.usermanagement.model.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -131,6 +128,15 @@ public class GlobalTherapyController {
 		return new ResponseEntity<>(therapyService.findTherapyDetailsWithConfigByTradeName(tradeName, channelType),
 				HttpStatus.OK);
 
+	}
+
+	@PostMapping("/sp/config/update")
+	@RequirePermissions({ Permission.MANAGE_MATERIAL })
+	@Operation(summary = "Update Therapy Configurations")
+	public ResponseEntity<String> updateSPTherapyConfigs(@Valid @RequestBody SPTherapyConfigRequestDTO request) {
+		log.debug("Updating sp therapy configs for spProductIds: {}", request.getSpProductIds());
+		therapyService.updateSPTherapyConfigs(request);
+		return new ResponseEntity<>("SP Therapy configurations updated successfully", HttpStatus.OK);
 	}
 
 	@GetMapping("/sp/config/{materialNumber}")

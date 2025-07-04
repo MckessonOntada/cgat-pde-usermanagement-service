@@ -532,10 +532,30 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			@Param("partnerFunction") AccountPartnerFunction partnerFunction);
 
 	@Query("""
-			     SELECT DISTINCT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,tc)
+			     SELECT DISTINCT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,stc)
 				 FROM CatalogPrice cp
 				 JOIN Therapy m ON m.materialNumber = cp.sapMaterial
-				 left JOIN TherapyConfig tc ON m.ndcNumber = tc.ndcNumber
+				 left JOIN SPTherapyConfig stc ON m.materialNumber = stc.spProductId
+				 JOIN Account ac ON ac.accountNumber = cp.soldToCustomer
+				 WHERE cp.soldToCustomer = :soldToAccount
+				 AND cp.shipToCustomer = :shipToAccount
+				 AND ac.partnerFunction  = :partnerFunction
+			     AND cp.deleted = false
+				 AND m.channelType = :channelType
+				 AND cp.channelType = :channelType
+				 AND m.itemStatus = 'A'
+				 and m.ndcNumber = :ndcNumber
+			""")
+	List<MaterialResponseDTO> findSPTherapyAndConfigBySoldToAccountAndProgramAndNdc(
+			@Param("soldToAccount") String soldToAccount, @Param("shipToAccount") String shipToAccount,
+			@Param("ndcNumber") String ndcNumber, @Param("channelType") ChannelType channelType,
+			@Param("partnerFunction") AccountPartnerFunction partnerFunction);
+
+	@Query("""
+			     SELECT DISTINCT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,stc)
+				 FROM CatalogPrice cp
+				 JOIN Therapy m ON m.materialNumber = cp.sapMaterial
+				 left JOIN SPTherapyConfig stc ON m.materialNumber = stc.spProductId
 				 left JOIN Crosswalk cw on cw.spProductId  = cp.sapMaterial
 				 JOIN Account ac ON ac.accountNumber = cp.soldToCustomer
 				 WHERE cp.soldToCustomer = :soldToAccount
@@ -547,7 +567,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 				 AND cp.channelType = :channelType
 				 AND m.itemStatus = 'A'
 			""")
-	List<MaterialResponseDTO> findSPTherapyAndConfigBySoldToAccountAndProgramAndNdc(
+	List<MaterialResponseDTO> findCrossWalkedSPTherapyAndConfigBySoldToAccountAndProgramAndNdc(
 			@Param("soldToAccount") String soldToAccount, @Param("shipToAccount") String shipToAccount,
 			@Param("ndcNumber") String ndcNumber, @Param("channelType") ChannelType channelType,
 			@Param("partnerFunction") AccountPartnerFunction partnerFunction);
