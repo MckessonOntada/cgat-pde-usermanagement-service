@@ -383,8 +383,13 @@ public class TherapyServiceImpl implements TherapyService {
 	public List<MaterialDetailsResponseDTO> findTherapyDetailsWithConfigByTradeName(String tradeName,
 			ChannelType channelType) throws ResourceNotFoundException {
 
-		List<MaterialResponseDTO> responseDTOList = therapyConfigRepository.findDetailesByTradeName(tradeName,
-				channelType);
+		List<MaterialResponseDTO> responseDTOList = new ArrayList<>();
+		if (channelType.equals(ChannelType.SPECIALITY_PHARMA)) {
+			responseDTOList = therapyConfigRepository.findSPDetailsByTradeName(tradeName, channelType);
+		}
+		else {
+			responseDTOList = therapyConfigRepository.findDetailesByTradeName(tradeName, channelType);
+		}
 
 		if (CollectionUtils.isEmpty(responseDTOList)) {
 			throw new ResourceNotFoundException("Therapy details not found with tradeName: " + tradeName);
@@ -406,7 +411,7 @@ public class TherapyServiceImpl implements TherapyService {
 						"SP Therapy config not found with materialNumber: " + materialNumber));
 		}
 		else {
-			responseDTO = therapyConfigRepository.findDetailesByMaterialNumber(materialNumber, channelType)
+			responseDTO = therapyConfigRepository.findDetailsByMaterialNumber(materialNumber, ChannelType.BUY_AND_BILL)
 				.orElseThrow(() -> new ResourceNotFoundException(
 						"Therapy config not found with materialNumber: " + materialNumber));
 		}
@@ -449,6 +454,7 @@ public class TherapyServiceImpl implements TherapyService {
 			.therapy(therapy)
 			.materialConfig(responseDTO.getMaterialConfig())
 			.questionnaires(questionnaires)
+			.spTherapyConfig(responseDTO.getSpTherapyConfig())
 			.build();
 	}
 

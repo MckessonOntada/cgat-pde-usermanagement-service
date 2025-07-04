@@ -39,7 +39,7 @@ public interface TherapyConfigRepository extends JpaRepository<TherapyConfig, Lo
 			    WHERE m.materialNumber = :materialNumber
 			    AND m.channelType = :channelType
 			""")
-	Optional<MaterialResponseDTO> findDetailesByMaterialNumber(@Param("materialNumber") String materialNumber,
+	Optional<MaterialResponseDTO> findDetailsByMaterialNumber(@Param("materialNumber") String materialNumber,
 			ChannelType channelType);
 
 	@Query("""
@@ -83,5 +83,16 @@ public interface TherapyConfigRepository extends JpaRepository<TherapyConfig, Lo
 			    AND m.channelType = :channelType
 			""")
 	List<Therapy> findDetailesByNdcNumber(@Param("ndcNumber") String ndcNumber, ChannelType channelType);
+
+	@Query("""
+			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,sp)
+			    FROM Therapy m
+			    LEFT JOIN SPTherapyConfig sp
+			    ON m.materialNumber = sp.spProductId
+			    WHERE m.tradeName = :tradeName
+			    AND m.channelType = :channelType
+			    AND m.itemStatus = 'A'
+			""")
+	List<MaterialResponseDTO> findSPDetailsByTradeName(String tradeName, ChannelType channelType);
 
 }
