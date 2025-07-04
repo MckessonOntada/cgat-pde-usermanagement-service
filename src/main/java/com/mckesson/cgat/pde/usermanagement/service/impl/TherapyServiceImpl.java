@@ -385,7 +385,8 @@ public class TherapyServiceImpl implements TherapyService {
 
 		List<MaterialResponseDTO> responseDTOList = new ArrayList<>();
 		if (channelType.equals(ChannelType.SPECIALITY_PHARMA)) {
-			responseDTOList = therapyConfigRepository.findSPDetailsByTradeName(tradeName, ChannelType.SPECIALITY_PHARMA);
+			responseDTOList = therapyConfigRepository.findSPDetailsByTradeName(tradeName,
+					ChannelType.SPECIALITY_PHARMA);
 		}
 		else {
 			responseDTOList = therapyConfigRepository.findDetailesByTradeName(tradeName, ChannelType.BUY_AND_BILL);
@@ -406,7 +407,8 @@ public class TherapyServiceImpl implements TherapyService {
 		MaterialResponseDTO responseDTO;
 
 		if (channelType.equals(ChannelType.SPECIALITY_PHARMA)) {
-			responseDTO = therapyConfigRepository.findSPDetailsByMaterialNumber(materialNumber, channelType)
+			responseDTO = therapyConfigRepository
+				.findSPDetailsByMaterialNumber(materialNumber, ChannelType.SPECIALITY_PHARMA)
 				.orElseThrow(() -> new ResourceNotFoundException(
 						"SP Therapy config not found with materialNumber: " + materialNumber));
 		}
@@ -495,11 +497,12 @@ public class TherapyServiceImpl implements TherapyService {
 
 			if (isCrossWalkedTherapySelected) {
 				therapies = therapyRepository.findCrossWalkedSPTherapyAndConfigBySoldToAccountAndProgramAndNdc(
-						soldToAccount, shipToAccount, ndcNumber, channelType, AccountPartnerFunction.SOLD_TO);
+						soldToAccount, shipToAccount, ndcNumber, ChannelType.SPECIALITY_PHARMA,
+						AccountPartnerFunction.SOLD_TO);
 			}
 			else {
 				therapies = therapyRepository.findSPTherapyAndConfigBySoldToAccountAndProgramAndNdc(soldToAccount,
-						shipToAccount, ndcNumber, channelType, AccountPartnerFunction.SOLD_TO);
+						shipToAccount, ndcNumber, ChannelType.SPECIALITY_PHARMA, AccountPartnerFunction.SOLD_TO);
 			}
 
 			if (therapies.isEmpty()) {
