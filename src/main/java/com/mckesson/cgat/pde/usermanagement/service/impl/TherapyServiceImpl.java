@@ -385,10 +385,10 @@ public class TherapyServiceImpl implements TherapyService {
 
 		List<MaterialResponseDTO> responseDTOList = new ArrayList<>();
 		if (channelType.equals(ChannelType.SPECIALITY_PHARMA)) {
-			responseDTOList = therapyConfigRepository.findSPDetailsByTradeName(tradeName, channelType);
+			responseDTOList = therapyConfigRepository.findSPDetailsByTradeName(tradeName, ChannelType.SPECIALITY_PHARMA);
 		}
 		else {
-			responseDTOList = therapyConfigRepository.findDetailesByTradeName(tradeName, channelType);
+			responseDTOList = therapyConfigRepository.findDetailesByTradeName(tradeName, ChannelType.BUY_AND_BILL);
 		}
 
 		if (CollectionUtils.isEmpty(responseDTOList)) {
