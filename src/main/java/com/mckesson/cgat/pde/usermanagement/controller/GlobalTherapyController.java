@@ -224,10 +224,10 @@ public class GlobalTherapyController {
 		// Override if BUY_AND_BILL
 		if (channelType == ChannelType.BUY_AND_BILL) {
 			fileName = "Material_info.csv";
-			headerLine = "Buy & Bill Material Id,Buy & Bill Material Description,Buy & Bill Material NDC";
+			headerLine = "SAP Material Id,SAP Material Description,SAP NDC";
 		}
 		else {
-			headerLine = "Product ID,Product Name,Product NDC";
+			headerLine = "Product ID,Product Name,SP NDC";
 		}
 
 		StreamingResponseBody stream = outputStream -> {

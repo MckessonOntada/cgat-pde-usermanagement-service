@@ -121,7 +121,7 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 	}
 
 	private void validateHeaders(Map<String, Integer> headerMap) {
-		List<String> expectedHeaders = List.of("Buy & Bill NDC", "SP Product ID", "SP NDC", "Status");
+		List<String> expectedHeaders = List.of("SAP NDC", "SP Product ID", "SP NDC", "Status");
 
 		// Check for missing headers first
 		List<String> missingHeaders = expectedHeaders.stream()
@@ -248,7 +248,7 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 			try {
 
 				if (!existingBnbMaterialNDC.contains(bnbMaterialNDC)) {
-					throw new IllegalArgumentException("Invalid Buy & Bill Material NDC");
+					throw new IllegalArgumentException("Invalid SAP NDC");
 				}
 
 				if (!existingSPProductIds.contains(spId)) {
@@ -360,7 +360,7 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 			Map<MaterialCrossWalkConfigRecordDTO, String> failedCrossWalks) {
 		try (OutputStreamWriter writer = new OutputStreamWriter(outputStream);
 				CSVPrinter csvPrinter = new CSVPrinter(writer,
-						CSVFormat.DEFAULT.withHeader("Buy & Bill NDC", "SP Product ID", "SP NDC", "Error Reason"))) {
+						CSVFormat.DEFAULT.withHeader("SAP NDC", "SP Product ID", "SP NDC", "Error Reason"))) {
 
 			for (Map.Entry<MaterialCrossWalkConfigRecordDTO, String> e : failedCrossWalks.entrySet()) {
 				MaterialCrossWalkConfigRecordDTO crossWalkConfigRecordDTO = e.getKey();
