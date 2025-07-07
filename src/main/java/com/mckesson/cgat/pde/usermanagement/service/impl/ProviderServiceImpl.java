@@ -389,7 +389,8 @@ public class ProviderServiceImpl implements ProviderService {
 	private void validateUniqueConstraintsForAddProvider(Provider provider) {
 		List<String> errorCodes = new ArrayList<>();
 
-		if (providerRepository.existsByPracticeIdAndDea(provider.getPracticeId(), provider.getDea())) {
+		if (StringUtils.isNotBlank(provider.getDea())
+				&& providerRepository.existsByPracticeIdAndDea(provider.getPracticeId(), provider.getDea())) {
 			errorCodes.add("provider.dea.conflict");
 		}
 
