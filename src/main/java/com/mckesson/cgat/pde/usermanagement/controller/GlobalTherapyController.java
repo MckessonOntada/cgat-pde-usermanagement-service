@@ -139,6 +139,15 @@ public class GlobalTherapyController {
 		return new ResponseEntity<>("SP Therapy configurations updated successfully", HttpStatus.OK);
 	}
 
+	@DeleteMapping("sp/config/{spProductId}")
+	@RequirePermissions({ Permission.MANAGE_MATERIAL })
+	@Operation(summary = "Delete SP Therapy Configurations")
+	public ResponseEntity<String> removeSPTherapyConfig(@NotBlank @PathVariable String spProductId) {
+		log.debug("Deleting config for SP Material: {}", spProductId);
+		therapyService.removeSPTherapyConfig(spProductId);
+		return new ResponseEntity<>("SP Therapy configurations deleted successfully", HttpStatus.OK);
+	}
+
 	@GetMapping("/sp/config/{materialNumber}")
 	@RequirePermissions({ Permission.VIEW_SP_MATERIAL })
 	@Operation(summary = "Find SP Therapy details by Material Number")

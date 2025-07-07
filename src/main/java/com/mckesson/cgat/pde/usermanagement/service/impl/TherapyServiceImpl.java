@@ -633,4 +633,10 @@ public class TherapyServiceImpl implements TherapyService {
 		spTherapyConfigRepository.saveAll(updatedConfigs);
 	}
 
+	@Override
+	@Transactional
+	public void removeSPTherapyConfig(String spProductId) {
+		spTherapyConfigRepository.deleteBySpProductId(spProductId);
+	}
+
 }

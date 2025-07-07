@@ -11,4 +11,6 @@ public interface SPTherapyConfigRepository extends JpaRepository<SPTherapyConfig
 
 	List<SPTherapyConfig> findBySpProductIdIn(List<String> spProductIds);
 
+	void deleteBySpProductId(String spProductId);
+
 }
