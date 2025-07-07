@@ -14,9 +14,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class MaterialCrossWalkConfigRecordDTO {
 
-	@NotBlank(message = "Buy & Bill Material NDC is mandatory, please provide Buy & Bill Material NDC and try again.")
-	@Size(max = 11, message = "Buy & Bill Material NDC must be at most 11 characters long")
-	@Pattern(regexp = "^(|[0-9]{11})$", message = "Buy & Bill Material NDC must be numeric and exactly 11 digits")
+	@NotBlank(message = "SAP NDC is mandatory, please provide SAP NDC and try again.")
+	@Size(max = 11, message = "SAP NDC must be at most 11 characters long")
+	@Pattern(regexp = "^(|[0-9]{11})$", message = "SAP NDC must be numeric and exactly 11 digits")
 	private String bnbNDC;
 
 	@NotBlank(message = "SP Product ID is mandatory, please provide SP Product ID and try again.")

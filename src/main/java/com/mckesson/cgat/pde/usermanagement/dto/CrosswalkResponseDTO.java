@@ -14,4 +14,6 @@ public interface CrosswalkResponseDTO {
 
 	String getSpNdc();
 
+	String getDosage();
+
 }
