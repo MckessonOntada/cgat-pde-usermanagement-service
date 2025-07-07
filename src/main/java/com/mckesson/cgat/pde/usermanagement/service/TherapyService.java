@@ -88,4 +88,6 @@ public interface TherapyService {
 
 	void updateSPTherapyConfigs(SPTherapyConfigRequestDTO request);
 
+	void removeSPTherapyConfig(String spProductId);
+
 }
