@@ -296,11 +296,19 @@ public class ProviderServiceImpl implements ProviderService {
 	}
 
 	@Override
-	public Provider createProvider(Provider provider) {
+	public Provider createProvider(Provider provider, Long accountId) throws ResourceNotFoundException {
 		validateProvider(provider);
 		validateUniqueConstraintsForAddProvider(provider);
 		provider.setIsActive(true);
-		return providerRepository.save(provider);
+		Provider savedProvider = providerRepository.save(provider);
+		if (accountId != null) {
+			linkProvidersToAccounts(ProviderAccountsDTO.builder()
+				.providerIds(List.of(savedProvider.getId()))
+				.accountIds(List.of(accountId))
+				.build());
+		}
+
+		return savedProvider;
 
 	}
 
