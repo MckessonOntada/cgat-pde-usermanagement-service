@@ -35,7 +35,7 @@ public class Questionnaire extends AuditColumns implements Serializable {
 
 	@Column(nullable = false)
 	@JdbcTypeCode(SqlTypes.JSON)
-	private List<Object> questions;
+	private List<SectionDetails> sectionsDetails;
 
 	@Column(name = "configured_at")
 	@Enumerated(EnumType.STRING)
@@ -43,5 +43,17 @@ public class Questionnaire extends AuditColumns implements Serializable {
 
 	@Convert(converter = NumericBooleanConverter.class)
 	private boolean isActive = true;
+
+	@PrePersist
+	@PreUpdate
+	private void validateUniqueSectionNames() {
+		Set<String> sectionNames = new HashSet<>();
+		for (SectionDetails section : sectionsDetails) {
+			String name = section.getSectionName().trim().toLowerCase();
+			if (!sectionNames.add(name)) {
+				throw new IllegalArgumentException("Duplicate section name found: " + name);
+			}
+		}
+	}
 
 }
