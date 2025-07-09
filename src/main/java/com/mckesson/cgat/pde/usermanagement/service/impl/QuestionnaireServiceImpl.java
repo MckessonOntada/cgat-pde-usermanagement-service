@@ -58,7 +58,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 			.orElseThrow(() -> new ResourceNotFoundException("Questionnaire not found for id: {} " + questionnaireId));
 
 		qs.setTemplateName(questionnaireObj.getTemplateName());
-		qs.setQuestions(questionnaireObj.getQuestions());
+		qs.setSectionsDetails(questionnaireObj.getSectionsDetails());
 		return questionnaireRepository.save(qs);
 	}
 
