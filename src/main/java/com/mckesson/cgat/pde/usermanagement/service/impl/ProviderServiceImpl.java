@@ -373,7 +373,8 @@ public class ProviderServiceImpl implements ProviderService {
 	private void validateUniqueConstraints(Provider provider) {
 		StringBuilder errorMessage = new StringBuilder();
 
-		if (providerRepository.existsByPracticeIdAndDea(provider.getPracticeId(), provider.getDea())) {
+		if (StringUtils.isNotBlank(provider.getDea())
+				&& providerRepository.existsByPracticeIdAndDea(provider.getPracticeId(), provider.getDea())) {
 			errorMessage.append("Provider with DEA ")
 				.append(provider.getDea())
 				.append(" already exists in practice ")
