@@ -1,6 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import com.mckesson.cgat.pde.usermanagement.dto.*;
 import com.mckesson.cgat.pde.usermanagement.model.*;
@@ -49,19 +50,24 @@ public class GlobalCatalogController {
 		this.catalogService = catalogService;
 	}
 
+	private static final Map<String, String> catalog_sortby_columns = Map.of("materialDescription",
+			"materialDescriptionInLanguageEn", "manufacturer", "m.manufacturerName", "accountNumber",
+			"cp.soldToCustomer");
+
 	@RequirePermissions({ Permission.VIEW_CATALOG, Permission.VIEW_SP_CATALOG })
 	@GetMapping
 	@Operation(summary = "Fetch all catalogs for provided soldTo accounts lists.")
-	public ResponseEntity<Page<CatalogPrice>> findAllCatalogs(@RequestParam(defaultValue = "0") Integer pageNo,
+	public ResponseEntity<Page<CatalogPriceResponse>> findAllCatalogs(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
 			@RequestParam(required = false) List<String> accountNumbers,
 			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType,
-			@RequestParam(defaultValue = "sap_material") String sortBy,
+			@RequestParam(defaultValue = "sapMaterial") String sortBy,
 			@RequestParam(defaultValue = "desc") String sortOrder,
 			@RequestParam(required = false) List<Integer> practiceIdList) {
 
-		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
-				: Sort.by(sortBy).descending();
+		String mappedSortBy = catalog_sortby_columns.getOrDefault(sortBy, "sapMaterial");
+		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(mappedSortBy).ascending()
+				: Sort.by(mappedSortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 		return new ResponseEntity<>(
 				therapyService.findAllGlobalCatalogs(accountNumbers, query, paging, channelType, practiceIdList),
