@@ -19,7 +19,7 @@ public interface ProviderService {
 	Boolean uploadProviders(MultipartFile providerDataFile, Long practiceId, OutputStream outputStream)
 			throws FileNotValidException;
 
-	Provider createProvider(Provider provider);
+	Provider createProvider(Provider provider, Long accountId) throws ResourceNotFoundException;
 
 	Page<Provider> findAllProviders(Pageable paging, String query, List<String> status, Long accountId,
 			Long practiceId);

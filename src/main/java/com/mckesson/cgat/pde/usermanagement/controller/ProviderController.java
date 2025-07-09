@@ -81,10 +81,11 @@ public class ProviderController {
 	@PostMapping
 	@Operation(summary = "Create new provider")
 	public ResponseEntity<Provider> createProvider(@Validated(BasicInfo.class) @RequestBody Provider provider,
-			@NotNull(message = "Practice Id is Required") @PathVariable Long practiceId)
-			throws UnauthorizedAccessException {
+			@NotNull(message = "Practice Id is Required") @PathVariable Long practiceId,
+			@RequestParam(required = false) Long accountId)
+			throws UnauthorizedAccessException, ResourceNotFoundException {
 		provider.setPracticeId(practiceId);
-		return new ResponseEntity<>(providerService.createProvider(provider), HttpStatus.OK);
+		return new ResponseEntity<>(providerService.createProvider(provider, accountId), HttpStatus.OK);
 	}
 
 	@RequirePermissions({ Permission.MANAGE_PROVIDERS_SCREEN, Permission.ADD_SP_ACCOUNT, Permission.ADD_ORDERS,
