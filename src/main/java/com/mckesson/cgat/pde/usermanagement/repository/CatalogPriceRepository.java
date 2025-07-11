@@ -36,7 +36,7 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 			@Param("ndcNumber") String ndcNumber, Pageable paging);
 
 	@Query("""
-			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponse(cp, m.productLevelPricing, m.genericName, m.manufacturerName, m.dosage)
+			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponse(cp, m.productLevelPricing, m.genericName, m.manufacturerName, m.dosage, cp.id as catalog_id)
 				 FROM CatalogPrice cp
 				 JOIN Therapy m ON m.materialNumber = cp.sapMaterial
 				 WHERE
@@ -58,7 +58,7 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 			@Param("ndcNumber") String ndcNumber, @Param("variantType") String variantType, Pageable pageable);
 
 	@Query(value = """
-			   SELECT new com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponse(cp, m.productLevelPricing, m.genericName, m.manufacturerName, m.dosage)
+			   SELECT new com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponse(cp, m.productLevelPricing, m.genericName, m.manufacturerName, m.dosage, cp.id as catalog_id)
 			FROM CatalogPrice cp
 			JOIN Account ac on cp.soldToCustomer = ac.sapCustomer
 			JOIN Therapy m on m.materialNumber = cp.sapMaterial

@@ -21,4 +21,6 @@ public class CatalogPriceResponse {
 
 	private String dosage;
 
+	private Long catalog_id;
+
 }
