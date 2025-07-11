@@ -121,7 +121,7 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 	}
 
 	private void validateHeaders(Map<String, Integer> headerMap) {
-		List<String> expectedHeaders = List.of("Buy & Bill NDC", "SP Product ID", "SP NDC", "Status");
+		List<String> expectedHeaders = List.of("SAP NDC", "SP Product ID", "SP NDC", "Status");
 
 		// Check for missing headers first
 		List<String> missingHeaders = expectedHeaders.stream()
@@ -248,7 +248,7 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 			try {
 
 				if (!existingBnbMaterialNDC.contains(bnbMaterialNDC)) {
-					throw new IllegalArgumentException("Invalid Buy & Bill Material NDC");
+					throw new IllegalArgumentException("Invalid SAP NDC");
 				}
 
 				if (!existingSPProductIds.contains(spId)) {
@@ -360,7 +360,7 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 			Map<MaterialCrossWalkConfigRecordDTO, String> failedCrossWalks) {
 		try (OutputStreamWriter writer = new OutputStreamWriter(outputStream);
 				CSVPrinter csvPrinter = new CSVPrinter(writer,
-						CSVFormat.DEFAULT.withHeader("Buy & Bill NDC", "SP Product ID", "SP NDC", "Error Reason"))) {
+						CSVFormat.DEFAULT.withHeader("SAP NDC", "SP Product ID", "SP NDC", "Error Reason"))) {
 
 			for (Map.Entry<MaterialCrossWalkConfigRecordDTO, String> e : failedCrossWalks.entrySet()) {
 				MaterialCrossWalkConfigRecordDTO crossWalkConfigRecordDTO = e.getKey();
@@ -374,49 +374,72 @@ public class MaterialCrossWalkServiceImpl implements MaterialCrossWalkService {
 		}
 	}
 
-	@Override
 	@Transactional
-	public int createCrosswalks(CrosswalkRequestDTO request) throws ResourceNotFoundException {
-		String bnbNdc = request.getBnbNdc();
-		List<String> spIds = request.getSpProductIds();
+	@Override
+	public int createCrosswalks(List<CrosswalkRequestDTO> crosswalks) throws ResourceNotFoundException {
+		int totalCrosswalkedSpCount = 0;
+		List<Therapy> allTherapiesToUpdate = new ArrayList<>();
 
-		// Validate BNB therapy
-		List<Therapy> bnbTherapy = validateBnbTherapy(bnbNdc);
+		for (CrosswalkRequestDTO request : crosswalks) {
+			String bnbNdc = request.getBnbNdc();
+			List<String> spIds = request.getSpProductIds();
 
-		// Fetch and validate SP therapies
-		Map<String, Therapy> spTherapyMap = validateSpTherapies(spIds);
+			log.info("Processing CrosswalkRequest for BNB NDC: {} with SP Product IDs: {}", bnbNdc, spIds);
 
-		// All inputs valid, create crosswalks
-		List<Crosswalk> newCrosswalks = spTherapyMap.values()
-			.stream()
-			.map(spTherapy -> Crosswalk.builder()
-				.bnbNdcNumber(bnbNdc)
-				.spProductId(spTherapy.getMaterialNumber())
-				.isActive(true)
-				.build())
-			.toList();
+			// 1. Validate BNB therapy
+			// Assuming this method throws ResourceNotFoundException if not found or
+			// invalid
+			List<Therapy> bnbTherapies = validateBnbTherapy(bnbNdc);
 
-		materialCrossWalkConfigRepository.saveAll(newCrosswalks);
+			// 2. Fetch and validate SP therapies
+			// Assuming this method throws ResourceNotFoundException if not found or
+			// invalid
+			Map<String, Therapy> spTherapyMap = validateSpTherapies(spIds);
 
-		// Set SP therapies as crosswalked
-		List<Therapy> therapiesToUpdate = new ArrayList<>();
-		int crosswalkedSpCount = 0; // Keep track of crosswalked SP count
-		for (Therapy spTherapy : spTherapyMap.values()) {
-			spTherapy.setIsCrosswalked(true);
-			therapiesToUpdate.add(spTherapy);
-			crosswalkedSpCount++; // Increment count
+			// 3. All inputs valid, create crosswalks for the current request
+			List<Crosswalk> newCrosswalks = spTherapyMap.values()
+				.stream()
+				.map(spTherapy -> Crosswalk.builder()
+					.bnbNdcNumber(bnbNdc)
+					.spProductId(spTherapy.getMaterialNumber())
+					.isActive(true)
+					.build())
+				.toList();
+
+			materialCrossWalkConfigRepository.saveAll(newCrosswalks);
+			log.debug("Created {} new crosswalk entities for BNB NDC: {}", newCrosswalks.size(), bnbNdc);
+
+			// 4. Set SP therapies as crosswalked for the current request
+			int currentRequestSpCrosswalkedCount = 0;
+			for (Therapy spTherapy : spTherapyMap.values()) {
+				if (!spTherapy.getIsCrosswalked()) {
+					spTherapy.setIsCrosswalked(true);
+					allTherapiesToUpdate.add(spTherapy);
+				}
+				currentRequestSpCrosswalkedCount++;
+			}
+
+			// 5. Set BNB therapy as crosswalked for the current request
+			for (Therapy therapy : bnbTherapies) {
+				if (!therapy.getIsCrosswalked()) {
+					therapy.setIsCrosswalked(true);
+					allTherapiesToUpdate.add(therapy);
+				}
+			}
+
+			totalCrosswalkedSpCount += currentRequestSpCrosswalkedCount;
+			log.info(
+					"Successfully processed CrosswalkRequest for BNB NDC: {}. SP Product IDs crosswalked in this request: {}",
+					bnbNdc, currentRequestSpCrosswalkedCount);
 		}
 
-		for (Therapy therapy : bnbTherapy) {
-			therapy.setIsCrosswalked(true);
-			therapiesToUpdate.add(therapy);
-		}
+		// Save all collected therapies once after processing all crosswalks
+		therapyRepository.saveAll(allTherapiesToUpdate);
+		log.info(
+				"Finished processing all CrosswalkRequests. Total unique therapies updated: {}. Total SP Product IDs crosswalked overall: {}",
+				allTherapiesToUpdate.size(), totalCrosswalkedSpCount);
 
-		therapyRepository.saveAll(therapiesToUpdate);
-
-		log.info("Crosswalked {} SP Product IDs for BNB NDC: {}", crosswalkedSpCount, bnbNdc);
-		return crosswalkedSpCount;
-
+		return totalCrosswalkedSpCount;
 	}
 
 	private List<Therapy> validateBnbTherapy(String bnbNdc) throws ResourceNotFoundException {

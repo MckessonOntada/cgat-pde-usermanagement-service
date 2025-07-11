@@ -221,7 +221,7 @@ public class ProviderServiceImpl implements ProviderService {
 				.middleName(providerData.get(1))
 				.lastName(providerData.get(2))
 				.build())
-			.dea(providerData.get(3))
+			.dea(StringUtils.isNotBlank(providerData.get(3)) ? providerData.get(3) : null)
 			.npi(providerData.get(4))
 			.address(Address.builder()
 				.address1(providerData.get(5))
@@ -232,7 +232,7 @@ public class ProviderServiceImpl implements ProviderService {
 				.build())
 			.phone(providerData.get(10))
 			.tin(providerData.get(12))
-			.medicaidNumber(providerData.get(13))
+			.medicaidNumber(StringUtils.isNotBlank(providerData.get(13)) ? providerData.get(13) : null)
 			.licenseState(providerData.get(14))
 			.email(providerData.get(15))
 			.fax(providerData.get(16))
@@ -296,11 +296,19 @@ public class ProviderServiceImpl implements ProviderService {
 	}
 
 	@Override
-	public Provider createProvider(Provider provider) {
+	public Provider createProvider(Provider provider, Long accountId) throws ResourceNotFoundException {
 		validateProvider(provider);
 		validateUniqueConstraintsForAddProvider(provider);
 		provider.setIsActive(true);
-		return providerRepository.save(provider);
+		Provider savedProvider = providerRepository.save(provider);
+		if (accountId != null) {
+			linkProvidersToAccounts(ProviderAccountsDTO.builder()
+				.providerIds(List.of(savedProvider.getId()))
+				.accountIds(List.of(accountId))
+				.build());
+		}
+
+		return savedProvider;
 
 	}
 
@@ -365,7 +373,8 @@ public class ProviderServiceImpl implements ProviderService {
 	private void validateUniqueConstraints(Provider provider) {
 		StringBuilder errorMessage = new StringBuilder();
 
-		if (providerRepository.existsByPracticeIdAndDea(provider.getPracticeId(), provider.getDea())) {
+		if (StringUtils.isNotBlank(provider.getDea())
+				&& providerRepository.existsByPracticeIdAndDea(provider.getPracticeId(), provider.getDea())) {
 			errorMessage.append("Provider with DEA ")
 				.append(provider.getDea())
 				.append(" already exists in practice ")
@@ -389,7 +398,8 @@ public class ProviderServiceImpl implements ProviderService {
 	private void validateUniqueConstraintsForAddProvider(Provider provider) {
 		List<String> errorCodes = new ArrayList<>();
 
-		if (providerRepository.existsByPracticeIdAndDea(provider.getPracticeId(), provider.getDea())) {
+		if (StringUtils.isNotBlank(provider.getDea())
+				&& providerRepository.existsByPracticeIdAndDea(provider.getPracticeId(), provider.getDea())) {
 			errorCodes.add("provider.dea.conflict");
 		}
 

@@ -15,4 +15,10 @@ public class CatalogPriceResponse {
 
 	private String productLevelPricing;
 
+	private String genericName;
+
+	private String manufacturer;
+
+	private String dosage;
+
 }

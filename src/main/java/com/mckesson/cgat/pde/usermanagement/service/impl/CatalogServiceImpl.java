@@ -240,15 +240,15 @@ public class CatalogServiceImpl implements CatalogService {
 				writer.write("SP Product ID,Product Name,NDC,Account Number");
 				writer.newLine();
 
-				List<CatalogPrice> allCatalogs = catalogPriceRepository
-					.findAllGlobalCatalogs(accountNumbers, AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(),
-							query, paging, ChannelType.SPECIALITY_PHARMA.name(), Collections.emptyList(), 0,
-							accountNumbers.size())
+				List<CatalogPriceResponse> allCatalogs = catalogPriceRepository
+					.findAllGlobalCatalogs(accountNumbers, AccountPartnerFunction.SOLD_TO, query, paging,
+							ChannelType.SPECIALITY_PHARMA, Collections.emptyList(), 0, accountNumbers.size())
 					.getContent();
 
-				for (CatalogPrice cp : allCatalogs) {
-					writer.write(String.format("\"%s\",\"%s\",\"%s\",\"%s\"", cp.getSapMaterial(),
-							cp.getMaterialDescriptionInLanguageEn(), cp.getNdc(), cp.getSoldToCustomer()));
+				for (CatalogPriceResponse cp : allCatalogs) {
+					writer.write(String.format("\"%s\",\"%s\",\"%s\",\"%s\"", cp.getCatalogPrice().getSapMaterial(),
+							cp.getCatalogPrice().getMaterialDescriptionInLanguageEn(), cp.getCatalogPrice().getNdc(),
+							cp.getCatalogPrice().getSoldToCustomer()));
 					writer.newLine();
 				}
 

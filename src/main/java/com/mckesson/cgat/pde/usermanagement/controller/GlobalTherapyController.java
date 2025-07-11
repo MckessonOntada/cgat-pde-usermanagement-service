@@ -1,14 +1,12 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
-import com.mckesson.cgat.pde.usermanagement.dto.MaterialDetailsResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.TherapyConfigRequestDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.TradeCatalogResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.*;
 import com.mckesson.cgat.pde.usermanagement.model.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -82,17 +80,21 @@ public class GlobalTherapyController {
 	}
 
 	@GetMapping("/type/speciality-pharma")
-	@RequirePermissions({ Permission.VIEW_MATERIAL })
+	@RequirePermissions({ Permission.VIEW_SP_MATERIAL })
 	@Operation(summary = "Fetch all therapies.")
 	public ResponseEntity<Page<Therapy>> findAllSPTherapies(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
-			@RequestParam(defaultValue = "material_number") String sortBy,
-			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam Status status,
-			@RequestParam(required = false) String manufacturer) {
-
-		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
-				: Sort.by(sortBy).descending();
-		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
+			@RequestParam(required = false) String sortBy, @RequestParam(defaultValue = "asc") String sortOrder,
+			@RequestParam Status status, @RequestParam(required = false) String manufacturer) {
+		Pageable paging;
+		if (StringUtils.isNotBlank(sortBy)) {
+			Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
+					: Sort.by(sortBy).descending();
+			paging = PageRequest.of(pageNo, pageSize, sort);
+		}
+		else {
+			paging = PageRequest.of(pageNo, pageSize);
+		}
 
 		return new ResponseEntity<>(therapyService.findAllGlobalSPTherapies(query, paging, status, manufacturer),
 				HttpStatus.OK);
@@ -126,6 +128,24 @@ public class GlobalTherapyController {
 		return new ResponseEntity<>(therapyService.findTherapyDetailsWithConfigByTradeName(tradeName, channelType),
 				HttpStatus.OK);
 
+	}
+
+	@PostMapping("/sp/config/update")
+	@RequirePermissions({ Permission.MANAGE_MATERIAL })
+	@Operation(summary = "Update Therapy Configurations")
+	public ResponseEntity<String> updateSPTherapyConfigs(@Valid @RequestBody SPTherapyConfigRequestDTO request) {
+		log.debug("Updating sp therapy configs for spProductIds: {}", request.getSpProductIds());
+		therapyService.updateSPTherapyConfigs(request);
+		return new ResponseEntity<>("SP Therapy configurations updated successfully", HttpStatus.OK);
+	}
+
+	@DeleteMapping("sp/config/{spProductId}")
+	@RequirePermissions({ Permission.MANAGE_MATERIAL })
+	@Operation(summary = "Delete SP Therapy Configurations")
+	public ResponseEntity<String> removeSPTherapyConfig(@NotBlank @PathVariable String spProductId) {
+		log.debug("Deleting config for SP Material: {}", spProductId);
+		therapyService.removeSPTherapyConfig(spProductId);
+		return new ResponseEntity<>("SP Therapy configurations deleted successfully", HttpStatus.OK);
 	}
 
 	@GetMapping("/sp/config/{materialNumber}")
@@ -204,10 +224,10 @@ public class GlobalTherapyController {
 		// Override if BUY_AND_BILL
 		if (channelType == ChannelType.BUY_AND_BILL) {
 			fileName = "Material_info.csv";
-			headerLine = "Buy & Bill Material Id,Buy & Bill Material Description,Buy & Bill Material NDC";
+			headerLine = "SAP Material Id,SAP Material Description,SAP NDC";
 		}
 		else {
-			headerLine = "Product ID,Product Name,Product NDC";
+			headerLine = "Product ID,Product Name,SP NDC";
 		}
 
 		StreamingResponseBody stream = outputStream -> {

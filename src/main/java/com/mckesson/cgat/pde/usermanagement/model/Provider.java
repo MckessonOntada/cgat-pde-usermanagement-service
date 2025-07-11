@@ -10,7 +10,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -55,12 +54,11 @@ public class Provider extends AuditColumns implements Serializable {
 	@Embedded
 	private Name name;
 
-	@NotBlank(message = "DEA Number is required", groups = BasicInfo.class)
 	@Size(min = 9, max = 9, message = "DEA Number must be exactly 9 characters", groups = BasicInfo.class)
 	@Pattern(regexp = "^[A-Za-z][A-Za-z0-9]\\d{7}$",
 			message = "DEA Number must start with a letter, followed by a letter or digit, and end with 7 digits (e.g., A12345678 or AB1234567)",
 			groups = BasicInfo.class)
-	@Column(name = "dea", length = 9, nullable = false)
+	@Column(name = "dea", length = 9)
 	private String dea;
 
 	@NotBlank(message = "NPI Number is required", groups = BasicInfo.class)
@@ -95,17 +93,16 @@ public class Provider extends AuditColumns implements Serializable {
 	@Column(name = "tin", length = 9, nullable = false)
 	private String tin;
 
-	@NotBlank(message = "Please enter the Medicaid Number", groups = BasicInfo.class)
 	@Size(min = 6, max = 6, message = "Medicaid Number must be exactly 6 digits", groups = BasicInfo.class)
 	@Pattern(regexp = "\\d{6}", message = "Medicaid Number must contain only numeric Values", groups = BasicInfo.class)
-	@Column(name = "medicaid_number", length = 6, nullable = false)
+	@Column(name = "medicaid_number", length = 6)
 	private String medicaidNumber;
 
 	private String licenseState;
 
 	@NotNull(message = "Please enter your Email ID", groups = BasicInfo.class)
 	@Size(min = 1, max = 50, message = "Email ID should not exceed 50 characters.", groups = BasicInfo.class)
-	@Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$",
+	@Pattern(regexp = "^(?!.*\\.\\.)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$",
 			message = "Please enter a valid email address (e.g., name@example.com).", groups = BasicInfo.class)
 	@Column(name = "email", nullable = false)
 	private String email;

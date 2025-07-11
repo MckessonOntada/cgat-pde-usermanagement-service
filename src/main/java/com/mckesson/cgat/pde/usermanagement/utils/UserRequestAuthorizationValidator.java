@@ -12,6 +12,8 @@ public class UserRequestAuthorizationValidator {
 
 	public static final String CUSTOMER_CENTRE_ROLE = "Customer Centre";
 
+	public static final String TREATMENT_CENTRE_EXECUTIVE = "Treatment centre Executive";
+
 	private static final Long SYSTEM_LEVEL_ORGANISATION_ID = 1L;
 
 	public static boolean isSystemAdmin(LoggedInUserDetails loggedInUser) {
@@ -20,6 +22,10 @@ public class UserRequestAuthorizationValidator {
 
 	public static boolean isCustomerCentreUser(LoggedInUserDetails loggedInUser) {
 		return CUSTOMER_CENTRE_ROLE.equals(loggedInUser.getRole().getName());
+	}
+
+	public static boolean isTreatmentCentreExecutiveUser(LoggedInUserDetails loggedInUser) {
+		return TREATMENT_CENTRE_EXECUTIVE.equals(loggedInUser.getRole().getName());
 	}
 
 	public static void canLoggedInUserManageUserType(UserType requestedUserType) throws UnauthorizedAccessException {
@@ -32,6 +38,7 @@ public class UserRequestAuthorizationValidator {
 			 * identifier as 1
 			 */
 			if (!(isSystemAdmin(loggedInUser) || isCustomerCentreUser(loggedInUser))
+					|| isTreatmentCentreExecutiveUser(loggedInUser)
 					|| !OrganizationContext.getCurrentOrgId().equals(SYSTEM_LEVEL_ORGANISATION_ID)) {
 				throw new UnauthorizedAccessException(CustomUtils.UNAUTHORIZED_MESSAGE);
 			}

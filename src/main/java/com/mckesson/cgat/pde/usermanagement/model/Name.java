@@ -32,8 +32,8 @@ public class Name implements Serializable {
 	private String firstName;
 
 	@Size(max = 50, message = "Middle name must be at most 50 characters", groups = BasicInfo.class)
-	@Pattern(regexp = "^(?!\\s+$)[\\p{L}\\p{P}\\p{S}\\p{Zs}\\p{N}]*$",
-			message = "Middle Name allows alphabets, Numbers, special, accented or space characters or empty.",
+	@Pattern(regexp = "^[\\p{L}\\p{N}\\p{Zs}]*$",
+			message = "Middle Name allows only alphabets, numbers, accented characters, or spaces.",
 			groups = BasicInfo.class)
 	private String middleName;
 

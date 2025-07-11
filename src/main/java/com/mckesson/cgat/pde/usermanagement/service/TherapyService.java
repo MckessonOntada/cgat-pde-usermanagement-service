@@ -9,7 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
@@ -46,7 +45,7 @@ public interface TherapyService {
 	Page<TradeCatalogResponseDTO> findNonCrosswalkedSPGlobalTherapies(String query, Pageable paging,
 			List<ChannelType> channelTypes, List<String> status, Boolean crosswalked);
 
-	Page<CatalogPrice> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging,
+	Page<CatalogPriceResponse> findAllGlobalCatalogs(List<String> accountIds, String query, Pageable paging,
 			ChannelType channelType, List<Integer> practiceIdList);
 
 	Therapy findByMaterialNumber(String materialNumber, ChannelType channelType) throws ResourceNotFoundException;
@@ -85,5 +84,9 @@ public interface TherapyService {
 
 	List<Therapy> findTherapyDetailsByNdcNumber(String ndcNumber, ChannelType channelType)
 			throws ResourceNotFoundException;
+
+	void updateSPTherapyConfigs(SPTherapyConfigRequestDTO request);
+
+	void removeSPTherapyConfig(String spProductId);
 
 }
