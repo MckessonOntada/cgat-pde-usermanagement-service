@@ -254,7 +254,6 @@ public class Therapy implements Serializable {
 	@Column(name = "ordering_uom_gtin")
 	private String orderingUomGtin;
 
-	@Size(max = 30)
 	@Column(name = "generic_name")
 	private String genericName;
 
