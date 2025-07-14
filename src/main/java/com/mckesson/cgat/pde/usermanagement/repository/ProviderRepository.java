@@ -67,4 +67,6 @@ public interface ProviderRepository extends JpaRepository<Provider, Long> {
 	Page<Provider> findNonLinkedProvidersByAccountId(@Param("query") String query, @Param("accountId") Long accountId,
 			Pageable paging, @Param("practiceId") Long practiceId);
 
+	boolean existsByEmail(String email);
+
 }

@@ -15,6 +15,7 @@ import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.ProviderRepository;
 import com.mckesson.cgat.pde.usermanagement.service.ProviderService;
+import com.mckesson.cgat.pde.usermanagement.service.UserService;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
@@ -56,12 +57,16 @@ public class ProviderServiceImpl implements ProviderService {
 
 	private final AccountRepository accountRepository;
 
+	private final UserService userService;
+
 	@Autowired
 	Validator validator;
 
-	public ProviderServiceImpl(ProviderRepository providerRepository, AccountRepository accountRepository) {
+	public ProviderServiceImpl(ProviderRepository providerRepository, AccountRepository accountRepository,
+			UserService userService) {
 		this.providerRepository = providerRepository;
 		this.accountRepository = accountRepository;
+		this.userService = userService;
 	}
 
 	@Override
@@ -295,17 +300,20 @@ public class ProviderServiceImpl implements ProviderService {
 		}
 	}
 
+	@Transactional
 	@Override
 	public Provider createProvider(Provider provider, Long accountId) throws ResourceNotFoundException {
 		validateProvider(provider);
 		validateUniqueConstraintsForAddProvider(provider);
 		provider.setIsActive(true);
 		Provider savedProvider = providerRepository.save(provider);
+		userService.createPhysicianUser(savedProvider);
 		if (accountId != null) {
 			linkProvidersToAccounts(ProviderAccountsDTO.builder()
 				.providerIds(List.of(savedProvider.getId()))
 				.accountIds(List.of(accountId))
 				.build());
+			userService.linkPhysicianToAccounts(savedProvider.getEmail(), List.of(accountId));
 		}
 
 		return savedProvider;
@@ -331,9 +339,11 @@ public class ProviderServiceImpl implements ProviderService {
 		return providerRepository.findAllByQueryText(query, statusFilter, paging, accountId, practiceId);
 	}
 
+	@Transactional
 	@Override
 	public Provider updateProviderDetailsById(Long providerId, ProviderDTO model) throws ResourceNotFoundException {
 		Provider provider = getProvider(providerId);
+		String oldEmail = provider.getEmail();
 		provider.setAddress(model.getAddress());
 		provider.setPhone(model.getPhone());
 		provider.setDea(model.getDea());
@@ -345,7 +355,21 @@ public class ProviderServiceImpl implements ProviderService {
 		provider.setMedicaidNumber(model.getMedicaidNumber());
 		provider.setTin(model.getTin());
 		validateProvider(provider);
-		return providerRepository.save(provider);
+		Provider savedProvider = providerRepository.save(provider);
+		if (provider.getEmail().equals(oldEmail)) {
+			userService.updatePhysicianUser(savedProvider);
+		}
+		else {
+			userService.createPhysicianUser(savedProvider);
+			if (savedProvider.getAccounts() != null && !savedProvider.getAccounts().isEmpty()) {
+				List<Long> accountIds = savedProvider.getAccounts()
+					.stream()
+					.map(Account::getId)
+					.collect(Collectors.toList());
+				userService.linkPhysicianToAccounts(savedProvider.getEmail(), accountIds);
+			}
+		}
+		return savedProvider;
 	}
 
 	@Override
@@ -390,6 +414,10 @@ public class ProviderServiceImpl implements ProviderService {
 				.append(". ");
 		}
 
+		if (providerRepository.existsByEmail(provider.getEmail())) {
+			errorMessage.append("Provider with Email ").append(provider.getEmail()).append(" already exists.");
+		}
+
 		if (!errorMessage.isEmpty()) {
 			throw new IllegalArgumentException(errorMessage.toString().trim());
 		}
@@ -405,6 +433,10 @@ public class ProviderServiceImpl implements ProviderService {
 
 		if (providerRepository.existsByPracticeIdAndNpi(provider.getPracticeId(), provider.getNpi())) {
 			errorCodes.add("provider.npi.conflict");
+		}
+
+		if (providerRepository.existsByEmail(provider.getEmail())) {
+			errorCodes.add("provider.email.conflict");
 		}
 
 		if (!errorCodes.isEmpty()) {
@@ -430,7 +462,15 @@ public class ProviderServiceImpl implements ProviderService {
 			}
 
 			// Link all providers to each account
-			accounts.stream().map(a -> a.getProviders().addAll(providers)).collect(Collectors.toList());
+			List<Long> accountIds = accounts.stream()
+				.peek(a -> a.getProviders().addAll(providers))
+				.map(Account::getId)
+				.collect(Collectors.toList());
+
+			for (Provider provider : providers) {
+				userService.linkPhysicianToAccounts(provider.getEmail(), accountIds);
+			}
+
 			accountRepository.saveAll(accounts);
 			log.info("Successfully linked providers to accounts.");
 		}
