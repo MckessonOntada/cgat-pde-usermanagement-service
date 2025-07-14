@@ -56,7 +56,7 @@ public class GlobalTherapyController {
 	@Operation(summary = "Fetch all therapies.")
 	public ResponseEntity<Page<TradeCatalogResponseDTO>> findAllTherapies(
 			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize,
-			@RequestParam(required = false) String query, @RequestParam(defaultValue = "trade_name") String sortBy,
+			@RequestParam(required = false) String query, @RequestParam(defaultValue = "tradeName") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder,
 			@RequestParam(required = false) List<ChannelType> channelTypes,
 			@RequestParam(required = false) List<String> status,
