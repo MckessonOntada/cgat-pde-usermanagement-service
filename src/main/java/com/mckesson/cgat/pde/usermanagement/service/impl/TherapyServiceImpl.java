@@ -613,24 +613,25 @@ public class TherapyServiceImpl implements TherapyService {
 			.collect(Collectors.toMap(SPTherapyConfig::getSpProductId, Function.identity()));
 
 		List<SPTherapyConfig> updatedConfigs = request.getSpProductIds().stream().map(spProductId -> {
-			SPTherapyConfig config = existingConfigMap.get(spProductId);
+			SPTherapyConfig config = existingConfigMap.getOrDefault(spProductId,
+					SPTherapyConfig.builder().spProductId(spProductId).build());
 
-			if (config != null) {
-				config.setIsCoiIdRequired(request.isCoiIdRequired());
-				config.setIsMRNRequired(request.isMrnRequired());
-				config.setIsPatientIdentifierRequired(request.isPatientIdentifierRequired());
-				return config;
-			}
-			else {
-				return SPTherapyConfig.builder()
-					.spProductId(spProductId)
-					.isPatientIdentifierRequired(request.isPatientIdentifierRequired())
-					.isCoiIdRequired(request.isCoiIdRequired())
-					.isMRNRequired(request.isMrnRequired())
-					.build();
-			}
-		}).collect(Collectors.toList());
+			applySPCommonFields(config, request);
+			return config;
+		}).toList();
+
 		spTherapyConfigRepository.saveAll(updatedConfigs);
+	}
+
+	private void applySPCommonFields(SPTherapyConfig config, SPTherapyConfigRequestDTO request) {
+		config.setIsCoiIdRequired(request.isCoiIdRequired());
+		config.setIsMRNRequired(request.isMrnRequired());
+		config.setIsPatientIdentifierRequired(request.isPatientIdentifierRequired());
+		config.setIsPrescriptionDetailsRequired(request.isPrescriptionDetailsRequired());
+		config.setQuantity(request.getQuantity());
+		config.setDaysSupply(request.getDaysSupply());
+		config.setRefills(request.getRefills());
+		config.setInstructions(request.getInstructions());
 	}
 
 	@Override
