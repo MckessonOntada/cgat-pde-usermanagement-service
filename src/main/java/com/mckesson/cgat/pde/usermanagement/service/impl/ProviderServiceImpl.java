@@ -356,6 +356,7 @@ public class ProviderServiceImpl implements ProviderService {
 					.collect(Collectors.toList());
 				userService.linkPhysicianToAccounts(savedProvider.getEmail(), accountIds);
 			}
+			userService.deleteUser(userService.getUserByEmail(oldEmail).getId());
 		}
 		return savedProvider;
 	}
