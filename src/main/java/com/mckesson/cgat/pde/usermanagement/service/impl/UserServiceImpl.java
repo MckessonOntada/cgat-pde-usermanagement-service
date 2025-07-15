@@ -308,6 +308,21 @@ public class UserServiceImpl implements UserService {
 		linkUserToAccounts(existingUser.getId(), accountIds);
 	}
 
+	@Transactional
+	@Override
+	public void deLinkPhysicianFromAccounts(String email, Long accountId) throws ResourceNotFoundException {
+		User existingUser = getUserByEmail(email);
+		delinkUserFromAccount(existingUser.getId(), accountId);
+	}
+
+	@Transactional
+	@Override
+	public void activatePhysicianUser(String email) throws ResourceNotFoundException {
+		User existingUser = userRepository.findByContactEmailAndIsActiveFalse(email)
+			.orElseThrow(() -> new ResourceNotFoundException("User not found for the given user email"));
+		activateUser(existingUser.getId());
+	}
+
 	// =======================================================
 	// Private methods (Bulk User Upload)
 	// =======================================================

@@ -88,19 +88,7 @@ public class ProviderServiceImpl implements ProviderService {
 					continue;
 				}
 
-				Provider existingProvider = providerRepository.findByPracticeIdAndNpi(practiceId, provider.getNpi());
-
-				if (existingProvider != null) {
-					updateExistingProvider(existingProvider, provider);
-					providerRepository.save(existingProvider);
-					log.info("Updated provider with NPI: {} for Practice ID: {}", provider.getNpi(), practiceId);
-				}
-				else {
-					provider.setPracticeId(practiceId);
-					validateUniqueConstraints(provider);
-					providerRepository.save(provider);
-					log.info("Saved new provider with NPI: {} for Practice ID: {}", provider.getNpi(), practiceId);
-				}
+				upsertProvider(provider, practiceId);
 			}
 			catch (Exception e) {
 				String errorMsg = e instanceof IllegalArgumentException ? e.getMessage()
@@ -378,19 +366,23 @@ public class ProviderServiceImpl implements ProviderService {
 			.orElseThrow(() -> new ResourceNotFoundException("Provider not found with id:" + providerId.toString()));
 	}
 
+	@Transactional
 	@Override
 	public void deactivateProvider(Long providerId) throws ResourceNotFoundException {
 		Provider provider = providerRepository.findById(providerId)
 			.orElseThrow(() -> new ResourceNotFoundException(providerId.toString()));
 		provider.setIsActive(false);
+		userService.deleteUser(userService.getUserByEmail(provider.getEmail()).getId());
 		providerRepository.save(provider);
 	}
 
+	@Transactional
 	@Override
 	public void activateProvider(Long providerId) throws ResourceNotFoundException {
 		Provider provider = providerRepository.findById(providerId)
 			.orElseThrow(() -> new ResourceNotFoundException(providerId.toString()));
 		provider.setIsActive(true);
+		userService.activatePhysicianUser(provider.getEmail());
 		providerRepository.save(provider);
 	}
 
@@ -479,6 +471,26 @@ public class ProviderServiceImpl implements ProviderService {
 			throw new RuntimeException("Linking provider with SP accounts failed ! ", e);
 		}
 
+	}
+
+	@Transactional
+	private void upsertProvider(Provider provider, Long practiceId) throws ResourceNotFoundException {
+		Optional<Provider> providerOpt = providerRepository.findByEmail(provider.getEmail());
+
+		if (providerOpt.isPresent()) {
+			Provider existingProvider = providerOpt.get();
+			updateExistingProvider(existingProvider, provider);
+			userService.updatePhysicianUser(existingProvider);
+			providerRepository.save(existingProvider);
+			log.info("Updated provider with NPI: {} for Practice ID: {}", provider.getNpi(), practiceId);
+		}
+		else {
+			provider.setPracticeId(practiceId);
+			validateUniqueConstraints(provider);
+			userService.createPhysicianUser(provider);
+			providerRepository.save(provider);
+			log.info("Saved new provider with NPI: {} for Practice ID: {}", provider.getNpi(), practiceId);
+		}
 	}
 
 }

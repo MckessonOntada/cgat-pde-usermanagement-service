@@ -54,6 +54,10 @@ public interface UserService {
 
 	void linkPhysicianToAccounts(String email, List<Long> accountIds) throws ResourceNotFoundException;
 
+	void deLinkPhysicianFromAccounts(String email, Long accountId) throws ResourceNotFoundException;
+
+	void activatePhysicianUser(String email) throws ResourceNotFoundException;
+
 	void resetPasswordByEmail(String email);
 
 }
