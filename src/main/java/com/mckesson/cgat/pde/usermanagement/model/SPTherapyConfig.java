@@ -34,4 +34,34 @@ public class SPTherapyConfig implements Serializable {
 	@Column(name = "is_mrn_required", nullable = false)
 	private Boolean isMRNRequired;
 
+	@Column(name = "is_prescription_details_required", nullable = false)
+	private Boolean isPrescriptionDetailsRequired;
+
+	@Column(name = "quantity")
+	private Long quantity;
+
+	@Column(name = "days_supply")
+	private Long daysSupply;
+
+	@Column(name = "refills")
+	private Long refills;
+
+	@Column(name = "instructions")
+	private String instructions;
+
+	@PrePersist
+	@PreUpdate
+	private void validatePrescriptionDetails() {
+		if (Boolean.TRUE.equals(isPrescriptionDetailsRequired)) {
+			if (quantity == null || daysSupply == null || refills == null || instructions == null) {
+				throw new IllegalStateException("Prescription details are required but one or more fields are null");
+			}
+		}
+		else {
+			if (quantity != null || daysSupply != null || refills != null || instructions != null) {
+				throw new IllegalStateException("Prescription details must be null when not required");
+			}
+		}
+	}
+
 }
