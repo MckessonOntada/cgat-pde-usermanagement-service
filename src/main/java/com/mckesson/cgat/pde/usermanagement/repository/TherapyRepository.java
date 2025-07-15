@@ -329,14 +329,15 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			       SELECT
 			                      m.trade_name AS tradeName,
 			                      m.channel_type AS channelType,
-			                      STRING_AGG(m.id::text, ', ') AS id,
-			                      STRING_AGG(m.material_number, ', ') AS therapyId,
-			                      STRING_AGG(m.material_description, ', ') AS therapyDescription,
-			                      STRING_AGG(m.ndc_number, ', ') AS ndc,
-			                      STRING_AGG(m.strength, ', ') AS strength,
-			                      STRING_AGG(m.dosage, ', ') AS dosage,
-			                      STRING_AGG(m.manufacturer_name, ', ') AS manufacturerName,
-			                      STRING_AGG(m.generic_name, ', ') AS genericName
+			                      STRING_AGG(COALESCE(m.id::text, ''), ',') AS id,
+			                      STRING_AGG(COALESCE(m.material_number, ''), ',') AS therapyId,
+			                      STRING_AGG(COALESCE(m.material_description, ''), ',') AS therapyDescription,
+			                      STRING_AGG(COALESCE(m.ndc_number, ''), ',') AS ndc,
+			                      STRING_AGG(COALESCE(m.strength, ''), ',') AS strength,
+			                      STRING_AGG(COALESCE(m.dosage, ''), ',') AS dosage,
+			                      STRING_AGG(COALESCE(m.manufacturer_name, ''), ',') AS manufacturerName,
+			                      STRING_AGG(COALESCE(m.generic_name, ''), ',') AS genericName
+
 			                  FROM
 			                      catalog.material m
 			                  WHERE

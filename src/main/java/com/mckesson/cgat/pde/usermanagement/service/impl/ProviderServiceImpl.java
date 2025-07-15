@@ -90,6 +90,13 @@ public class ProviderServiceImpl implements ProviderService {
 
 				upsertProvider(provider, practiceId);
 			}
+			catch (DataIntegrityViolationException e) {
+				String errorMsg = handleDataIntegrityViolation(e, provider);
+				String existing = failedProviders.getOrDefault(provider, "");
+				failedProviders.put(provider, (existing + " " + errorMsg).trim());
+				log.error("Data integrity violation for provider NPI: {} for Practice ID: {}. Error: {}",
+						provider.getNpi(), practiceId, errorMsg, e);
+			}
 			catch (Exception e) {
 				String errorMsg = e instanceof IllegalArgumentException ? e.getMessage()
 						: e.getCause() != null && e.getCause().getCause() != null ? e.getCause().getCause().getMessage()
@@ -492,6 +499,25 @@ public class ProviderServiceImpl implements ProviderService {
 			providerRepository.save(provider);
 			log.info("Saved new provider with NPI: {} for Practice ID: {}", provider.getNpi(), practiceId);
 		}
+	}
+
+	private String handleDataIntegrityViolation(DataIntegrityViolationException e, Provider provider) {
+		log.warn("Caught DataIntegrityViolationException. Root cause: {}",
+				e.getRootCause() != null ? e.getRootCause().getMessage() : e.getMessage());
+
+		if (StringUtils.isNotBlank(provider.getDea())
+				&& providerRepository.existsByPracticeIdAndDea(provider.getPracticeId(), provider.getDea())) {
+			return "Provider with DEA " + provider.getDea() + " already exists in practice " + provider.getPracticeId()
+					+ ".";
+		}
+
+		if (providerRepository.existsByPracticeIdAndNpi(provider.getPracticeId(), provider.getNpi())) {
+			return "Provider with NPI " + provider.getNpi() + " already exists in practice " + provider.getPracticeId()
+					+ ".";
+		}
+
+		return "A data integrity violation occurred: "
+				+ (e.getRootCause() != null ? e.getRootCause().getLocalizedMessage() : e.getLocalizedMessage());
 	}
 
 }
