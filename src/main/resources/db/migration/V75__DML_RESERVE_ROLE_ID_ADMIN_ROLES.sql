@@ -22,25 +22,25 @@ BEGIN
   FROM usermanagement.role
   WHERE id >= 4;
 
-  -- Step 3: Update role_permissions_mapping with new role_ids
-  UPDATE usermanagement.role_permissions_mapping rpm
-  SET role_id = rim.new_id
-  FROM role_id_map rim
-  WHERE rpm.role_id = rim.old_id;
-
-  -- Step 4: Update user table with new role_ids
-  UPDATE usermanagement."user" u
-  SET role_id = rim.new_id
-  FROM role_id_map rim
-  WHERE u.role_id = rim.old_id;
-
-  -- Step 5: Update the role table with new IDs
+  -- Step 3: Update the role table with new IDs first
   UPDATE usermanagement.role r
   SET id = rim.new_id
   FROM role_id_map rim
   WHERE r.id = rim.old_id;
 
-  -- Step 5: Sync the sequence to the new max ID in role
+  -- Step 4: Update role_permissions_mapping with new role_ids
+  UPDATE usermanagement.role_permissions_mapping rpm
+  SET role_id = rim.new_id
+  FROM role_id_map rim
+  WHERE rpm.role_id = rim.old_id;
+
+  -- Step 5: Update user table with new role_ids
+  UPDATE usermanagement."user" u
+  SET role_id = rim.new_id
+  FROM role_id_map rim
+  WHERE u.role_id = rim.old_id;
+
+  -- Step 6: Sync the sequence to the new max ID in role
   PERFORM setval('usermanagement.role_sequence', (SELECT MAX(id) FROM usermanagement.role), true);
 END
 $$;
