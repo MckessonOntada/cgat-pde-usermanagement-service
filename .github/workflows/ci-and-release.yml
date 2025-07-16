@@ -232,7 +232,6 @@ jobs:
       DOCKER_TAG: ${{ needs.set_env.outputs.DOCKER_TAG }}
       BRANCH_NAME: ${{ needs.set_env.outputs.BRANCH_NAME }}
       PROJECT_NAME: ${{ needs.set_env.outputs.PROJECT_NAME }}
-      PROJECT_ABBR: "cgat-pde-ums"
       #RELEASE_VERSION: ${{ needs.set_env.outputs.RELEASE_VERSION }}
       CURRENT_DATE_TIME: ${{ needs.set_env.outputs.CURRENT_DATE_TIME }}
       BUILD_NUMBER: ${{ needs.set_env.outputs.BUILD_NUMBER }}
@@ -254,6 +253,6 @@ jobs:
         with:
           artifacts: "./upload-artifacts/*"
           prerelease: true
-          tag: ${{ env.PROJECT_ABBR }}-${{ env.BRANCH_NAME }}-${{ env.CURRENT_DATE_TIME }}-${{ env.BUILD_NUMBER }}
+          tag: ${{ env.PROJECT_NAME }}-${{ env.BRANCH_NAME }}-${{ env.CURRENT_DATE_TIME }}-${{ env.BUILD_NUMBER }}
           token: ${{ secrets.GITHUB_TOKEN }}
           commit: ${{ github.sha }}
