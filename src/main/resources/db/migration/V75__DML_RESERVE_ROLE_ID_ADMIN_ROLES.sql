@@ -20,7 +20,7 @@ BEGIN
   SELECT id AS old_id,
          ROW_NUMBER() OVER (ORDER BY id) + current_seq AS new_id
   FROM usermanagement.role
-  WHERE id >= 4;
+  WHERE id >= 4 AND id < 21;
 
   -- Step 3: Insert new roles with new IDs
   INSERT INTO usermanagement.role (id, name, description, created_at, updated_at)  -- add other columns as needed
