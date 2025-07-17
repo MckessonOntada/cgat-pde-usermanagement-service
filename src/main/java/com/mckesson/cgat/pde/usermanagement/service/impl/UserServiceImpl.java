@@ -492,6 +492,28 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
+	public void resendActivationEmail(String email) throws CGATHttpException {
+		log.debug("Initiating resend activation process for email: {}", email);
+
+		try {
+			String oktaUserId = oktaUserManagementService.findOktaUserIdByEmail(email);
+
+			if (oktaUserId == null) {
+				log.warn("No Okta user found with email: {}", email);
+				throw new CGATHttpException("No Okta user found with email: " + email);
+			}
+			oktaUserManagementService.triggerReActivateEmail(oktaUserId);
+
+			log.info("Re-activation email triggered successfully for email: {}", email);
+
+		}
+		catch (CGATHttpException e) {
+			log.error("Exception occurred while re-activating user email: {}. Error: {}", email, e.getMessage(), e);
+			throw e;
+		}
+	}
+
 	private User mapProviderToUser(Provider provider) {
 		Contact userContact = Contact.builder()
 			.email(provider.getEmail())
