@@ -22,4 +22,6 @@ public interface TherapyCatalogResponseDTO {
 
 	String getGenericName();
 
+	String getDrugForm();
+
 }
