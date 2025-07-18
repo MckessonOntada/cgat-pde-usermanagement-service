@@ -28,10 +28,10 @@ public class TradeCatalogResponseMapper {
 		String[] dosages = splitSafe(row.getDosage());
 		String[] manufacturerNames = splitSafe(row.getManufacturerName());
 		String[] genericNames = splitSafe(row.getGenericName());
-		String[] drugForm = splitSafe(row.getDrugForm());
+		String[] productForm = splitSafe(row.getProductForm());
 
 		int maxLength = maxLength(ids, therapyNumbers, descriptions, ndcs, strengths, dosages, manufacturerNames,
-				genericNames, drugForm);
+				genericNames, productForm);
 
 		Map<String, TherapyDTO> therapyMap = new HashMap<>();
 		Set<String> addedNdcs = new HashSet<>();
@@ -55,7 +55,7 @@ public class TradeCatalogResponseMapper {
 			dto.setDosage(safeGet(dosages, i));
 			dto.setManufacturerName(safeGet(manufacturerNames, i));
 			dto.setGenericName(safeGet(genericNames, i));
-			dto.setDrugForm(safeGet(drugForm, i));
+			dto.setProductForm(safeGet(productForm, i));
 			therapyMap.put(id, dto);
 
 		}
