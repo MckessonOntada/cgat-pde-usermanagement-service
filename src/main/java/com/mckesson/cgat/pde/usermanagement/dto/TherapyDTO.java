@@ -23,4 +23,6 @@ public class TherapyDTO {
 
 	private String manufacturerName;
 
+	private String productForm;
+
 }
