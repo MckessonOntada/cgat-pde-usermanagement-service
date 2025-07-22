@@ -1,12 +1,14 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import com.mckesson.cgat.pde.usermanagement.dto.*;
+import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.mapper.CatalogPriceMapper;
 import com.mckesson.cgat.pde.usermanagement.mapper.TradeCatalogResponseMapper;
 import com.mckesson.cgat.pde.usermanagement.model.*;
 import com.mckesson.cgat.pde.usermanagement.repository.*;
 import com.mckesson.cgat.pde.usermanagement.service.QuestionnaireService;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
+import com.mckesson.cgat.pde.usermanagement.service.impl.utils.PracticeUtils;
 import com.mckesson.cgat.pde.usermanagement.utils.OrganizationContext;
 import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -18,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -48,11 +51,17 @@ public class TherapyServiceImpl implements TherapyService {
 
 	private final SPTherapyConfigRepository spTherapyConfigRepository;
 
+	private final PracticeUtils practiceUtils;
+
+	private final String MANUFACTURER_LOGO_BASE_URL = "logos/manufacturer";
+
+	private final String MANUFACTURER_LOGO_EXTENSION = "jpg";
+
 	public TherapyServiceImpl(TherapyRepository therapyRepository, CatalogPriceRepository catalogPriceRepository,
 			CatalogPriceMapper catalogPriceMapper, TherapyConfigRepository therapyConfigRepository,
 			QuestionnaireService questionnaireService, ShippingLocationRepository shippingLocationRepository,
 			MaterialCrossWalkConfigRepository materialCrossWalkConfigRepository,
-			SPTherapyConfigRepository spTherapyConfigRepository) {
+			SPTherapyConfigRepository spTherapyConfigRepository, PracticeUtils practiceUtils) {
 		this.therapyRepository = therapyRepository;
 		this.catalogPriceRepository = catalogPriceRepository;
 		this.catalogPriceMapper = catalogPriceMapper;
@@ -61,6 +70,7 @@ public class TherapyServiceImpl implements TherapyService {
 		this.shippingLocationRepository = shippingLocationRepository;
 		this.materialCrossWalkConfigRepository = materialCrossWalkConfigRepository;
 		this.spTherapyConfigRepository = spTherapyConfigRepository;
+		this.practiceUtils = practiceUtils;
 	}
 
 	public Page<TradeCatalogResponseDTO> findAllTherapies(Long userId, String query, List<String> salesOrg,
@@ -638,6 +648,25 @@ public class TherapyServiceImpl implements TherapyService {
 	@Transactional
 	public void removeSPTherapyConfig(String spProductId) {
 		spTherapyConfigRepository.deleteBySpProductId(spProductId);
+	}
+
+	@Override
+	public TherapyLogoResponseDto getManufacturerLogo(Long therapyId) throws ResourceNotFoundException {
+		Therapy therapy = findById(therapyId);
+		String manufacturerName = therapy.getManufacturerName();
+		if (manufacturerName == null) {
+			throw new ResourceNotFoundException("Manufacturer is not present in the therapy: " + therapyId);
+		}
+		String firstName = manufacturerName.contains(" ") ? manufacturerName.substring(0, manufacturerName.indexOf(" "))
+				: manufacturerName;
+
+		MediaType mediaType = practiceUtils.getContentType(MANUFACTURER_LOGO_EXTENSION);
+		if (mediaType == null) {
+			throw new FileNotValidException("Unsupported file type: " + MANUFACTURER_LOGO_EXTENSION);
+		}
+		String logoUri = String.format("%s/%s.%s", MANUFACTURER_LOGO_BASE_URL, firstName, MANUFACTURER_LOGO_EXTENSION);
+		byte[] logo = practiceUtils.fetchLogo(logoUri);
+		return TherapyLogoResponseDto.builder().logo(logo).logoExtension(mediaType).build();
 	}
 
 }

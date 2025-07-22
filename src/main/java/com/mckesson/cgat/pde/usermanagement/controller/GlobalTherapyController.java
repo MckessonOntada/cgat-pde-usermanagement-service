@@ -276,4 +276,15 @@ public class GlobalTherapyController {
 				HttpStatus.OK);
 	}
 
+	@GetMapping("/{therapyId}/manufacturer/logo")
+	@Operation(summary = "Get Manufacturer Logo by Therapy Id")
+	public ResponseEntity<byte[]> getManufacturerLogo(@NotNull @PathVariable Long therapyId)
+			throws NumberFormatException, ResourceNotFoundException {
+		TherapyLogoResponseDto therapyLogoResponseDto = therapyService.getManufacturerLogo(therapyId);
+
+		return ResponseEntity.status(HttpStatus.OK)
+			.contentType(therapyLogoResponseDto.getLogoExtension())
+			.body(therapyLogoResponseDto.getLogo());
+	}
+
 }

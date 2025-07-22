@@ -89,4 +89,6 @@ public interface TherapyService {
 
 	void removeSPTherapyConfig(String spProductId);
 
+	TherapyLogoResponseDto getManufacturerLogo(Long therapyId) throws ResourceNotFoundException;
+
 }
