@@ -391,6 +391,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			    OR LOWER(m.material_description) LIKE %:query%
 			    OR LOWER(m.generic_name) LIKE %:query%
 			    OR LOWER(m.trade_name) LIKE %:query%
+			    OR LOWER(m.manufacturer_name) LIKE %:query%
 			)
 			AND
 			(
