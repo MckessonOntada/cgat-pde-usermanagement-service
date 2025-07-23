@@ -2,9 +2,9 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import java.io.*;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CsvFileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
+import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
@@ -29,7 +29,6 @@ import org.springframework.util.CollectionUtils;
 import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CGATHttpException;
 import com.mckesson.cgat.pde.usermanagement.model.Account;
-import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.Role;
 import com.mckesson.cgat.pde.usermanagement.model.User;
 import com.mckesson.cgat.pde.usermanagement.model.UserPreference;
@@ -41,7 +40,6 @@ import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
 import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
 import com.mckesson.cgat.pde.usermanagement.service.OktaUserManagementService;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;
-import com.mckesson.cgat.pde.usermanagement.utils.UserRequestAuthorizationValidator;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
 import jakarta.transaction.Transactional;
@@ -281,6 +279,50 @@ public class UserServiceImpl implements UserService {
 		return userRepository.save(user);
 	}
 
+	@Transactional
+	@Override
+	public void createPhysicianUser(Provider provider) throws ResourceNotFoundException {
+		User user = mapProviderToUser(provider);
+
+		Role role = roleRepository.findByNameAndPracticeId_IdAndIsActiveTrue(CustomUtils.PHYSICIAN_ROLE_NAME, null)
+			.orElseThrow(() -> new ResourceNotFoundException("Physician Role not found"));
+		user.setRole(role);
+		user.setPermissions(new HashSet<>(role.getPermissions()));
+		user.setAccounts(new HashSet<>());
+
+		createUser(user);
+	}
+
+	@Transactional
+	@Override
+	public void updatePhysicianUser(Provider provider) throws ResourceNotFoundException {
+		User user = mapProviderToUser(provider);
+		User existingUser = getUserByEmail(provider.getEmail());
+		updateUser(existingUser.getId(), user);
+	}
+
+	@Transactional
+	@Override
+	public void linkPhysicianToAccounts(String email, List<Long> accountIds) throws ResourceNotFoundException {
+		User existingUser = getUserByEmail(email);
+		linkUserToAccounts(existingUser.getId(), accountIds);
+	}
+
+	@Transactional
+	@Override
+	public void deLinkPhysicianFromAccounts(String email, Long accountId) throws ResourceNotFoundException {
+		User existingUser = getUserByEmail(email);
+		delinkUserFromAccount(existingUser.getId(), accountId);
+	}
+
+	@Transactional
+	@Override
+	public void activatePhysicianUser(String email) throws ResourceNotFoundException {
+		User existingUser = userRepository.findByContactEmailAndIsActiveFalse(email)
+			.orElseThrow(() -> new ResourceNotFoundException("User not found for the given user email"));
+		activateUser(existingUser.getId());
+	}
+
 	// =======================================================
 	// Private methods (Bulk User Upload)
 	// =======================================================
@@ -448,6 +490,25 @@ public class UserServiceImpl implements UserService {
 			log.error("Exception occurred while resetting password for email: {}. Error: {}", email, e.getMessage(), e);
 			throw e;
 		}
+	}
+
+	private User mapProviderToUser(Provider provider) {
+		Contact userContact = Contact.builder()
+			.email(provider.getEmail())
+			.phone(provider.getPhone())
+			.countryCode("+1")
+			.build();
+
+		User user = User.builder()
+			.practiceId(provider.getPracticeId())
+			.name(provider.getName())
+			.address(provider.getAddress())
+			.contact(userContact)
+			.isActive(true)
+			.build();
+
+		validateUser(user);
+		return user;
 	}
 
 }
