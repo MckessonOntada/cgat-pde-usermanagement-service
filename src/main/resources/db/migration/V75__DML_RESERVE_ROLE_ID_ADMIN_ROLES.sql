@@ -23,8 +23,8 @@ BEGIN
   WHERE id >= 4 AND id < 21;
 
   -- Step 3: Insert new roles with new IDs
-  INSERT INTO usermanagement.role (id, name, description, created_at, updated_at)  -- add other columns as needed
-  SELECT rim.new_id, r.name, r.description, r.created_at, r.updated_at
+  INSERT INTO usermanagement.role (id, name, description, created_at, updated_at, practice_id, is_active, created_by, updated_by, created_by_impersonator, updated_by_impersonator, created_by_user_name, created_by_impersonator_user_name)
+  SELECT rim.new_id, r.name, r.description, r.created_at, r.updated_at, r.practice_id, r.is_active, r.created_by, r.updated_by, r.created_by_impersonator, r.updated_by_impersonator, r.created_by_user_name, r.created_by_impersonator_user_name
   FROM usermanagement.role r
   JOIN role_id_map rim ON r.id = rim.old_id;
 
