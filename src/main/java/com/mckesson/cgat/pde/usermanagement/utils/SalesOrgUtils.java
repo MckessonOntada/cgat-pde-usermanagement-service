@@ -10,7 +10,7 @@ public class SalesOrgUtils {
 	static {
 		SALES_ORG_MAP.put("MPB", Collections.singletonList("8545"));
 		SALES_ORG_MAP.put("3PL", Arrays.asList("1100", "2"));
-		SALES_ORG_MAP.put("SD", Collections.singletonList("1000"));
+		SALES_ORG_MAP.put("SD", Arrays.asList("1000", "1010"));
 		SALES_ORG_MAP.put("NA", Collections.singletonList("NA"));
 	}
 
