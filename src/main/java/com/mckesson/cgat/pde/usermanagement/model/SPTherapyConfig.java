@@ -25,16 +25,16 @@ public class SPTherapyConfig implements Serializable {
 	@Column(name = "sp_product_id", nullable = false, unique = true)
 	private String spProductId;
 
-	@Column(name = "is_coi_id_required", nullable = false)
+	@Column(name = "is_coi_id_required")
 	private Boolean isCoiIdRequired;
 
-	@Column(name = "is_patient_identifier_required", nullable = false)
+	@Column(name = "is_patient_identifier_required")
 	private Boolean isPatientIdentifierRequired;
 
-	@Column(name = "is_mrn_required", nullable = false)
+	@Column(name = "is_mrn_required")
 	private Boolean isMRNRequired;
 
-	@Column(name = "is_prescription_details_required", nullable = false)
+	@Column(name = "is_prescription_details_required")
 	private Boolean isPrescriptionDetailsRequired;
 
 	@Column(name = "quantity")

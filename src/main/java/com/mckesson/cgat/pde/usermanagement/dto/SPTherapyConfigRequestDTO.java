@@ -14,13 +14,13 @@ public class SPTherapyConfigRequestDTO {
 	@Size(min = 1, message = "SP Product ids must not be empty.")
 	private List<String> spProductIds;
 
-	private boolean isCoiIdRequired;
+	private Boolean isCoiIdRequired;
 
-	private boolean isPatientIdentifierRequired;
+	private Boolean isPatientIdentifierRequired;
 
-	private boolean isMrnRequired;
+	private Boolean isMrnRequired;
 
-	private boolean isPrescriptionDetailsRequired;
+	private Boolean isPrescriptionDetailsRequired;
 
 	@Min(value = 1, message = "Quantity must be greater than 0.")
 	private Long quantity;
