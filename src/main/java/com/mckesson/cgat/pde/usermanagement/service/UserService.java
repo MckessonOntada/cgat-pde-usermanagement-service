@@ -60,4 +60,6 @@ public interface UserService {
 
 	void resetPasswordByEmail(String email);
 
+	void resendActivationEmail(String email) throws CGATHttpException;
+
 }

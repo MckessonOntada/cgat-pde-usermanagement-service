@@ -11,4 +11,6 @@ public interface OktaUserManagementService {
 
 	void triggerPasswordResetEmail(String oktaUserId);
 
+	void triggerReActivateEmail(String oktaUserId) throws CGATHttpException;
+
 }
