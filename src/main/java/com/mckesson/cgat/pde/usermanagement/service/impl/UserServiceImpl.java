@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 import java.io.*;
 
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CsvFileNotValidException;
+import com.mckesson.cgat.pde.usermanagement.exception.custom.ResourceConflictException;
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import jakarta.validation.ConstraintViolation;
@@ -282,6 +283,10 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	@Override
 	public void createPhysicianUser(Provider provider) throws ResourceNotFoundException {
+		Optional<User> existingUser = userRepository.findByContactEmail(provider.getEmail());
+		if (existingUser.isPresent()) {
+			throw new ResourceConflictException(List.of("user.email.conflict"));
+		}
 		User user = mapProviderToUser(provider);
 
 		Role role = roleRepository.findByNameAndPracticeId_IdAndIsActiveTrue(CustomUtils.PHYSICIAN_ROLE_NAME, null)
