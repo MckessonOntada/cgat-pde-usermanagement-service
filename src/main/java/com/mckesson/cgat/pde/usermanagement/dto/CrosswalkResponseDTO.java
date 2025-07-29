@@ -16,4 +16,6 @@ public interface CrosswalkResponseDTO {
 
 	String getDosage();
 
+	String getFormulation();
+
 }
