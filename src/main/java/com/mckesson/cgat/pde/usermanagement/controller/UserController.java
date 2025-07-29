@@ -9,6 +9,7 @@ import com.mckesson.cgat.pde.usermanagement.exception.custom.CGATHttpException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.service.impl.utils.FileValidationUtils;
 import com.mckesson.jbat.auth.module.exception.BadRequestException;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -273,6 +274,14 @@ public class UserController {
 	public ResponseEntity<Void> resetPasswordByEmail() throws CGATHttpException {
 		String email = Objects.requireNonNull(UserSecurityUtils.getLoggedInUser()).getUserName();
 		userService.resetPasswordByEmail(email);
+		return ResponseEntity.ok().build();
+	}
+
+	@PostMapping("/resend-activation/{email}")
+	@Operation(summary = "Resend activation email")
+	public ResponseEntity<Void> resendActivationEmail(
+			@NotBlank(message = "Email must not be blank") @PathVariable String email) throws CGATHttpException {
+		userService.resendActivationEmail(email);
 		return ResponseEntity.ok().build();
 	}
 

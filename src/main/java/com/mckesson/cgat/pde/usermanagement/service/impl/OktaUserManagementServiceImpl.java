@@ -161,4 +161,29 @@ public class OktaUserManagementServiceImpl implements OktaUserManagementService 
 		}
 	}
 
+	@Override
+	public void triggerReActivateEmail(String oktaUserId) throws CGATHttpException {
+		log.debug("Triggering re-activate email for Okta ID: {}", oktaUserId);
+
+		// Prepare the URL and query parameters
+		String url = String.format("%s/%s/lifecycle/reactivate", OKTA_USER_PATH, oktaUserId);
+		HashMap<String, String> queryParams = new HashMap<>();
+		queryParams.put("sendEmail", "true");
+
+		// Empty payload
+		String payload = "";
+
+		try {
+			// Send POST request to trigger password reset email
+			String response = cgatHttpClient.sendPostRequest(url, queryParams, payload, "SSWS " + oktaApiToken);
+
+			log.info("Re-activation email triggered successfully for Okta ID: {}. Response: {}", oktaUserId, response);
+
+		}
+		catch (CGATHttpException e) {
+			log.error("Failed to trigger re-activate email for Okta ID: {}. Error: {}", oktaUserId, e.getMessage(), e);
+			throw e;
+		}
+	}
+
 }

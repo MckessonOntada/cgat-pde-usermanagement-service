@@ -198,4 +198,6 @@ public class CustomUtils {
 		return statusActive;
 	}
 
+	public static final String PHYSICIAN_ROLE_NAME = "Physician";
+
 }
