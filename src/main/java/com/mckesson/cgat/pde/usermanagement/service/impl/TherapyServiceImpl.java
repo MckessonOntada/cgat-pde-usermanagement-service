@@ -362,12 +362,12 @@ public class TherapyServiceImpl implements TherapyService {
 	public void updateTherapyConfigs(TherapyConfigRequestDTO request) {
 		List<String> ndcNumbers = request.getNdcNumbers();
 		ChannelType channelType = request.getChannelType();
-		boolean patientInfoRequired = request.isPatientInformationRequired();
-		boolean coiIdRequired = request.isCoiIdRequired();
-		boolean mrnRequired = request.isMRNRequired();
-		boolean doaRequired = request.isDOARequired();
-		boolean poRequired = request.isPORequired();
-		boolean pidRequired = request.isPIDRequired();
+		boolean patientInfoRequired = request.getIsPatientInformationRequired();
+		boolean coiIdRequired = request.getIsCoiIdRequired();
+		boolean mrnRequired = request.getIsMRNRequired();
+		boolean doaRequired = request.getIsDOARequired();
+		boolean poRequired = request.getIsPORequired();
+		boolean pidRequired = request.getIsPIDRequired();
 
 		Map<String, TherapyConfig> existingConfigMap = therapyConfigRepository
 			.findByNdcNumberInAndChannelType(ndcNumbers, channelType)
