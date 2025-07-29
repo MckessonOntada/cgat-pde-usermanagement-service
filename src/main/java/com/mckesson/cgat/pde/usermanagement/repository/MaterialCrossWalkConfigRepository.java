@@ -40,7 +40,6 @@ public interface MaterialCrossWalkConfigRepository extends JpaRepository<Crosswa
 			    :query IS NULL
 			    OR LOWER(m1.material_number) LIKE %:query%
 			    OR LOWER(m1.ndc_number) LIKE %:query%
-			    OR LOWER(m1.trade_name) LIKE %:query%
 			    OR LOWER(m1.material_description) LIKE %:query%
 				OR LOWER(m2.material_number) LIKE %:query%
 			    OR LOWER(m2.ndc_number) LIKE %:query%
