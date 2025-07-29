@@ -18,22 +18,14 @@ public class TherapyConfigRequestDTO {
 
 	private boolean isCoiIdRequired;
 
+	private boolean isMRNRequired;
+
+	private boolean isDOARequired;
+
+	private boolean isPORequired;
+
+	private boolean isPIDRequired;
+
 	private ChannelType channelType = ChannelType.BUY_AND_BILL;
-
-	public boolean getIsPatientInformationRequired() {
-		return isPatientInformationRequired;
-	}
-
-	public boolean getIsCoiIdRequired() {
-		return isCoiIdRequired;
-	}
-
-	public void setIsPatientInformationRequired(boolean isPatientInformationRequired) {
-		this.isPatientInformationRequired = isPatientInformationRequired;
-	}
-
-	public void setIsCoiIdRequired(boolean isCoiIdRequired) {
-		this.isCoiIdRequired = isCoiIdRequired;
-	}
 
 }

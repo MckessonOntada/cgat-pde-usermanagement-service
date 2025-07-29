@@ -359,32 +359,33 @@ public class TherapyServiceImpl implements TherapyService {
 
 	@Override
 	@Transactional
-	public void updateTherapyConfigs(List<String> ndcNumbers, boolean isPatientInformationRequired,
-			boolean isCoiIdRequired, ChannelType channelType) {
+	public void updateTherapyConfigs(TherapyConfigRequestDTO request) {
+		List<String> ndcNumbers = request.getNdcNumbers();
+		ChannelType channelType = request.getChannelType();
+		boolean patientInfoRequired = request.isPatientInformationRequired();
+		boolean coiIdRequired = request.isCoiIdRequired();
+		boolean mrnRequired = request.isMRNRequired();
+		boolean doaRequired = request.isDOARequired();
+		boolean poRequired = request.isPORequired();
+		boolean pidRequired = request.isPIDRequired();
 
-		List<TherapyConfig> existingConfigs = therapyConfigRepository.findByNdcNumberInAndChannelType(ndcNumbers,
-				channelType);
-
-		Map<String, TherapyConfig> existingConfigMap = existingConfigs.stream()
+		Map<String, TherapyConfig> existingConfigMap = therapyConfigRepository
+			.findByNdcNumberInAndChannelType(ndcNumbers, channelType)
+			.stream()
 			.collect(Collectors.toMap(TherapyConfig::getNdcNumber, Function.identity()));
 
-		List<TherapyConfig> updatedConfigs = ndcNumbers.stream().map(ndcNumber -> {
-			TherapyConfig config = existingConfigMap.get(ndcNumber);
+		List<TherapyConfig> updatedConfigs = ndcNumbers.stream().map(ndc -> {
+			TherapyConfig config = existingConfigMap.getOrDefault(ndc,
+					TherapyConfig.builder().ndcNumber(ndc).channelType(channelType).build());
 
-			if (config != null) {
-				config.setIsPatientInformationRequired(isPatientInformationRequired);
-				config.setIsCoiIdRequired(isCoiIdRequired);
-				return config;
-			}
-			else {
-				return TherapyConfig.builder()
-					.ndcNumber(ndcNumber)
-					.isPatientInformationRequired(isPatientInformationRequired)
-					.isCoiIdRequired(isCoiIdRequired)
-					.channelType(channelType)
-					.build();
-			}
-		}).collect(Collectors.toList());
+			config.setIsPatientInformationRequired(patientInfoRequired);
+			config.setIsCoiIdRequired(coiIdRequired);
+			config.setIsMRNRequired(mrnRequired);
+			config.setIsDOARequired(doaRequired);
+			config.setIsPORequired(poRequired);
+			config.setIsPIDRequired(pidRequired);
+			return config;
+		}).toList();
 
 		therapyConfigRepository.saveAll(updatedConfigs);
 	}
