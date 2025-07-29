@@ -28,7 +28,7 @@ public interface MaterialCrossWalkConfigRepository extends JpaRepository<Crosswa
 			 	m1.trade_name as trade_name,
 				m1.ndc_number as bnbNdc,
 				m1.product_form as formulation,
-				CONCAT(m1.strength, '/', m1.dosage) as dosage,
+				CONCAT(m1.strength, ' ', m1.dosage) as dosage,
 				m2.material_number as spProductId,
 			    m2.material_description as spProductName,
 				m2.ndc_number as spNdc
