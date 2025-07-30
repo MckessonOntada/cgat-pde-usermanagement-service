@@ -30,143 +30,146 @@ import static com.mckesson.cgat.pde.usermanagement.notification.config.EmailNoti
 @Slf4j
 public class EmailNotificationServiceImpl implements EmailNotificationService {
 
-    private EmailNotificationEventRepository emailNotificationEventRepository;
+	private EmailNotificationEventRepository emailNotificationEventRepository;
 
-    private EmailNotificationConfig emailNotificationConfig;
+	private EmailNotificationConfig emailNotificationConfig;
 
-    private PracticeRepository practiceRepository;
+	private PracticeRepository practiceRepository;
 
-    private Validator validator;
+	private Validator validator;
 
-    private EmailTemplateFactory emailTemplateFactory;
+	private EmailTemplateFactory emailTemplateFactory;
 
-    private RestNotificationClient restNotificationClient;
+	private RestNotificationClient restNotificationClient;
 
-    public EmailNotificationServiceImpl(EmailNotificationEventRepository emailNotificationEventRepository,
-                                        EmailNotificationConfig emailNotificationConfig, Validator validator,
-                                        EmailTemplateFactory emailTemplateFactory, PracticeRepository practiceRepository) {
-        this.emailNotificationEventRepository = emailNotificationEventRepository;
-        this.emailNotificationConfig = emailNotificationConfig;
-        this.validator = validator;
-        this.emailTemplateFactory = emailTemplateFactory;
-        this.practiceRepository = practiceRepository;
-        restNotificationClient = new RestNotificationClient(this.emailNotificationConfig.getRestClientUrl());
-    }
+	public EmailNotificationServiceImpl(EmailNotificationEventRepository emailNotificationEventRepository,
+			EmailNotificationConfig emailNotificationConfig, Validator validator,
+			EmailTemplateFactory emailTemplateFactory, PracticeRepository practiceRepository) {
+		this.emailNotificationEventRepository = emailNotificationEventRepository;
+		this.emailNotificationConfig = emailNotificationConfig;
+		this.validator = validator;
+		this.emailTemplateFactory = emailTemplateFactory;
+		this.practiceRepository = practiceRepository;
+		restNotificationClient = new RestNotificationClient(this.emailNotificationConfig.getRestClientUrl());
+	}
 
-    @Override
-    public void sendOnBehalfEmail(EmailNotificationEventType eventType) {
-        LoggedInUserDetails user = UserSecurityUtils.getLoggedInUser();
-        try {
+	@Override
+	public void sendOnBehalfEmail(EmailNotificationEventType eventType) {
+		LoggedInUserDetails user = UserSecurityUtils.getLoggedInUser();
+		try {
 
-            Map<String, String> templateData = buildTemplateData(user, eventType);
-            EmailNotification emailNotification = EmailNotificationUtil.createEmailNotificationPayload(templateData,
-                    user.getUserName(), EmailNotificationConstants.ON_BEHALF_LOGIN_TEMPLATE, user.getId(),
-                    getTemplateForEvent(eventType), String.valueOf(eventType), String.valueOf(user.getPracticeId()),
-                    emailNotificationConfig.getHookActionURI());
-            sendEmailNotification(emailNotification, user, eventType);
-        } catch (IllegalArgumentException e) {
-            log.error("Failed to process email notification: {}", e);
-            savePendingEmailNotification(user, eventType);
-        }
+			Map<String, String> templateData = buildTemplateData(user, eventType);
+			EmailNotification emailNotification = EmailNotificationUtil.createEmailNotificationPayload(templateData,
+					user.getUserName(), EmailNotificationConstants.ON_BEHALF_LOGIN_TEMPLATE, user.getId(),
+					getTemplateForEvent(eventType), String.valueOf(eventType), String.valueOf(user.getPracticeId()),
+					emailNotificationConfig.getHookActionURI());
+			sendEmailNotification(emailNotification, user, eventType);
+		}
+		catch (IllegalArgumentException e) {
+			log.error("Failed to process email notification: {}", e);
+			savePendingEmailNotification(user, eventType);
+		}
 
-    }
+	}
 
-    @Override
-    public void sendContactUsNotification(ContactUsDTO dto) {
-        try {
-            ContactUsEmailBuilder builder = (ContactUsEmailBuilder) emailTemplateFactory
-                    .getBuilder(EmailNotificationEventType.CONTACT_US);
-            ContactEmailDTO emailDTO = builder.buildTemplate(dto, emailNotificationConfig, dto.getCompany());
+	@Override
+	public void sendContactUsNotification(ContactUsDTO dto) {
+		try {
+			ContactUsEmailBuilder builder = (ContactUsEmailBuilder) emailTemplateFactory
+				.getBuilder(EmailNotificationEventType.CONTACT_US);
+			ContactEmailDTO emailDTO = builder.buildTemplate(dto, emailNotificationConfig, dto.getCompany());
 
-            EmailNotificationUtil.validateDTO(emailDTO, validator);
+			EmailNotificationUtil.validateDTO(emailDTO, validator);
 
-            Map<String, String> templateData = EmailNotificationUtil.convertObjectToMap(emailDTO);
+			Map<String, String> templateData = EmailNotificationUtil.convertObjectToMap(emailDTO);
 
-            String recipientEmail = "Coleman.Harris@McKesson.com";
-            EmailNotification emailNotification = EmailNotificationUtil.createEmailNotificationPayload(templateData,
-                    recipientEmail, EmailNotificationConstants.CONTACT_US_TEMPLATE, dto.getPhoneNumber(),
-                    EmailNotificationConstants.CONTACT_US_TEMPLATE, EmailNotificationEventType.CONTACT_US.name(), null,
-                    emailNotificationConfig.getHookActionURI());
-            restNotificationClient.sendNotification(emailNotification).thenAcceptAsync(response -> {
-                log.info("Contact Us notification sent successfully for: {}", dto.getWorkEmail());
-                saveContactNotificationEvent(dto, emailNotification, EmailNotificationStatus.SUCCESS);
-            }).exceptionally(ex -> {
-                log.error("Contact Us Notification failed for email: {}", dto.getWorkEmail(), ex);
-                saveContactNotificationEvent(dto, emailNotification, EmailNotificationStatus.FAILED);
-                return null;
-            });
+			String recipientEmail = "Coleman.Harris@McKesson.com";
+			EmailNotification emailNotification = EmailNotificationUtil.createEmailNotificationPayload(templateData,
+					recipientEmail, EmailNotificationConstants.CONTACT_US_TEMPLATE, dto.getPhoneNumber(),
+					EmailNotificationConstants.CONTACT_US_TEMPLATE, EmailNotificationEventType.CONTACT_US.name(), null,
+					emailNotificationConfig.getHookActionURI());
+			restNotificationClient.sendNotification(emailNotification).thenAcceptAsync(response -> {
+				log.info("Contact Us notification sent successfully for: {}", dto.getWorkEmail());
+				saveContactNotificationEvent(dto, emailNotification, EmailNotificationStatus.SUCCESS);
+			}).exceptionally(ex -> {
+				log.error("Contact Us Notification failed for email: {}", dto.getWorkEmail(), ex);
+				saveContactNotificationEvent(dto, emailNotification, EmailNotificationStatus.FAILED);
+				return null;
+			});
 
-        } catch (IllegalArgumentException e) {
-            log.error("Validation failed for Contact Us email notification: {}", e.getMessage());
-        } catch (Exception e) {
-            log.error("Failed to process Contact Us notification: {}", e.getMessage(), e);
-        }
-    }
+		}
+		catch (IllegalArgumentException e) {
+			log.error("Validation failed for Contact Us email notification: {}", e.getMessage());
+		}
+		catch (Exception e) {
+			log.error("Failed to process Contact Us notification: {}", e.getMessage(), e);
+		}
+	}
 
-    private void saveEmailNotification(LoggedInUserDetails user, EmailNotificationEventType emailNotificationEventType,
-                                       EmailNotification emailNotification, EmailNotificationStatus status) {
-        EmailNotificationEvent emailNotificationEvent = EmailNotificationEvent.builder()
-                .userId(String.valueOf(user.getId()))
-                .emailNotificationEventType(emailNotificationEventType)
-                .emailNotificationStatus(status)
-                .emailNotification(emailNotification)
-                .build();
+	private void saveEmailNotification(LoggedInUserDetails user, EmailNotificationEventType emailNotificationEventType,
+			EmailNotification emailNotification, EmailNotificationStatus status) {
+		EmailNotificationEvent emailNotificationEvent = EmailNotificationEvent.builder()
+			.userId(String.valueOf(user.getId()))
+			.emailNotificationEventType(emailNotificationEventType)
+			.emailNotificationStatus(status)
+			.emailNotification(emailNotification)
+			.build();
 
-        emailNotificationEventRepository.save(emailNotificationEvent);
+		emailNotificationEventRepository.save(emailNotificationEvent);
 
-    }
+	}
 
-    private void savePendingEmailNotification(LoggedInUserDetails user,
-                                              EmailNotificationEventType emailNotificationEventType) {
-        EmailNotificationEvent emailNotificationEvent = EmailNotificationEvent.builder()
-                .userId(String.valueOf(user.getId()))
-                .emailNotificationEventType(emailNotificationEventType)
-                .emailNotificationStatus(EmailNotificationStatus.PENDING)
-                .build();
+	private void savePendingEmailNotification(LoggedInUserDetails user,
+			EmailNotificationEventType emailNotificationEventType) {
+		EmailNotificationEvent emailNotificationEvent = EmailNotificationEvent.builder()
+			.userId(String.valueOf(user.getId()))
+			.emailNotificationEventType(emailNotificationEventType)
+			.emailNotificationStatus(EmailNotificationStatus.PENDING)
+			.build();
 
-        emailNotificationEventRepository.save(emailNotificationEvent);
+		emailNotificationEventRepository.save(emailNotificationEvent);
 
-    }
+	}
 
-    private Map<String, String> buildTemplateData(LoggedInUserDetails user, EmailNotificationEventType eventType) {
-        String practiceName = practiceRepository.findNameById(user.getPracticeId()).orElse(null);
-        EmailNotificationDTO emailDTO = emailTemplateFactory.getBuilder(eventType)
-                .buildTemplate(user, emailNotificationConfig, practiceName);
-        EmailNotificationUtil.validateDTO(emailDTO, validator);
-        return EmailNotificationUtil.convertObjectToMap(emailDTO);
+	private Map<String, String> buildTemplateData(LoggedInUserDetails user, EmailNotificationEventType eventType) {
+		String practiceName = practiceRepository.findNameById(user.getPracticeId()).orElse(null);
+		EmailNotificationDTO emailDTO = emailTemplateFactory.getBuilder(eventType)
+			.buildTemplate(user, emailNotificationConfig, practiceName);
+		EmailNotificationUtil.validateDTO(emailDTO, validator);
+		return EmailNotificationUtil.convertObjectToMap(emailDTO);
 
-    }
+	}
 
-    private String getTemplateForEvent(EmailNotificationEventType eventType) {
-        switch (eventType) {
-            case ON_BEHALF_LOGIN:
-                return EmailNotificationConstants.ON_BEHALF_LOGIN_TEMPLATE;
-            default:
-                throw new IllegalArgumentException("Unsupported event type: " + eventType);
-        }
-    }
+	private String getTemplateForEvent(EmailNotificationEventType eventType) {
+		switch (eventType) {
+			case ON_BEHALF_LOGIN:
+				return EmailNotificationConstants.ON_BEHALF_LOGIN_TEMPLATE;
+			default:
+				throw new IllegalArgumentException("Unsupported event type: " + eventType);
+		}
+	}
 
-    private void sendEmailNotification(EmailNotification emailNotification, LoggedInUserDetails user,
-                                       EmailNotificationEventType emailNotificationEventType) {
-        restNotificationClient.sendNotification(emailNotification).thenAcceptAsync(response -> {
-            log.info("Notification sent successfully to: {}", user.getName());
-            saveEmailNotification(user, emailNotificationEventType, emailNotification, EmailNotificationStatus.SUCCESS);
-        }).exceptionally(ex -> {
-            log.error("Email Notification failed for sourceId: {}", emailNotification.getSourceId());
-            saveEmailNotification(user, emailNotificationEventType, emailNotification, EmailNotificationStatus.FAILED);
-            return null;
-        });
-    }
+	private void sendEmailNotification(EmailNotification emailNotification, LoggedInUserDetails user,
+			EmailNotificationEventType emailNotificationEventType) {
+		restNotificationClient.sendNotification(emailNotification).thenAcceptAsync(response -> {
+			log.info("Notification sent successfully to: {}", user.getName());
+			saveEmailNotification(user, emailNotificationEventType, emailNotification, EmailNotificationStatus.SUCCESS);
+		}).exceptionally(ex -> {
+			log.error("Email Notification failed for sourceId: {}", emailNotification.getSourceId());
+			saveEmailNotification(user, emailNotificationEventType, emailNotification, EmailNotificationStatus.FAILED);
+			return null;
+		});
+	}
 
-    private void saveContactNotificationEvent(ContactUsDTO dto, EmailNotification notification,
-                                              EmailNotificationStatus status) {
-        EmailNotificationEvent event = EmailNotificationEvent.builder()
-                .userId(dto.getWorkEmail())
-                .emailNotificationEventType(EmailNotificationEventType.CONTACT_US)
-                .emailNotificationStatus(status)
-                .emailNotification(notification)
-                .build();
-        emailNotificationEventRepository.save(event);
-    }
+	private void saveContactNotificationEvent(ContactUsDTO dto, EmailNotification notification,
+			EmailNotificationStatus status) {
+		EmailNotificationEvent event = EmailNotificationEvent.builder()
+			.userId(dto.getWorkEmail())
+			.emailNotificationEventType(EmailNotificationEventType.CONTACT_US)
+			.emailNotificationStatus(status)
+			.emailNotification(notification)
+			.build();
+		emailNotificationEventRepository.save(event);
+	}
 
 }
