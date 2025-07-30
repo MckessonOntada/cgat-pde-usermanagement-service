@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 @RestController
 @Tag(name = "Global Footer", description = "Controller for global footer configuration")
-@RequestMapping(path = "/global-footer", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/global-config", produces = MediaType.APPLICATION_JSON_VALUE)
 public class GlobalFooterController {
 
 	private final JdbcTemplate jdbcTemplate;
