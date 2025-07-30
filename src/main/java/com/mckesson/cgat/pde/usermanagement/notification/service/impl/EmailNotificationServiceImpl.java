@@ -2,11 +2,13 @@ package com.mckesson.cgat.pde.usermanagement.notification.service.impl;
 
 import com.mckesson.cgat.pde.notification.client.RestNotificationClient;
 import com.mckesson.cgat.pde.notification.payload.EmailNotification;
+import com.mckesson.cgat.pde.usermanagement.dto.ContactUsDTO;
 import com.mckesson.cgat.pde.usermanagement.model.LoggedInUserDetails;
 import com.mckesson.cgat.pde.usermanagement.notification.config.EmailNotificationConfig;
 import com.mckesson.cgat.pde.usermanagement.notification.config.EmailNotificationConstants;
 import com.mckesson.cgat.pde.usermanagement.notification.config.EmailNotificationEventType;
 import com.mckesson.cgat.pde.usermanagement.notification.config.EmailNotificationStatus;
+import com.mckesson.cgat.pde.usermanagement.notification.dto.ContactEmailDTO;
 import com.mckesson.cgat.pde.usermanagement.notification.dto.EmailNotificationDTO;
 import com.mckesson.cgat.pde.usermanagement.notification.model.EmailNotificationEvent;
 import com.mckesson.cgat.pde.usermanagement.notification.repository.EmailNotificationEventRepository;
@@ -19,7 +21,10 @@ import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.Map;
+
+import static com.mckesson.cgat.pde.usermanagement.notification.config.EmailNotificationConstants.CONTACT_US_TEMPLATE;
 
 @Service
 @Slf4j
@@ -65,6 +70,40 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
 			savePendingEmailNotification(user, eventType);
 		}
 
+	}
+
+	@Override
+	public void sendContactUsNotification(ContactUsDTO dto) {
+		try {
+			ContactUsEmailBuilder builder = (ContactUsEmailBuilder) emailTemplateFactory
+				.getBuilder(EmailNotificationEventType.CONTACT_US);
+			ContactEmailDTO emailDTO = builder.buildTemplate(dto, emailNotificationConfig, dto.getCompany());
+
+			EmailNotificationUtil.validateDTO(emailDTO, validator);
+
+			Map<String, String> templateData = EmailNotificationUtil.convertObjectToMap(emailDTO);
+
+			String recipientEmail = "Coleman.Harris@McKesson.com";
+			EmailNotification emailNotification = EmailNotificationUtil.createEmailNotificationPayload(templateData,
+					recipientEmail, EmailNotificationConstants.CONTACT_US_TEMPLATE, dto.getPhoneNumber(),
+					EmailNotificationConstants.CONTACT_US_TEMPLATE, EmailNotificationEventType.CONTACT_US.name(), null,
+					emailNotificationConfig.getHookActionURI());
+			restNotificationClient.sendNotification(emailNotification).thenAcceptAsync(response -> {
+				log.info("Contact Us notification sent successfully for: {}", dto.getWorkEmail());
+				saveContactNotificationEvent(dto, emailNotification, EmailNotificationStatus.SUCCESS);
+			}).exceptionally(ex -> {
+				log.error("Contact Us Notification failed for email: {}", dto.getWorkEmail(), ex);
+				saveContactNotificationEvent(dto, emailNotification, EmailNotificationStatus.FAILED);
+				return null;
+			});
+
+		}
+		catch (IllegalArgumentException e) {
+			log.error("Validation failed for Contact Us email notification: {}", e.getMessage());
+		}
+		catch (Exception e) {
+			log.error("Failed to process Contact Us notification: {}", e.getMessage(), e);
+		}
 	}
 
 	private void saveEmailNotification(LoggedInUserDetails user, EmailNotificationEventType emailNotificationEventType,
@@ -120,6 +159,17 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
 			saveEmailNotification(user, emailNotificationEventType, emailNotification, EmailNotificationStatus.FAILED);
 			return null;
 		});
+	}
+
+	private void saveContactNotificationEvent(ContactUsDTO dto, EmailNotification notification,
+			EmailNotificationStatus status) {
+		EmailNotificationEvent event = EmailNotificationEvent.builder()
+			.userId(dto.getWorkEmail())
+			.emailNotificationEventType(EmailNotificationEventType.CONTACT_US)
+			.emailNotificationStatus(status)
+			.emailNotification(notification)
+			.build();
+		emailNotificationEventRepository.save(event);
 	}
 
 }

@@ -1,6 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.notification.service;
 
 import com.mckesson.cgat.pde.usermanagement.notification.config.EmailNotificationEventType;
+import com.mckesson.cgat.pde.usermanagement.notification.service.impl.ContactUsEmailBuilder;
 import com.mckesson.cgat.pde.usermanagement.notification.service.impl.OnbehalfLoginEmailBuilder;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ public class EmailTemplateFactory {
 
 	public EmailTemplateFactory() {
 		builders.put(EmailNotificationEventType.ON_BEHALF_LOGIN, new OnbehalfLoginEmailBuilder());
+		builders.put(EmailNotificationEventType.CONTACT_US, new ContactUsEmailBuilder());
 	}
 
 	public EmailTemplateBuilder getBuilder(EmailNotificationEventType eventType) {
