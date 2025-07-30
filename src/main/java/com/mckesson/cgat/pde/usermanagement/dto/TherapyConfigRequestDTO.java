@@ -14,26 +14,18 @@ public class TherapyConfigRequestDTO {
 	@Size(min = 1, message = "Ndc numbers must not be empty.")
 	private List<String> ndcNumbers;
 
-	private boolean isPatientInformationRequired;
+	private Boolean isPatientInformationRequired;
 
-	private boolean isCoiIdRequired;
+	private Boolean isCoiIdRequired;
+
+	private Boolean isMRNRequired;
+
+	private Boolean isDOARequired;
+
+	private Boolean isPORequired;
+
+	private Boolean isPIDRequired;
 
 	private ChannelType channelType = ChannelType.BUY_AND_BILL;
-
-	public boolean getIsPatientInformationRequired() {
-		return isPatientInformationRequired;
-	}
-
-	public boolean getIsCoiIdRequired() {
-		return isCoiIdRequired;
-	}
-
-	public void setIsPatientInformationRequired(boolean isPatientInformationRequired) {
-		this.isPatientInformationRequired = isPatientInformationRequired;
-	}
-
-	public void setIsCoiIdRequired(boolean isCoiIdRequired) {
-		this.isCoiIdRequired = isCoiIdRequired;
-	}
 
 }

@@ -52,8 +52,7 @@ public interface TherapyService {
 
 	List<Therapy> findByNdcNumber(String ndcNumber, ChannelType channelType) throws ResourceNotFoundException;
 
-	void updateTherapyConfigs(List<String> ndcNumbers, boolean isPatientInformationRequired, boolean isCoiIdRequired,
-			ChannelType channelType);
+	void updateTherapyConfigs(TherapyConfigRequestDTO request);
 
 	List<MaterialDetailsResponseDTO> findTherapyDetailsWithConfigByTradeName(String tradeName, ChannelType channelType)
 			throws ResourceNotFoundException;
