@@ -9,7 +9,7 @@ import com.mckesson.cgat.pde.usermanagement.notification.service.EmailTemplateBu
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class OnbehalfLoginEmailBuilder implements EmailTemplateBuilder {
+public class OnbehalfLoginEmailBuilder implements EmailTemplateBuilder<LoggedInUserDetails> {
 
 	// Define a formatter for consistent date/time formatting
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
