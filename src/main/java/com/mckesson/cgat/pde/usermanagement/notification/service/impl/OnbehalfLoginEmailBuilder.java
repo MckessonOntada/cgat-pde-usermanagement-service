@@ -28,6 +28,7 @@ public class OnbehalfLoginEmailBuilder implements EmailTemplateBuilder<LoggedInU
 			.organizationName(practiceName)
 			.loginDateTime(formattedDateTime)
 			.adminName(user.getImpersonatedByUser().getName().getFullName())
+			.supportEmail(config.getSupportEmail())
 			.build();
 	}
 

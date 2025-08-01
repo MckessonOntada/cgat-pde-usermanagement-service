@@ -19,4 +19,6 @@ public class EmailNotificationConfig {
 
 	private String linkPDEPortal;
 
+	private String supportEmail;
+
 }
