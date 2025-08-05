@@ -20,4 +20,7 @@ public class EmailNotificationDTO {
 	@NotNull(message = "Link to PDE portal is required")
 	private String linkPortal;
 
+	@NotNull(message = "Support Contact is required")
+	private String supportEmail;
+
 }

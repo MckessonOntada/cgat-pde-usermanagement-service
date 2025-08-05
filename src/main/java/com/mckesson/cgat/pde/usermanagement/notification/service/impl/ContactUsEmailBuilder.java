@@ -26,6 +26,7 @@ public class ContactUsEmailBuilder implements EmailTemplateBuilder<ContactUsDTO>
 			.phoneNumber(dto.getPhoneNumber())
 			.company(dto.getCompany())
 			.tellUsMore(dto.getTellUsMore())
+			.supportEmail(config.getSupportEmail())
 			.build();
 	}
 
