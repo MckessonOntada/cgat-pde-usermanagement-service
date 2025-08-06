@@ -11,14 +11,14 @@ public class ContactUsDTO {
 
 	@NotBlank(message = "Please enter the First Name.")
 	@Size(max = 50, message = "First Name must not exceed 50 characters.")
-	@Pattern(regexp = "^[a-zA-Z0-9\\s,\\-]+$",
-			message = "Only alphabets, numbers, spaces, commas, and hyphens are allowed.")
+	@Pattern(regexp = "^[\\p{L}\\p{P}\\p{S}\\p{Zs}\\p{N}]+$",
+			message = "First Name allows alphabets, Numbers, special, accented or space characters only.")
 	private String firstName;
 
 	@NotBlank(message = "Please enter the Last Name.")
 	@Size(max = 50, message = "Last Name must not exceed 50 characters.")
-	@Pattern(regexp = "^[a-zA-Z0-9\\s,\\-]+$",
-			message = "Only alphabets, numbers, spaces, commas, and hyphens are allowed.")
+	@Pattern(regexp = "^[\\p{L}\\p{P}\\p{S}\\p{Zs}\\p{N}]+$",
+			message = "Last Name allows alphabets, Numbers, special, accented or space characters only.")
 	private String lastName;
 
 	@NotBlank(message = "Please enter the Title.")
