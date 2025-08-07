@@ -19,6 +19,7 @@ import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
 import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -41,6 +42,9 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
 	private EmailTemplateFactory emailTemplateFactory;
 
 	private RestNotificationClient restNotificationClient;
+
+	@Value("${contact.us.support.email}")
+	private String recipientEmail;
 
 	public EmailNotificationServiceImpl(EmailNotificationEventRepository emailNotificationEventRepository,
 			EmailNotificationConfig emailNotificationConfig, Validator validator,
@@ -83,7 +87,6 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
 
 			Map<String, String> templateData = EmailNotificationUtil.convertObjectToMap(emailDTO);
 
-			String recipientEmail = "Coleman.Harris@McKesson.com";
 			EmailNotification emailNotification = EmailNotificationUtil.createEmailNotificationPayload(templateData,
 					recipientEmail, EmailNotificationConstants.CONTACT_US_TEMPLATE, dto.getPhoneNumber(),
 					EmailNotificationConstants.CONTACT_US_TEMPLATE, EmailNotificationEventType.CONTACT_US.name(), null,
