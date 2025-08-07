@@ -70,7 +70,11 @@ jobs:
         OKTA_BASEURL: ${{ vars.OKTA_BASEURL }}
         NOTIFICATION_SUPPORT_CONTACT: ${{ secrets.NOTIFICATION_SUPPORT_CONTACT }}
         NOTIFICATION_SUPPORT_EMAIL: ${{ vars.NOTIFICATION_SUPPORT_EMAIL }}
+        NOTIFICATION_LINK_PDE_PORTAL: ${{ vars.NOTIFICATION_LINK_PDE_PORTAL }}
+        NOTIFICATION_SUPPORT_CONTACT: ${{ vars.NOTIFICATION_SUPPORT_CONTACT }}
         CONTACT_US_SUPPORT_EMAIL: ${{ vars.CONTACT_US_SUPPORT_EMAIL }}
+        BLOB_CONTAINER_LINK: ${{ secrets.BLOB_CONTAINER_LINK }}
+
 
       run: |
         # Setting up cluster configurations, config files are in the kubectl image
