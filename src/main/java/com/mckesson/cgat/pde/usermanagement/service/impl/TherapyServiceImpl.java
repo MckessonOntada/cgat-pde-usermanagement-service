@@ -660,8 +660,17 @@ public class TherapyServiceImpl implements TherapyService {
 
 	@Override
 	@Transactional
-	public void removeSPTherapyConfig(String spProductId) {
-		spTherapyConfigRepository.deleteBySpProductId(spProductId);
+	public void removeSPTherapyConfig(String spProductId) throws ResourceNotFoundException {
+		SPTherapyConfig configToUpdate = spTherapyConfigRepository.findBySpProductId(spProductId);
+
+		if (configToUpdate == null) {
+			throw new ResourceNotFoundException("SPTherapyConfig not found for spProductId: " + spProductId);
+		}
+		configToUpdate.setIsCoiIdRequired(null);
+		configToUpdate.setIsPatientIdentifierRequired(null);
+		configToUpdate.setIsMRNRequired(null);
+
+		spTherapyConfigRepository.save(configToUpdate);
 	}
 
 	@Override
