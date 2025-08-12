@@ -7,7 +7,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface DiagnosisCodeService {
 
-    Page<DiagnosisCode> searchDiagnosisCodes(String searchTerm, Pageable pageable);
+	Page<DiagnosisCode> searchDiagnosisCodes(String searchTerm, Pageable pageable);
 
-    void uploadCsv(MultipartFile file) throws Exception;
+	void uploadCsv(MultipartFile file) throws Exception;
+
 }

@@ -22,34 +22,34 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DiagnosisCodeServiceImpl implements DiagnosisCodeService {
 
-    private final DiagnosisCodeRepository repository;
+	private final DiagnosisCodeRepository repository;
 
-    @Override
-    public Page<DiagnosisCode> searchDiagnosisCodes(String query, Pageable pageable) {
-        if (query == null || query.trim().isEmpty()) {
-            return repository.findAll(pageable);
-        }
-        return repository.findByCodeContainingIgnoreCaseOrLongDescriptionContainingIgnoreCase(query, query, pageable);
-    }
+	@Override
+	public Page<DiagnosisCode> searchDiagnosisCodes(String query, Pageable pageable) {
+		if (query == null || query.trim().isEmpty()) {
+			return repository.findAll(pageable);
+		}
+		return repository.findByCodeContainingIgnoreCaseOrLongDescriptionContainingIgnoreCase(query, query, pageable);
+	}
 
-    @Override
-    public void uploadCsv(MultipartFile file) throws Exception {
-        List<DiagnosisCode> codes = new ArrayList<>();
+	@Override
+	public void uploadCsv(MultipartFile file) throws Exception {
+		List<DiagnosisCode> codes = new ArrayList<>();
 
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8));
-             CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
+		try (BufferedReader reader = new BufferedReader(
+				new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8));
+				CSVParser csvParser = new CSVParser(reader,
+						CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
 
-            for (CSVRecord record : csvParser) {
-                codes.add(DiagnosisCode.builder()
-                        .code(record.get("CODE"))
-                        .longDescription(record.get("LONG DESCRIPTION"))
-                        .build());
-            }
-        }
+			for (CSVRecord record : csvParser) {
+				codes.add(DiagnosisCode.builder()
+					.code(record.get("CODE"))
+					.longDescription(record.get("LONG DESCRIPTION"))
+					.build());
+			}
+		}
 
-        repository.saveAll(codes);
-    }
-
+		repository.saveAll(codes);
+	}
 
 }

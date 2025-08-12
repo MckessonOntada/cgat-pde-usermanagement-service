@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface DiagnosisCodeRepository extends JpaRepository<DiagnosisCode, Long> {
 
-    Page<DiagnosisCode> findByCodeContainingIgnoreCaseOrLongDescriptionContainingIgnoreCase(String code,
-                                                                                            String shortDescription, Pageable pageable);
+	Page<DiagnosisCode> findByCodeContainingIgnoreCaseOrLongDescriptionContainingIgnoreCase(String code,
+			String shortDescription, Pageable pageable);
 
 }

@@ -20,34 +20,34 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 public class DiagnosisCodeController {
 
-    private final DiagnosisCodeService diagnosisCodeService;
+	private final DiagnosisCodeService diagnosisCodeService;
 
-    public DiagnosisCodeController(DiagnosisCodeService diagnosisCodeService) {
-        this.diagnosisCodeService = diagnosisCodeService;
-    }
+	public DiagnosisCodeController(DiagnosisCodeService diagnosisCodeService) {
+		this.diagnosisCodeService = diagnosisCodeService;
+	}
 
+	@GetMapping
+	@Operation(summary = "Search diagnosis codes with pagination and sorting")
+	public Page<DiagnosisCode> searchDiagnosisCodes(@RequestParam(defaultValue = "0") Integer pageNo,
+			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "code") String sortBy,
+			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query) {
 
-    @GetMapping
-    @Operation(summary = "Search diagnosis codes with pagination and sorting")
-    public Page<DiagnosisCode> searchDiagnosisCodes(@RequestParam(defaultValue = "0") Integer pageNo,
-                                                    @RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "code") String sortBy,
-                                                    @RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query) {
+		Sort sort = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
-        Sort sort = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+		return diagnosisCodeService.searchDiagnosisCodes(query, pageable);
+	}
 
-        return diagnosisCodeService.searchDiagnosisCodes(query, pageable);
-    }
-
-    @PostMapping("/upload")
-    @Operation(summary = "Upload diagnosis codes CSV")
-    public ResponseEntity<String> uploadDiagnosisCodes(@RequestParam("file") MultipartFile file) {
-        try {
-            diagnosisCodeService.uploadCsv(file);
-            return ResponseEntity.ok("Diagnosis codes uploaded successfully!");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error uploading file: " + e.getMessage());
-        }
-    }
+	@PostMapping("/upload")
+	@Operation(summary = "Upload diagnosis codes CSV")
+	public ResponseEntity<String> uploadDiagnosisCodes(@RequestParam("file") MultipartFile file) {
+		try {
+			diagnosisCodeService.uploadCsv(file);
+			return ResponseEntity.ok("Diagnosis codes uploaded successfully!");
+		}
+		catch (Exception e) {
+			return ResponseEntity.badRequest().body("Error uploading file: " + e.getMessage());
+		}
+	}
 
 }
