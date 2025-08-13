@@ -34,4 +34,7 @@ public class SPTherapyConfigRequestDTO {
 	@Size(max = 5000, message = "Instructions must not exceed 5000 characters.")
 	private String instructions;
 
+	@Size(max = 5000, message = "Consent policy must not exceed 5000 characters.")
+	private String consentPolicy;
+
 }
