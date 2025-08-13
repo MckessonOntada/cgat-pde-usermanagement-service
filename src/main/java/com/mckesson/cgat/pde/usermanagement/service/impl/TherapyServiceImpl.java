@@ -643,6 +643,7 @@ public class TherapyServiceImpl implements TherapyService {
 			config.setDaysSupply(request.getDaysSupply());
 			config.setRefills(request.getRefills());
 			config.setInstructions(request.getInstructions());
+			config.setConsentPolicy(request.getConsentPolicy());
 		}
 		else if (Boolean.FALSE.equals(prescriptionRequired)) {
 			config.setIsPrescriptionDetailsRequired(false);
@@ -650,6 +651,7 @@ public class TherapyServiceImpl implements TherapyService {
 			config.setDaysSupply(null);
 			config.setRefills(null);
 			config.setInstructions(null);
+			config.setConsentPolicy(null);
 		}
 		else {
 			config.setIsCoiIdRequired(request.getIsCoiIdRequired());

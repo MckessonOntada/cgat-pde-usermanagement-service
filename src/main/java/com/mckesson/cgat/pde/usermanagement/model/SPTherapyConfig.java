@@ -1,6 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -49,16 +50,21 @@ public class SPTherapyConfig implements Serializable {
 	@Column(name = "instructions")
 	private String instructions;
 
+	@Column(name = "consent_policy")
+	private String consentPolicy;
+
 	@PrePersist
 	@PreUpdate
 	private void validatePrescriptionDetails() {
 		if (Boolean.TRUE.equals(isPrescriptionDetailsRequired)) {
-			if (quantity == null || daysSupply == null || refills == null || instructions == null) {
+			if (quantity == null || daysSupply == null || refills == null || instructions == null
+					|| consentPolicy == null) {
 				throw new IllegalStateException("Prescription details are required but one or more fields are null");
 			}
 		}
 		else {
-			if (quantity != null || daysSupply != null || refills != null || instructions != null) {
+			if (quantity != null || daysSupply != null || refills != null || instructions != null
+					|| consentPolicy != null) {
 				throw new IllegalStateException("Prescription details must be null when not required");
 			}
 		}
