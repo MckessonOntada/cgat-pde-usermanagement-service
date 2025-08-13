@@ -21,6 +21,7 @@ import com.mckesson.cgat.pde.usermanagement.exception.custom.CsvFileNotValidExce
 import com.mckesson.cgat.pde.usermanagement.model.*;
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
 import com.mckesson.cgat.pde.usermanagement.repository.ProviderRepository;
+import com.mckesson.cgat.pde.usermanagement.service.UserService;
 import com.mckesson.cgat.pde.usermanagement.utils.SalesOrgUtils;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
@@ -78,10 +79,12 @@ public class AccountServiceImpl implements AccountService {
 
 	private final Validator validator;
 
+	private final UserService userService;
+
 	public AccountServiceImpl(AccountRepository accountRepository, PracticeRepository practiceRepository,
 			UserRepository userRepository, UserPreferenceRepository userPreferenceRepository,
 			QuestionnaireService questionnaireService, AccountMapper accountMapper,
-			ProviderRepository providerRepository, Validator validator) {
+			ProviderRepository providerRepository, Validator validator, UserService userService) {
 		this.accountRepository = accountRepository;
 		this.practiceRepository = practiceRepository;
 		this.userRepository = userRepository;
@@ -90,6 +93,7 @@ public class AccountServiceImpl implements AccountService {
 		this.accountMapper = accountMapper;
 		this.providerRepository = providerRepository;
 		this.validator = validator;
+		this.userService = userService;
 	}
 
 	@Override
@@ -273,6 +277,16 @@ public class AccountServiceImpl implements AccountService {
 			throw new ResourceNotFoundException("Some of the provided provider IDs do not exist.");
 		}
 
+		providers.stream().forEach(provider -> {
+			try {
+				userService.linkPhysicianToAccounts(provider.getEmail(), List.of(accountId));
+			}
+			catch (ResourceNotFoundException e) {
+				log.error("Failed to link provider accounts with Physician user", e);
+				throw new RuntimeException(e);
+			}
+		});
+
 		account.getProviders().addAll(providers);
 		return accountRepository.save(account);
 	}
@@ -288,6 +302,16 @@ public class AccountServiceImpl implements AccountService {
 		if (providers.size() != providerIds.size()) {
 			throw new ResourceNotFoundException("Some of the provided provider IDs do not exist.");
 		}
+
+		providers.stream().forEach(provider -> {
+			try {
+				userService.deLinkPhysicianFromAccounts(provider.getEmail(), accountId);
+			}
+			catch (ResourceNotFoundException e) {
+				log.error("Failed to un-link provider accounts with Physician user", e);
+				throw new RuntimeException(e);
+			}
+		});
 
 		account.getProviders().removeAll(providers);
 		accountRepository.save(account);

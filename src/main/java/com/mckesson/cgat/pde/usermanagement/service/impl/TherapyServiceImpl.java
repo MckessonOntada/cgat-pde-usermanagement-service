@@ -624,30 +624,55 @@ public class TherapyServiceImpl implements TherapyService {
 			.collect(Collectors.toMap(SPTherapyConfig::getSpProductId, Function.identity()));
 
 		List<SPTherapyConfig> updatedConfigs = request.getSpProductIds().stream().map(spProductId -> {
-			SPTherapyConfig config = existingConfigMap.get(spProductId);
+			SPTherapyConfig config = existingConfigMap.getOrDefault(spProductId,
+					SPTherapyConfig.builder().spProductId(spProductId).build());
 
-			if (config != null) {
-				config.setIsCoiIdRequired(request.isCoiIdRequired());
-				config.setIsMRNRequired(request.isMrnRequired());
-				config.setIsPatientIdentifierRequired(request.isPatientIdentifierRequired());
-				return config;
-			}
-			else {
-				return SPTherapyConfig.builder()
-					.spProductId(spProductId)
-					.isPatientIdentifierRequired(request.isPatientIdentifierRequired())
-					.isCoiIdRequired(request.isCoiIdRequired())
-					.isMRNRequired(request.isMrnRequired())
-					.build();
-			}
-		}).collect(Collectors.toList());
+			applySPCommonFields(config, request);
+			return config;
+		}).toList();
+
 		spTherapyConfigRepository.saveAll(updatedConfigs);
+	}
+
+	private void applySPCommonFields(SPTherapyConfig config, SPTherapyConfigRequestDTO request) {
+		Boolean prescriptionRequired = request.getIsPrescriptionDetailsRequired();
+
+		if (Boolean.TRUE.equals(prescriptionRequired)) {
+			config.setIsPrescriptionDetailsRequired(true);
+			config.setQuantity(request.getQuantity());
+			config.setDaysSupply(request.getDaysSupply());
+			config.setRefills(request.getRefills());
+			config.setInstructions(request.getInstructions());
+			config.setConsentPolicy(request.getConsentPolicy());
+		}
+		else if (Boolean.FALSE.equals(prescriptionRequired)) {
+			config.setIsPrescriptionDetailsRequired(false);
+			config.setQuantity(null);
+			config.setDaysSupply(null);
+			config.setRefills(null);
+			config.setInstructions(null);
+			config.setConsentPolicy(null);
+		}
+		else {
+			config.setIsCoiIdRequired(request.getIsCoiIdRequired());
+			config.setIsMRNRequired(request.getIsMrnRequired());
+			config.setIsPatientIdentifierRequired(request.getIsPatientIdentifierRequired());
+		}
 	}
 
 	@Override
 	@Transactional
-	public void removeSPTherapyConfig(String spProductId) {
-		spTherapyConfigRepository.deleteBySpProductId(spProductId);
+	public void removeSPTherapyConfig(String spProductId) throws ResourceNotFoundException {
+		SPTherapyConfig configToUpdate = spTherapyConfigRepository.findBySpProductId(spProductId);
+
+		if (configToUpdate == null) {
+			throw new ResourceNotFoundException("SPTherapyConfig not found for spProductId: " + spProductId);
+		}
+		configToUpdate.setIsCoiIdRequired(null);
+		configToUpdate.setIsPatientIdentifierRequired(null);
+		configToUpdate.setIsMRNRequired(null);
+
+		spTherapyConfigRepository.save(configToUpdate);
 	}
 
 	@Override
