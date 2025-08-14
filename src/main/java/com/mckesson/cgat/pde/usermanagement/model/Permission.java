@@ -33,7 +33,8 @@ public enum Permission {
 	MANAGE_PROVIDERS_SCREEN(false, true), UPLOAD_PROVIDER(false, true), MANAGE_SP_CATALOG(true, false),
 	VIEW_SP_CATALOG(true, false), ADD_CROSSWALK(true, false), VIEW_MATERIAL_CROSSWALK(true, false),
 	UPLOAD_CROSSWALK(true, false), MANAGE_CROSSWALK(true, false), MANAGE_LINKED_ACCOUNTS(false, true),
-	REVIEW_ORDER(false, false);
+	REVIEW_ORDER(false, false), THERAPY_SELECTION(false, true), ACCOUNT_SELECTION(false, true),
+	UPDATE_PATIENTS_DETAILS(false, true), UPDATE_ADDITIONAL_DETAILS(false, true), SUBMIT_ORDER(false, true);
 
 	boolean isActiveForSystemAdmin;
 
