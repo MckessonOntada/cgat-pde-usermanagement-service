@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface ProviderRepository extends JpaRepository<Provider, Long> {
 
@@ -66,5 +68,9 @@ public interface ProviderRepository extends JpaRepository<Provider, Long> {
 			""", nativeQuery = true)
 	Page<Provider> findNonLinkedProvidersByAccountId(@Param("query") String query, @Param("accountId") Long accountId,
 			Pageable paging, @Param("practiceId") Long practiceId);
+
+	boolean existsByEmail(String email);
+
+	Optional<Provider> findByEmail(String email);
 
 }

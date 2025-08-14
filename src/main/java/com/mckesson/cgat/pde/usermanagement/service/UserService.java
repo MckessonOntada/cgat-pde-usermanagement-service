@@ -7,6 +7,7 @@ import java.util.List;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CGATHttpException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
+import com.mckesson.cgat.pde.usermanagement.model.Provider;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -47,6 +48,18 @@ public interface UserService {
 
 	User retryOktaProvisioning(Long userId) throws ResourceNotFoundException;
 
+	void createPhysicianUser(Provider provider) throws ResourceNotFoundException;
+
+	void updatePhysicianUser(Provider provider) throws ResourceNotFoundException;
+
+	void linkPhysicianToAccounts(String email, List<Long> accountIds) throws ResourceNotFoundException;
+
+	void deLinkPhysicianFromAccounts(String email, Long accountId) throws ResourceNotFoundException;
+
+	void activatePhysicianUser(String email) throws ResourceNotFoundException;
+
 	void resetPasswordByEmail(String email);
+
+	void resendActivationEmail(String email) throws CGATHttpException;
 
 }
