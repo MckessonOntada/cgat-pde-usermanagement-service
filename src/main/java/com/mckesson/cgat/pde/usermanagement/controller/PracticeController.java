@@ -143,7 +143,7 @@ public class PracticeController {
 		return practiceService.findAll(paging, query, status, location);
 	}
 
-	@RequirePermissions({ Permission.EDIT_ORDERS, Permission.ADD_ORDERS })
+	@RequirePermissions({ Permission.THERAPY_SELECTION, Permission.APPROVE_ORDERS })
 	@GetMapping("/{practiceId}/name")
 	@Operation(summary = "Get Practice Name by Practice Id")
 	public ResponseEntity<String> getPracticeName(@PathVariable Long practiceId)
