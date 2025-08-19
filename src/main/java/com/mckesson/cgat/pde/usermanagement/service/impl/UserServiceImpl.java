@@ -524,6 +524,7 @@ public class UserServiceImpl implements UserService {
 			.email(provider.getEmail())
 			.phone(provider.getPhone())
 			.countryCode("+1")
+			.fax(provider.getFax())
 			.build();
 
 		User user = User.builder()
