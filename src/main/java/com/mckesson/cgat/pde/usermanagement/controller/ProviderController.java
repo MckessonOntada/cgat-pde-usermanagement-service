@@ -88,8 +88,9 @@ public class ProviderController {
 		return new ResponseEntity<>(providerService.createProvider(provider, accountId), HttpStatus.OK);
 	}
 
-	@RequirePermissions({ Permission.MANAGE_PROVIDERS_SCREEN, Permission.ADD_SP_ACCOUNT, Permission.ADD_ORDERS,
-			Permission.EDIT_ORDERS })
+	@RequirePermissions({ Permission.MANAGE_PROVIDERS_SCREEN, Permission.ADD_SP_ACCOUNT, Permission.THERAPY_SELECTION,
+			Permission.ACCOUNT_SELECTION, Permission.UPDATE_PATIENTS_DETAILS, Permission.UPDATE_ADDITIONAL_DETAILS,
+			Permission.SUBMIT_ORDER })
 	@GetMapping
 	@Operation(summary = "Fetch all Providers based on filter provided with pagination capabilities.")
 	public Page<Provider> findAllProviders(@RequestParam(defaultValue = "0") Integer pageNo,
@@ -129,7 +130,8 @@ public class ProviderController {
 		providerService.activateProvider(providerId);
 	}
 
-	@RequirePermissions({ Permission.VIEW_PROVIDER, Permission.ADD_ORDERS, Permission.EDIT_ORDERS })
+	@RequirePermissions({ Permission.VIEW_PROVIDER, Permission.THERAPY_SELECTION, Permission.ACCOUNT_SELECTION,
+			Permission.UPDATE_PATIENTS_DETAILS, Permission.UPDATE_ADDITIONAL_DETAILS, Permission.SUBMIT_ORDER })
 	@GetMapping("/{providerId}")
 	@Operation(summary = "Get provider details by Id ")
 	public ResponseEntity<Provider> getProvider(@PathVariable Long providerId) throws ResourceNotFoundException {
