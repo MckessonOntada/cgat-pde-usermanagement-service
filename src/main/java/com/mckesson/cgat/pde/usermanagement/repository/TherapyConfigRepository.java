@@ -68,10 +68,12 @@ public interface TherapyConfigRepository extends JpaRepository<TherapyConfig, Lo
 			@Param("channelType") ChannelType channelType);
 
 	@Query("""
-			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,tc)
+			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m, tc, sp)
 			    FROM Therapy m
 			    LEFT JOIN TherapyConfig tc
-			    ON m.ndcNumber = tc.ndcNumber
+			        ON m.ndcNumber = tc.ndcNumber
+			    LEFT JOIN SPTherapyConfig sp
+			        ON m.materialNumber = sp.spProductId
 			    WHERE m.id = :id
 			""")
 	Optional<MaterialResponseDTO> findTherapyDetailsById(@Param("id") Long id);

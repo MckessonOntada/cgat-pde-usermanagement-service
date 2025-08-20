@@ -32,4 +32,10 @@ public class MaterialResponseDTO implements Serializable {
 		this.spTherapyConfig = spTherapyConfig;
 	}
 
+	public MaterialResponseDTO(Therapy therapy, TherapyConfig materialConfig, SPTherapyConfig spTherapyConfig) {
+		this.therapy = therapy;
+		this.materialConfig = materialConfig;
+		this.spTherapyConfig = spTherapyConfig;
+	}
+
 }
