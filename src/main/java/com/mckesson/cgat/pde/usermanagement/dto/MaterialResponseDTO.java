@@ -11,7 +11,6 @@ import lombok.experimental.SuperBuilder;
 import java.io.Serializable;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
 public class MaterialResponseDTO implements Serializable {
