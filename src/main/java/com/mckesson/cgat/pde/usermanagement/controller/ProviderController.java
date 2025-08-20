@@ -130,8 +130,7 @@ public class ProviderController {
 		providerService.activateProvider(providerId);
 	}
 
-	@RequirePermissions({ Permission.VIEW_PROVIDER, Permission.THERAPY_SELECTION, Permission.ACCOUNT_SELECTION,
-			Permission.UPDATE_PATIENTS_DETAILS, Permission.UPDATE_ADDITIONAL_DETAILS, Permission.SUBMIT_ORDER })
+	@RequirePermissions({ Permission.VIEW_PROVIDER, Permission.UPDATE_PATIENTS_DETAILS })
 	@GetMapping("/{providerId}")
 	@Operation(summary = "Get provider details by Id ")
 	public ResponseEntity<Provider> getProvider(@PathVariable Long providerId) throws ResourceNotFoundException {
