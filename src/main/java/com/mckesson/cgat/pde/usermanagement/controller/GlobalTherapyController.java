@@ -182,8 +182,7 @@ public class GlobalTherapyController {
 	}
 
 	@GetMapping("/config/ndc/{ndcNumber}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/therapy")
-	@RequirePermissions({ Permission.THERAPY_SELECTION, Permission.ACCOUNT_SELECTION,
-			Permission.UPDATE_PATIENTS_DETAILS, Permission.UPDATE_ADDITIONAL_DETAILS, Permission.SUBMIT_ORDER })
+	@RequirePermissions({ Permission.ACCOUNT_SELECTION })
 	@Operation(summary = "Find Therapy details by Ndc Number and soldTo account")
 	public ResponseEntity<List<MaterialResponseDTO>> findTherapyDetailsByNdcAndSoldToAccount(
 			@PathVariable @NotBlank(message = "Ndc number is required") String ndcNumber,
@@ -199,8 +198,7 @@ public class GlobalTherapyController {
 	}
 
 	@GetMapping("/config/therapyId/{id}")
-	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.THERAPY_SELECTION, Permission.ACCOUNT_SELECTION,
-			Permission.UPDATE_PATIENTS_DETAILS, Permission.UPDATE_ADDITIONAL_DETAILS, Permission.SUBMIT_ORDER })
+	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.UPDATE_ADDITIONAL_DETAILS })
 	@Operation(summary = "Find Therapy details by id")
 	public ResponseEntity<MaterialResponseDTO> findTherapyDetailsById(@PathVariable Long id)
 			throws ResourceNotFoundException {

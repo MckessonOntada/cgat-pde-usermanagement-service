@@ -83,9 +83,7 @@ public class ShippingLocationController {
 				Long.valueOf(accountId));
 	}
 
-	@RequirePermissions({ Permission.ADD_SP_ACCOUNT, Permission.MANAGE_SP_ACCOUNT, Permission.THERAPY_SELECTION,
-			Permission.ACCOUNT_SELECTION, Permission.UPDATE_PATIENTS_DETAILS, Permission.UPDATE_ADDITIONAL_DETAILS,
-			Permission.SUBMIT_ORDER })
+	@RequirePermissions({ Permission.ADD_SP_ACCOUNT, Permission.MANAGE_SP_ACCOUNT, Permission.ACCOUNT_SELECTION })
 	@GetMapping("/{shippingId}")
 	@Operation(summary = "Fetch Shipping Location by shippingId")
 	ShippingLocation findById(@NotNull @PathVariable Long accountId, @NotNull @PathVariable Long shippingId)
