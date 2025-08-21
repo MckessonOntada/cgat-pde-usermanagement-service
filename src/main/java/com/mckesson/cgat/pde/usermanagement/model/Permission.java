@@ -17,7 +17,7 @@ public enum Permission {
 	EDIT_SYSTEM_ADMINISTRATOR(true, false), MANAGE_ROLES_SCREEN(true, true), VIEW_ROLES(true, true),
 	ADD_ROLES(true, true), EDIT_ROLES(true, true), ON_BEHALF_OF_USER(true, true),
 	MANAGE_ORGANIZATION_SCREEN(true, false), VIEW_ORGANIZATION(true, false), ADD_ORGANIZATION(true, false),
-	EDIT_ORGANIZATION(true, false), MANAGE_ORDERS(false, true), VIEW_ORDERS(false, true),
+	EDIT_ORGANIZATION(true, false), UPLOAD_ORDER_DOCUMENTS(false, true), VIEW_ORDERS(false, true),
 	VIEW_PENDING_ORDERS(false, true), ADD_ORDERS(false, true), EDIT_ORDERS(false, true), APPROVE_ORDERS(false, true),
 	CANCEL_ORDER(false, true), REJECT_ORDER(false, true), ADD_APPROVER_GROUP(false, true),
 	VIEW_APPROVER_GROUP(false, true), MANAGE_APPROVER_GROUP(false, true), EDIT_APPROVER_GROUP(false, true),
