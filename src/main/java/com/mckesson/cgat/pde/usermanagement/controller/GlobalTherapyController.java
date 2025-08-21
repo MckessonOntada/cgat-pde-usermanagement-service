@@ -111,7 +111,9 @@ public class GlobalTherapyController {
 	}
 
 	@GetMapping("/config/{tradeName}")
-	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.EDIT_ORDERS, Permission.VIEW_SP_MATERIAL })
+	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.VIEW_SP_MATERIAL, Permission.THERAPY_SELECTION,
+			Permission.ACCOUNT_SELECTION, Permission.UPDATE_PATIENTS_DETAILS, Permission.UPDATE_ADDITIONAL_DETAILS,
+			Permission.SUBMIT_ORDER })
 	@Operation(summary = "Find Therapy details by Trade Name")
 	public ResponseEntity<List<MaterialDetailsResponseDTO>> findTherapyDetailsByTradeName(
 			@PathVariable String tradeName, @RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType)
@@ -167,7 +169,8 @@ public class GlobalTherapyController {
 	}
 
 	@GetMapping("/config/ndc/{ndcNumber}")
-	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.ADD_ORDERS, Permission.EDIT_ORDERS })
+	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.THERAPY_SELECTION, Permission.ACCOUNT_SELECTION,
+			Permission.UPDATE_PATIENTS_DETAILS, Permission.UPDATE_ADDITIONAL_DETAILS, Permission.SUBMIT_ORDER })
 	@Operation(summary = "Find Therapy details by Ndc Number")
 	public ResponseEntity<MaterialResponseDTO> findTherapyDetailsByNdc(
 			@PathVariable @NotNull(message = "Ndc number cannot be null ") @NotEmpty(
@@ -179,7 +182,7 @@ public class GlobalTherapyController {
 	}
 
 	@GetMapping("/config/ndc/{ndcNumber}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/therapy")
-	@RequirePermissions({ Permission.ADD_ORDERS, Permission.EDIT_ORDERS })
+	@RequirePermissions({ Permission.ACCOUNT_SELECTION })
 	@Operation(summary = "Find Therapy details by Ndc Number and soldTo account")
 	public ResponseEntity<List<MaterialResponseDTO>> findTherapyDetailsByNdcAndSoldToAccount(
 			@PathVariable @NotBlank(message = "Ndc number is required") String ndcNumber,
@@ -195,7 +198,7 @@ public class GlobalTherapyController {
 	}
 
 	@GetMapping("/config/therapyId/{id}")
-	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.ADD_ORDERS, Permission.EDIT_ORDERS })
+	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.UPDATE_ADDITIONAL_DETAILS })
 	@Operation(summary = "Find Therapy details by id")
 	public ResponseEntity<MaterialResponseDTO> findTherapyDetailsById(@PathVariable Long id)
 			throws ResourceNotFoundException {
@@ -258,7 +261,9 @@ public class GlobalTherapyController {
 	}
 
 	@GetMapping("/therapy/{ndcNumber}")
-	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.EDIT_ORDERS, Permission.VIEW_SP_MATERIAL })
+	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.VIEW_SP_MATERIAL, Permission.THERAPY_SELECTION,
+			Permission.ACCOUNT_SELECTION, Permission.UPDATE_PATIENTS_DETAILS, Permission.UPDATE_ADDITIONAL_DETAILS,
+			Permission.SUBMIT_ORDER })
 	@Operation(summary = "Find Therapy details by NDC Number")
 	public ResponseEntity<List<Therapy>> findTherapyDetailsByNdcNumber(
 			@PathVariable @NotNull(message = "Ndc number cannot be null ") @NotEmpty(
