@@ -88,7 +88,7 @@ public class ProviderServiceImpl implements ProviderService {
 					continue;
 				}
 
-				upsertProvider(provider, practiceId);
+				upsertProvider(provider, practiceId, failedProviders);
 			}
 			catch (DataIntegrityViolationException e) {
 				String errorMsg = handleDataIntegrityViolation(e, provider);
@@ -482,15 +482,25 @@ public class ProviderServiceImpl implements ProviderService {
 	}
 
 	@Transactional
-	private void upsertProvider(Provider provider, Long practiceId) throws ResourceNotFoundException {
+	private void upsertProvider(Provider provider, Long practiceId, Map<Provider, String> failedProviders)
+			throws ResourceNotFoundException {
 		Optional<Provider> providerOpt = providerRepository.findByEmail(provider.getEmail());
 
 		if (providerOpt.isPresent()) {
 			Provider existingProvider = providerOpt.get();
-			updateExistingProvider(existingProvider, provider);
-			userService.updatePhysicianUser(existingProvider);
-			providerRepository.save(existingProvider);
-			log.info("Updated provider with NPI: {} for Practice ID: {}", provider.getNpi(), practiceId);
+
+			if (existingProvider.getPracticeId().equals(practiceId)) {
+
+				updateExistingProvider(existingProvider, provider);
+				userService.updatePhysicianUser(existingProvider);
+				providerRepository.save(existingProvider);
+				log.info("Updated provider with NPI: {} for Practice ID: {}", provider.getNpi(), practiceId);
+			}
+			else {
+				String errorMsg = "Provider with email " + provider.getEmail() + " already exists.";
+				failedProviders.put(provider, errorMsg);
+				log.warn(errorMsg);
+			}
 		}
 		else {
 			provider.setPracticeId(practiceId);
