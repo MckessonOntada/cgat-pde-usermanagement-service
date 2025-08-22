@@ -3,7 +3,6 @@ package com.mckesson.cgat.pde.usermanagement.dto;
 import com.mckesson.cgat.pde.usermanagement.model.SPTherapyConfig;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.cgat.pde.usermanagement.model.TherapyConfig;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;

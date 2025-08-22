@@ -17,7 +17,7 @@ public enum Permission {
 	EDIT_SYSTEM_ADMINISTRATOR(true, false), MANAGE_ROLES_SCREEN(true, true), VIEW_ROLES(true, true),
 	ADD_ROLES(true, true), EDIT_ROLES(true, true), ON_BEHALF_OF_USER(true, true),
 	MANAGE_ORGANIZATION_SCREEN(true, false), VIEW_ORGANIZATION(true, false), ADD_ORGANIZATION(true, false),
-	EDIT_ORGANIZATION(true, false), MANAGE_ORDERS(false, true), VIEW_ORDERS(false, true),
+	EDIT_ORGANIZATION(true, false), UPLOAD_ORDER_DOCUMENTS(false, true), VIEW_ORDERS(false, true),
 	VIEW_PENDING_ORDERS(false, true), ADD_ORDERS(false, true), EDIT_ORDERS(false, true), APPROVE_ORDERS(false, true),
 	CANCEL_ORDER(false, true), REJECT_ORDER(false, true), ADD_APPROVER_GROUP(false, true),
 	VIEW_APPROVER_GROUP(false, true), MANAGE_APPROVER_GROUP(false, true), EDIT_APPROVER_GROUP(false, true),
@@ -33,7 +33,9 @@ public enum Permission {
 	MANAGE_PROVIDERS_SCREEN(false, true), UPLOAD_PROVIDER(false, true), MANAGE_SP_CATALOG(true, false),
 	VIEW_SP_CATALOG(true, false), ADD_CROSSWALK(true, false), VIEW_MATERIAL_CROSSWALK(true, false),
 	UPLOAD_CROSSWALK(true, false), MANAGE_CROSSWALK(true, false), MANAGE_LINKED_ACCOUNTS(false, true),
-	REVIEW_ORDER(false, false);
+	REVIEW_ORDER(false, false), THERAPY_SELECTION(false, true), ACCOUNT_SELECTION(false, true),
+	UPDATE_PATIENTS_DETAILS(false, true), UPDATE_ADDITIONAL_DETAILS(false, true), SUBMIT_ORDER(false, true),
+	DISCARD_ORDER(false, true);
 
 	boolean isActiveForSystemAdmin;
 

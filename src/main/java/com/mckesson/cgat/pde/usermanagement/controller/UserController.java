@@ -121,7 +121,7 @@ public class UserController {
 		return userService.updateUser(userId, user);
 	}
 
-	@RequirePermissions({ Permission.VIEW_USERS, Permission.ADD_ORDERS, Permission.EDIT_USERS })
+	@RequirePermissions({ Permission.VIEW_USERS, Permission.SUBMIT_ORDER, Permission.EDIT_USERS })
 	@GetMapping("/{userId}")
 	@Operation(summary = "Get user details byId ")
 	public ResponseEntity<User> getUser(@PathVariable Long userId,
