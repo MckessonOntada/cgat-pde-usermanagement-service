@@ -182,7 +182,6 @@ public class OktaUserManagementServiceImpl implements OktaUserManagementService 
 
 			HashMap<String, String> queryParams = new HashMap<>();
 			queryParams.put("sendEmail", "true");
-
 			String payload = "";
 			String url = String.format("%s/%s/lifecycle/reactivate", OKTA_USER_PATH, oktaUserId);
 
