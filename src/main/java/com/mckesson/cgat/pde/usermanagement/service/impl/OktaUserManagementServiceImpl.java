@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CGATHttpException;
 import com.mckesson.cgat.pde.usermanagement.http.CGATHttpClient;
@@ -17,10 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -162,26 +160,42 @@ public class OktaUserManagementServiceImpl implements OktaUserManagementService 
 	}
 
 	@Override
-	public void triggerReActivateEmail(String oktaUserId) throws CGATHttpException {
-		log.debug("Triggering re-activate email for Okta ID: {}", oktaUserId);
-
-		// Prepare the URL and query parameters
-		String url = String.format("%s/%s/lifecycle/reactivate", OKTA_USER_PATH, oktaUserId);
-		HashMap<String, String> queryParams = new HashMap<>();
-		queryParams.put("sendEmail", "true");
-
-		// Empty payload
-		String payload = "";
+	public void triggerReActivateEmail(String oktaUserId) throws CGATHttpException, JsonProcessingException {
+		log.debug("Triggering re-activate or forgot-password email for Okta ID: {}", oktaUserId);
 
 		try {
-			// Send POST request to trigger password reset email
+			String getUserUrl = String.format("%s/%s", OKTA_USER_PATH, oktaUserId);
+			HashMap<String, String> emptyParams = new HashMap<>();
+
+			String userResponse = cgatHttpClient.sendGetRequest(getUserUrl, emptyParams, "SSWS " + oktaApiToken);
+
+			JsonNode root = mapper.readTree(userResponse);
+			String status = root.path("status").asText();
+
+			log.debug("Okta user {} has status = {}", oktaUserId, status);
+
+			if ("ACTIVE".equalsIgnoreCase(status)) {
+				log.info("User {} is ACTIVE → triggering forgot-password email", oktaUserId);
+				triggerPasswordResetEmail(oktaUserId);
+				return;
+			}
+
+			HashMap<String, String> queryParams = new HashMap<>();
+			queryParams.put("sendEmail", "true");
+
+			String payload = "";
+			String url = String.format("%s/%s/lifecycle/reactivate", OKTA_USER_PATH, oktaUserId);
+
+			log.info("User {} is {} → triggering re-activation email", oktaUserId, status);
+
 			String response = cgatHttpClient.sendPostRequest(url, queryParams, payload, "SSWS " + oktaApiToken);
 
 			log.info("Re-activation email triggered successfully for Okta ID: {}. Response: {}", oktaUserId, response);
 
 		}
 		catch (CGATHttpException e) {
-			log.error("Failed to trigger re-activate email for Okta ID: {}. Error: {}", oktaUserId, e.getMessage(), e);
+			log.error("Failed to trigger re-activate/forgot-password email for Okta ID: {}. Error: {}", oktaUserId,
+					e.getMessage(), e);
 			throw e;
 		}
 	}

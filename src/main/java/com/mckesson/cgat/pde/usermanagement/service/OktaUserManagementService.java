@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CGATHttpException;
 import com.mckesson.cgat.pde.usermanagement.model.User;
 
@@ -11,6 +12,6 @@ public interface OktaUserManagementService {
 
 	void triggerPasswordResetEmail(String oktaUserId);
 
-	void triggerReActivateEmail(String oktaUserId) throws CGATHttpException;
+	void triggerReActivateEmail(String oktaUserId) throws CGATHttpException, JsonProcessingException;
 
 }
