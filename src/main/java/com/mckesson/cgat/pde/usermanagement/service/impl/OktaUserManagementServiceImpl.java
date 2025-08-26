@@ -176,7 +176,7 @@ public class OktaUserManagementServiceImpl implements OktaUserManagementService 
 			log.debug("Okta user {} has status = {}", oktaUserId, status);
 
 			if ("ACTIVE".equalsIgnoreCase(status)) {
-				log.info("User {} already is ACTIVE → ", oktaUserId);
+				log.info("User {} already is ACTIVE ,reactivate operation is not allowed → ", oktaUserId);
 				throw new ResourceConflictException(List.of("User.already.active.conflict"));
 			}
 
