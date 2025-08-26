@@ -201,7 +201,7 @@ public class OktaUserManagementServiceImpl implements OktaUserManagementService 
 
 		log.info("User {} is {} → triggering re-activation email", oktaUserId, status);
 
-		String response = cgatHttpClient.sendPostRequest(url, queryParams, "", "SSWS " + oktaApiToken);
+		String response = cgatHttpClient.sendPostRequest(url, queryParams, StringUtils.EMPTY, "SSWS " + oktaApiToken);
 
 		log.info("Re-activation email triggered successfully for Okta ID: {}. Response: {}", oktaUserId, response);
 	}
