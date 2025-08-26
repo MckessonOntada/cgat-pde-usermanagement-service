@@ -193,8 +193,7 @@ public class OktaUserManagementServiceImpl implements OktaUserManagementService 
 
 		}
 		catch (CGATHttpException e) {
-			log.error("Failed to trigger re-activate/forgot-password email for Okta ID: {}. Error: {}", oktaUserId,
-					e.getMessage(), e);
+			log.error("Failed to trigger re-activate email for Okta ID: {}. Error: {}", oktaUserId, e.getMessage(), e);
 			throw e;
 		}
 	}
