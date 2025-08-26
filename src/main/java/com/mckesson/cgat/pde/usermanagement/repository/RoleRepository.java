@@ -29,7 +29,7 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
 					or LOWER(name) like %:query%
 				)
 				and
-				practice_id =:practiceId
+				(practice_id = :practiceId OR practice_id IS NULL)
 				and
 					(
 					  (
