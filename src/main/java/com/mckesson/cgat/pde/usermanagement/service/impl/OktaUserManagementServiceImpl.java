@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CGATHttpException;
+import com.mckesson.cgat.pde.usermanagement.exception.custom.ResourceConflictException;
 import com.mckesson.cgat.pde.usermanagement.http.CGATHttpClient;
 import com.mckesson.cgat.pde.usermanagement.model.Contact;
 import com.mckesson.cgat.pde.usermanagement.model.Name;
@@ -175,9 +176,8 @@ public class OktaUserManagementServiceImpl implements OktaUserManagementService 
 			log.debug("Okta user {} has status = {}", oktaUserId, status);
 
 			if ("ACTIVE".equalsIgnoreCase(status)) {
-				log.info("User {} is ACTIVE → triggering forgot-password email", oktaUserId);
-				triggerPasswordResetEmail(oktaUserId);
-				return;
+				log.info("User {} already is ACTIVE → ", oktaUserId);
+				throw new ResourceConflictException(List.of("User.already.active.conflict"));
 			}
 
 			HashMap<String, String> queryParams = new HashMap<>();
