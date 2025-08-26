@@ -43,6 +43,8 @@ public class OktaUserManagementServiceImpl implements OktaUserManagementService 
 
 	private String OKTA_GROUP_PATH;
 
+	private static final String OKTA_REACTIVATE_PATH = "/lifecycle/reactivate";
+
 	@PostConstruct
 	public void init() {
 		OKTA_USER_PATH = oktaBaseUrl + "/api/v1/users";
@@ -197,7 +199,7 @@ public class OktaUserManagementServiceImpl implements OktaUserManagementService 
 		HashMap<String, String> queryParams = new HashMap<>();
 		queryParams.put("sendEmail", "true");
 
-		String url = buildOktaUserUrl(oktaUserId) + "/lifecycle/reactivate";
+		String url = buildOktaUserUrl(oktaUserId) + OKTA_REACTIVATE_PATH;
 
 		log.info("User {} is {} → triggering re-activation email", oktaUserId, status);
 
