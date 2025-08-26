@@ -162,7 +162,7 @@ public class OktaUserManagementServiceImpl implements OktaUserManagementService 
 
 	@Override
 	public void triggerReActivateEmail(String oktaUserId) throws CGATHttpException, JsonProcessingException {
-		log.debug("Triggering re-activate or forgot-password email for Okta ID: {}", oktaUserId);
+		log.debug("Triggering re-activate email for Okta ID: {}", oktaUserId);
 
 		try {
 			String getUserUrl = String.format("%s/%s", OKTA_USER_PATH, oktaUserId);
