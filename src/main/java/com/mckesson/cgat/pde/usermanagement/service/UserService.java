@@ -62,4 +62,6 @@ public interface UserService {
 
 	void resendActivationEmail(String email) throws CGATHttpException, JsonProcessingException;
 
+	void updateLoginTime(Long userId) throws ResourceNotFoundException;
+
 }

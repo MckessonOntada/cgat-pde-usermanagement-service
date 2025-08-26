@@ -11,6 +11,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -518,6 +519,13 @@ public class UserServiceImpl implements UserService {
 			log.error("Exception occurred while re-activating user email: {}. Error: {}", email, e.getMessage(), e);
 			throw e;
 		}
+	}
+
+	@Override
+	public void updateLoginTime(Long userId) throws ResourceNotFoundException {
+		User user = getUser(userId);
+		user.setLastLogin(LocalDateTime.now());
+		userRepository.save(user);
 	}
 
 	private User mapProviderToUser(Provider provider) {
