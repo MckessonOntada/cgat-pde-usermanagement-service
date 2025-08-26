@@ -2,6 +2,7 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 
 import java.io.*;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CsvFileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.ResourceConflictException;
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
@@ -499,7 +500,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void resendActivationEmail(String email) throws CGATHttpException {
+	public void resendActivationEmail(String email) throws CGATHttpException, JsonProcessingException {
 		log.debug("Initiating resend activation process for email: {}", email);
 
 		try {

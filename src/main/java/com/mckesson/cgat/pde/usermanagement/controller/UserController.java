@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CGATHttpException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.service.impl.utils.FileValidationUtils;
@@ -280,7 +281,8 @@ public class UserController {
 	@PostMapping("/resend-activation/{email}")
 	@Operation(summary = "Resend activation email")
 	public ResponseEntity<Void> resendActivationEmail(
-			@NotBlank(message = "Email must not be blank") @PathVariable String email) throws CGATHttpException {
+			@NotBlank(message = "Email must not be blank") @PathVariable String email)
+			throws CGATHttpException, JsonProcessingException {
 		userService.resendActivationEmail(email);
 		return ResponseEntity.ok().build();
 	}

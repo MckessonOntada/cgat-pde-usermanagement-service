@@ -60,7 +60,7 @@ public interface UserService {
 
 	void resetPasswordByEmail(String email);
 
-	void resendActivationEmail(String email) throws CGATHttpException;
+	void resendActivationEmail(String email) throws CGATHttpException, JsonProcessingException;
 
 	void updateLoginTime(Long userId) throws ResourceNotFoundException;
 
