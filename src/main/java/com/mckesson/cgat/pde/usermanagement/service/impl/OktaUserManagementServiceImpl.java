@@ -165,37 +165,49 @@ public class OktaUserManagementServiceImpl implements OktaUserManagementService 
 		log.debug("Triggering re-activate email for Okta ID: {}", oktaUserId);
 
 		try {
-			String getUserUrl = String.format("%s/%s", OKTA_USER_PATH, oktaUserId);
-			HashMap<String, String> emptyParams = new HashMap<>();
-
-			String userResponse = cgatHttpClient.sendGetRequest(getUserUrl, emptyParams, "SSWS " + oktaApiToken);
-
-			JsonNode root = mapper.readTree(userResponse);
-			String status = root.path("status").asText();
+			String status = getOktaUserStatus(oktaUserId);
 
 			log.debug("Okta user {} has status = {}", oktaUserId, status);
 
 			if ("ACTIVE".equalsIgnoreCase(status)) {
-				log.info("User {} already is ACTIVE ,reactivate operation is not allowed → ", oktaUserId);
-				throw new ResourceConflictException(List.of("User.already.active.conflict"));
+				log.info("User {} is already ACTIVE, reactivation not allowed.", oktaUserId);
+				throw new ResourceConflictException(List.of("user.already.active.conflict"));
 			}
 
-			HashMap<String, String> queryParams = new HashMap<>();
-			queryParams.put("sendEmail", "true");
-			String payload = "";
-			String url = String.format("%s/%s/lifecycle/reactivate", OKTA_USER_PATH, oktaUserId);
-
-			log.info("User {} is {} → triggering re-activation email", oktaUserId, status);
-
-			String response = cgatHttpClient.sendPostRequest(url, queryParams, payload, "SSWS " + oktaApiToken);
-
-			log.info("Re-activation email triggered successfully for Okta ID: {}. Response: {}", oktaUserId, response);
+			triggerOktaReactivation(oktaUserId, status);
 
 		}
 		catch (CGATHttpException e) {
 			log.error("Failed to trigger re-activate email for Okta ID: {}. Error: {}", oktaUserId, e.getMessage(), e);
 			throw e;
 		}
+	}
+
+	private String getOktaUserStatus(String oktaUserId) throws CGATHttpException, JsonProcessingException {
+		String getUserUrl = buildOktaUserUrl(oktaUserId);
+		HashMap<String, String> emptyParams = new HashMap<>();
+
+		String userResponse = cgatHttpClient.sendGetRequest(getUserUrl, emptyParams, "SSWS " + oktaApiToken);
+		JsonNode root = mapper.readTree(userResponse);
+
+		return root.path("status").asText();
+	}
+
+	private void triggerOktaReactivation(String oktaUserId, String status) throws CGATHttpException {
+		HashMap<String, String> queryParams = new HashMap<>();
+		queryParams.put("sendEmail", "true");
+
+		String url = buildOktaUserUrl(oktaUserId) + "/lifecycle/reactivate";
+
+		log.info("User {} is {} → triggering re-activation email", oktaUserId, status);
+
+		String response = cgatHttpClient.sendPostRequest(url, queryParams, "", "SSWS " + oktaApiToken);
+
+		log.info("Re-activation email triggered successfully for Okta ID: {}. Response: {}", oktaUserId, response);
+	}
+
+	private String buildOktaUserUrl(String oktaUserId) {
+		return String.format("%s/%s", OKTA_USER_PATH, oktaUserId);
 	}
 
 }
