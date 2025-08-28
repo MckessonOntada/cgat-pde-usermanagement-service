@@ -81,6 +81,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 						OR LOWER(com.trade_name) LIKE %:query%
 						OR LOWER(com.strength) LIKE %:query%
 						OR LOWER(com.dosage) LIKE %:query%
+						OR LOWER(com.generic_name) LIKE %:query%
 					)
 			         GROUP BY com.trade_name, com.channel_type
 			""",
