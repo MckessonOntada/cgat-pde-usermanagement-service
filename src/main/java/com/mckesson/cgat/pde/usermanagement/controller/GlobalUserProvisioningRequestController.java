@@ -25,8 +25,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
 @RestController
-@Tag(name = "Users Provisioning Request",
-		description = "Controller for Managing user-provisioning request related operations and data.")
+@Tag(name = "Global User Provisioning",
+		description = "Handles the creation of user provisioning requests and searching for associated practices.")
 @RequestMapping(path = "/users-provisioning-requests", consumes = "application/json",
 		produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
@@ -39,14 +39,16 @@ public class GlobalUserProvisioningRequestController {
 	private UserProvisioningRequestService userProvisioningRequestService;
 
 	@PostMapping
-	@Operation(summary = "Create user provisioning request")
+	@Operation(summary = "Create a new user provisioning request",
+			description = "Creates a new request for user provisioning. This is typically used for self-service user registration workflows.")
 	public ResponseEntity<UserProvisioningRequest> createUserProvisioning(
 			@Valid @RequestBody UserProvisioningRequest request) {
 		return new ResponseEntity<>(userProvisioningRequestService.createUserProvisioning(request), HttpStatus.CREATED);
 	}
 
 	@GetMapping("/practices")
-	@Operation(summary = "Fetch all the available Practices based on filter provided with pagination capabilities.")
+	@Operation(summary = "Find and filter all practices available for user provisioning",
+			description = "Retrieves a paginated list of all practices that are available for new user provisioning requests.")
 	Page<CustomDTOs.GlobalPracticeResponseDto> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,

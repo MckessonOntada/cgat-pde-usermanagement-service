@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-@Tag(name = "Global Footer", description = "Controller for global footer configuration")
+@Tag(name = "Global Footer", description = "Provides the global footer configuration for the application UI.")
 @RequestMapping(path = "/global-config", produces = MediaType.APPLICATION_JSON_VALUE)
 public class GlobalFooterController {
 
@@ -26,7 +26,8 @@ public class GlobalFooterController {
 	}
 
 	@GetMapping
-	@Operation(summary = "Get footer configuration")
+	@Operation(summary = "Get the global footer configuration (cached)",
+			description = "Retrieves the global footer configuration from the database. The response is cached for 30 minutes.")
 	public ResponseEntity<String> getFooterConfig() {
 		Map<String, Object> result = jdbcTemplate
 			.queryForMap("SELECT config_json::text FROM usermanagement.footer_config WHERE id = 1");

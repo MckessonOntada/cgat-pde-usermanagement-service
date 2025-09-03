@@ -28,7 +28,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path = "/cache/therapies", produces = MediaType.APPLICATION_JSON_VALUE)
-@Tag(name = "Cache Controller ", description = "Controller for cache demo.")
+@Tag(name = "Therapy & Material Cache", description = "Provides cached access to therapy and material data.")
 @Slf4j
 @Validated
 public class CacheDemoController {
@@ -41,7 +41,8 @@ public class CacheDemoController {
 
 	@GetMapping
 	@RequirePermissions({ Permission.VIEW_MATERIAL })
-	@Operation(summary = "Fetch all therapies.")
+	@Operation(summary = "Find and filter all global therapies (cached)",
+			description = "Retrieves a paginated list of all global therapies from the cache, with an option to filter by a search query.")
 	public ResponseEntity<Page<TradeCatalogResponseDTO>> findAllThreapies(
 			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(required = false) String query) {
@@ -53,7 +54,8 @@ public class CacheDemoController {
 	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.VIEW_SP_MATERIAL, Permission.THERAPY_SELECTION,
 			Permission.ACCOUNT_SELECTION, Permission.UPDATE_PATIENTS_DETAILS, Permission.UPDATE_ADDITIONAL_DETAILS,
 			Permission.SUBMIT_ORDER })
-	@Operation(summary = "Find Therapy details by Trade Name")
+	@Operation(summary = "Get therapy and material details by Trade Name (cached)",
+			description = "Fetches detailed configuration for a specific therapy and its associated materials, identified by its trade name and channel type.")
 	public ResponseEntity<List<MaterialDetailsResponseDTO>> findTherapyDetailsByTradeName(
 			@PathVariable String tradeName, @RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType)
 			throws ResourceNotFoundException {
@@ -64,7 +66,8 @@ public class CacheDemoController {
 
 	@DeleteMapping("/config/{materialNumber}")
 	@RequirePermissions({ Permission.MANAGE_MATERIAL })
-	@Operation(summary = "Delete Configuration by Material Number")
+	@Operation(summary = "Delete a material configuration and evict from cache",
+			description = "Deletes a material configuration from the system and removes it from the cache to ensure data consistency.")
 	public ResponseEntity<String> deleteConfigByMaterialNumber(
 			@PathVariable @NotNull(message = "Material number cannot be null ") @NotEmpty(
 					message = "Material number cannot be empty") String materialNumber)
@@ -75,6 +78,8 @@ public class CacheDemoController {
 	}
 
 	@GetMapping("/test")
+	@Operation(summary = "Trigger a test of cache events (for internal use)",
+			description = "An endpoint for internal testing to manually trigger cache events and verify cache behavior.")
 	public String testCache() {
 		cacheService.testCacheEvents();
 		return "Cache events triggered!";

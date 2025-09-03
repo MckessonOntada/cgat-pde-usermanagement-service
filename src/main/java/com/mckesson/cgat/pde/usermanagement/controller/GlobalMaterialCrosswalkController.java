@@ -32,7 +32,8 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@Tag(name = "MaterialCrossWalk", description = "Controller for cross walk for bnb material with sp material")
+@Tag(name = "Global Material Crosswalk",
+		description = "Manages the mapping between Buy and Bill (BnB) and Specialty Pharma (SP) materials.")
 @RequestMapping(path = "/cross-walk", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class GlobalMaterialCrosswalkController {
@@ -50,7 +51,8 @@ public class GlobalMaterialCrosswalkController {
 			"bnbMaterialDescription", "m1.material_description");
 
 	@PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	@Operation(summary = "Upload bulk cross walks data")
+	@Operation(summary = "Upload and process a CSV file of material crosswalks",
+			description = "Allows for bulk uploading of material crosswalks from a CSV file. If any records fail validation, a CSV file with the failed records is returned.")
 	@RequirePermissions({ Permission.UPLOAD_CROSSWALK })
 	public ResponseEntity<byte[]> uploadCrossWalks(@RequestPart("crossWalkData") MultipartFile crossWalkData)
 			throws FileNotValidException, UnauthorizedAccessException {
@@ -79,7 +81,8 @@ public class GlobalMaterialCrosswalkController {
 
 	@RequirePermissions({ Permission.ADD_CROSSWALK })
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-	@Operation(summary = "Create Crosswalk")
+	@Operation(summary = "Create multiple material crosswalks",
+			description = "Creates one or more material crosswalks from the provided list of crosswalk requests.")
 	public ResponseEntity<Integer> createCrosswalks(@Valid @RequestBody List<CrosswalkRequestDTO> crosswalks)
 			throws UnauthorizedAccessException, ResourceNotFoundException {
 		int count = materialCrossWalkService.createCrosswalks(crosswalks);
@@ -88,7 +91,8 @@ public class GlobalMaterialCrosswalkController {
 
 	@RequirePermissions({ Permission.VIEW_MATERIAL_CROSSWALK })
 	@GetMapping
-	@Operation(summary = "Fetch all CrossWalks based on filter provided with pagination capabilities.")
+	@Operation(summary = "Find and filter all material crosswalks with pagination",
+			description = "Retrieves a paginated and filtered list of all material crosswalks.")
 	public ResponseEntity<Page<CrosswalkResponseDTO>> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(defaultValue = "trade_name") String sortBy,
@@ -105,7 +109,8 @@ public class GlobalMaterialCrosswalkController {
 
 	@RequirePermissions({ Permission.MANAGE_CROSSWALK })
 	@DeleteMapping("/{crosswalkId}/deLink")
-	@Operation(summary = "Delink Material Crosswalk")
+	@Operation(summary = "Delink a material crosswalk by ID",
+			description = "Removes the link for a specific material crosswalk, identified by its ID.")
 	public ResponseEntity<Void> deLinkMaterialCrosswalk(
 			@PathVariable @NotNull(message = "'crosswalkId' cannot be null") Long crosswalkId)
 			throws ResourceNotFoundException {

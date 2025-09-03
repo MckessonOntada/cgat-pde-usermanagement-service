@@ -52,7 +52,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@Tag(name = "Users", description = "Controller for Managing user-related operations and data.")
+@Tag(name = "Practice Users",
+		description = "Manages users and their relationships with roles and accounts within a specific practice.")
 @RequestMapping(path = "/practices/{practiceId}/users", consumes = "application/json",
 		produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
@@ -75,7 +76,7 @@ public class UserController {
 
 	@RequirePermissions({ Permission.ADD_USERS })
 	@PostMapping
-	@Operation(summary = "Create new user")
+	@Operation(summary = "Create a new user", description = "Creates a new user within the specified practice.")
 	public ResponseEntity<User> createUser(@Validated(BasicInfo.class) @RequestBody User user,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
 			throws UnauthorizedAccessException {
@@ -85,7 +86,8 @@ public class UserController {
 
 	@RequirePermissions({ Permission.ADD_USERS })
 	@PostMapping(value = "/upload", consumes = { "multipart/form-data" })
-	@Operation(summary = "Upload bulk users")
+	@Operation(summary = "Upload and process a CSV file of users",
+			description = "Allows for bulk uploading of users from a CSV file. If any records fail validation, a CSV file with the failed records is returned.")
 	public ResponseEntity<byte[]> uploadUsers(@RequestPart("userData") MultipartFile userData,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType,
 			@NotNull(message = "Practice Id is Required") @PathVariable Long practiceId)
@@ -106,7 +108,8 @@ public class UserController {
 
 	@RequirePermissions({ Permission.ADD_USERS, Permission.EDIT_USERS })
 	@PostMapping("/{userId}/retry-okta-provisioning")
-	@Operation(summary = "Retry Okta provisioning for an existing user")
+	@Operation(summary = "Retry Okta provisioning for an existing user",
+			description = "Triggers a retry of the Okta provisioning process for an existing user, in case the initial attempt failed.")
 	public ResponseEntity<User> retryOktaProvisioning(@PathVariable Long userId) throws ResourceNotFoundException {
 		User user = userService.retryOktaProvisioning(userId);
 		return ResponseEntity.ok(user);
@@ -114,7 +117,8 @@ public class UserController {
 
 	@RequirePermissions({ Permission.ADD_USERS, Permission.EDIT_USERS })
 	@PatchMapping("/{userId}")
-	@Operation(summary = "Update existing user details byId")
+	@Operation(summary = "Update an existing user's details by ID",
+			description = "Updates the details of an existing user, identified by their ID.")
 	public User updateUserDetails(@PathVariable Long userId, @Validated(BasicInfo.class) @RequestBody User user,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
@@ -124,7 +128,8 @@ public class UserController {
 
 	@RequirePermissions({ Permission.VIEW_USERS, Permission.SUBMIT_ORDER, Permission.EDIT_USERS })
 	@GetMapping("/{userId}")
-	@Operation(summary = "Get user details byId ")
+	@Operation(summary = "Get a user's details by ID",
+			description = "Retrieves the full details for a single user by their unique ID.")
 	public ResponseEntity<User> getUser(@PathVariable Long userId,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
@@ -134,7 +139,7 @@ public class UserController {
 
 	@RequirePermissions({ Permission.EDIT_USERS })
 	@DeleteMapping("/{userId}")
-	@Operation(summary = "Delete user details byId")
+	@Operation(summary = "Delete a user by ID", description = "Deletes a specified user from the practice.")
 	public void deleteUser(@PathVariable Long userId,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
@@ -145,7 +150,7 @@ public class UserController {
 
 	@RequirePermissions({ Permission.EDIT_USERS })
 	@PatchMapping("/{userId}/activate")
-	@Operation(summary = "Activate user by Id")
+	@Operation(summary = "Activate a user by ID", description = "Marks a specified user as active.")
 	public void activateUser(@PathVariable Long userId,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
@@ -156,7 +161,8 @@ public class UserController {
 
 	@RequirePermissions({ Permission.EDIT_USERS })
 	@DeleteMapping("/{userId}/accounts/{accountId}")
-	@Operation(summary = "Delink user from account")
+	@Operation(summary = "Delink a user from an account",
+			description = "Removes the association between a specified user and an account.")
 	public ResponseEntity<Void> delinkUserFromAccount(@PathVariable Long userId,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType,
 			@NotNull(message = "Account can not be empty") @PathVariable Long accountId)
@@ -169,7 +175,8 @@ public class UserController {
 
 	@RequirePermissions({ Permission.MANAGE_USERS_SCREEN })
 	@GetMapping
-	@Operation(summary = "Fetch all Users based on filter provided with pagination capabilities.")
+	@Operation(summary = "Find and filter all users with pagination",
+			description = "Retrieves a paginated and filtered list of all users for the specified practice.")
 	Page<User> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(defaultValue = "first_name") String sortBy,
@@ -195,7 +202,8 @@ public class UserController {
 
 	@RequirePermissions({ Permission.ADD_USERS, Permission.EDIT_USERS })
 	@PatchMapping("/{userId}/accounts")
-	@Operation(summary = "Link User with multiple accounts.")
+	@Operation(summary = "Link a user to multiple accounts",
+			description = "Creates associations between a specified user and a list of accounts.")
 	public User linkUserToAccounts(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
 			@NotEmpty(message = "Accounts can not be empty") @RequestBody List<Long> accountIds,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
@@ -207,7 +215,8 @@ public class UserController {
 
 	@RequirePermissions({ Permission.ADD_USERS, Permission.EDIT_USERS })
 	@PatchMapping("/{userId}/roles-permissions")
-	@Operation(summary = "Link User with role and permissions")
+	@Operation(summary = "Link a user to a role and assign specific permissions",
+			description = "Links a user to a role and assigns a specific set of permissions to that user.")
 	public ResponseEntity<User> linkUserToRole(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType,
 			@RequestBody RolePermissionsPatchDTO rolePermissions)
@@ -219,7 +228,8 @@ public class UserController {
 	}
 
 	@GetMapping("/{userId}/accounts")
-	@Operation(summary = "Fetch all Acccounts for User based on filter provided with pagination capabilities.")
+	@Operation(summary = "Find and filter all accounts linked to a specific user",
+			description = "Retrieves a paginated and filtered list of all accounts that are linked to a specific user.")
 	Page<Account> findAllAccounts(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "name_1") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
@@ -235,7 +245,8 @@ public class UserController {
 	}
 
 	@PatchMapping("/current/preference/defaultpayto/{payToAccount}")
-	@Operation(summary = "Set default PayTo Account to User")
+	@Operation(summary = "Set the default PayTo account for the current user",
+			description = "Sets the default PayTo account for the currently authenticated user.")
 	public User setDefaultPayToACcount(
 			@NotNull(message = "Account Id can not be null") @PathVariable String payToAccount)
 			throws ResourceNotFoundException {
@@ -244,7 +255,8 @@ public class UserController {
 	}
 
 	@GetMapping("/current/accounts/ids")
-	@Operation(summary = "Fetch all AcccountIds for User")
+	@Operation(summary = "Get all account IDs for the current user",
+			description = "Retrieves a list of all account IDs for the currently authenticated user.")
 	ResponseEntity<List<Long>> findAllAccountIds() {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(accountRepository.findAccountIdsByUser(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()),
@@ -253,7 +265,8 @@ public class UserController {
 	}
 
 	@GetMapping("/current/accounts")
-	@Operation(summary = "Fetch all Accounts for User")
+	@Operation(summary = "Get all account details for the current user",
+			description = "Retrieves a list of all account details for the currently authenticated user.")
 	ResponseEntity<List<Account>> findAllAccount() {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(accountRepository.findAccountsByUser(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()),
@@ -261,7 +274,8 @@ public class UserController {
 
 	}
 
-	@Operation(summary = "Find all payto accounts that are linked to all soldto accounts that the user has access")
+	@Operation(summary = "Find all PayTo accounts available to the current user",
+			description = "Retrieves a paginated list of all PayTo accounts that the currently authenticated user has access to.")
 	@GetMapping("/current/paytoaccounts")
 	public Page<AccountsResponseDTO> findAllPayToAccounts(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query) {
@@ -271,7 +285,8 @@ public class UserController {
 	}
 
 	@PostMapping("/current/reset-password")
-	@Operation(summary = "Reset Okta password by email")
+	@Operation(summary = "Trigger a password reset for the current user",
+			description = "Triggers a password reset for the currently authenticated user. An email will be sent to the user with instructions on how to reset their password.")
 	public ResponseEntity<Void> resetPasswordByEmail() throws CGATHttpException {
 		String email = Objects.requireNonNull(UserSecurityUtils.getLoggedInUser()).getUserName();
 		userService.resetPasswordByEmail(email);
@@ -279,7 +294,8 @@ public class UserController {
 	}
 
 	@PostMapping("/resend-activation/{email}")
-	@Operation(summary = "Resend activation email")
+	@Operation(summary = "Resend the activation email for a user",
+			description = "Resends the activation email to a user who has not yet activated their account.")
 	public ResponseEntity<Void> resendActivationEmail(
 			@NotBlank(message = "Email must not be blank") @PathVariable String email)
 			throws CGATHttpException, JsonProcessingException {

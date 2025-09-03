@@ -33,8 +33,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@Tag(name = "Users Provisioning Request",
-		description = "Controller for Managing user-provisioning related operations and data.")
+@Tag(name = "Practice User Provisioning Requests",
+		description = "Manages user provisioning requests within a specific practice.")
 @RequestMapping(path = "/practices/{practiceId}/users-provisioning-requests",
 		produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
@@ -46,7 +46,8 @@ public class UserProvisioningRequestController {
 	private static final String SORT_ORDER_ASC = "asc";
 
 	@PatchMapping("/{userProvisioningReqId}/status")
-	@Operation(summary = "Update user provisioning status")
+	@Operation(summary = "Update the status of a user provisioning request",
+			description = "Updates the status of a user provisioning request (e.g., from PENDING to APPROVED or REJECTED).")
 	public ResponseEntity<Object> updateUserProvisioningStatus(@RequestParam UserProvisioningStatus status,
 			@PathVariable Long userProvisioningReqId) throws ResourceNotFoundException {
 		return new ResponseEntity<>(
@@ -55,7 +56,8 @@ public class UserProvisioningRequestController {
 	}
 
 	@GetMapping("/{userProvisioningReqId}")
-	@Operation(summary = "Fetch a user provisioning request.")
+	@Operation(summary = "Get a user provisioning request by its ID",
+			description = "Retrieves the full details for a single user provisioning request by its unique ID.")
 	public ResponseEntity<UserProvisioningRequest> getUserProvisioningRequest(@PathVariable Long userProvisioningReqId)
 			throws ResourceNotFoundException {
 		return new ResponseEntity<>(userProvisioningRequestService.getUserProvisioningRequest(userProvisioningReqId),
@@ -63,8 +65,8 @@ public class UserProvisioningRequestController {
 	}
 
 	@GetMapping
-	@Operation(
-			summary = "Fetch all user provisioning request List based on filter provided with pagination capabilities.")
+	@Operation(summary = "Find and filter all user provisioning requests with pagination",
+			description = "Retrieves a paginated and filtered list of all user provisioning requests for the specified practice.")
 	Page<UserProvisioningRequest> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(defaultValue = "first_name") String sortBy,

@@ -32,7 +32,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
 @RestController
-@Tag(name = "roles", description = "Controller for Manages role/permission related operations and data.")
+@Tag(name = "Practice Roles & Permissions",
+		description = "Manages roles and their associated permissions within a specific practice.")
 @RequestMapping(path = "/practices/{practiceId}/roles", produces = MediaType.APPLICATION_JSON_VALUE)
 
 public class RoleController {
@@ -45,7 +46,7 @@ public class RoleController {
 
 	@RequirePermissions({ Permission.ADD_ROLES })
 	@PostMapping
-	@Operation(summary = "Create Role")
+	@Operation(summary = "Create a new role", description = "Creates a new role within the specified practice.")
 	public ResponseEntity<Role> createRole(@Validated @RequestBody Role role, @PathVariable String practiceId)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		return ResponseEntity.status(HttpStatus.CREATED).body(roleService.createOrUpdateRole(role, practiceId));
@@ -53,7 +54,8 @@ public class RoleController {
 
 	@RequirePermissions({ Permission.ADD_ROLES, Permission.EDIT_ROLES })
 	@PatchMapping("/{roleId}")
-	@Operation(summary = "Update basic deatils of role (i.e Role Name and Description)")
+	@Operation(summary = "Update a role's basic details (name and description)",
+			description = "Updates the name and description of an existing role, identified by its ID.")
 	public ResponseEntity<Role> updateRole(@PathVariable @NotNull(message = "Role Id can not be null") Long roleId,
 			@Validated(BasicInfo.class) @RequestBody Role updatedRole)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
@@ -62,8 +64,8 @@ public class RoleController {
 
 	@RequirePermissions({ Permission.ADD_ROLES, Permission.EDIT_ROLES })
 	@PatchMapping("/{roleId}/permissions")
-	@Operation(
-			summary = "Link/Unlink permission to Role. Permissions in current request becomes the permissions mapped to the role.")
+	@Operation(summary = "Update the permissions assigned to a role",
+			description = "Updates the set of permissions that are assigned to a specific role.")
 	public ResponseEntity<Role> updatePermissionsForRole(
 			@PathVariable @NotNull(message = "Role Id can not be null") Long roleId,
 			@Valid @RequestBody Role updatedRole) throws ResourceNotFoundException, UnauthorizedAccessException {
@@ -72,7 +74,8 @@ public class RoleController {
 
 	@RequirePermissions({ Permission.VIEW_ROLES })
 	@GetMapping("/{roleId}")
-	@Operation(summary = "Get Role by Id")
+	@Operation(summary = "Get a role by its ID",
+			description = "Retrieves the full details for a single role by its unique ID.")
 	public ResponseEntity<Role> getRole(@PathVariable Long roleId)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		return new ResponseEntity<>(roleService.getRole(roleId), HttpStatus.OK);
@@ -80,7 +83,7 @@ public class RoleController {
 
 	@RequirePermissions({ Permission.EDIT_ROLES })
 	@DeleteMapping("/{roleId}")
-	@Operation(summary = "Delete Role by Id")
+	@Operation(summary = "Delete a role by its ID", description = "Deletes a specified role from the practice.")
 	public ResponseEntity<Object> deleteRole(@PathVariable Long roleId)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		roleService.deleteRole(roleId);
@@ -89,7 +92,8 @@ public class RoleController {
 
 	@RequirePermissions({ Permission.MANAGE_ROLES_SCREEN })
 	@GetMapping
-	@Operation(summary = "Fetch all Roles based on filter provided with pagination capabilities.")
+	@Operation(summary = "Find and filter all roles with pagination",
+			description = "Retrieves a paginated and filtered list of all roles for the specified practice.")
 	Page<Role> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "name") String sortBy,
 			@RequestParam(required = false) List<String> status, @RequestParam(defaultValue = "asc") String sortOrder,

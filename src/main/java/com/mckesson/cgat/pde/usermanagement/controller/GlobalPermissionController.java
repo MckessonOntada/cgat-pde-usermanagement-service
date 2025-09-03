@@ -23,7 +23,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@Tag(name = "Permissions", description = "Controller for getting all permissions.")
+@Tag(name = "Global Permissions", description = "Provides endpoints for retrieving available system permissions.")
 @RequestMapping(path = "/global/permissions", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class GlobalPermissionController {
@@ -35,13 +35,15 @@ public class GlobalPermissionController {
 	}
 
 	@GetMapping
-	@Operation(summary = "Fetch All Permissions available in system")
+	@Operation(summary = "Get all permissions available in the system",
+			description = "Retrieves a complete list of all possible permissions defined within the application.")
 	public ResponseEntity<List<Permission>> getPermissions() {
 		return new ResponseEntity<>(Arrays.asList(Permission.values()), HttpStatus.OK);
 	}
 
 	@GetMapping("/{userType}")
-	@Operation(summary = "Fetch all valid Permissions for Role")
+	@Operation(summary = "Get all permissions available for a specific user type",
+			description = "Retrieves a set of permissions that are applicable to a specific user type (e.g., PRACTICE_USER, INTERNAL_USER).")
 	public ResponseEntity<Set<Permission>> getPermissions(@PathVariable UserType userType)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		return new ResponseEntity<>(Permission.getPermissions(userType), HttpStatus.OK);

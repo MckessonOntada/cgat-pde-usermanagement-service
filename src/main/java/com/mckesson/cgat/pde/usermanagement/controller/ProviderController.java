@@ -45,7 +45,8 @@ import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 @RestController
-@Tag(name = "Providers", description = "Controller for Managing provider-related operations and data.")
+@Tag(name = "Practice Providers",
+		description = "Manages provider data and their relationships with accounts within a specific practice.")
 @RequestMapping(path = "/practices/{practiceId}/providers", consumes = "application/json",
 		produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
@@ -62,7 +63,8 @@ public class ProviderController {
 
 	@RequirePermissions({ Permission.UPLOAD_PROVIDER })
 	@PostMapping(value = "/upload", consumes = { "multipart/form-data" })
-	@Operation(summary = "Upload bulk providers")
+	@Operation(summary = "Upload and process a CSV file of providers",
+			description = "Allows for bulk uploading of providers from a CSV file. If any records fail validation, a CSV file with the failed records is returned.")
 	public ResponseEntity<byte[]> uploadProviders(@RequestPart("providerData") MultipartFile providerData,
 			@NotNull(message = "Practice Id is Required") @PathVariable Long practiceId)
 			throws FileNotValidException, UnauthorizedAccessException {
@@ -79,7 +81,8 @@ public class ProviderController {
 
 	@RequirePermissions({ Permission.ADD_PROVIDER })
 	@PostMapping
-	@Operation(summary = "Create new provider")
+	@Operation(summary = "Create a new provider",
+			description = "Creates a new provider within the specified practice. An account can optionally be linked at the time of creation.")
 	public ResponseEntity<Provider> createProvider(@Validated(BasicInfo.class) @RequestBody Provider provider,
 			@NotNull(message = "Practice Id is Required") @PathVariable Long practiceId,
 			@RequestParam(required = false) Long accountId)
@@ -92,7 +95,8 @@ public class ProviderController {
 			Permission.ACCOUNT_SELECTION, Permission.UPDATE_PATIENTS_DETAILS, Permission.UPDATE_ADDITIONAL_DETAILS,
 			Permission.SUBMIT_ORDER })
 	@GetMapping
-	@Operation(summary = "Fetch all Providers based on filter provided with pagination capabilities.")
+	@Operation(summary = "Find and filter all providers with pagination",
+			description = "Retrieves a paginated and filtered list of all providers for the specified practice.")
 	public Page<Provider> findAllProviders(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(defaultValue = "first_name") String sortBy,
@@ -108,7 +112,8 @@ public class ProviderController {
 
 	@RequirePermissions({ Permission.EDIT_PROVIDER, Permission.ADD_PROVIDER })
 	@PatchMapping("/{providerId}")
-	@Operation(summary = "Update existing provider details by Id")
+	@Operation(summary = "Update an existing provider's details by ID",
+			description = "Updates the details of an existing provider, identified by their ID.")
 	public Provider updateProviderDetails(@PathVariable Long providerId,
 			@Validated(BasicInfo.class) @RequestBody ProviderDTO provider)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
@@ -118,28 +123,30 @@ public class ProviderController {
 
 	@RequirePermissions({ Permission.EDIT_PROVIDER })
 	@PatchMapping("/{providerId}/deactivate")
-	@Operation(summary = "Deactivate provider byId")
+	@Operation(summary = "Deactivate a provider by ID", description = "Marks a specified provider as inactive.")
 	public void deactivateProvider(@PathVariable Long providerId) throws ResourceNotFoundException {
 		providerService.deactivateProvider(providerId);
 	}
 
 	@RequirePermissions({ Permission.EDIT_PROVIDER })
 	@PatchMapping("/{providerId}/activate")
-	@Operation(summary = "Activate provider by Id")
+	@Operation(summary = "Activate a provider by ID", description = "Marks a specified provider as active.")
 	public void activateProvider(@PathVariable Long providerId) throws ResourceNotFoundException {
 		providerService.activateProvider(providerId);
 	}
 
 	@RequirePermissions({ Permission.VIEW_PROVIDER, Permission.UPDATE_PATIENTS_DETAILS })
 	@GetMapping("/{providerId}")
-	@Operation(summary = "Get provider details by Id ")
+	@Operation(summary = "Get a provider's details by ID",
+			description = "Retrieves the full details for a single provider by their unique ID.")
 	public ResponseEntity<Provider> getProvider(@PathVariable Long providerId) throws ResourceNotFoundException {
 		return new ResponseEntity<>(providerService.getProvider(providerId), HttpStatus.OK);
 	}
 
 	@RequirePermissions({ Permission.MANAGE_PROVIDERS_SCREEN })
 	@PatchMapping("/link-accounts")
-	@Operation(summary = "Link multiple provider with multiple sp account.")
+	@Operation(summary = "Link multiple providers to multiple Specialty Pharma accounts",
+			description = "Creates associations between a list of providers and a list of Specialty Pharma accounts.")
 	public ResponseEntity<Void> linkProviderToAccounts(@Valid @RequestBody ProviderAccountsDTO providersAccounts)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		providerService.linkProvidersToAccounts(providersAccounts);
@@ -148,7 +155,8 @@ public class ProviderController {
 
 	@RequirePermissions({ Permission.MANAGE_PROVIDERS_SCREEN })
 	@GetMapping("/{providerId}/accounts")
-	@Operation(summary = "Get Account List by providerId")
+	@Operation(summary = "Get all accounts linked to a specific provider",
+			description = "Retrieves a paginated list of all accounts that are linked to a specific provider.")
 	public ResponseEntity<Page<Account>> getAccountsByProviderId(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(defaultValue = "sap_partner") String sortBy,
@@ -165,7 +173,8 @@ public class ProviderController {
 
 	@RequirePermissions({ Permission.MANAGE_PROVIDERS_SCREEN })
 	@PostMapping("/unlinked-accounts")
-	@Operation(summary = "Get unlinked Accounts of providers by provider ids")
+	@Operation(summary = "Get all accounts not linked to a specific set of providers",
+			description = "Retrieves a paginated list of accounts that are not yet linked to a given set of providers.")
 	public ResponseEntity<Page<Account>> getUnlinkedAccountsOfProviderIds(
 			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(defaultValue = "sap_partner") String sortBy,

@@ -32,7 +32,8 @@ import java.util.List;
 import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.SORT_ORDER_ASC;
 
 @RestController
-@Tag(name = "Therapies", description = "Controller for getting all therapies.")
+@Tag(name = "Global Therapies",
+		description = "Manages global material data for both Buy and Bill and Specialty Pharma channels.")
 @RequestMapping(path = "/therapies", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 
@@ -46,7 +47,8 @@ public class GlobalTherapyController {
 
 	@GetMapping
 	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.VIEW_SP_MATERIAL, Permission.ADD_CROSSWALK })
-	@Operation(summary = "Fetch all therapies.")
+	@Operation(summary = "Find and filter all therapies",
+			description = "Retrieves a paginated list of all therapies, with extensive filtering options.")
 	public ResponseEntity<Page<TradeCatalogResponseDTO>> findAllTherapies(
 			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(required = false) String query, @RequestParam(defaultValue = "trade_name") String sortBy,
@@ -74,7 +76,8 @@ public class GlobalTherapyController {
 
 	@GetMapping("/type/speciality-pharma")
 	@RequirePermissions({ Permission.VIEW_SP_MATERIAL })
-	@Operation(summary = "Fetch all therapies.")
+	@Operation(summary = "Find and filter all Specialty Pharma therapies",
+			description = "Retrieves a paginated list of all Specialty Pharma therapies, with options for filtering by status and manufacturer.")
 	public ResponseEntity<Page<Therapy>> findAllSPTherapies(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
 			@RequestParam(required = false) String sortBy, @RequestParam(defaultValue = "asc") String sortOrder,
@@ -94,7 +97,8 @@ public class GlobalTherapyController {
 	}
 
 	@GetMapping("/{materialNumber}")
-	@Operation(summary = "Find Therapy by Material Number")
+	@Operation(summary = "Get therapy details by material number",
+			description = "Retrieves the details for a single therapy, identified by its material number and channel type.")
 	public ResponseEntity<Therapy> findByMaterialNumber(@PathVariable String materialNumber,
 			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) throws ResourceNotFoundException {
 		log.debug("Fetching therapy with materialNumber: {}", materialNumber);
@@ -103,7 +107,8 @@ public class GlobalTherapyController {
 
 	@PostMapping("/config/update")
 	@RequirePermissions({ Permission.MANAGE_MATERIAL })
-	@Operation(summary = "Update Therapy Configurations")
+	@Operation(summary = "Update Buy and Bill therapy configurations in bulk",
+			description = "Allows for the bulk update of Buy and Bill therapy configurations based on a list of NDC numbers.")
 	public ResponseEntity<String> updateTherapyConfigs(@Valid @RequestBody TherapyConfigRequestDTO request) {
 		log.debug("Updating therapy configs for ndcNumbers: {}", request.getNdcNumbers());
 		therapyService.updateTherapyConfigs(request);
@@ -114,7 +119,8 @@ public class GlobalTherapyController {
 	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.VIEW_SP_MATERIAL, Permission.THERAPY_SELECTION,
 			Permission.ACCOUNT_SELECTION, Permission.UPDATE_PATIENTS_DETAILS, Permission.UPDATE_ADDITIONAL_DETAILS,
 			Permission.SUBMIT_ORDER })
-	@Operation(summary = "Find Therapy details by Trade Name")
+	@Operation(summary = "Get therapy details by trade name",
+			description = "Retrieves detailed information for a therapy and its associated configuration, identified by its trade name and channel type.")
 	public ResponseEntity<List<MaterialDetailsResponseDTO>> findTherapyDetailsByTradeName(
 			@PathVariable String tradeName, @RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType)
 			throws ResourceNotFoundException {
@@ -126,7 +132,8 @@ public class GlobalTherapyController {
 
 	@PostMapping("/sp/config/update")
 	@RequirePermissions({ Permission.MANAGE_MATERIAL })
-	@Operation(summary = "Update Therapy Configurations")
+	@Operation(summary = "Update Specialty Pharma therapy configurations in bulk",
+			description = "Allows for the bulk update of Specialty Pharma therapy configurations based on a list of SP product IDs.")
 	public ResponseEntity<String> updateSPTherapyConfigs(@Valid @RequestBody SPTherapyConfigRequestDTO request) {
 		log.debug("Updating sp therapy configs for spProductIds: {}", request.getSpProductIds());
 		therapyService.updateSPTherapyConfigs(request);
@@ -135,7 +142,8 @@ public class GlobalTherapyController {
 
 	@PatchMapping("sp/config/{spProductId}")
 	@RequirePermissions({ Permission.MANAGE_MATERIAL })
-	@Operation(summary = "Remove SP Therapy Configurations")
+	@Operation(summary = "Remove a Specialty Pharma therapy configuration",
+			description = "Removes a specific Specialty Pharma therapy configuration from the system.")
 	public ResponseEntity<String> removeSPTherapyConfig(@NotBlank @PathVariable String spProductId)
 			throws ResourceNotFoundException {
 		log.debug("Remove sp therapy config for SP Material: {}", spProductId);
@@ -145,7 +153,8 @@ public class GlobalTherapyController {
 
 	@GetMapping("/sp/config/{materialNumber}")
 	@RequirePermissions({ Permission.VIEW_SP_MATERIAL })
-	@Operation(summary = "Find SP Therapy details by Material Number")
+	@Operation(summary = "Get Specialty Pharma therapy details by material number",
+			description = "Retrieves detailed information for a Specialty Pharma therapy, identified by its material number.")
 	public ResponseEntity<MaterialDetailsResponseDTO> findSPTherapyDetailsByMaterialNumber(
 			@PathVariable String materialNumber,
 			@RequestParam(defaultValue = "SPECIALITY_PHARMA") ChannelType channelType)
@@ -158,7 +167,8 @@ public class GlobalTherapyController {
 
 	@DeleteMapping("/config/ndc/{ndcNumber}")
 	@RequirePermissions({ Permission.MANAGE_MATERIAL })
-	@Operation(summary = "Delete Configuration by Ndc Number")
+	@Operation(summary = "Delete a therapy configuration by NDC number",
+			description = "Deletes a therapy configuration from the system, identified by its NDC number and channel type.")
 	public ResponseEntity<String> deleteConfigByNdcNumber(
 			@PathVariable @NotNull(message = "Ndc number cannot be null ") @NotEmpty(
 					message = "Ndc number cannot be empty") String ndcNumber,
@@ -171,7 +181,8 @@ public class GlobalTherapyController {
 	@GetMapping("/config/ndc/{ndcNumber}")
 	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.THERAPY_SELECTION, Permission.ACCOUNT_SELECTION,
 			Permission.UPDATE_PATIENTS_DETAILS, Permission.UPDATE_ADDITIONAL_DETAILS, Permission.SUBMIT_ORDER })
-	@Operation(summary = "Find Therapy details by Ndc Number")
+	@Operation(summary = "Get therapy and configuration details by NDC number",
+			description = "Retrieves detailed information for a therapy and its associated configuration, identified by its NDC number and channel type.")
 	public ResponseEntity<MaterialResponseDTO> findTherapyDetailsByNdc(
 			@PathVariable @NotNull(message = "Ndc number cannot be null ") @NotEmpty(
 					message = "Ndc number cannot be empty") String ndcNumber,
@@ -183,7 +194,8 @@ public class GlobalTherapyController {
 
 	@GetMapping("/config/ndc/{ndcNumber}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/therapy")
 	@RequirePermissions({ Permission.ACCOUNT_SELECTION })
-	@Operation(summary = "Find Therapy details by Ndc Number and soldTo account")
+	@Operation(summary = "Get therapy details by NDC, sold-to, and ship-to accounts",
+			description = "Retrieves therapy details based on NDC number, sold-to account, ship-to account, and other criteria.")
 	public ResponseEntity<List<MaterialResponseDTO>> findTherapyDetailsByNdcAndSoldToAccount(
 			@PathVariable @NotBlank(message = "Ndc number is required") String ndcNumber,
 			@PathVariable @NotBlank(message = "Sold To Account is required") String soldToAccountId,
@@ -199,7 +211,8 @@ public class GlobalTherapyController {
 
 	@GetMapping("/config/therapyId/{id}")
 	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.UPDATE_ADDITIONAL_DETAILS })
-	@Operation(summary = "Find Therapy details by id")
+	@Operation(summary = "Get therapy and configuration details by internal therapy ID",
+			description = "Retrieves detailed information for a therapy and its associated configuration, identified by its internal database ID.")
 	public ResponseEntity<MaterialResponseDTO> findTherapyDetailsById(@PathVariable Long id)
 			throws ResourceNotFoundException {
 		log.debug("Fetching therapy details with id: {}", id);
@@ -209,7 +222,8 @@ public class GlobalTherapyController {
 
 	@GetMapping(value = "/download", produces = "text/csv")
 	@RequirePermissions({ Permission.MANAGE_SP_CATALOG, Permission.MANAGE_CROSSWALK })
-	@Operation(summary = "Download CSV file for materials based on channel type")
+	@Operation(summary = "Download a CSV file of materials for a specific channel",
+			description = "Generates and downloads a CSV file containing material information for either the Specialty Pharma or Buy and Bill channel.")
 	public ResponseEntity<StreamingResponseBody> downloadMaterialsCsvFile(
 			@RequestParam(defaultValue = "SPECIALITY_PHARMA") ChannelType channelType) {
 
@@ -249,7 +263,8 @@ public class GlobalTherapyController {
 
 	@GetMapping("/manufacturers")
 	@RequirePermissions({ Permission.VIEW_SP_MATERIAL })
-	@Operation(summary = "Get unique manufacturer names for Speciality Pharma therapies by status")
+	@Operation(summary = "Get unique manufacturer names for Specialty Pharma therapies",
+			description = "Retrieves a list of unique manufacturer names for Specialty Pharma therapies, filtered by status.")
 	public ResponseEntity<List<String>> getUniqueManufacturersByStatus(@RequestParam Status status) {
 
 		log.debug("Fetching unique manufacturers for channelType=SPECIALITY_PHARMA and itemStatus={}", status);
@@ -264,7 +279,8 @@ public class GlobalTherapyController {
 	@RequirePermissions({ Permission.VIEW_MATERIAL, Permission.VIEW_SP_MATERIAL, Permission.THERAPY_SELECTION,
 			Permission.ACCOUNT_SELECTION, Permission.UPDATE_PATIENTS_DETAILS, Permission.UPDATE_ADDITIONAL_DETAILS,
 			Permission.SUBMIT_ORDER })
-	@Operation(summary = "Find Therapy details by NDC Number")
+	@Operation(summary = "Find therapy details by NDC number",
+			description = "Retrieves a list of therapy details, identified by NDC number and channel type.")
 	public ResponseEntity<List<Therapy>> findTherapyDetailsByNdcNumber(
 			@PathVariable @NotNull(message = "Ndc number cannot be null ") @NotEmpty(
 					message = "Ndc number cannot be empty") String ndcNumber,
@@ -275,7 +291,8 @@ public class GlobalTherapyController {
 	}
 
 	@GetMapping("/{therapyId}/manufacturer/logo")
-	@Operation(summary = "Get Manufacturer Logo by Therapy Id")
+	@Operation(summary = "Get a manufacturer's logo by therapy ID",
+			description = "Retrieves the logo for a manufacturer, identified by a therapy ID. The response will contain the binary image data.")
 	public ResponseEntity<byte[]> getManufacturerLogo(@NotNull @PathVariable Long therapyId)
 			throws NumberFormatException, ResourceNotFoundException {
 		TherapyLogoResponseDto therapyLogoResponseDto = therapyService.getManufacturerLogo(therapyId);

@@ -23,7 +23,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@Tag(name = "Shipping Location", description = "Controller for Managing Shipping Location for SP Account.")
+@Tag(name = "SP Account Shipping Locations",
+		description = "Manages shipping locations for a specific Specialty Pharma (SP) account.")
 @RequestMapping(path = "/practices/{practiceId}/accounts/{accountId}/shipping-locations", consumes = "application/json",
 		produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
@@ -39,7 +40,8 @@ public class ShippingLocationController {
 
 	@RequirePermissions({ Permission.ADD_SP_ACCOUNT })
 	@PostMapping(consumes = "application/json")
-	@Operation(summary = "Create new shipping location")
+	@Operation(summary = "Create a new shipping location for an SP account",
+			description = "Creates a new shipping location and associates it with the specified Specialty Pharma (SP) account.")
 	public ResponseEntity<ShippingLocation> createShippingLocation(
 			@Valid @RequestBody ShippingLocation shippingLocation) throws UnauthorizedAccessException {
 		ShippingLocation createdShippingLocation = shippingLocationService.createShippingLocation(shippingLocation);
@@ -49,7 +51,8 @@ public class ShippingLocationController {
 
 	@RequirePermissions({ Permission.ADD_SP_ACCOUNT })
 	@PutMapping("/{shippingLocationId}")
-	@Operation(summary = "Update existing shipping location")
+	@Operation(summary = "Update an existing shipping location",
+			description = "Updates the details of an existing shipping location, identified by its ID.")
 	public ResponseEntity<ShippingLocation> updateShippingLocation(@PathVariable Long shippingLocationId,
 			@Valid @RequestBody ShippingLocation shippingLocation)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
@@ -61,7 +64,8 @@ public class ShippingLocationController {
 
 	@RequirePermissions({ Permission.ADD_SP_ACCOUNT })
 	@DeleteMapping
-	@Operation(summary = "Delete shipping locations by IDs")
+	@Operation(summary = "Delete multiple shipping locations by their IDs",
+			description = "Deletes one or more shipping locations from the system based on a list of their IDs.")
 	public ResponseEntity<Void> removeShippingLocations(@RequestBody List<Long> shippingLocationIds)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		shippingLocationService.removeShippingLocations(shippingLocationIds);
@@ -71,7 +75,8 @@ public class ShippingLocationController {
 
 	@RequirePermissions({ Permission.ADD_SP_ACCOUNT, Permission.MANAGE_SP_ACCOUNT, Permission.MANAGE_LINKED_ACCOUNTS })
 	@GetMapping
-	@Operation(summary = "Fetch all Shipping Locations based on filter provided with pagination capabilities.")
+	@Operation(summary = "Find and filter all shipping locations for an SP account",
+			description = "Retrieves a paginated and filtered list of all shipping locations for the specified Specialty Pharma (SP) account.")
 	Page<ShippingLocation> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "id") String sortBy,
 			@RequestParam(defaultValue = "desc") String sortOrder, @RequestParam(required = false) String query,
@@ -85,7 +90,8 @@ public class ShippingLocationController {
 
 	@RequirePermissions({ Permission.ADD_SP_ACCOUNT, Permission.MANAGE_SP_ACCOUNT, Permission.ACCOUNT_SELECTION })
 	@GetMapping("/{shippingId}")
-	@Operation(summary = "Fetch Shipping Location by shippingId")
+	@Operation(summary = "Get a shipping location by its ID",
+			description = "Retrieves the full details for a single shipping location by its unique ID.")
 	ShippingLocation findById(@NotNull @PathVariable Long accountId, @NotNull @PathVariable Long shippingId)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		return shippingLocationService.findById(shippingId);

@@ -44,7 +44,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@Tag(name = "Practices", description = "Controller for Manages practices-related operations and data.")
+@Tag(name = "Practices", description = "Manages practice-level operations and data.")
 @RequestMapping(path = "/practices", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class PracticeController {
@@ -62,7 +62,8 @@ public class PracticeController {
 
 	@RequirePermissions({ Permission.ADD_ORGANIZATION })
 	@PostMapping(consumes = { "multipart/form-data" })
-	@Operation(summary = "Create Practice")
+	@Operation(summary = "Create a new practice with an optional logo",
+			description = "Creates a new practice based on the provided JSON data and optionally uploads a logo. The practice data is sent as a string in a multipart request part.")
 	public ResponseEntity<Object> createPractice(@RequestPart("practiceStr") String practiceStr,
 			@RequestPart(value = "logo", required = false) MultipartFile logo, BindingResult bindingResult)
 			throws IOException, MethodArgumentNotValidException, UnauthorizedAccessException {
@@ -85,7 +86,8 @@ public class PracticeController {
 
 	@RequirePermissions({ Permission.EDIT_ORGANIZATION, Permission.ADD_ORGANIZATION })
 	@PutMapping(value = "/{practiceId}", consumes = { "multipart/form-data" })
-	@Operation(summary = "Update Practice")
+	@Operation(summary = "Update an existing practice with an optional logo",
+			description = "Updates an existing practice, identified by its ID, with the provided JSON data and optionally uploads a new logo.")
 	public ResponseEntity<Object> updatePractice(@RequestPart("practiceStr") @Valid String practiceStr,
 			@RequestPart(value = "logo", required = false) MultipartFile logo, @PathVariable String practiceId,
 			BindingResult bindingResult) throws IOException, UnauthorizedAccessException {
@@ -102,14 +104,16 @@ public class PracticeController {
 
 	// @RequirePermissions({ Permission.VIEW_ORGANIZATION })
 	@GetMapping("/{practiceId}")
-	@Operation(summary = "Get Practice by Id")
+	@Operation(summary = "Get a practice by its ID",
+			description = "Retrieves the full details for a single practice by its unique ID.")
 	public ResponseEntity<Practice> getPractice(@PathVariable String practiceId)
 			throws NumberFormatException, ResourceNotFoundException, UnauthorizedAccessException {
 		return new ResponseEntity<>(practiceService.getPractice(practiceId), HttpStatus.OK);
 	}
 
 	@GetMapping("/{practiceId}/logo")
-	@Operation(summary = "Get Practice Logo by Practice Id")
+	@Operation(summary = "Get a practice's logo by its ID",
+			description = "Retrieves the logo for a specific practice, identified by its ID. The response will contain the binary image data.")
 	public ResponseEntity<byte[]> getPracticeLogo(@PathVariable String practiceId)
 			throws NumberFormatException, ResourceNotFoundException {
 		PracticeLogoResponseDto practiceLogoResponseDto = practiceService.getPracticeLogo(practiceId);
@@ -121,7 +125,7 @@ public class PracticeController {
 
 	@RequirePermissions({ Permission.EDIT_ORGANIZATION })
 	@DeleteMapping("/{practiceId}")
-	@Operation(summary = "Delete Practice by Id")
+	@Operation(summary = "Delete a practice by its ID", description = "Deletes a specified practice from the system.")
 	public ResponseEntity<Object> deletePractice(@PathVariable String practiceId)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		practiceService.deletePractice(practiceId);
@@ -130,7 +134,8 @@ public class PracticeController {
 
 	@RequirePermissions({ Permission.MANAGE_ORGANIZATION_SCREEN })
 	@GetMapping
-	@Operation(summary = "Fetch all Practices based on filter provided with pagination capabilities.")
+	@Operation(summary = "Find and filter all practices with pagination",
+			description = "Retrieves a paginated and filtered list of all practices, based on various criteria.")
 	Page<Practice> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
@@ -145,7 +150,8 @@ public class PracticeController {
 
 	@RequirePermissions({ Permission.THERAPY_SELECTION, Permission.APPROVE_ORDERS })
 	@GetMapping("/{practiceId}/name")
-	@Operation(summary = "Get Practice Name by Practice Id")
+	@Operation(summary = "Get a practice's name by its ID",
+			description = "Retrieves the name of a practice, identified by its ID.")
 	public ResponseEntity<String> getPracticeName(@PathVariable Long practiceId)
 			throws NumberFormatException, ResourceNotFoundException {
 		String practiceName = practiceService.getPracticeName(practiceId);

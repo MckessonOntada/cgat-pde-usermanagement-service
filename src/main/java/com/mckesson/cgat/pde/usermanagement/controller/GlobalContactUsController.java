@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@Tag(name = "Global Contact Us", description = "Controller for global contact us configuration")
+@Tag(name = "Global Contact Us", description = "Handles submissions from the global 'Contact Us' form.")
 @RequestMapping(path = "/contact-us", produces = MediaType.APPLICATION_JSON_VALUE)
 public class GlobalContactUsController {
 
@@ -33,7 +33,8 @@ public class GlobalContactUsController {
 	}
 
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-	@Operation(summary = "Submit contact us form")
+	@Operation(summary = "Submit the 'Contact Us' form and trigger an email notification",
+			description = "Accepts a submission from the 'Contact Us' form, validates the data, and triggers an email notification to the support team.")
 	public ResponseEntity<Map<String, String>> submitContactUs(@Valid @RequestBody ContactUsDTO contactUsDTO) {
 
 		emailNotificationService.sendContactUsNotification(contactUsDTO);

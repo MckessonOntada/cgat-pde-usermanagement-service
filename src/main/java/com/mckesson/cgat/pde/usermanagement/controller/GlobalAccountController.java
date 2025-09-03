@@ -31,7 +31,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 @RestController
-@Tag(name = "Accounts", description = "Controller for getting all unlinked accounts.")
+@Tag(name = "Global Accounts",
+		description = "Manages global account operations, such as finding unlinked accounts and handling Specialty Pharma data.")
 @RequestMapping(path = "/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class GlobalAccountController {
@@ -45,7 +46,8 @@ public class GlobalAccountController {
 	}
 
 	@GetMapping
-	@Operation(summary = "Fetch all unlinked Accounts.")
+	@Operation(summary = "Find all Buy and Bill accounts not linked to any practice",
+			description = "Retrieves a paginated list of all Buy and Bill accounts that are not currently associated with any practice.")
 	public ResponseEntity<Page<Account>> findAllAvailableAccounts(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "name_1") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
@@ -62,7 +64,8 @@ public class GlobalAccountController {
 
 	@GetMapping("/specialty-pharma/linked-accounts/{sapMaterial}")
 	@RequirePermissions({ Permission.VIEW_SP_MATERIAL })
-	@Operation(summary = "Fetch all Specialty Pharma accounts linked to a specific SAP material")
+	@Operation(summary = "Find all Specialty Pharma accounts linked to a specific SAP material",
+			description = "Retrieves a paginated list of all Specialty Pharma accounts that are linked to a given SAP material.")
 	public ResponseEntity<Page<SpecialtyPharmaAccountDto>> getSpecialtyPharmaAccountsBySapMaterial(
 			@PathVariable String sapMaterial, @RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize,
@@ -81,7 +84,8 @@ public class GlobalAccountController {
 
 	@PutMapping("/specialty-pharma/material/{sapMaterial}/account/{accountNumber}/unlink")
 	@RequirePermissions({ Permission.VIEW_SP_MATERIAL })
-	@Operation(summary = "Unlink a specific account from a SAP material by setting deleted flag to true")
+	@Operation(summary = "Unlink a Specialty Pharma account from a SAP material",
+			description = "Removes the association between a Specialty Pharma account and a SAP material.")
 	public ResponseEntity<String> unlinkSpecialtyPharmaAccount(@PathVariable String sapMaterial,
 			@PathVariable String accountNumber) throws ResourceNotFoundException {
 		accountService.unlinkSpecialtyPharmaAccount(sapMaterial, accountNumber);
@@ -91,7 +95,8 @@ public class GlobalAccountController {
 
 	@RequirePermissions({ Permission.VIEW_SP_CATALOG, Permission.MANAGE_SP_CATALOG })
 	@GetMapping("/for-organizations")
-	@Operation(summary = "Fetch all Accounts based on filter provided with pagination capabilities.")
+	@Operation(summary = "Find and filter accounts for specific organizations",
+			description = "Retrieves a paginated and filtered list of accounts for a given set of organizations, based on various criteria.")
 	Page<Account> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(defaultValue = "sap_partner") String sortBy,
@@ -111,7 +116,8 @@ public class GlobalAccountController {
 
 	@GetMapping(value = "/download", produces = "text/csv")
 	@RequirePermissions({ Permission.MANAGE_SP_CATALOG })
-	@Operation(summary = "Download csv file contains all speciality pharma active accounts")
+	@Operation(summary = "Download all active Specialty Pharma accounts as a CSV file",
+			description = "Generates and downloads a CSV file containing all active Specialty Pharma accounts.")
 	public ResponseEntity<StreamingResponseBody> downloadSPAccountsCsvFile() {
 		StreamingResponseBody stream = outputStream -> {
 			try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
@@ -135,7 +141,8 @@ public class GlobalAccountController {
 
 	@PostMapping(value = "/for-practice/{practiceId}/upload", consumes = { "multipart/form-data" })
 	@RequirePermissions({ Permission.MANAGE_SP_ACCOUNT })
-	@Operation(summary = "Upload bulk SP accounts")
+	@Operation(summary = "Upload and process a CSV file of Specialty Pharma accounts",
+			description = "Allows for bulk uploading of Specialty Pharma accounts from a CSV file for a specific practice. If any errors are found during processing, a CSV error report is returned.")
 	public ResponseEntity<?> uploadSPAccountCsv(@RequestPart("accountsData") MultipartFile accountsData,
 			@PathVariable int practiceId) {
 

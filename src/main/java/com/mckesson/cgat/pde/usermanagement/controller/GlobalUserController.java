@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Tag(name = "Users", description = "Controller for Managing user-related operations and data.")
+@Tag(name = "Global User", description = "Provides information about the currently authenticated user.")
 @RequestMapping(path = "/user", consumes = "application/json", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class GlobalUserController {
@@ -26,7 +26,8 @@ public class GlobalUserController {
 	}
 
 	@GetMapping("/current")
-	@Operation(summary = "Fetch current logged in user from Security context")
+	@Operation(summary = "Get details for the currently authenticated user",
+			description = "Retrieves the details of the user who is currently authenticated, based on the security context. Also updates the user's last login time if the 'login' parameter is set to true.")
 	public LoggedInUserDetails getLoggedInUserDetails(@RequestParam(defaultValue = "false") boolean login)
 			throws ResourceNotFoundException {
 		LoggedInUserDetails userDetails = UserSecurityUtils.getLoggedInUser();

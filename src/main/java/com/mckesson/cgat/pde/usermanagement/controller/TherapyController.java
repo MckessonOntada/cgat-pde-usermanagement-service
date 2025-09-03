@@ -32,7 +32,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@Tag(name = "Therapy", description = "Controller for Managing Therapy-catalogs operations and data.")
+@Tag(name = "User-Context Therapies",
+		description = "Provides therapy and catalog data from the perspective of the currently authenticated user.")
 @RequestMapping(path = "/practices/{practiceId}/users/current/therapies", consumes = "application/json",
 		produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
@@ -54,8 +55,8 @@ public class TherapyController {
 	}
 
 	@GetMapping
-	@Operation(
-			summary = "Find all therapies being offered via catalog for all accounts that the logged in user has access")
+	@Operation(summary = "Find all therapies available to the current user",
+			description = "Retrieves a paginated list of all therapies that the currently authenticated user has access to.")
 	public Page<TradeCatalogResponseDTO> findAllThreapies(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
 			@RequestParam(required = false) List<String> salesOrg,
@@ -70,8 +71,8 @@ public class TherapyController {
 	}
 
 	@GetMapping("/ndc/{ndcNumber}/soldtoaccounts")
-	@Operation(
-			summary = "Find all soldto accounts from which the selected ndc is being offered, and the logged in user has access to")
+	@Operation(summary = "Find all sold-to accounts for a therapy available to the current user",
+			description = "Retrieves a paginated list of all sold-to accounts that the currently authenticated user can use to order a specific therapy (identified by NDC).")
 	public Page<AccountsResponseDTO> findAllSoldToAccountsByTherapy(@PathVariable String ndcNumber,
 			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(required = false) String query,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String program,
@@ -85,8 +86,8 @@ public class TherapyController {
 	}
 
 	@GetMapping("/ndc/{ndcNumber}/soldtoaccount/{soldToAccountId}/shiptoaccounts")
-	@Operation(
-			summary = "Find all shipto accounts that is linked to the selected soldto account and the ndc also being offered from that shipto account")
+	@Operation(summary = "Find all ship-to accounts for a therapy and sold-to account",
+			description = "Retrieves a paginated list of all ship-to accounts that can be used for a specific therapy (identified by NDC) and sold-to account.")
 	public Page<AccountsResponseDTO> findAllShipToAccountsForTherapy(@PathVariable String soldToAccountId,
 			@PathVariable String ndcNumber, @RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
@@ -108,28 +109,31 @@ public class TherapyController {
 	}
 
 	@GetMapping("/{therapyId}")
-	@Operation(summary = "Find Therapy by id")
+	@Operation(summary = "Get a therapy by its ID",
+			description = "Retrieves the details for a single therapy by its unique ID.")
 	public Therapy findbyId(@PathVariable Long therapyId) throws ResourceNotFoundException {
 		return therapyService.findById(therapyId);
 	}
 
 	@GetMapping("/therapyDetails/{therapyId}")
-	@Operation(summary = "Find Therapy Details with crosswalk by id")
+	@Operation(summary = "Get therapy details with crosswalk information by ID",
+			description = "Retrieves the details for a single therapy, including its crosswalk information, by its unique ID.")
 	public TherapyResponseDTO findTherapyWithCrosswalkById(@PathVariable Long therapyId)
 			throws ResourceNotFoundException {
 		return therapyService.findTherapyWithCrosswalkById(therapyId);
 	}
 
 	@GetMapping("/details/{tradeName}")
-	@Operation(summary = "Find Therapy Details with crosswalk by tradeName")
+	@Operation(summary = "Get therapy details by trade name",
+			description = "Retrieves a list of therapy details, identified by trade name and channel type.")
 	public List<Therapy> findTherapyDetailsByTradeName(@PathVariable String tradeName,
 			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) {
 		return therapyService.findTherapyDetailsByTradeName(tradeName, channelType);
 	}
 
 	@GetMapping("{ndcNumber}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/variants")
-	@Operation(
-			summary = "Find all variants of therapy that is linked to the selected soldto account,shipto account and the therapy being offered from that shipto account")
+	@Operation(summary = "Find all therapy variants for a specific NDC, sold-to, and ship-to account",
+			description = "Retrieves a paginated list of all therapy variants available for a specific NDC, sold-to account, and ship-to account.")
 	public Page<VariantsResponseDTO> findAllVariantsLinkedToShipToAccountsForNDC(
 			@PathVariable @NotNull(message = "'soldToAccountId' cannot be null") @NotEmpty(
 					message = "'soldToAccountId' cannot be empty") String soldToAccountId,
@@ -144,8 +148,8 @@ public class TherapyController {
 	}
 
 	@GetMapping("/ndc/{ndcNumber}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}/catalog")
-	@Operation(
-			summary = "Find price of the variant of therapy that is linked to the selected soldto account,shipto account and the ndc being offered from that shipto account")
+	@Operation(summary = "Get the catalog price for a specific therapy variant",
+			description = "Retrieves the catalog price for a specific therapy variant, based on the NDC, sold-to account, and ship-to account.")
 	public CatalogPriceResponseDto findPriceOfVariantLinkedToShipToAccountsForTherapy(
 			@PathVariable @NotNull(message = "'soldToAccountId' cannot be null") @NotEmpty(
 					message = "'soldToAccountId' cannot be empty") String soldToAccountId,
@@ -158,8 +162,8 @@ public class TherapyController {
 	}
 
 	@GetMapping("/ndc/{ndcNumber}/programs-channels")
-	@Operation(
-			summary = "Find all programs and channels from which the selected therapy is being offered, and the logged in user has access to")
+	@Operation(summary = "Find all programs and channels for a therapy available to the current user",
+			description = "Retrieves a list of all programs and channels that the currently authenticated user can use to order a specific therapy (identified by NDC).")
 	public ResponseEntity<ProgramChannelResponseDTO> findAllProgramAndChannels(@PathVariable String ndcNumber,
 			@RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType) throws ResourceNotFoundException {
 		return new ResponseEntity<>(therapyService.findAllProgramAndChannels(
@@ -167,8 +171,8 @@ public class TherapyController {
 	}
 
 	@GetMapping("/customeridentifiers")
-	@Operation(
-			summary = "Find all Customer Identifiers or soldto accounts from which therapies are being offered, and the logged in user has access to")
+	@Operation(summary = "Find all customer identifiers (sold-to accounts) available to the current user",
+			description = "Retrieves a paginated list of all customer identifiers (sold-to accounts) that the currently authenticated user has access to.")
 	public ResponseEntity<Page<AccountsResponseDTO>> findAllCustomerIdentifiers(
 			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(required = false) String query) {
