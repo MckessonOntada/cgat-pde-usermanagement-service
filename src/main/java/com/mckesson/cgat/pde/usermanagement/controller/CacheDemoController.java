@@ -28,7 +28,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path = "/cache/therapies", produces = MediaType.APPLICATION_JSON_VALUE)
-@Tag(name = "Therapy & Material Cache", description = "Provides cached access to therapy and material data.")
+@Tag(name = "Therapy Cache Controller", description = "Provides cached access to therapy data.")
 @Slf4j
 @Validated
 public class CacheDemoController {
