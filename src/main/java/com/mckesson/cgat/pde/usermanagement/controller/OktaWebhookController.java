@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping(path = "/inlineHooks", produces = MediaType.APPLICATION_JSON_VALUE)
-@Tag(name = "InlineHooks", description = "Okta Inline Webhook Handlers to handle okta token and event hooks.")
+@Tag(name = "Okta Webhooks", description = "Handles incoming Okta inline token hooks and event hooks.")
 @Slf4j
 public class OktaWebhookController {
 
@@ -32,8 +32,8 @@ public class OktaWebhookController {
 	private OktaUserWebhookService oktaUserWebhookService;
 
 	@PostMapping("/handleTokenHook")
-	@Operation(
-			summary = "Send authorization information as commands to token hook to embed the authorization information inside the authentication token")
+	@Operation(summary = "Process Okta inline token hooks and event hooks",
+			description = "This endpoint receives and processes POST requests from Okta for both inline token hooks and event hooks. It validates the request and then either adds custom claims to a token or processes a user event.")
 	@ResponseStatus(code = HttpStatus.OK)
 	public Map<?, ?> handleTokenHook(@RequestBody Map<String, Object> authenticationResponse,
 			@RequestHeader HttpHeaders headers) {
@@ -60,7 +60,8 @@ public class OktaWebhookController {
 	}
 
 	@GetMapping("/handleTokenHook")
-	@Operation(summary = "Dummy API for OKTA to accept the service is valid.")
+	@Operation(summary = "Respond to Okta's one-time verification challenge",
+			description = "This endpoint handles GET requests from Okta for the one-time verification challenge. It responds with the value of the 'x-okta-verification-challenge' header to confirm the endpoint's validity.")
 	@ResponseStatus(code = HttpStatus.OK)
 	public Map<String, String> handleTokenHook(@RequestHeader HttpHeaders headers) {
 		Map<String, String> response = new HashMap<>();

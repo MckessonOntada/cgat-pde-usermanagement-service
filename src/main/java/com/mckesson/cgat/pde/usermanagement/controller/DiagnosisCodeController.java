@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@Tag(name = "Diagnosis Codes", description = "Controller for Managing Diagnosis Code operations and data.")
+@Tag(name = "Practice Diagnosis Codes", description = "Manages diagnosis codes for a specific practice.")
 @RequestMapping(path = "/practices/{practiceId}/diagnosis-codes", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class DiagnosisCodeController {
@@ -27,7 +27,8 @@ public class DiagnosisCodeController {
 	}
 
 	@GetMapping
-	@Operation(summary = "Search diagnosis codes with pagination and sorting")
+	@Operation(summary = "Find and filter diagnosis codes with pagination",
+			description = "Retrieves a paginated and sorted list of diagnosis codes, with an option to filter by a search query.")
 	public Page<DiagnosisCode> searchDiagnosisCodes(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "code") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query) {
@@ -39,7 +40,8 @@ public class DiagnosisCodeController {
 	}
 
 	@PostMapping("/upload")
-	@Operation(summary = "Upload diagnosis codes CSV")
+	@Operation(summary = "Upload and process a CSV file of diagnosis codes",
+			description = "Allows for bulk uploading of diagnosis codes from a CSV file. The file is processed and the codes are added to the system.")
 	public ResponseEntity<String> uploadDiagnosisCodes(@RequestParam("file") MultipartFile file) {
 		try {
 			diagnosisCodeService.uploadCsv(file);

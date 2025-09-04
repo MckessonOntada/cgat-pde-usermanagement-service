@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Tag(name = "Practice", description = "Controller for Manages practice related operations and data.")
+@Tag(name = "Global Practice", description = "Provides global access to practice-related data, such as logos.")
 @RequestMapping(path = "/practice", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class GlobalPracticeController {
@@ -27,7 +27,8 @@ public class GlobalPracticeController {
 	}
 
 	@GetMapping("/{practiceId}/logo")
-	@Operation(summary = "Get Practice Logo by Practice Id")
+	@Operation(summary = "Get a practice's logo by its ID",
+			description = "Retrieves the logo for a specific practice, identified by its ID. The response will contain the binary image data.")
 	public ResponseEntity<byte[]> getPracticeLogo(@PathVariable String practiceId)
 			throws NumberFormatException, ResourceNotFoundException {
 		log.info("Fetching logo for practiceId: {}", practiceId);

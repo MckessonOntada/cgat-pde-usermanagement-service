@@ -13,14 +13,16 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/practices/{practiceId}/on-behalf-notification")
-@Tag(name = "On Behalf", description = "Controller for sending email and auditing impersonated and user details.")
+@Tag(name = "On-Behalf Auditing",
+		description = "Manages auditing and notifications for on-behalf (impersonation) events.")
 public class OnBehalfAudController {
 
 	@Autowired
 	private OnBehalfAuidtService auditService;
 
 	@PostMapping
-	@Operation(summary = "Audit log for User and Impersonated User along with sending email about the login.")
+	@Operation(summary = "Log an impersonation event and send a notification",
+			description = "Logs an audit record of an impersonation event and sends a notification to the appropriate parties.")
 	public ResponseEntity<String> logImpersonation() {
 		LoggedInUserDetails user = UserSecurityUtils.getLoggedInUser();
 

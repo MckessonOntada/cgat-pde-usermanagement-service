@@ -45,7 +45,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @ComponentScan(basePackages = "com.mckesson.jbat.auth.module")
 @RestController
-@Tag(name = "Public Access", description = "Open and unauthenticated API endpoints for public access.")
+@Tag(name = "Public Access", description = "Provides open, unauthenticated API endpoints for public use.")
 @RequestMapping(path = "/public", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 @ComponentScan(basePackages = "com.mckesson.jbat.auth.module")
@@ -62,7 +62,8 @@ public class PublicAccessController {
 
 	@GetMapping(value = { "/idpConfig" })
 	@ResponseBody
-	@Operation(summary = "Retrieve Identity Provider Metadata")
+	@Operation(summary = "Get the Identity Provider (IDP) configuration metadata",
+			description = "Retrieves the configuration metadata for the Identity Provider (IDP), which can be used by the client to initiate authentication.")
 	public IdentityProviderMetaData getIDPConfig() throws Exception {
 		log.info("AuthenticationServiceWebAPI::getIDPConfig() starts");
 
@@ -71,7 +72,8 @@ public class PublicAccessController {
 
 	@GetMapping(value = { "/jwt" })
 	@ResponseBody
-	@Operation(summary = "Decode jwt token")
+	@Operation(summary = "Decode a provided JWT and return user information",
+			description = "Decodes a provided JSON Web Token (JWT) from the Authorization header and returns user information, including roles and permissions.")
 	public JwtResponseDto decodeJwtToken(
 			@RequestHeader(value = HttpHeaders.AUTHORIZATION, required = true) String authToken) throws Exception {
 		log.info("decodeJwtToken() starts");

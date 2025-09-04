@@ -25,7 +25,7 @@ import java.util.List;
 import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.SORT_ORDER_ASC;
 
 @RestController
-@Tag(name = "Questionnaire", description = "Controller for Managing Questionnaires operations and data.")
+@Tag(name = "Questionnaires", description = "Manages the creation, configuration, and lifecycle of questionnaires.")
 @RequestMapping(path = "/questionnaires", consumes = "application/json", produces = MediaType.APPLICATION_JSON_VALUE)
 public class QuestionnaireController {
 
@@ -36,13 +36,14 @@ public class QuestionnaireController {
 	}
 
 	@PostMapping
-	@Operation(summary = "Create Questionnaire")
+	@Operation(summary = "Create a new questionnaire", description = "Creates a new questionnaire template.")
 	public ResponseEntity<Questionnaire> createQuestionnaire(@RequestBody Questionnaire questionnaire) {
 		return new ResponseEntity<>(questionnaireService.createQuestionnaire(questionnaire), HttpStatus.OK);
 	}
 
 	@GetMapping
-	@Operation(summary = "Fetch all Questionnaire based on filter provided with pagination capabilities.")
+	@Operation(summary = "Find and filter all questionnaires with pagination",
+			description = "Retrieves a paginated and filtered list of all questionnaires.")
 	Page<Questionnaire> findAll(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize,
 			@RequestParam(defaultValue = "template_name") String sortBy,
@@ -56,7 +57,8 @@ public class QuestionnaireController {
 	}
 
 	@PatchMapping("/{questionnaireId}")
-	@Operation(summary = "Update Questionnaire")
+	@Operation(summary = "Update an existing questionnaire",
+			description = "Updates the details of an existing questionnaire, identified by its ID.")
 	public ResponseEntity<Questionnaire> updateQuestionnaire(@PathVariable Long questionnaireId,
 			@RequestBody Questionnaire questionnaire) throws ResourceNotFoundException {
 		return new ResponseEntity<>(questionnaireService.updateQuestionnaire(questionnaireId, questionnaire),
@@ -64,7 +66,8 @@ public class QuestionnaireController {
 	}
 
 	@PostMapping("/configure")
-	@Operation(summary = "Configure Questionnaire")
+	@Operation(summary = "Configure a questionnaire for a specific entity type",
+			description = "Configures a questionnaire to be used for a specific entity type, such as a material or an account.")
 	public ResponseEntity<Void> configureQuestionnaire(
 			@Valid @RequestBody QuestionnaireConfigurationDTO questionnaireConfigurationDTO,
 			@RequestParam QuestionnaireConfigurationType type) throws ResourceNotFoundException, BadRequestException {
@@ -73,7 +76,8 @@ public class QuestionnaireController {
 	}
 
 	@DeleteMapping("/configure/deLink")
-	@Operation(summary = "De Configure Questionnaire")
+	@Operation(summary = "Delink a questionnaire from a specific entity type",
+			description = "Removes the configuration of a questionnaire from a specific entity type.")
 	public ResponseEntity<Void> deLinkConfigureQuestionnaire(
 			@Valid @RequestBody DeLinkQuestionnaireConfigurationDTO dto,
 			@RequestParam QuestionnaireConfigurationType type) throws ResourceNotFoundException {
@@ -82,7 +86,8 @@ public class QuestionnaireController {
 	}
 
 	@GetMapping("/configured-questionnaire")
-	@Operation(summary = "Fetch all configured questionnaire for the data")
+	@Operation(summary = "Get all questionnaires configured for a specific context",
+			description = "Retrieves a list of all questionnaires that are configured for a specific context, such as a combination of material, accounts, and channel.")
 	public ResponseEntity<List<Questionnaire>> getAllConfiguredQuestionnaires(@RequestParam String soldToCustomer,
 			@RequestParam String shipToCustomer, @RequestParam String sapMaterial,
 			@RequestParam(required = false) String variant, @RequestParam String materialOrNdcNumber,
@@ -92,7 +97,8 @@ public class QuestionnaireController {
 	}
 
 	@PatchMapping("/deactivate")
-	@Operation(summary = "Deactivate multiple questionnaires by IDs")
+	@Operation(summary = "Deactivate multiple questionnaires by their IDs",
+			description = "Marks a list of questionnaires as inactive.")
 	public ResponseEntity<Void> deactivateQuestionnaires(@RequestBody List<Long> questionnaireIds)
 			throws ResourceNotFoundException {
 		questionnaireService.deactivateQuestionnaires(questionnaireIds);
@@ -100,7 +106,8 @@ public class QuestionnaireController {
 	}
 
 	@PatchMapping("/reactivate")
-	@Operation(summary = "reactivate multiple questionnaires by IDs")
+	@Operation(summary = "Reactivate multiple questionnaires by their IDs",
+			description = "Marks a list of questionnaires as active.")
 	public ResponseEntity<Void> reactivateQuestionnaires(@RequestBody List<Long> questionnaireIds)
 			throws ResourceNotFoundException {
 		questionnaireService.reactivateQuestionnaires(questionnaireIds);
@@ -108,7 +115,8 @@ public class QuestionnaireController {
 	}
 
 	@GetMapping("/{questionnaireId}")
-	@Operation(summary = "Get questionnaire by Id")
+	@Operation(summary = "Get a questionnaire by its ID",
+			description = "Retrieves the full details for a single questionnaire by its unique ID.")
 	public ResponseEntity<Questionnaire> getQuestionnaireById(@PathVariable Long questionnaireId)
 			throws ResourceNotFoundException {
 		return new ResponseEntity<>(questionnaireService.fetchQuestionnaireById(questionnaireId), HttpStatus.OK);

@@ -35,7 +35,8 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import static com.mckesson.cgat.pde.usermanagement.utils.CustomUtils.SORT_ORDER_ASC;
 
 @RestController
-@Tag(name = "Catalogs", description = "Controller for Managing all catalogs.")
+@Tag(name = "Global Catalogs",
+		description = "Manages global catalog and pricing data for both Buy and Bill and Specialty Pharma channels.")
 @RequestMapping(path = "/catalogs", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 @Validated
@@ -56,7 +57,8 @@ public class GlobalCatalogController {
 
 	@RequirePermissions({ Permission.VIEW_CATALOG, Permission.VIEW_SP_CATALOG })
 	@GetMapping
-	@Operation(summary = "Fetch all catalogs for provided soldTo accounts lists.")
+	@Operation(summary = "Find and filter all global catalogs by accounts",
+			description = "Retrieves a paginated list of global catalog prices, filtered by account numbers, channel type, and other criteria.")
 	public ResponseEntity<Page<CatalogPriceResponse>> findAllCatalogs(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
 			@RequestParam(required = false) List<String> accountNumbers,
@@ -76,8 +78,8 @@ public class GlobalCatalogController {
 
 	@RequirePermissions({ Permission.MANAGE_CATALOG })
 	@PostMapping("/configure")
-	@Operation(
-			summary = "Configure the catalog materials according to materialId, variant, soldTo account and shipTo account")
+	@Operation(summary = "Create or update a Buy and Bill catalog configuration",
+			description = "Allows for the creation or modification of a Buy and Bill catalog configuration, including pricing and other details.")
 	public ResponseEntity<List<CatalogConfiguration>> configureCatalogMaterial(
 			@Valid @RequestBody CatalogConfigurationDTO configuration) {
 		return new ResponseEntity<>(catalogService.saveCatalogConfiguration(configuration), HttpStatus.OK);
@@ -85,8 +87,8 @@ public class GlobalCatalogController {
 
 	@RequirePermissions({ Permission.VIEW_CATALOG })
 	@GetMapping("/configuration")
-	@Operation(
-			summary = "Get catalog configuration with catalog price according to materialId, variant, soldTo account and shipTo account")
+	@Operation(summary = "Get a Buy and Bill catalog configuration with pricing details",
+			description = "Retrieves detailed information for a specific Buy and Bill catalog configuration, including pricing, based on material, variant, and account details.")
 	public ResponseEntity<CatalogDetailsResponseDTO> findCatalogConfiguration(@RequestParam String materialId,
 			@RequestParam(required = false) String variant, @RequestParam String shipToAccount,
 			@RequestParam String soldToAccount, @RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType)
@@ -98,8 +100,8 @@ public class GlobalCatalogController {
 
 	@RequirePermissions({ Permission.MANAGE_CATALOG })
 	@DeleteMapping("/configuration")
-	@Operation(
-			summary = "Delete catalog configuration using materialId, variant, soldTo account, shipTo account and channelType")
+	@Operation(summary = "Delete a Buy and Bill catalog configuration",
+			description = "Deletes a specific Buy and Bill catalog configuration from the system.")
 	public ResponseEntity<String> deleteCatalogConfiguration(@RequestParam String materialId,
 			@RequestParam(required = false) String variant, @RequestParam String shipToAccount,
 			@RequestParam String soldToAccount, @RequestParam(defaultValue = "BUY_AND_BILL") ChannelType channelType)
@@ -109,8 +111,8 @@ public class GlobalCatalogController {
 	}
 
 	@GetMapping("/configuration/material/{materialId}/soldtoaccount/{soldToAccountId}/shiptoaccount/{shipToAccountId}")
-	@Operation(
-			summary = "Get catalog configuration according to materialId, variant, soldTo account and shipTo account")
+	@Operation(summary = "Get a specific Buy and Bill catalog configuration",
+			description = "Retrieves a single Buy and Bill catalog configuration based on material, sold-to account, and ship-to account.")
 	public ResponseEntity<CatalogConfiguration> findCatalogConf(
 			@PathVariable @NotNull(message = "'soldToAccountId' cannot be null") @NotEmpty(
 					message = "'soldToAccount' cannot be empty") String soldToAccountId,
@@ -125,7 +127,8 @@ public class GlobalCatalogController {
 
 	@RequirePermissions({ Permission.MANAGE_SP_CATALOG })
 	@DeleteMapping("/specialityPharma/deLink")
-	@Operation(summary = "Delink SP catalog configuration according to sap_material and sold_to_customer")
+	@Operation(summary = "Delink multiple Specialty Pharma catalog configurations",
+			description = "Removes the link for a list of Specialty Pharma catalog configurations.")
 	public ResponseEntity<Void> deLinkSPCatalog(@RequestBody List<CatalogDeLinkRequestDTO> catalogList) {
 		therapyService.deLinkSPCatalog(catalogList);
 		return ResponseEntity.ok().build();
@@ -133,14 +136,15 @@ public class GlobalCatalogController {
 
 	@RequirePermissions({ Permission.MANAGE_SP_CATALOG })
 	@PostMapping("/specialityPharma")
-	@Operation(summary = "Link SP catalog configuration according to SP Product ID and SP Account number")
+	@Operation(summary = "Link multiple Specialty Pharma catalog configurations",
+			description = "Creates a link for a list of Specialty Pharma catalog configurations.")
 	public ResponseEntity<CatalogLinkResponseDto> linkSPCatalog(@RequestBody List<CatalogRequestDTO> catalogList) {
 		return ResponseEntity.ok(catalogService.linkSPCatalog(catalogList));
 	}
 
 	@PostMapping(value = "/upload", consumes = { "multipart/form-data" })
-	@RequirePermissions({ Permission.MANAGE_SP_CATALOG })
-	@Operation(summary = "Upload bulk SP catalogs")
+	@Operation(summary = "Upload and process a CSV file of Specialty Pharma catalogs",
+			description = "Allows for bulk uploading of Specialty Pharma catalogs from a CSV file. If any errors are found during processing, a CSV error report is returned.")
 	public ResponseEntity<?> uploadSPCatalogCsv(@RequestPart("catalogsData") MultipartFile catalogsData) {
 		FileValidationUtils.validateMultiPartFile(catalogsData);
 
@@ -157,7 +161,8 @@ public class GlobalCatalogController {
 	}
 
 	@GetMapping("/download")
-	@Operation(summary = "Download all sp catalogs for provided sp accounts as a CSV file.")
+	@Operation(summary = "Download Specialty Pharma catalogs for specified accounts as a CSV file",
+			description = "Generates and downloads a CSV file containing Specialty Pharma catalog data for a given list of accounts.")
 	public ResponseEntity<StreamingResponseBody> downloadAllCatalogs(
 			@NotEmpty(message = "Account Numbers cannot be empty") @RequestParam List<String> accountIds,
 			@RequestParam(defaultValue = "sap_material") String sortBy,
