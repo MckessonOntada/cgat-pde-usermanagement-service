@@ -368,7 +368,7 @@ public class TherapyServiceImpl implements TherapyService {
 		boolean doaRequired = request.getIsDOARequired();
 		boolean poRequired = request.getIsPORequired();
 		boolean pidRequired = request.getIsPIDRequired();
-
+		boolean dateOfApheresisRequired = request.getIsDateOfApheresisRequired();
 		Map<String, TherapyConfig> existingConfigMap = therapyConfigRepository
 			.findByNdcNumberInAndChannelType(ndcNumbers, channelType)
 			.stream()
@@ -384,6 +384,7 @@ public class TherapyServiceImpl implements TherapyService {
 			config.setIsDOARequired(doaRequired);
 			config.setIsPORequired(poRequired);
 			config.setIsPIDRequired(pidRequired);
+			config.setIsDateOfApheresisRequired(dateOfApheresisRequired);
 			return config;
 		}).toList();
 

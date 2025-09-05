@@ -26,6 +26,8 @@ public class TherapyConfigRequestDTO {
 
 	private Boolean isPIDRequired;
 
+	private Boolean isDateOfApheresisRequired;
+
 	private ChannelType channelType = ChannelType.BUY_AND_BILL;
 
 }
