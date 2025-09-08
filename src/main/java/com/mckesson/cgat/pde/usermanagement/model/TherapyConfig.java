@@ -45,6 +45,9 @@ public class TherapyConfig implements Serializable {
 	@Column(name = "is_pid_required", nullable = false)
 	private Boolean isPIDRequired;
 
+	@Column(name = "is_date_of_apheresis_required", nullable = false)
+	private Boolean isDateOfApheresisRequired;
+
 	@Enumerated(EnumType.STRING)
 	private ChannelType channelType;
 
