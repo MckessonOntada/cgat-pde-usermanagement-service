@@ -77,4 +77,20 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 	Optional<User> findByContactEmail(String email);
 
+	@Query(value = """
+			SELECT upm.permission as permission, STRING_AGG(DISTINCT r.name, ',') as role_names
+			FROM usermanagement.user u
+			JOIN usermanagement.user_account_mapping uam ON u.id = uam.user_id
+			JOIN usermanagement.account a ON uam.account_id = a.id
+			JOIN usermanagement.user_permission_mapping upm ON u.id = upm.user_id
+			JOIN usermanagement.role r ON u.role_id = r.id
+			WHERE a.sap_customer = :accountNumber
+			  AND u.practice_id = :practiceId
+			  AND upm.permission IN (:permissions)
+			  AND u.is_active = 1
+			GROUP BY upm.permission
+			""", nativeQuery = true)
+	List<Object[]> findPermissionWithAggregatedRoleNamesByAccountAndPermissions(@Param("practiceId") Long practiceId,
+			@Param("accountNumber") String accountNumber, @Param("permissions") List<String> permissions);
+
 }
