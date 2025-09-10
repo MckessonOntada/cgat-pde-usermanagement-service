@@ -9,4 +9,5 @@ public interface NotificationService {
 	void saveNotification(Long id, NotificationEventType notificationEventType);
 
 	long saveContactUsMetadata(@Valid ContactUsDTO contactUsDTO);
+
 }

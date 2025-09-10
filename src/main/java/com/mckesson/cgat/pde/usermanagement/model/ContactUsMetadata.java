@@ -19,17 +19,17 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class ContactUsMetadata implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private static final String SEQUENCE_GENERATOR_NAME = "CONTACT_US_METADATA_ID_SEQ";
+	private static final String SEQUENCE_GENERATOR_NAME = "CONTACT_US_METADATA_ID_SEQ";
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = SEQUENCE_GENERATOR_NAME)
-    @SequenceGenerator(name = SEQUENCE_GENERATOR_NAME, sequenceName = SEQUENCE_GENERATOR_NAME, allocationSize = 1)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = SEQUENCE_GENERATOR_NAME)
+	@SequenceGenerator(name = SEQUENCE_GENERATOR_NAME, sequenceName = SEQUENCE_GENERATOR_NAME, allocationSize = 1)
+	private Long id;
 
-    @Column(name = "form_data", nullable = false)
-    @JdbcTypeCode(SqlTypes.JSON)
-    private ContactUsDTO formData;
+	@Column(name = "form_data", nullable = false)
+	@JdbcTypeCode(SqlTypes.JSON)
+	private ContactUsDTO formData;
 
 }
