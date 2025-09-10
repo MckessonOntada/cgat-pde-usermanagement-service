@@ -42,7 +42,7 @@ public class OnBehalfAuditServiceImpl implements OnBehalfAuidtService {
 			.build();
 
 		OnBehalfAudit savedLog = auditRepository.save(log);
-		notificationService.saveNotification(savedLog.getId(),NotificationEventType.ON_BEHALF_LOGIN);
+		notificationService.saveNotification(savedLog.getId(), NotificationEventType.ON_BEHALF_LOGIN);
 		inAppNotificationEventService.saveInAppNotification(savedLog.getId(), InAppNotificationCategory.ON_BEHALF,
 				InAppNotificationEventType.ON_BEHALF_LOGIN);
 	}
