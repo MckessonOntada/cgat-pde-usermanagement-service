@@ -1,0 +1,22 @@
+name: User McKesson Compliance Check
+
+on:
+    workflow_call:
+    schedule:
+        - cron: '0 0 * * *'
+    push:
+      branches-ignore:
+        - main
+        - master
+    pull_request:
+      types: [closed]
+
+jobs:
+  compliance-check:
+    runs-on: ubuntu-latest
+    steps:
+      # Compliance Check
+      - name: McKesson Compliance Check
+        uses: mckesson/mt-appsec-policy-as-code@1.0.6
+        with:
+          token: ${{ secrets.PAT_PDE }}
