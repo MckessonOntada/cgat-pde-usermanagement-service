@@ -1,0 +1,31 @@
+CREATE TABLE IF NOT EXISTS notification_event
+(
+    id BIGINT NOT NULL,
+    trigger_id BIGINT NOT NULL,
+    notification_picked INTEGER NOT NULL DEFAULT 0,
+    notification_event_type VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP,
+    created_by VARCHAR(255),
+    CONSTRAINT notification_event_pk PRIMARY KEY (id)
+);
+
+CREATE SEQUENCE IF NOT EXISTS NOTIFICATION_SEQUENCE
+    START WITH 1
+    INCREMENT BY 1
+    MINVALUE 1
+    NO MAXVALUE
+    CACHE 20;
+
+CREATE TABLE IF NOT EXISTS contact_us_metadata
+(
+    id BIGINT NOT NULL,
+    form_data JSONB NOT NULL,
+    CONSTRAINT contact_us_metadata_pk PRIMARY KEY (id)
+);
+
+CREATE SEQUENCE IF NOT EXISTS CONTACT_US_METADATA_ID_SEQ
+    START WITH 1
+    INCREMENT BY 1
+    MINVALUE 1
+    NO MAXVALUE
+    CACHE 20;
