@@ -1,4 +1,4 @@
-name: Order McKesson Compliance Check
+name: User McKesson Compliance Check
 
 on:
     workflow_call:
