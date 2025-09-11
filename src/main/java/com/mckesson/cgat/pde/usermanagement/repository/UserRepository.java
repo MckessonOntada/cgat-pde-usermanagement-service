@@ -87,7 +87,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 			  AND u.is_active = 1
 			GROUP BY upm.permission
 			""", nativeQuery = true)
-	List<Object[]> findPermissionWithAggregatedRoleNamesByAccountAndPermissions(@Param("practiceId") Long practiceId,
+	List<Object[]> findPermissionWithAggregatedRoleNamesByPermissions(@Param("practiceId") Long practiceId,
 			@Param("permissions") List<String> permissions);
 
 }
