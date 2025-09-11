@@ -2,8 +2,8 @@ package com.mckesson.cgat.pde.usermanagement.notification.model;
 
 import com.mckesson.cgat.pde.notification.payload.EmailNotification;
 import com.mckesson.cgat.pde.usermanagement.model.AuditColumns;
-import com.mckesson.cgat.pde.usermanagement.notification.config.EmailNotificationEventType;
-import com.mckesson.cgat.pde.usermanagement.notification.config.EmailNotificationStatus;
+import com.mckesson.cgat.pde.usermanagement.notification.config.NotificationEventType;
+import com.mckesson.cgat.pde.usermanagement.notification.config.NotificationStatus;
 import com.mckesson.cgat.pde.usermanagement.notification.model.converters.EmailNotificationConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -41,10 +41,10 @@ public class EmailNotificationEvent extends AuditColumns {
 
 	@Column(name = "email_notification_status")
 	@Enumerated(EnumType.STRING)
-	private EmailNotificationStatus emailNotificationStatus;
+	private NotificationStatus emailNotificationStatus;
 
 	@Column(name = "email_notification_event_type")
 	@Enumerated(EnumType.STRING)
-	private EmailNotificationEventType emailNotificationEventType;
+	private NotificationEventType emailNotificationEventType;
 
 }
