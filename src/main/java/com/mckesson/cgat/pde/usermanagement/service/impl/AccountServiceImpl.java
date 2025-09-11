@@ -444,13 +444,13 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public Map<String, String> getPermissionsAndAssociatedRolesForPracticeAndAccount(String soldToAccountId,
-			String practiceId, List<Permission> permissions) {
+	public Map<String, String> getPermissionsAndAssociatedRolesForPractice(String practiceId,
+			List<Permission> permissions) {
 		List<String> permissionStrings = permissions.stream()
 			.map(Permission::name) // converts each enum to its name (as String)
 			.collect(Collectors.toList());
-		List<Object[]> results = userRepository.findPermissionWithAggregatedRoleNamesByAccountAndPermissions(
-				Long.valueOf(practiceId), soldToAccountId, permissionStrings);
+		List<Object[]> results = userRepository
+			.findPermissionWithAggregatedRoleNamesByPermissions(Long.valueOf(practiceId), permissionStrings);
 		Map<String, String> permissionToRoles = results.stream()
 			.collect(Collectors.toMap(row -> (String) row[0], // permission
 					row -> (String) row[1] // aggregated role names
