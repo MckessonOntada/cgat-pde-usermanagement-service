@@ -186,13 +186,13 @@ public class AccountController {
 		return accountService.findNonLinkedProvidersByAccountId(query, accountId, paging, practiceId);
 	}
 
-	@GetMapping("/{soldToAccountId}/permissions/roles")
-	@Operation(summary = "Get permissions vs list of role names of users by account ID and permissions")
+	@GetMapping("/permissions/roles")
+	@Operation(summary = "Get permissions vs list of role names of users by practice ID and permissions")
 	public ResponseEntity<Map<String, String>> getPermissionsAndAssociatedRolesForPracticeAndAccount(
-			@PathVariable String practiceId, @PathVariable String soldToAccountId,
-			@RequestParam List<Permission> permissions) throws UnauthorizedAccessException {
+			@PathVariable String practiceId, @RequestParam List<Permission> permissions)
+			throws UnauthorizedAccessException {
 		Map<String, String> permissionsMap = accountService
-			.getPermissionsAndAssociatedRolesForPracticeAndAccount(soldToAccountId, practiceId, permissions);
+			.getPermissionsAndAssociatedRolesForPracticeAndAccount(practiceId, permissions);
 		return new ResponseEntity<>(permissionsMap, HttpStatus.OK);
 
 	}

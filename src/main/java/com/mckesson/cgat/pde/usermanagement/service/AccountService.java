@@ -66,7 +66,7 @@ public interface AccountService {
 
 	CSVProcessingResult uploadSPAccounts(MultipartFile accountsData, int practiceId);
 
-	Map<String, String> getPermissionsAndAssociatedRolesForPracticeAndAccount(String soldToAccountId, String practiceId,
+	Map<String, String> getPermissionsAndAssociatedRolesForPracticeAndAccount(String practiceId,
 			List<Permission> permissions);
 
 }
