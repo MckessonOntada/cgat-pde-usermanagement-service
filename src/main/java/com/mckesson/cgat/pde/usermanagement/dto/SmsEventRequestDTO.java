@@ -11,7 +11,7 @@ import java.time.ZonedDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SmsEventResponseDTO {
+public class SmsEventRequestDTO {
 
 	private String id;
 

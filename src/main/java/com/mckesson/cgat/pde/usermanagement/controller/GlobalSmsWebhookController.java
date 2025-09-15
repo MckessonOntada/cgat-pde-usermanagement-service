@@ -1,6 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
-import com.mckesson.cgat.pde.usermanagement.dto.SmsEventResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.SmsEventRequestDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -17,7 +17,7 @@ public class GlobalSmsWebhookController {
 			description = "Receives an SMS event payload from Azure Communication Services (ACS). "
 					+ "Logs or processes the SMS details (sender, recipient, message, etc.) "
 					+ "and returns the same payload with a 200 OK response for confirmation.")
-	public ResponseEntity<SmsEventResponseDTO> receiveSmsWebhook(@RequestBody SmsEventResponseDTO requestDto) {
+	public ResponseEntity<SmsEventRequestDTO> receiveSmsWebhook(@RequestBody SmsEventRequestDTO requestDto) {
 
 		log.info("Received SMS webhook: " + requestDto);
 		return ResponseEntity.ok(requestDto);
