@@ -18,6 +18,7 @@ public class CGATUserManagementApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(CGATUserManagementApplication.class, args);
+
 	}
 
 }

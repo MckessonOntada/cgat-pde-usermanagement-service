@@ -1,6 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.mckesson.cgat.pde.usermanagement.model.Provider;
@@ -183,6 +184,17 @@ public class AccountController {
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 
 		return accountService.findNonLinkedProvidersByAccountId(query, accountId, paging, practiceId);
+	}
+
+	@GetMapping("/permissions/roles")
+	@Operation(summary = "Get permissions vs list of role names of users by practice ID and permissions")
+	public ResponseEntity<Map<String, String>> getPermissionsAndAssociatedRolesForPractice(
+			@PathVariable String practiceId, @RequestParam List<Permission> permissions)
+			throws UnauthorizedAccessException {
+		Map<String, String> permissionsMap = accountService.getPermissionsAndAssociatedRolesForPractice(practiceId,
+				permissions);
+		return new ResponseEntity<>(permissionsMap, HttpStatus.OK);
+
 	}
 
 }
