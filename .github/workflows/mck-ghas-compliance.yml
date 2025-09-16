@@ -4,12 +4,6 @@ on:
     workflow_call:
     schedule:
         - cron: '0 0 * * *'
-    push:
-      branches-ignore:
-        - main
-        - master
-    pull_request:
-      types: [closed]
 
 jobs:
   compliance-check:
