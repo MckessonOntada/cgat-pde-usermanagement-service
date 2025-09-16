@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS email_notification_event;
+
 CREATE TABLE IF NOT EXISTS notification_event
 (
     id BIGINT NOT NULL,
