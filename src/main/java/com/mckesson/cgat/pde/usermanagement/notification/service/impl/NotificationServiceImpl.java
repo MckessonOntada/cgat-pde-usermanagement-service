@@ -7,26 +7,22 @@ import com.mckesson.cgat.pde.usermanagement.model.NotificationEvent;
 import com.mckesson.cgat.pde.usermanagement.notification.config.NotificationEventType;
 import com.mckesson.cgat.pde.usermanagement.notification.service.NotificationService;
 import com.mckesson.cgat.pde.usermanagement.repository.ContactUsMetadataRepository;
-import com.mckesson.cgat.pde.usermanagement.repository.NotificationEventRepository;
+import com.mckesson.cgat.pde.usermanagement.notification.repository.NotificationEventRepository;
 import com.mckesson.cgat.pde.usermanagement.utils.UserSecurityUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
 @Service
 @Slf4j
-public class EmailNotificationServiceImpl implements NotificationService {
+public class NotificationServiceImpl implements NotificationService {
 
 	private final ContactUsMetadataRepository contactUsMetadataRepository;
 
 	private final NotificationEventRepository notificationEventRepository;
 
-	@Value("${contact.us.support.email}")
-	private String recipientEmail;
-
-	public EmailNotificationServiceImpl(ContactUsMetadataRepository contactUsMetadataRepository,
+	public NotificationServiceImpl(ContactUsMetadataRepository contactUsMetadataRepository,
 			NotificationEventRepository notificationEventRepository) {
 		this.contactUsMetadataRepository = contactUsMetadataRepository;
 		this.notificationEventRepository = notificationEventRepository;
