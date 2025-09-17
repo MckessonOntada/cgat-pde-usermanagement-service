@@ -71,7 +71,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 			nativeQuery = true)
 	void resetDefaultPayToAccount(@Param("userId") Long userId, @Param("preferenceType") String preferenceType);
 
-	Optional<User> findByContactEmailAndIsActiveTrue(String email);
+	Optional<User> findByContactEmailIgnoreCaseAndIsActiveTrue(String email);
 
 	Optional<User> findByContactEmailAndIsActiveFalse(String email);
 
