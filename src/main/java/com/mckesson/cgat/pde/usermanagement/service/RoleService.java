@@ -1,16 +1,15 @@
 package com.mckesson.cgat.pde.usermanagement.service;
 
-import java.time.LocalDate;
-import java.util.List;
-
+import com.mckesson.cgat.pde.usermanagement.model.CommunicationPreferences;
+import com.mckesson.cgat.pde.usermanagement.model.Role;
+import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.mckesson.cgat.pde.usermanagement.model.Role;
-import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
-
-import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public interface RoleService {
@@ -28,5 +27,7 @@ public interface RoleService {
 
 	Role updatePermissionForRole(@NotNull(message = "Role Id can not be null") Long roleId, Role updatedRole)
 			throws ResourceNotFoundException;
+
+	Role updateCommunicationPreferences(Long roleId, CommunicationPreferences communicationPreferences);
 
 }
