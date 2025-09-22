@@ -92,4 +92,8 @@ public class User extends AuditColumns implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private LocalDateTime lastLogin;
 
+	@Column(name = "is_phone_verified")
+	@NotAudited
+	private Boolean isPhoneVerified;
+
 }

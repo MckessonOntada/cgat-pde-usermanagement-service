@@ -64,4 +64,6 @@ public interface UserService {
 
 	void updateLoginTime(Long userId) throws ResourceNotFoundException;
 
+	User updateUserNumberById(Long userId, String number) throws ResourceNotFoundException;
+
 }

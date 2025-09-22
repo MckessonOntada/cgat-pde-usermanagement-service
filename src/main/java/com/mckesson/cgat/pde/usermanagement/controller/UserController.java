@@ -303,4 +303,15 @@ public class UserController {
 		return ResponseEntity.ok().build();
 	}
 
+	@RequirePermissions({ Permission.ADD_USERS, Permission.EDIT_USERS })
+	@PatchMapping("/{userId}/number")
+	@Operation(summary = "Update an existing user's phone number by ID",
+			description = "Updates the details of an existing user, identified by their ID.")
+	public User updateUserDetails(@PathVariable Long userId, @RequestParam(required = false) String number,
+			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
+		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
+		return userService.updateUserNumberById(userId, number);
+	}
+
 }
