@@ -89,8 +89,9 @@ public class UserServiceImpl implements UserService {
 					e.getMessage(), e);
 		}
 		model.setProvisionedInOktaStatus(oktaStatus);
-		return userRepository.save(model);
-
+		User user = userRepository.save(model);
+		notificationService.saveNotification(model.getId(), NotificationEventType.SMS_CONSENT);
+		return user;
 	}
 
 	@Override
@@ -557,8 +558,12 @@ public class UserServiceImpl implements UserService {
 	public User updateUserNumberById(Long userId, String number) throws ResourceNotFoundException {
 		User user = getUser(userId);
 		user.getContact().setPhone(number);
-		// notificationService.saveNotification(NotificationEventType.SMS_CONSENT);
-		return userRepository.save(user);
+
+		User updatedUser = userRepository.save(user);
+
+		notificationService.saveNotification(userId, NotificationEventType.SMS_CONSENT);
+
+		return updatedUser;
 	}
 
 }
