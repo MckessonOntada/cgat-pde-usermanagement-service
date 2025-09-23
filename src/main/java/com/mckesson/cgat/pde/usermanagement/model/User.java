@@ -92,4 +92,7 @@ public class User extends AuditColumns implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private LocalDateTime lastLogin;
 
+	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+	private UserCommunicationPreferences userCommunicationPreferences;
+
 }

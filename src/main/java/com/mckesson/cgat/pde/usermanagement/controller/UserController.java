@@ -8,6 +8,7 @@ import java.util.Objects;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CGATHttpException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
+import com.mckesson.cgat.pde.usermanagement.model.*;
 import com.mckesson.cgat.pde.usermanagement.service.impl.utils.FileValidationUtils;
 import com.mckesson.jbat.auth.module.exception.BadRequestException;
 import jakarta.validation.constraints.NotBlank;
@@ -26,13 +27,6 @@ import org.springframework.web.bind.annotation.*;
 import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
-import com.mckesson.cgat.pde.usermanagement.model.Account;
-import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
-import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
-import com.mckesson.cgat.pde.usermanagement.model.Permission;
-import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
-import com.mckesson.cgat.pde.usermanagement.model.User;
-import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
@@ -301,6 +295,15 @@ public class UserController {
 			throws CGATHttpException, JsonProcessingException {
 		userService.resendActivationEmail(email);
 		return ResponseEntity.ok().build();
+	}
+
+	@PatchMapping("/current/communication-preference")
+	@Operation(summary = "Updating the communication preferences for the current user",
+			description = "Updating the communication preferences for the current user")
+	public User updateCommunicationPreferences(@RequestBody UserCommunicationPreferences communicationPreferences)
+			throws ResourceNotFoundException {
+		return userService.updateCommunicationPreferences(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()),
+				communicationPreferences);
 	}
 
 }

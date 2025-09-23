@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CGATHttpException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.model.Provider;
+import com.mckesson.cgat.pde.usermanagement.model.UserCommunicationPreferences;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -63,5 +64,8 @@ public interface UserService {
 	void resendActivationEmail(String email) throws CGATHttpException, JsonProcessingException;
 
 	void updateLoginTime(Long userId) throws ResourceNotFoundException;
+
+	User updateCommunicationPreferences(Long userId, UserCommunicationPreferences communicationPreferences)
+			throws ResourceNotFoundException;
 
 }

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CsvFileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.ResourceConflictException;
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
+import com.mckesson.cgat.pde.usermanagement.repository.UserCommunicationPreferencesRepository;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
@@ -61,15 +62,19 @@ public class UserServiceImpl implements UserService {
 
 	private final OktaUserManagementService oktaUserManagementService;
 
+	private final UserCommunicationPreferencesRepository communicationPreferencesRepository;
+
 	@Autowired
 	Validator validator;
 
 	public UserServiceImpl(UserRepository userRepository, AccountRepository repository, RoleRepository roleRepository,
-			OktaUserManagementService oktaUserManagementService) {
+			OktaUserManagementService oktaUserManagementService,
+			UserCommunicationPreferencesRepository communicationPreferencesRepository) {
 		this.userRepository = userRepository;
 		this.accountRepository = repository;
 		this.roleRepository = roleRepository;
 		this.oktaUserManagementService = oktaUserManagementService;
+		this.communicationPreferencesRepository = communicationPreferencesRepository;
 	}
 
 	@Override
@@ -526,6 +531,28 @@ public class UserServiceImpl implements UserService {
 		User user = getUser(userId);
 		user.setLastLogin(LocalDateTime.now());
 		userRepository.save(user);
+	}
+
+	@Override
+	public User updateCommunicationPreferences(Long userId, UserCommunicationPreferences communicationPreferences)
+			throws ResourceNotFoundException {
+		User user = userRepository.findByIdAndIsActiveTrue(userId)
+			.orElseThrow(() -> new ResourceNotFoundException("User not found with id:" + userId));
+		communicationPreferences.setUser(user);
+
+		if (user.getUserCommunicationPreferences() != null) {
+			// Update the existing communication preferences
+			UserCommunicationPreferences existingPreferences = user.getUserCommunicationPreferences();
+			existingPreferences.setPreferences(communicationPreferences.getPreferences());
+			communicationPreferencesRepository.save(existingPreferences);
+		}
+		else {
+			// Create new communication preferences
+			user.setUserCommunicationPreferences(communicationPreferences);
+			communicationPreferencesRepository.save(communicationPreferences);
+		}
+
+		return user;
 	}
 
 	private User mapProviderToUser(Provider provider) {
