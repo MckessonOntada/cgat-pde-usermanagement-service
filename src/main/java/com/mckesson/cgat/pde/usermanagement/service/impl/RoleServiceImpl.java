@@ -1,26 +1,26 @@
 package com.mckesson.cgat.pde.usermanagement.service.impl;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-
+import com.mckesson.cgat.pde.usermanagement.model.CommunicationPreferences;
+import com.mckesson.cgat.pde.usermanagement.model.Practice;
+import com.mckesson.cgat.pde.usermanagement.model.Role;
+import com.mckesson.cgat.pde.usermanagement.repository.CommunicationPreferencesRepository;
+import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
+import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
+import com.mckesson.cgat.pde.usermanagement.service.RoleService;
+import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
+import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
+import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import com.mckesson.cgat.pde.usermanagement.model.Practice;
-import com.mckesson.cgat.pde.usermanagement.model.Role;
-import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
-import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
-import com.mckesson.cgat.pde.usermanagement.service.RoleService;
-import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
-import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
-
-import jakarta.transaction.Transactional;
-import jakarta.validation.constraints.NotNull;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -30,9 +30,13 @@ public class RoleServiceImpl implements RoleService {
 
 	private final PracticeRepository practiceRepository;
 
-	public RoleServiceImpl(RoleRepository roleRepository2, PracticeRepository practiceRepository) {
+	private final CommunicationPreferencesRepository communicationPreferencesRepository;
+
+	public RoleServiceImpl(RoleRepository roleRepository2, PracticeRepository practiceRepository,
+			CommunicationPreferencesRepository communicationPreferencesRepository) {
 		this.roleRepository = roleRepository2;
 		this.practiceRepository = practiceRepository;
+		this.communicationPreferencesRepository = communicationPreferencesRepository;
 	}
 
 	@Transactional
@@ -93,6 +97,29 @@ public class RoleServiceImpl implements RoleService {
 		role.getPermissions().clear();
 		role.setPermissions(updatedRole.getPermissions());
 		return roleRepository.save(role);
+	}
+
+	@Override
+	@Transactional
+	public Role updateCommunicationPreferences(Long roleId, CommunicationPreferences communicationPreferences) {
+		Role role = roleRepository.findById(roleId)
+			.orElseThrow(() -> new IllegalArgumentException("Role not found with ID: " + roleId));
+
+		communicationPreferences.setRole(role);
+		// Check if the role already has communication preferences
+		if (role.getCommunicationPreferences() != null) {
+			// Update the existing communication preferences
+			CommunicationPreferences existingPreferences = role.getCommunicationPreferences();
+			existingPreferences.setPreferences(communicationPreferences.getPreferences());
+			communicationPreferencesRepository.save(existingPreferences);
+		}
+		else {
+			// Create new communication preferences
+			role.setCommunicationPreferences(communicationPreferences);
+			communicationPreferencesRepository.save(communicationPreferences);
+		}
+
+		return role;
 	}
 
 }
