@@ -9,8 +9,6 @@ import lombok.*;
 @Builder
 public class PreferenceDetails {
 
-	private Boolean setPreference;
-
 	private Boolean email;
 
 	private Boolean inApp;
