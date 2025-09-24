@@ -90,7 +90,7 @@ public class UserServiceImpl implements UserService {
 		}
 		model.setProvisionedInOktaStatus(oktaStatus);
 		User user = userRepository.save(model);
-		notificationService.saveNotification(model.getId(), NotificationEventType.SMS_CONSENT);
+		notificationService.saveNotification(user.getId(), NotificationEventType.SMS_CONSENT);
 		return user;
 	}
 

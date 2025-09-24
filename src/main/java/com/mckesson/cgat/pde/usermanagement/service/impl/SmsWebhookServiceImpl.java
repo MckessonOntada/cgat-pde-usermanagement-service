@@ -35,7 +35,7 @@ public class SmsWebhookServiceImpl implements SmsWebhookService {
 
 		if ("yes".equalsIgnoreCase(messageText)) {
 			users.forEach(user -> {
-				if (!Boolean.TRUE.equals(user.getIsPhoneVerified())) {
+				if (Boolean.FALSE.equals(user.getIsPhoneVerified())) {
 					user.setIsPhoneVerified(true);
 					log.info("User {} marked as SMS confirmed", user.getId());
 				}
