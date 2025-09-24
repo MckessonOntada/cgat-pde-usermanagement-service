@@ -6,6 +6,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CsvFileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.ResourceConflictException;
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
+import com.mckesson.cgat.pde.usermanagement.notification.config.NotificationEventType;
+import com.mckesson.cgat.pde.usermanagement.notification.service.NotificationService;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
@@ -64,6 +66,9 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	Validator validator;
 
+	@Autowired
+	private NotificationService notificationService;
+
 	public UserServiceImpl(UserRepository userRepository, AccountRepository repository, RoleRepository roleRepository,
 			OktaUserManagementService oktaUserManagementService) {
 		this.userRepository = userRepository;
@@ -84,8 +89,9 @@ public class UserServiceImpl implements UserService {
 					e.getMessage(), e);
 		}
 		model.setProvisionedInOktaStatus(oktaStatus);
-		return userRepository.save(model);
-
+		User user = userRepository.save(model);
+		notificationService.saveNotification(user.getId(), NotificationEventType.SMS_CONSENT);
+		return user;
 	}
 
 	@Override
@@ -546,6 +552,18 @@ public class UserServiceImpl implements UserService {
 
 		validateUser(user);
 		return user;
+	}
+
+	@Override
+	public User updateUserNumberById(Long userId, String number) throws ResourceNotFoundException {
+		User user = getUser(userId);
+		user.getContact().setPhone(number);
+
+		User updatedUser = userRepository.save(user);
+
+		notificationService.saveNotification(userId, NotificationEventType.SMS_CONSENT);
+
+		return updatedUser;
 	}
 
 }
