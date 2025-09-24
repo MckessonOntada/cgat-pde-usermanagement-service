@@ -307,11 +307,22 @@ public class UserController {
 	@PatchMapping("/{userId}/number")
 	@Operation(summary = "Update an existing user's phone number by ID",
 			description = "Updates the details of an existing user, identified by their ID.")
-	public User updateUserDetails(@PathVariable Long userId, @RequestParam(required = false) String number,
+	public User updateUserNumberById(@PathVariable Long userId, @RequestParam(required = false) String number,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
 		return userService.updateUserNumberById(userId, number);
 	}
+
+	// @PostMapping("/{userId}/resend-number-verification")
+	// @Operation(summary = "Resend the activation email for a user",
+	// description = "Resends the activation email to a user who has not yet activated
+	// their account.")
+	// public ResponseEntity<Void> resendActivationEmail(
+	// @NotBlank(message = "Email must not be blank") @PathVariable String email)
+	// throws CGATHttpException, JsonProcessingException {
+	// userService.resendActivationEmail(email);
+	// return ResponseEntity.ok().build();
+	// }
 
 }
