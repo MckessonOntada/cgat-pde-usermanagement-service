@@ -2,10 +2,12 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.mckesson.cgat.pde.usermanagement.dto.ResendNumberVerificationDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CGATHttpException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.service.impl.utils.FileValidationUtils;
@@ -307,22 +309,29 @@ public class UserController {
 	@PatchMapping("/{userId}/number")
 	@Operation(summary = "Update an existing user's phone number by ID",
 			description = "Updates the details of an existing user, identified by their ID.")
-	public User updateUserNumberById(@PathVariable Long userId, @RequestParam(required = false) String number,
+	public User updateUserNumberById(@PathVariable Long userId,
+			@NotBlank(message = "Number must not be blank") @RequestParam String number,
 			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
 		return userService.updateUserNumberById(userId, number);
 	}
 
-	// @PostMapping("/{userId}/resend-number-verification")
-	// @Operation(summary = "Resend the activation email for a user",
-	// description = "Resends the activation email to a user who has not yet activated
-	// their account.")
-	// public ResponseEntity<Void> resendActivationEmail(
-	// @NotBlank(message = "Email must not be blank") @PathVariable String email)
-	// throws CGATHttpException, JsonProcessingException {
-	// userService.resendActivationEmail(email);
-	// return ResponseEntity.ok().build();
-	// }
+	@PostMapping("/{userId}/resend-number-verification-sms")
+	@Operation(summary = "Resend number verification sms for a user",
+			description = "Resends number verification sms to a user who has not give consent for sms service.")
+	public LocalDateTime resendNumberVerificationSms(@PathVariable Long userId,
+			@NotBlank(message = "Number must not be blank") @RequestParam String number)
+			throws CGATHttpException, ResourceNotFoundException {
+		return userService.resendNumberVerificationSms(userId, number);
+	}
+
+	@PostMapping("/{userId}/resend")
+	@Operation(summary = "Resend number verification details",
+			description = "Resend number verification details of a user who has not give consent for sms service.")
+	public ResendNumberVerificationDTO resendNumberVerificationDetails(@PathVariable Long userId)
+			throws CGATHttpException, ResourceNotFoundException {
+		return userService.resendNumberVerificationDetails(userId);
+	}
 
 }
