@@ -317,16 +317,15 @@ public class UserController {
 		return userService.updateUserNumberById(userId, number);
 	}
 
-	@PostMapping("/{userId}/resend-number-verification-sms")
+	@GetMapping("/{userId}/resend-number-verification-sms")
 	@Operation(summary = "Resend number verification sms for a user",
 			description = "Resends number verification sms to a user who has not give consent for sms service.")
-	public LocalDateTime resendNumberVerificationSms(@PathVariable Long userId,
-			@NotBlank(message = "Number must not be blank") @RequestParam String number)
+	public LocalDateTime resendNumberVerificationSms(@PathVariable Long userId)
 			throws CGATHttpException, ResourceNotFoundException {
-		return userService.resendNumberVerificationSms(userId, number);
+		return userService.resendNumberVerificationSms(userId);
 	}
 
-	@PostMapping("/{userId}/resend")
+	@GetMapping("/{userId}/number-verification-status")
 	@Operation(summary = "Resend number verification details",
 			description = "Resend number verification details of a user who has not give consent for sms service.")
 	public ResendNumberVerificationDTO resendNumberVerificationDetails(@PathVariable Long userId)

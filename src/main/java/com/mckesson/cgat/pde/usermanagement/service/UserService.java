@@ -69,7 +69,7 @@ public interface UserService {
 
 	User updateUserNumberById(Long userId, String number) throws ResourceNotFoundException;
 
-	LocalDateTime resendNumberVerificationSms(Long userId, String number) throws ResourceNotFoundException;
+	LocalDateTime resendNumberVerificationSms(Long userId) throws ResourceNotFoundException;
 
 	ResendNumberVerificationDTO resendNumberVerificationDetails(Long userId) throws ResourceNotFoundException;
 

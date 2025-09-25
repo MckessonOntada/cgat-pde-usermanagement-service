@@ -573,11 +573,15 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public LocalDateTime resendNumberVerificationSms(Long userId, String number) throws ResourceNotFoundException {
+	public LocalDateTime resendNumberVerificationSms(Long userId) throws ResourceNotFoundException {
 		User user = getUser(userId);
 
 		if (user == null) {
 			throw new ResourceNotFoundException("User with id " + userId + " not found");
+		}
+
+		if (user.getContact() == null || user.getContact().getPhone() == null) {
+			throw new ResourceNotFoundException("Phone number not found for user with id " + userId);
 		}
 
 		notificationService.saveNotification(userId, NotificationEventType.SMS_CONSENT);
@@ -605,7 +609,7 @@ public class UserServiceImpl implements UserService {
 		return ResendNumberVerificationDTO.builder()
 			.isNumberVerified(user.getIsPhoneVerified())
 			.number(user.getContact().getPhone())
-			.time(latestEvent != null ? latestEvent.getCreatedAt() : null)
+			.lastResendSMSTime(latestEvent != null ? latestEvent.getCreatedAt() : null)
 			.build();
 	}
 

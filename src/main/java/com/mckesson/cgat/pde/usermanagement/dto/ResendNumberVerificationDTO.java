@@ -17,6 +17,6 @@ public class ResendNumberVerificationDTO {
 
 	private String number;
 
-	private LocalDateTime time;
+	private LocalDateTime lastResendSMSTime;
 
 }
