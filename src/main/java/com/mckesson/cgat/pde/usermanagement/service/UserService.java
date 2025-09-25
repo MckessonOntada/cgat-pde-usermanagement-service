@@ -2,12 +2,15 @@ package com.mckesson.cgat.pde.usermanagement.service;
 
 import java.io.OutputStream;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.mckesson.cgat.pde.usermanagement.dto.ResendNumberVerificationDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CGATHttpException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.model.Provider;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -65,5 +68,9 @@ public interface UserService {
 	void updateLoginTime(Long userId) throws ResourceNotFoundException;
 
 	User updateUserNumberById(Long userId, String number) throws ResourceNotFoundException;
+
+	LocalDateTime resendNumberVerificationSms(Long userId) throws ResourceNotFoundException;
+
+	ResendNumberVerificationDTO resendNumberVerificationDetails(Long userId) throws ResourceNotFoundException;
 
 }

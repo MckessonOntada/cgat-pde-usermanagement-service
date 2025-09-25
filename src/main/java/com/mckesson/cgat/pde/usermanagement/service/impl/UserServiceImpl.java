@@ -3,10 +3,12 @@ package com.mckesson.cgat.pde.usermanagement.service.impl;
 import java.io.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.mckesson.cgat.pde.usermanagement.dto.ResendNumberVerificationDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CsvFileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.ResourceConflictException;
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
 import com.mckesson.cgat.pde.usermanagement.notification.config.NotificationEventType;
+import com.mckesson.cgat.pde.usermanagement.notification.repository.NotificationEventRepository;
 import com.mckesson.cgat.pde.usermanagement.notification.service.NotificationService;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import jakarta.validation.ConstraintViolation;
@@ -63,6 +65,8 @@ public class UserServiceImpl implements UserService {
 
 	private final OktaUserManagementService oktaUserManagementService;
 
+	private final NotificationEventRepository notificationEventRepository;
+
 	@Autowired
 	Validator validator;
 
@@ -70,11 +74,13 @@ public class UserServiceImpl implements UserService {
 	private NotificationService notificationService;
 
 	public UserServiceImpl(UserRepository userRepository, AccountRepository repository, RoleRepository roleRepository,
-			OktaUserManagementService oktaUserManagementService) {
+			OktaUserManagementService oktaUserManagementService,
+			NotificationEventRepository notificationEventRepository) {
 		this.userRepository = userRepository;
 		this.accountRepository = repository;
 		this.roleRepository = roleRepository;
 		this.oktaUserManagementService = oktaUserManagementService;
+		this.notificationEventRepository = notificationEventRepository;
 	}
 
 	@Override
@@ -564,6 +570,47 @@ public class UserServiceImpl implements UserService {
 		notificationService.saveNotification(userId, NotificationEventType.SMS_CONSENT);
 
 		return updatedUser;
+	}
+
+	@Override
+	public LocalDateTime resendNumberVerificationSms(Long userId) throws ResourceNotFoundException {
+		User user = getUser(userId);
+
+		if (user == null) {
+			throw new ResourceNotFoundException("User with id " + userId + " not found");
+		}
+
+		if (user.getContact() == null || user.getContact().getPhone() == null) {
+			throw new ResourceNotFoundException("Phone number not found for user with id " + userId);
+		}
+
+		notificationService.saveNotification(userId, NotificationEventType.SMS_CONSENT);
+
+		// Fetch the latest notification for this user and type
+		NotificationEvent latestEvent = notificationEventRepository
+			.findTopByTriggerIdAndNotificationEventTypeOrderByCreatedAtDesc(userId, NotificationEventType.SMS_CONSENT)
+			.orElseThrow(() -> new IllegalStateException("Notification event not found after saving"));
+
+		return latestEvent.getCreatedAt();
+	}
+
+	@Override
+	public ResendNumberVerificationDTO resendNumberVerificationDetails(Long userId) throws ResourceNotFoundException {
+		User user = getUser(userId);
+
+		if (user == null) {
+			throw new ResourceNotFoundException("User with id " + userId + " not found");
+		}
+
+		NotificationEvent latestEvent = notificationEventRepository
+			.findTopByTriggerIdAndNotificationEventTypeOrderByCreatedAtDesc(userId, NotificationEventType.SMS_CONSENT)
+			.orElse(null);
+
+		return ResendNumberVerificationDTO.builder()
+			.isNumberVerified(user.getIsPhoneVerified())
+			.number(user.getContact().getPhone())
+			.lastResendSMSTime(latestEvent != null ? latestEvent.getCreatedAt() : null)
+			.build();
 	}
 
 }
