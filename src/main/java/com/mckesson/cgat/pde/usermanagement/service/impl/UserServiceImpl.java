@@ -16,6 +16,8 @@ import jakarta.validation.Validator;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -573,7 +575,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public LocalDateTime resendNumberVerificationSms(Long userId) throws ResourceNotFoundException {
+	public OffsetDateTime resendNumberVerificationSms(Long userId) throws ResourceNotFoundException {
 		User user = getUser(userId);
 
 		if (user == null) {
@@ -591,7 +593,7 @@ public class UserServiceImpl implements UserService {
 			.findTopByTriggerIdAndNotificationEventTypeOrderByCreatedAtDesc(userId, NotificationEventType.SMS_CONSENT)
 			.orElseThrow(() -> new IllegalStateException("Notification event not found after saving"));
 
-		return latestEvent.getCreatedAt();
+		return latestEvent.getCreatedAt().atOffset(ZoneOffset.UTC);
 	}
 
 	@Override
@@ -609,7 +611,7 @@ public class UserServiceImpl implements UserService {
 		return ResendNumberVerificationDTO.builder()
 			.isNumberVerified(user.getIsPhoneVerified())
 			.number(user.getContact().getPhone())
-			.lastResendSMSTime(latestEvent != null ? latestEvent.getCreatedAt() : null)
+			.lastResendSMSTime(latestEvent != null ? latestEvent.getCreatedAt().atOffset(ZoneOffset.UTC) : null)
 			.build();
 	}
 

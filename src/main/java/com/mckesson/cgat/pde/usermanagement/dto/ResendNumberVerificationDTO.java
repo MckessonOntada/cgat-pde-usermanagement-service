@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Data
 @Builder
@@ -17,6 +17,6 @@ public class ResendNumberVerificationDTO {
 
 	private String number;
 
-	private LocalDateTime lastResendSMSTime;
+	private OffsetDateTime lastResendSMSTime;
 
 }
