@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -320,7 +321,7 @@ public class UserController {
 	@GetMapping("/{userId}/resend-number-verification-sms")
 	@Operation(summary = "Resend number verification sms for a user",
 			description = "Resends number verification sms to a user who has not give consent for sms service.")
-	public LocalDateTime resendNumberVerificationSms(@PathVariable Long userId)
+	public OffsetDateTime resendNumberVerificationSms(@PathVariable Long userId)
 			throws CGATHttpException, ResourceNotFoundException {
 		return userService.resendNumberVerificationSms(userId);
 	}

@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.service;
 import java.io.OutputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -69,7 +70,7 @@ public interface UserService {
 
 	User updateUserNumberById(Long userId, String number) throws ResourceNotFoundException;
 
-	LocalDateTime resendNumberVerificationSms(Long userId) throws ResourceNotFoundException;
+	OffsetDateTime resendNumberVerificationSms(Long userId) throws ResourceNotFoundException;
 
 	ResendNumberVerificationDTO resendNumberVerificationDetails(Long userId) throws ResourceNotFoundException;
 
