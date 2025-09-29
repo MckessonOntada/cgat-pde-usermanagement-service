@@ -306,4 +306,13 @@ public class UserController {
 				communicationPreferences);
 	}
 
+	@GetMapping("/current/communication-preference")
+	@Operation(summary = "Get  the communication preferences for the current user",
+			description = "Retrieves  the communication preferences for the currently authenticated user.")
+	ResponseEntity<UserCommunicationPreferencesDTO> fetchCommunicationPreferences() throws ResourceNotFoundException {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(userService.fetchCommunicationPreferences(UserSecurityUtils.getLoggedInUser()));
+
+	}
+
 }

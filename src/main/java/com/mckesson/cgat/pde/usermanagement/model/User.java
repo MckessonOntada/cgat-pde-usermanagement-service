@@ -93,6 +93,7 @@ public class User extends AuditColumns implements Serializable {
 	private LocalDateTime lastLogin;
 
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+	@JoinColumn(name = "id")
 	private UserCommunicationPreferences userCommunicationPreferences;
 
 }

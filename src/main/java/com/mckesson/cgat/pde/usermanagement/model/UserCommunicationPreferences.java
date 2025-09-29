@@ -25,7 +25,7 @@ public class UserCommunicationPreferences {
 			sequenceName = "user_communication_preferences_sequence", allocationSize = 1)
 	private Long id;
 
-	@OneToOne
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
 	@JsonIgnore
 	private User user;

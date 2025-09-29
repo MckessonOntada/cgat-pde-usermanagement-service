@@ -25,7 +25,7 @@ public class CommunicationPreferences {
 			allocationSize = 1)
 	private Long id;
 
-	@OneToOne
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false)
 	@JsonIgnore
 	private Role role;
