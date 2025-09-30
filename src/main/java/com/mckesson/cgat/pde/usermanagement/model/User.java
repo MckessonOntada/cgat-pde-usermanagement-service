@@ -96,4 +96,9 @@ public class User extends AuditColumns implements Serializable {
 	@JoinColumn(name = "id")
 	private UserCommunicationPreferences userCommunicationPreferences;
 
+	@Column(name = "is_phone_verified", nullable = false)
+	@NotAudited
+	private Boolean isPhoneVerified = false;
+
+
 }
