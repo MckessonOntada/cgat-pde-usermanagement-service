@@ -10,14 +10,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mckesson.cgat.pde.usermanagement.dto.ResendNumberVerificationDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CGATHttpException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
+import com.mckesson.cgat.pde.usermanagement.model.*;
 import com.mckesson.cgat.pde.usermanagement.model.Provider;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
-import com.mckesson.cgat.pde.usermanagement.model.User;
-import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -67,6 +66,12 @@ public interface UserService {
 	void resendActivationEmail(String email) throws CGATHttpException, JsonProcessingException;
 
 	void updateLoginTime(Long userId) throws ResourceNotFoundException;
+
+	User updateCommunicationPreferences(Long userId, UserCommunicationPreferences communicationPreferences)
+			throws ResourceNotFoundException;
+
+	UserCommunicationPreferencesDTO fetchCommunicationPreferences(LoggedInUserDetails loggedInUser)
+			throws ResourceNotFoundException;
 
 	User updateUserNumberById(Long userId, String number) throws ResourceNotFoundException;
 

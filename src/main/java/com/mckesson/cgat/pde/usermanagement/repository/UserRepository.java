@@ -90,6 +90,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	List<Object[]> findPermissionWithAggregatedRoleNamesByPermissions(@Param("practiceId") Long practiceId,
 			@Param("permissions") List<String> permissions);
 
+	Optional<User> findByIdAndIsActiveTrue(Long id);
+
 	List<User> findAllByContact_Phone(String senderPhone);
 
 }
