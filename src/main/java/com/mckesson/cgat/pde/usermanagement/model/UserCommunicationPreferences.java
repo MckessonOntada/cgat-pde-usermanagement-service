@@ -8,6 +8,7 @@ import com.mckesson.cgat.pde.usermanagement.model.converters.PreferencesMapConve
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Entity
@@ -32,6 +33,6 @@ public class UserCommunicationPreferences {
 
 	@Column(name = "preferences", columnDefinition = "TEXT")
 	@Convert(converter = PreferencesMapConverter.class)
-	private Map<Module, Map<ModuleCategory, PreferenceDetails>> preferences;
+	private Map<Module, Map<ModuleCategory, PreferenceDetails>> preferences = new HashMap<>();
 
 }
