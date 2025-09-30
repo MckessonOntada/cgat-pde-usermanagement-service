@@ -100,5 +100,4 @@ public class User extends AuditColumns implements Serializable {
 	@NotAudited
 	private Boolean isPhoneVerified = false;
 
-
 }

@@ -67,7 +67,6 @@ public interface UserService {
 
 	void updateLoginTime(Long userId) throws ResourceNotFoundException;
 
-
 	User updateCommunicationPreferences(Long userId, UserCommunicationPreferences communicationPreferences)
 			throws ResourceNotFoundException;
 
@@ -79,6 +78,5 @@ public interface UserService {
 	OffsetDateTime resendNumberVerificationSms(Long userId) throws ResourceNotFoundException;
 
 	ResendNumberVerificationDTO resendNumberVerificationDetails(Long userId) throws ResourceNotFoundException;
-
 
 }

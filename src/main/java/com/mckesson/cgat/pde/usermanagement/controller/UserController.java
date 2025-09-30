@@ -300,7 +300,6 @@ public class UserController {
 		return ResponseEntity.ok().build();
 	}
 
-
 	@PatchMapping("/current/communication-preference")
 	@Operation(summary = "Updating the communication preferences for the current user",
 			description = "Updating the communication preferences for the current user")
@@ -316,8 +315,8 @@ public class UserController {
 	ResponseEntity<UserCommunicationPreferencesDTO> fetchCommunicationPreferences() throws ResourceNotFoundException {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(userService.fetchCommunicationPreferences(UserSecurityUtils.getLoggedInUser()));
-  }
-  
+	}
+
 	@RequirePermissions({ Permission.ADD_USERS, Permission.EDIT_USERS })
 	@PatchMapping("/{userId}/number")
 	@Operation(summary = "Update an existing user's phone number by ID",
