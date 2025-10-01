@@ -614,11 +614,7 @@ public class UserServiceImpl implements UserService {
 			userPreferences.compute(category, (cat, userPref) -> {
 				if (userPref == null) {
 					// New preference → default true, overridden by role
-					return PreferenceDetails.builder()
-						.email(true)
-						.sms(true)
-						.inApp(rolePref.getInApp()) // use role's inApp setting
-						.build();
+					return PreferenceDetails.builder().email(true).sms(rolePref.getSms()).inApp(true).build();
 				}
 				else {
 					// Update existing only if role has true
