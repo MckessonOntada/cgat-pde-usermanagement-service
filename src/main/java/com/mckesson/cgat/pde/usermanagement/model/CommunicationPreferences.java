@@ -8,6 +8,7 @@ import com.mckesson.cgat.pde.usermanagement.model.converters.PreferencesMapConve
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.Map;
 
 @Entity
@@ -17,7 +18,7 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CommunicationPreferences {
+public class CommunicationPreferences extends AuditColumns implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "communication_preferences_sequence")
