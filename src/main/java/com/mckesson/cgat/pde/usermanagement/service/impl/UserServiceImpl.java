@@ -602,8 +602,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	private void updateUserPreferencesForModule(Map<ModuleCategory, PreferenceDetails> userPreferences,
-			Map<ModuleCategory, PreferenceDetails> rolePreferences, ZonedDateTime userPrefUpdatedAt,
-			ZonedDateTime rolePrefUpdatedAt) {
+			Map<ModuleCategory, PreferenceDetails> rolePreferences, Date userPrefUpdatedAt, Date rolePrefUpdatedAt) {
 
 		for (Map.Entry<ModuleCategory, PreferenceDetails> entry : rolePreferences.entrySet()) {
 			ModuleCategory category = entry.getKey();
@@ -611,7 +610,7 @@ public class UserServiceImpl implements UserService {
 
 			userPreferences.compute(category, (cat, userPref) -> {
 				if (userPref == null || (rolePrefUpdatedAt != null
-						&& (userPrefUpdatedAt == null || rolePrefUpdatedAt.isAfter(userPrefUpdatedAt)))) {
+						&& (userPrefUpdatedAt == null || rolePrefUpdatedAt.after(userPrefUpdatedAt)))) {
 					// New preference → default true, overridden by role
 					return PreferenceDetails.builder().email(true).sms(rolePref.getSms()).inApp(true).build();
 				}
