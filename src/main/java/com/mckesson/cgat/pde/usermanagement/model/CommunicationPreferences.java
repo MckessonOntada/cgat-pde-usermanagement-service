@@ -18,7 +18,7 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CommunicationPreferences extends Auditable implements Serializable {
+public class CommunicationPreferences extends AuditColumns implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "communication_preferences_sequence")
