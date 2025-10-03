@@ -8,6 +8,7 @@ import com.mckesson.cgat.pde.usermanagement.model.converters.PreferencesMapConve
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,7 +19,7 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserCommunicationPreferences {
+public class UserCommunicationPreferences extends Auditable implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_communication_preferences_sequence")

@@ -6,7 +6,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mckesson.cgat.pde.usermanagement.dto.ResendNumberVerificationDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CsvFileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.ResourceConflictException;
-import com.mckesson.cgat.pde.usermanagement.model.communication.Module;
 import com.mckesson.cgat.pde.usermanagement.model.communication.ModuleCategory;
 import com.mckesson.cgat.pde.usermanagement.model.communication.PreferenceDetails;
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
@@ -18,10 +17,7 @@ import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -594,7 +590,8 @@ public class UserServiceImpl implements UserService {
 		roleCommunicationPreferences.getPreferences()
 			.forEach((module, rolePrefs) -> updateUserPreferencesForModule(
 					userCommunicationPreferences.getPreferences().computeIfAbsent(module, k -> new HashMap<>()),
-					rolePrefs));
+					rolePrefs, userCommunicationPreferences.getUpdatedAt(),
+					roleCommunicationPreferences.getUpdatedAt()));
 
 		userCommunicationPreferencesDTO = UserCommunicationPreferencesDTO.builder()
 			.userCommunicationPreferences(userCommunicationPreferences)
@@ -605,14 +602,16 @@ public class UserServiceImpl implements UserService {
 	}
 
 	private void updateUserPreferencesForModule(Map<ModuleCategory, PreferenceDetails> userPreferences,
-			Map<ModuleCategory, PreferenceDetails> rolePreferences) {
+			Map<ModuleCategory, PreferenceDetails> rolePreferences, ZonedDateTime userPrefUpdatedAt,
+			ZonedDateTime rolePrefUpdatedAt) {
 
 		for (Map.Entry<ModuleCategory, PreferenceDetails> entry : rolePreferences.entrySet()) {
 			ModuleCategory category = entry.getKey();
 			PreferenceDetails rolePref = entry.getValue();
 
 			userPreferences.compute(category, (cat, userPref) -> {
-				if (userPref == null) {
+				if (userPref == null || (rolePrefUpdatedAt != null
+						&& (userPrefUpdatedAt == null || rolePrefUpdatedAt.isAfter(userPrefUpdatedAt)))) {
 					// New preference → default true, overridden by role
 					return PreferenceDetails.builder().email(true).sms(rolePref.getSms()).inApp(true).build();
 				}
