@@ -259,7 +259,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User getUserByEmail(String email) throws ResourceNotFoundException {
-		return userRepository.findByContactEmailAndIsActiveTrue(email)
+		return userRepository.findByContactEmailIgnoreCaseAndIsActiveTrue(email)
 			.orElseThrow(() -> new ResourceNotFoundException("User not found for the given user email"));
 	}
 
