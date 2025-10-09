@@ -1,18 +1,18 @@
 package com.mckesson.cgat.pde.usermanagement.repository;
 
-import com.mckesson.cgat.pde.usermanagement.model.SPTherapyConfig;
+import com.mckesson.cgat.pde.usermanagement.model.SPTherapyConfigs;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface SPTherapyConfigRepository extends JpaRepository<SPTherapyConfig, Long> {
+public interface SPTherapyConfigRepository extends JpaRepository<SPTherapyConfigs, Long> {
 
-	List<SPTherapyConfig> findBySpProductIdIn(List<String> spProductIds);
+	List<SPTherapyConfigs> findBySpProductIdIn(List<String> spProductIds);
 
 	void deleteBySpProductId(String spProductId);
 
-	SPTherapyConfig findBySpProductId(String spProductId);
+	SPTherapyConfigs findBySpProductId(String spProductId);
 
 }

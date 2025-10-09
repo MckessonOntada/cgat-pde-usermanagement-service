@@ -1,7 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,26 +13,29 @@ import java.io.Serializable;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "sp_material_config", schema = "catalog")
-public class SPTherapyConfig implements Serializable {
+@Table(name = "sp_therapy_config", schema = "catalog")
+public class SPTherapyConfigs implements Serializable {
 
 	@Id
-	@GeneratedValue(generator = "sp_material_config_id_seq", strategy = GenerationType.SEQUENCE)
-	@SequenceGenerator(name = "sp_material_config_id_seq", sequenceName = "catalog.sp_material_config_id_seq",
+	@GeneratedValue(generator = "sp_therapy_config_id_seq", strategy = GenerationType.SEQUENCE)
+	@SequenceGenerator(name = "sp_therapy_config_id_seq", sequenceName = "catalog.sp_therapy_config_id_seq",
 			allocationSize = 1)
 	private Long id;
 
 	@Column(name = "sp_product_id", nullable = false, unique = true)
 	private String spProductId;
 
-	@Column(name = "is_coi_id_required")
-	private Boolean isCoiIdRequired;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "patient_identifier_requirement", nullable = false)
+	private ConfigFieldRequirement patientIdentifierRequirement;
 
-	@Column(name = "is_patient_identifier_required")
-	private Boolean isPatientIdentifierRequired;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "mrn__requirement", nullable = false)
+	private ConfigFieldRequirement mrnRequirement;
 
-	@Column(name = "is_mrn_required")
-	private Boolean isMRNRequired;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "coi_id_requirement", nullable = false)
+	private ConfigFieldRequirement coiIdRequirement;
 
 	@Column(name = "is_prescription_details_required")
 	private Boolean isPrescriptionDetailsRequired;
