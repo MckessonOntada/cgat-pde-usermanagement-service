@@ -522,7 +522,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 				     SELECT DISTINCT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,tc)
 					 FROM CatalogPrice cp
 					 JOIN Therapy m ON m.materialNumber = cp.sapMaterial
-					 left JOIN TherapyConfig tc ON m.ndcNumber = tc.ndcNumber
+					 left JOIN TherapyConfigs tc ON m.ndcNumber = tc.ndcNumber
 					 JOIN Account ac ON ac.accountNumber = cp.soldToCustomer
 					 WHERE cp.soldToCustomer = :soldToAccount
 					 AND cp.shipToCustomer = :shipToAccount
@@ -544,7 +544,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			     SELECT DISTINCT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,stc)
 				 FROM CatalogPrice cp
 				 JOIN Therapy m ON m.materialNumber = cp.sapMaterial
-				 left JOIN SPTherapyConfig stc ON m.materialNumber = stc.spProductId
+				 left JOIN SPTherapyConfigs stc ON m.materialNumber = stc.spProductId
 				 JOIN Account ac ON ac.accountNumber = cp.soldToCustomer
 				 WHERE cp.soldToCustomer = :soldToAccount
 				 AND cp.shipToCustomer = :shipToAccount
@@ -563,7 +563,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			     SELECT DISTINCT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,stc)
 				 FROM CatalogPrice cp
 				 JOIN Therapy m ON m.materialNumber = cp.sapMaterial
-				 left JOIN SPTherapyConfig stc ON m.materialNumber = stc.spProductId
+				 left JOIN SPTherapyConfigs stc ON m.materialNumber = stc.spProductId
 				 left JOIN Crosswalk cw on cw.spProductId  = cp.sapMaterial
 				 JOIN Account ac ON ac.accountNumber = cp.soldToCustomer
 				 WHERE cp.soldToCustomer = :soldToAccount

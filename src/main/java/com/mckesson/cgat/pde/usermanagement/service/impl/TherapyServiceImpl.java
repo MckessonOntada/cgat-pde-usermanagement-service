@@ -363,28 +363,28 @@ public class TherapyServiceImpl implements TherapyService {
 		List<String> ndcNumbers = request.getNdcNumbers();
 		ChannelType channelType = request.getChannelType();
 		boolean patientInfoRequired = request.getIsPatientInformationRequired();
-		boolean coiIdRequired = request.getIsCoiIdRequired();
-		boolean mrnRequired = request.getIsMRNRequired();
-		boolean doaRequired = request.getIsDOARequired();
-		boolean poRequired = request.getIsPORequired();
-		boolean pidRequired = request.getIsPIDRequired();
-		boolean dateOfApheresisRequired = request.getIsDateOfApheresisRequired();
-		Map<String, TherapyConfig> existingConfigMap = therapyConfigRepository
+		ConfigFieldRequirement coiIdRequirement = request.getCoiIdRequirement();
+		ConfigFieldRequirement mrnRequirement = request.getMrnRequirement();
+		ConfigFieldRequirement doaRequirement = request.getDoaRequirement();
+		ConfigFieldRequirement poRequirement = request.getPoRequirement();
+		ConfigFieldRequirement pidRequirement = request.getPidRequirement();
+		ConfigFieldRequirement dateOfApheresisRequirement = request.getDateOfApheresisRequirement();
+		Map<String, TherapyConfigs> existingConfigMap = therapyConfigRepository
 			.findByNdcNumberInAndChannelType(ndcNumbers, channelType)
 			.stream()
-			.collect(Collectors.toMap(TherapyConfig::getNdcNumber, Function.identity()));
+			.collect(Collectors.toMap(TherapyConfigs::getNdcNumber, Function.identity()));
 
-		List<TherapyConfig> updatedConfigs = ndcNumbers.stream().map(ndc -> {
-			TherapyConfig config = existingConfigMap.getOrDefault(ndc,
-					TherapyConfig.builder().ndcNumber(ndc).channelType(channelType).build());
+		List<TherapyConfigs> updatedConfigs = ndcNumbers.stream().map(ndc -> {
+			TherapyConfigs config = existingConfigMap.getOrDefault(ndc,
+					TherapyConfigs.builder().ndcNumber(ndc).channelType(channelType).build());
 
 			config.setIsPatientInformationRequired(patientInfoRequired);
-			config.setIsCoiIdRequired(coiIdRequired);
-			config.setIsMRNRequired(mrnRequired);
-			config.setIsDOARequired(doaRequired);
-			config.setIsPORequired(poRequired);
-			config.setIsPIDRequired(pidRequired);
-			config.setIsDateOfApheresisRequired(dateOfApheresisRequired);
+			config.setCoiIdRequirement(coiIdRequirement);
+			config.setMrnRequirement(mrnRequirement);
+			config.setDateOfAdministrationRequirement(doaRequirement);
+			config.setPoNumberRequirement(poRequirement);
+			config.setPatientIdentifierRequirement(pidRequirement);
+			config.setDateOfApheresisRequirement(dateOfApheresisRequirement);
 			return config;
 		}).toList();
 
@@ -618,15 +618,15 @@ public class TherapyServiceImpl implements TherapyService {
 
 	@Override
 	public void updateSPTherapyConfigs(SPTherapyConfigRequestDTO request) {
-		List<SPTherapyConfig> existingConfigs = spTherapyConfigRepository
+		List<SPTherapyConfigs> existingConfigs = spTherapyConfigRepository
 			.findBySpProductIdIn(request.getSpProductIds());
 
-		Map<String, SPTherapyConfig> existingConfigMap = existingConfigs.stream()
-			.collect(Collectors.toMap(SPTherapyConfig::getSpProductId, Function.identity()));
+		Map<String, SPTherapyConfigs> existingConfigMap = existingConfigs.stream()
+			.collect(Collectors.toMap(SPTherapyConfigs::getSpProductId, Function.identity()));
 
-		List<SPTherapyConfig> updatedConfigs = request.getSpProductIds().stream().map(spProductId -> {
-			SPTherapyConfig config = existingConfigMap.getOrDefault(spProductId,
-					SPTherapyConfig.builder().spProductId(spProductId).build());
+		List<SPTherapyConfigs> updatedConfigs = request.getSpProductIds().stream().map(spProductId -> {
+			SPTherapyConfigs config = existingConfigMap.getOrDefault(spProductId,
+					SPTherapyConfigs.builder().spProductId(spProductId).build());
 
 			applySPCommonFields(config, request);
 			return config;
@@ -635,7 +635,7 @@ public class TherapyServiceImpl implements TherapyService {
 		spTherapyConfigRepository.saveAll(updatedConfigs);
 	}
 
-	private void applySPCommonFields(SPTherapyConfig config, SPTherapyConfigRequestDTO request) {
+	private void applySPCommonFields(SPTherapyConfigs config, SPTherapyConfigRequestDTO request) {
 		Boolean prescriptionRequired = request.getIsPrescriptionDetailsRequired();
 
 		if (Boolean.TRUE.equals(prescriptionRequired)) {
@@ -655,23 +655,23 @@ public class TherapyServiceImpl implements TherapyService {
 			config.setConsentPolicy(null);
 		}
 		else {
-			config.setIsCoiIdRequired(request.getIsCoiIdRequired());
-			config.setIsMRNRequired(request.getIsMrnRequired());
-			config.setIsPatientIdentifierRequired(request.getIsPatientIdentifierRequired());
+			config.setCoiIdRequirement(request.getCoiIdRequirement());
+			config.setMrnRequirement(request.getMrnRequirement());
+			config.setPatientIdentifierRequirement(request.getPidRequirement());
 		}
 	}
 
 	@Override
 	@Transactional
 	public void removeSPTherapyConfig(String spProductId) throws ResourceNotFoundException {
-		SPTherapyConfig configToUpdate = spTherapyConfigRepository.findBySpProductId(spProductId);
+		SPTherapyConfigs configToUpdate = spTherapyConfigRepository.findBySpProductId(spProductId);
 
 		if (configToUpdate == null) {
 			throw new ResourceNotFoundException("SPTherapyConfig not found for spProductId: " + spProductId);
 		}
-		configToUpdate.setIsCoiIdRequired(null);
-		configToUpdate.setIsPatientIdentifierRequired(null);
-		configToUpdate.setIsMRNRequired(null);
+		configToUpdate.setCoiIdRequirement(ConfigFieldRequirement.NOT_REQUIRED);
+		configToUpdate.setPatientIdentifierRequirement(ConfigFieldRequirement.NOT_REQUIRED);
+		configToUpdate.setMrnRequirement(ConfigFieldRequirement.NOT_REQUIRED);
 
 		spTherapyConfigRepository.save(configToUpdate);
 	}

@@ -11,6 +11,8 @@ import com.mckesson.cgat.pde.usermanagement.model.Contact;
 import com.mckesson.cgat.pde.usermanagement.model.Name;
 import com.mckesson.cgat.pde.usermanagement.model.OktaUserPayload;
 import com.mckesson.cgat.pde.usermanagement.model.User;
+import com.mckesson.cgat.pde.usermanagement.notification.config.NotificationEventType;
+import com.mckesson.cgat.pde.usermanagement.notification.service.NotificationService;
 import com.mckesson.cgat.pde.usermanagement.service.OktaUserManagementService;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +38,9 @@ public class OktaUserManagementServiceImpl implements OktaUserManagementService 
 
 	@Autowired
 	private CGATHttpClient cgatHttpClient;
+
+	@Autowired
+	private NotificationService notificationService;
 
 	private final ObjectMapper mapper = new ObjectMapper();
 
@@ -69,6 +74,7 @@ public class OktaUserManagementServiceImpl implements OktaUserManagementService 
 
 			if (StringUtils.isNotEmpty(oktaUserId)) {
 				assignUserToOktaGroup(oktaUserId);
+				notificationService.saveNotification(user.getId(), NotificationEventType.OKTA_EXISTING_USER);
 				return;
 			}
 			createOktaUser(oktaUser);

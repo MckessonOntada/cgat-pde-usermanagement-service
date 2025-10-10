@@ -6,7 +6,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mckesson.cgat.pde.usermanagement.dto.ResendNumberVerificationDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CsvFileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.ResourceConflictException;
+import com.mckesson.cgat.pde.usermanagement.model.communication.ModuleCategory;
+import com.mckesson.cgat.pde.usermanagement.model.communication.PreferenceDetails;
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
+import com.mckesson.cgat.pde.usermanagement.repository.UserCommunicationPreferencesRepository;
 import com.mckesson.cgat.pde.usermanagement.notification.config.NotificationEventType;
 import com.mckesson.cgat.pde.usermanagement.notification.repository.NotificationEventRepository;
 import com.mckesson.cgat.pde.usermanagement.notification.service.NotificationService;
@@ -14,10 +17,7 @@ import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -67,6 +67,8 @@ public class UserServiceImpl implements UserService {
 
 	private final OktaUserManagementService oktaUserManagementService;
 
+	private final UserCommunicationPreferencesRepository communicationPreferencesRepository;
+
 	private final NotificationEventRepository notificationEventRepository;
 
 	@Autowired
@@ -77,11 +79,13 @@ public class UserServiceImpl implements UserService {
 
 	public UserServiceImpl(UserRepository userRepository, AccountRepository repository, RoleRepository roleRepository,
 			OktaUserManagementService oktaUserManagementService,
+			UserCommunicationPreferencesRepository communicationPreferencesRepository,
 			NotificationEventRepository notificationEventRepository) {
 		this.userRepository = userRepository;
 		this.accountRepository = repository;
 		this.roleRepository = roleRepository;
 		this.oktaUserManagementService = oktaUserManagementService;
+		this.communicationPreferencesRepository = communicationPreferencesRepository;
 		this.notificationEventRepository = notificationEventRepository;
 	}
 
@@ -540,6 +544,91 @@ public class UserServiceImpl implements UserService {
 		User user = getUser(userId);
 		user.setLastLogin(LocalDateTime.now());
 		userRepository.save(user);
+	}
+
+	@Override
+	public User updateCommunicationPreferences(Long userId, UserCommunicationPreferences communicationPreferences)
+			throws ResourceNotFoundException {
+		User user = userRepository.findByIdAndIsActiveTrue(userId)
+			.orElseThrow(() -> new ResourceNotFoundException("User not found with id:" + userId));
+		communicationPreferences.setUser(user);
+
+		if (user.getUserCommunicationPreferences() != null) {
+			// Update the existing communication preferences
+			UserCommunicationPreferences existingPreferences = user.getUserCommunicationPreferences();
+			existingPreferences.setPreferences(communicationPreferences.getPreferences());
+			communicationPreferencesRepository.save(existingPreferences);
+		}
+		else {
+			// Create new communication preferences
+			user.setUserCommunicationPreferences(communicationPreferences);
+			communicationPreferencesRepository.save(communicationPreferences);
+		}
+
+		return user;
+	}
+
+	@Override
+	public UserCommunicationPreferencesDTO fetchCommunicationPreferences(LoggedInUserDetails loggedInUser)
+			throws ResourceNotFoundException {
+
+		long userId = Long.parseLong(loggedInUser.getId());
+
+		User user = userRepository.findByIdAndIsActiveTrue(userId)
+			.orElseThrow(() -> new ResourceNotFoundException("User not found with id:" + userId));
+
+		UserCommunicationPreferencesDTO userCommunicationPreferencesDTO = new UserCommunicationPreferencesDTO();
+
+		CommunicationPreferences roleCommunicationPreferences = user.getRole().getCommunicationPreferences();
+		if (roleCommunicationPreferences == null) {
+			return userCommunicationPreferencesDTO;
+		}
+
+		UserCommunicationPreferences userCommunicationPreferences = Objects
+			.requireNonNullElseGet(user.getUserCommunicationPreferences(), UserCommunicationPreferences::new);
+
+		roleCommunicationPreferences.getPreferences()
+			.forEach((module, rolePrefs) -> updateUserPreferencesForModule(
+					userCommunicationPreferences.getPreferences().computeIfAbsent(module, k -> new HashMap<>()),
+					rolePrefs, userCommunicationPreferences.getUpdatedAt(),
+					roleCommunicationPreferences.getUpdatedAt()));
+
+		userCommunicationPreferencesDTO = UserCommunicationPreferencesDTO.builder()
+			.userCommunicationPreferences(userCommunicationPreferences)
+			.roleCommunicationPreferences(roleCommunicationPreferences)
+			.build();
+
+		return userCommunicationPreferencesDTO;
+	}
+
+	private void updateUserPreferencesForModule(Map<ModuleCategory, PreferenceDetails> userPreferences,
+			Map<ModuleCategory, PreferenceDetails> rolePreferences, Date userPrefUpdatedAt, Date rolePrefUpdatedAt) {
+
+		for (Map.Entry<ModuleCategory, PreferenceDetails> entry : rolePreferences.entrySet()) {
+			ModuleCategory category = entry.getKey();
+			PreferenceDetails rolePref = entry.getValue();
+
+			userPreferences.compute(category, (cat, userPref) -> {
+				if (userPref == null || (rolePrefUpdatedAt != null
+						&& (userPrefUpdatedAt == null || rolePrefUpdatedAt.after(userPrefUpdatedAt)))) {
+					// New preference → default true, overridden by role
+					return PreferenceDetails.builder().email(true).sms(rolePref.getSms()).inApp(true).build();
+				}
+				else {
+					// Update existing only if role has true
+					if (Boolean.TRUE.equals(rolePref.getEmail())) {
+						userPref.setEmail(true);
+					}
+					if (Boolean.TRUE.equals(rolePref.getSms())) {
+						userPref.setSms(true);
+					}
+					if (Boolean.TRUE.equals(rolePref.getInApp())) {
+						userPref.setInApp(true);
+					}
+					return userPref;
+				}
+			});
+		}
 	}
 
 	private User mapProviderToUser(Provider provider) {

@@ -52,6 +52,7 @@ public class Role extends AuditColumns implements Serializable {
 	private Boolean isActive = true;
 
 	@OneToOne(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+	@JoinColumn(name = "id")
 	private CommunicationPreferences communicationPreferences;
 
 }
