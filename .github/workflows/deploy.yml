@@ -68,13 +68,15 @@ jobs:
         OKTA_AUTHSERVERID: ${{ secrets.OKTA_AUTHSERVERID }}
         OKTA_CLIENTID: ${{ secrets.OKTA_CLIENTID }}
         OKTA_BASEURL: ${{ vars.OKTA_BASEURL }}
+        OKTA_APITOKEN: ${{ secrets.OKTA_APITOKEN }}
+        OKTA_ASSOCIATEDGROUPID: ${{ secrets.OKTA_ASSOCIATEDGROUPID }}
         NOTIFICATION_SUPPORT_CONTACT: ${{ secrets.NOTIFICATION_SUPPORT_CONTACT }}
         NOTIFICATION_SUPPORT_EMAIL: ${{ vars.NOTIFICATION_SUPPORT_EMAIL }}
         NOTIFICATION_LINK_PDE_PORTAL: ${{ vars.NOTIFICATION_LINK_PDE_PORTAL }}
         CONTACT_US_SUPPORT_EMAIL: ${{ vars.CONTACT_US_SUPPORT_EMAIL }}
         BLOB_CONTAINER_LINK: ${{ secrets.BLOB_CONTAINER_LINK }}
-
-
+        NOTIFICATION_REST_CLIENT_URL: ${{ vars.NOTIFICATION_REST_CLIENT_URL }}
+        
       run: |
         # Setting up cluster configurations, config files are in the kubectl image
         # https://github.com/mckesson/pltsrv-kube-apps/tree/master/kubectl
