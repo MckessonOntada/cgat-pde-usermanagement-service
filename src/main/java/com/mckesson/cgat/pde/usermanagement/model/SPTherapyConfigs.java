@@ -26,15 +26,15 @@ public class SPTherapyConfigs implements Serializable {
 	private String spProductId;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "patient_identifier_requirement", nullable = false)
+	@Column(name = "patient_identifier_requirement")
 	private ConfigFieldRequirement patientIdentifierRequirement;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "mrn__requirement", nullable = false)
+	@Column(name = "mrn__requirement")
 	private ConfigFieldRequirement mrnRequirement;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "coi_id_requirement", nullable = false)
+	@Column(name = "coi_id_requirement")
 	private ConfigFieldRequirement coiIdRequirement;
 
 	@Column(name = "is_prescription_details_required")
