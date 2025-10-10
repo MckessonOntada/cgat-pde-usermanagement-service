@@ -12,6 +12,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -59,11 +60,16 @@ public class UserAuthenticationBaseFilter extends CGATBaseFilter {
 	}
 
 	private LoggedInUserDetails createUserRequestWithOKTAToken(HttpServletRequest request,
-			HttpServletResponse response) {
+															   HttpServletResponse response) {
 		try {
 			Map<String, Claim> payload = securityUtils.getPayloadByToken(request, response);
 			Map<String, Object> profileMap = payload.get("Profile").asMap();
-			String userIdentifier = String.valueOf(profileMap.get("login"));
+			String userIdentifier = String.valueOf(profileMap.get("email"));
+
+			if (StringUtils.isBlank(userIdentifier)) {
+				userIdentifier = String.valueOf(profileMap.get("login"));
+			}
+
 			return userFilterUtils.buildUserContextDetailFromOkta(userIdentifier, request);
 		}
 		catch (Exception e) {
