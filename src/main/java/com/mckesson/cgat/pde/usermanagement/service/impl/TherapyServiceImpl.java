@@ -669,9 +669,9 @@ public class TherapyServiceImpl implements TherapyService {
 		if (configToUpdate == null) {
 			throw new ResourceNotFoundException("SPTherapyConfig not found for spProductId: " + spProductId);
 		}
-		configToUpdate.setCoiIdRequirement(ConfigFieldRequirement.NOT_REQUIRED);
-		configToUpdate.setPatientIdentifierRequirement(ConfigFieldRequirement.NOT_REQUIRED);
-		configToUpdate.setMrnRequirement(ConfigFieldRequirement.NOT_REQUIRED);
+		configToUpdate.setCoiIdRequirement(null);
+		configToUpdate.setPatientIdentifierRequirement(null);
+		configToUpdate.setMrnRequirement(null);
 
 		spTherapyConfigRepository.save(configToUpdate);
 	}
