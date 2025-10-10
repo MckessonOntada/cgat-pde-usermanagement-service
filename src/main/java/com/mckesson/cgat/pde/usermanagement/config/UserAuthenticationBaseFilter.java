@@ -60,7 +60,7 @@ public class UserAuthenticationBaseFilter extends CGATBaseFilter {
 	}
 
 	private LoggedInUserDetails createUserRequestWithOKTAToken(HttpServletRequest request,
-															   HttpServletResponse response) {
+			HttpServletResponse response) {
 		try {
 			Map<String, Claim> payload = securityUtils.getPayloadByToken(request, response);
 			Map<String, Object> profileMap = payload.get("Profile").asMap();
