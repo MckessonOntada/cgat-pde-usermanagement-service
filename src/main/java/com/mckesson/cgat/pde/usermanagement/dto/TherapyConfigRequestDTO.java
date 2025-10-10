@@ -1,6 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.dto;
 
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
+import com.mckesson.cgat.pde.usermanagement.model.ConfigFieldRequirement;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -16,17 +17,17 @@ public class TherapyConfigRequestDTO {
 
 	private Boolean isPatientInformationRequired;
 
-	private Boolean isCoiIdRequired;
+	private ConfigFieldRequirement coiIdRequirement;
 
-	private Boolean isMRNRequired;
+	private ConfigFieldRequirement mrnRequirement;
 
-	private Boolean isDOARequired;
+	private ConfigFieldRequirement doaRequirement;
 
-	private Boolean isPORequired;
+	private ConfigFieldRequirement poRequirement;
 
-	private Boolean isPIDRequired;
+	private ConfigFieldRequirement pidRequirement;
 
-	private Boolean isDateOfApheresisRequired;
+	private ConfigFieldRequirement dateOfApheresisRequirement;
 
 	private ChannelType channelType = ChannelType.BUY_AND_BILL;
 

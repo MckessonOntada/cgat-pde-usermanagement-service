@@ -1,5 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.dto;
 
+import com.mckesson.cgat.pde.usermanagement.model.ConfigFieldRequirement;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -14,11 +15,11 @@ public class SPTherapyConfigRequestDTO {
 	@Size(min = 1, message = "SP Product ids must not be empty.")
 	private List<String> spProductIds;
 
-	private Boolean isCoiIdRequired;
+	private ConfigFieldRequirement coiIdRequirement;
 
-	private Boolean isPatientIdentifierRequired;
+	private ConfigFieldRequirement mrnRequirement;
 
-	private Boolean isMrnRequired;
+	private ConfigFieldRequirement pidRequirement;
 
 	private Boolean isPrescriptionDetailsRequired;
 
