@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS catalog.therapy_config (
         channel_type VARCHAR(100)   NOT NULL
     );
 
-CREATE SEQUENCE catalog.therapy_config_id_seq START 1 INCREMENT 1;
+CREATE SEQUENCE IF NOT EXISTS catalog.therapy_config_id_seq START 1 INCREMENT 1;
 
 CREATE INDEX IF NOT EXISTS idx_ndc_number_therapy_config ON catalog.therapy_config(ndc_number);
 
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS catalog.sp_therapy_config (
     consent_policy TEXT
     );
 
-CREATE SEQUENCE catalog.sp_therapy_config_id_seq START 1 INCREMENT 1;
+CREATE SEQUENCE IF NOT EXISTS catalog.sp_therapy_config_id_seq START 1 INCREMENT 1;
 
 CREATE INDEX IF NOT EXISTS idx_sp_product_id_therapy_configs ON catalog.sp_therapy_config(sp_product_id);
 

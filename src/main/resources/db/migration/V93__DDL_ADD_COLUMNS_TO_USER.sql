@@ -1,2 +1,2 @@
 ALTER TABLE usermanagement.user
-  ADD COLUMN is_phone_verified BOOLEAN NOT NULL DEFAULT FALSE;
+  ADD COLUMN IF NOT EXISTS is_phone_verified BOOLEAN NOT NULL DEFAULT FALSE;

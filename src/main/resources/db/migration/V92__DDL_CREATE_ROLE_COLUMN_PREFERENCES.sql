@@ -1,4 +1,4 @@
-CREATE TABLE communication_preferences (
+CREATE TABLE IF NOT EXISTS communication_preferences (
        id INTEGER PRIMARY KEY,
        role_id INTEGER NOT NULL,
        preferences TEXT NOT NULL,
