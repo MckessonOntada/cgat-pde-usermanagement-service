@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.mckesson.cgat.pde.usermanagement.model.Provider;
+import com.mckesson.cgat.pde.usermanagement.model.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,11 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.mckesson.cgat.pde.usermanagement.dto.AccountDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.AccountDetailsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
-import com.mckesson.cgat.pde.usermanagement.model.Account;
-import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
-import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
-import com.mckesson.cgat.pde.usermanagement.model.Permission;
-import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 
@@ -188,11 +183,11 @@ public class AccountController {
 
 	@GetMapping("/permissions/roles")
 	@Operation(summary = "Get permissions vs list of role names of users by practice ID and permissions")
-	public ResponseEntity<Map<String, String>> getPermissionsAndAssociatedRolesForPractice(
+	public ResponseEntity<List<PermissionsRoleUserDto>> getPermissionsAndAssociatedRolesForPractice(
 			@PathVariable String practiceId, @RequestParam List<Permission> permissions)
 			throws UnauthorizedAccessException {
-		Map<String, String> permissionsMap = accountService.getPermissionsAndAssociatedRolesForPractice(practiceId,
-				permissions);
+		List<PermissionsRoleUserDto> permissionsMap = accountService
+			.getPermissionsAndAssociatedRolesForPractice(practiceId, permissions);
 		return new ResponseEntity<>(permissionsMap, HttpStatus.OK);
 
 	}
