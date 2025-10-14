@@ -644,6 +644,7 @@ public class UserServiceImpl implements UserService {
 			.name(provider.getName())
 			.address(provider.getAddress())
 			.contact(userContact)
+			.isPhoneVerified(false)
 			.isActive(true)
 			.build();
 
