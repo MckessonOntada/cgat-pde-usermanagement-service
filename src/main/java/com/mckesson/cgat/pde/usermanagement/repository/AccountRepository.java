@@ -20,7 +20,7 @@ import com.mckesson.cgat.pde.usermanagement.model.Account;
 public interface AccountRepository extends JpaRepository<Account, Long> {
 
 	@Query(nativeQuery = true, value = """
-			SELECT *
+			SELECT DISTINCT a.*
 			FROM usermanagement.account a
 			WHERE
 			(
