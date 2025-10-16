@@ -39,7 +39,7 @@ public class SPTherapyConfigs implements Serializable {
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "fulfillment_channel")
-	private SPFullfilmentChannel fulfillmentChannel;
+	private SPFulfillmentChannel fulfillmentChannel;
 
 	@Column(name = "is_prescription_details_required")
 	private Boolean isPrescriptionDetailsRequired;

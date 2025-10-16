@@ -1,6 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.model;
 
-public enum SPFullfilmentChannel {
+public enum SPFulfillmentChannel {
 
 	SP, HUB;
 
