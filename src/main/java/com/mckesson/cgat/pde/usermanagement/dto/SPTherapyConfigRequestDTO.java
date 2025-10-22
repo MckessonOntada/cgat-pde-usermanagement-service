@@ -1,7 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.dto;
 
 import com.mckesson.cgat.pde.usermanagement.model.ConfigFieldRequirement;
-import com.mckesson.cgat.pde.usermanagement.model.SPFulfillmentChannel;
+import com.mckesson.cgat.pde.usermanagement.model.SPTriageChannel;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -24,7 +24,7 @@ public class SPTherapyConfigRequestDTO {
 
 	private Boolean isPrescriptionDetailsRequired;
 
-	private SPFulfillmentChannel fulfillmentChannel;
+	private SPTriageChannel triageChannel;
 
 	@Min(value = 1, message = "Quantity must be greater than 0.")
 	private Long quantity;

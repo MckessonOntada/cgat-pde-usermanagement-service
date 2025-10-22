@@ -38,8 +38,8 @@ public class SPTherapyConfigs implements Serializable {
 	private ConfigFieldRequirement coiIdRequirement;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "fulfillment_channel")
-	private SPFulfillmentChannel fulfillmentChannel;
+	@Column(name = "triage_channel")
+	private SPTriageChannel triageChannel;
 
 	@Column(name = "is_prescription_details_required")
 	private Boolean isPrescriptionDetailsRequired;
