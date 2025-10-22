@@ -658,7 +658,7 @@ public class TherapyServiceImpl implements TherapyService {
 			config.setCoiIdRequirement(request.getCoiIdRequirement());
 			config.setMrnRequirement(request.getMrnRequirement());
 			config.setPatientIdentifierRequirement(request.getPidRequirement());
-			config.setFulfillmentChannel(request.getFulfillmentChannel());
+			config.setTriageChannel(request.getTriageChannel());
 		}
 	}
 
@@ -673,7 +673,7 @@ public class TherapyServiceImpl implements TherapyService {
 		configToUpdate.setCoiIdRequirement(null);
 		configToUpdate.setPatientIdentifierRequirement(null);
 		configToUpdate.setMrnRequirement(null);
-		configToUpdate.setFulfillmentChannel(null);
+		configToUpdate.setTriageChannel(null);
 
 		spTherapyConfigRepository.save(configToUpdate);
 	}
