@@ -237,7 +237,7 @@ public class UserController {
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 		return accountService.findAll(paging, query, status, userId, OrganizationContext.getCurrentOrgId(),
-				AccountPartnerFunction.SOLD_TO, salesOrg, distributionChannel, ChannelType.ALL);
+				AccountPartnerFunction.SOLD_TO, salesOrg, distributionChannel, ChannelType.ALL, false);
 
 	}
 

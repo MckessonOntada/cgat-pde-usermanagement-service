@@ -153,7 +153,7 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public Page<Account> findAll(Pageable paging, String query, List<String> status, Long userId, Long practiceId,
 			AccountPartnerFunction partnerFunction, List<String> salesOrg, List<String> distChannels,
-			ChannelType channelType) throws ResourceNotFoundException {
+			ChannelType channelType, boolean allAccounts) throws ResourceNotFoundException {
 		query = StringUtils.toRootLowerCase(query);
 		String statusActive = CustomUtils.object_status.ALL.name();
 		if (!CollectionUtils.isEmpty(status)) {
@@ -186,16 +186,12 @@ public class AccountServiceImpl implements AccountService {
 				.findAccountsByUser(userId, query, statusActive, paging, practiceId,
 						partnerFunction.getPartnerFunctionType(), salesOrgForQuery, distChannels, channelType.name(),
 						include3PLPattern)
-				.map(account -> {
-					return convertingSalesOrgAndCGATIdentifierFrom340T0340B(account);
-				});
+				.map(AccountServiceImpl::convertingSalesOrgAndCGATIdentifierFrom340T0340B);
 		}
 		return accountRepository
 			.findAllByQueryText(query, statusActive, paging, practiceId, partnerFunction.getPartnerFunctionType(),
-					salesOrgForQuery, distChannels, channelType.name(), include3PLPattern)
-			.map(account -> {
-				return convertingSalesOrgAndCGATIdentifierFrom340T0340B(account);
-			});
+					salesOrgForQuery, distChannels, channelType.name(), include3PLPattern, allAccounts)
+			.map(AccountServiceImpl::convertingSalesOrgAndCGATIdentifierFrom340T0340B);
 	}
 
 	private static Account convertingSalesOrgAndCGATIdentifierFrom340T0340B(Account account) {

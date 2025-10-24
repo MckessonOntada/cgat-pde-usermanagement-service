@@ -26,7 +26,7 @@ public interface AccountService {
 
 	Page<Account> findAll(Pageable paging, String query, List<String> status, Long userId, Long practiceId,
 			AccountPartnerFunction partnerFunction, List<String> salesOrg, List<String> distChannels,
-			ChannelType channelType) throws ResourceNotFoundException;
+			ChannelType channelType, boolean allAccounts) throws ResourceNotFoundException;
 
 	Account createAccount(AccountDTO account);
 
