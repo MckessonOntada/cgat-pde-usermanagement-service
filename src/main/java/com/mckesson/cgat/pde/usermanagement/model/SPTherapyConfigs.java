@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.Set;
 
 @Entity
 @Data
@@ -58,6 +59,11 @@ public class SPTherapyConfigs implements Serializable {
 
 	@Column(name = "consent_policy")
 	private String consentPolicy;
+
+	@ManyToMany
+	@JoinTable(name = "sp_therapy_config_diagnosis_code", joinColumns = @JoinColumn(name = "sp_therapy_config_id"),
+			inverseJoinColumns = @JoinColumn(name = "diagnosis_code_id"))
+	private Set<DiagnosisCode> diagnosisCodes;
 
 	@PrePersist
 	@PreUpdate

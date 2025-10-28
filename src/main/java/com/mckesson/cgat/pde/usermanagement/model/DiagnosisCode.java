@@ -1,14 +1,9 @@
 package com.mckesson.cgat.pde.usermanagement.model;
 
 import java.io.Serializable;
+import java.util.Set;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,5 +34,8 @@ public class DiagnosisCode extends AuditColumns implements Serializable {
 
 	@Column(name = "long_description")
 	private String longDescription;
+
+	@ManyToMany(mappedBy = "diagnosisCodes")
+	private Set<SPTherapyConfigs> spTherapyConfigs;
 
 }
