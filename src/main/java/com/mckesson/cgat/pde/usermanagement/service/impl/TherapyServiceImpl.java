@@ -51,6 +51,8 @@ public class TherapyServiceImpl implements TherapyService {
 
 	private final SPTherapyConfigRepository spTherapyConfigRepository;
 
+	private final DiagnosisCodeRepository diagnosisCodeRepository;
+
 	private final PracticeUtils practiceUtils;
 
 	private final String MANUFACTURER_LOGO_BASE_URL = "logos/manufacturer";
@@ -61,7 +63,8 @@ public class TherapyServiceImpl implements TherapyService {
 			CatalogPriceMapper catalogPriceMapper, TherapyConfigRepository therapyConfigRepository,
 			QuestionnaireService questionnaireService, ShippingLocationRepository shippingLocationRepository,
 			MaterialCrossWalkConfigRepository materialCrossWalkConfigRepository,
-			SPTherapyConfigRepository spTherapyConfigRepository, PracticeUtils practiceUtils) {
+			SPTherapyConfigRepository spTherapyConfigRepository, DiagnosisCodeRepository diagnosisCodeRepository,
+			PracticeUtils practiceUtils) {
 		this.therapyRepository = therapyRepository;
 		this.catalogPriceRepository = catalogPriceRepository;
 		this.catalogPriceMapper = catalogPriceMapper;
@@ -70,6 +73,7 @@ public class TherapyServiceImpl implements TherapyService {
 		this.shippingLocationRepository = shippingLocationRepository;
 		this.materialCrossWalkConfigRepository = materialCrossWalkConfigRepository;
 		this.spTherapyConfigRepository = spTherapyConfigRepository;
+		this.diagnosisCodeRepository = diagnosisCodeRepository;
 		this.practiceUtils = practiceUtils;
 	}
 
@@ -695,6 +699,55 @@ public class TherapyServiceImpl implements TherapyService {
 		String logoUri = String.format("%s/%s.%s", MANUFACTURER_LOGO_BASE_URL, firstName, MANUFACTURER_LOGO_EXTENSION);
 		byte[] logo = practiceUtils.fetchLogo(logoUri);
 		return TherapyLogoResponseDto.builder().logo(logo).logoExtension(mediaType).build();
+	}
+
+	@Override
+	@Transactional
+	public SPTherapyConfigs updateSPTherapyConfigDiagnosisCodes(String spProductId, List<Long> diagnosisCodeIDs)
+			throws ResourceNotFoundException {
+		SPTherapyConfigs configToUpdate = spTherapyConfigRepository.findBySpProductId(spProductId);
+
+		if (configToUpdate == null) {
+			configToUpdate = new SPTherapyConfigs();
+			configToUpdate.setSpProductId(spProductId);
+		}
+
+		List<DiagnosisCode> diagnosisCodeToLink = diagnosisCodeRepository.findAllById(diagnosisCodeIDs);
+		if (diagnosisCodeIDs.size() != diagnosisCodeToLink.size()) {
+			throw new ResourceNotFoundException("Some of the provided diagnosis Code IDs do not exist.");
+		}
+		Set<DiagnosisCode> existingDiagCode = new HashSet<>(configToUpdate.getDiagnosisCodes());
+
+		existingDiagCode.addAll(diagnosisCodeToLink);
+		configToUpdate.getDiagnosisCodes().clear();
+		configToUpdate.setDiagnosisCodes(existingDiagCode);
+		spTherapyConfigRepository.save(configToUpdate);
+		return configToUpdate;
+
+	}
+
+	@Override
+	@Transactional
+	public void delinkSPProductFromDiagnosisCodes(String spProductId, List<Long> diagnosisCodeIDs)
+			throws ResourceNotFoundException {
+		SPTherapyConfigs spTherapyConfigs = spTherapyConfigRepository.findBySpProductId(spProductId);
+
+		if (spTherapyConfigs == null) {
+			throw new ResourceNotFoundException("SPTherapyConfig not found for spProductId: " + spProductId);
+		}
+
+		List<DiagnosisCode> diagnosisCodeToRemove = diagnosisCodeRepository.findAllById(diagnosisCodeIDs);
+		if (diagnosisCodeIDs.size() != diagnosisCodeToRemove.size()) {
+			throw new ResourceNotFoundException("Some of the provided diagnosis Code IDs do not exist.");
+		}
+
+		boolean removedAll = spTherapyConfigs.getDiagnosisCodes().removeAll(new HashSet<>(diagnosisCodeToRemove));
+		if (!removedAll) {
+			throw new ResourceNotFoundException(
+					"Some of the provided diagnosis Code IDs are not linked to the SP Product.");
+		}
+		spTherapyConfigRepository.save(spTherapyConfigs);
+
 	}
 
 }

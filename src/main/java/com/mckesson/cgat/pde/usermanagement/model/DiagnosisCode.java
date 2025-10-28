@@ -3,6 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.model;
 import java.io.Serializable;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -35,7 +36,10 @@ public class DiagnosisCode extends AuditColumns implements Serializable {
 	@Column(name = "long_description")
 	private String longDescription;
 
-	@ManyToMany(mappedBy = "diagnosisCodes")
+	@JsonIgnore
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "sp_therapy_config_diagnosis_code", joinColumns = @JoinColumn(name = "sp_therapy_config_id"),
+			inverseJoinColumns = @JoinColumn(name = "diagnosis_code_id"), schema = "catalog")
 	private Set<SPTherapyConfigs> spTherapyConfigs;
 
 }

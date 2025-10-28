@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -60,10 +61,10 @@ public class SPTherapyConfigs implements Serializable {
 	@Column(name = "consent_policy")
 	private String consentPolicy;
 
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "sp_therapy_config_diagnosis_code", joinColumns = @JoinColumn(name = "sp_therapy_config_id"),
-			inverseJoinColumns = @JoinColumn(name = "diagnosis_code_id"))
-	private Set<DiagnosisCode> diagnosisCodes;
+			inverseJoinColumns = @JoinColumn(name = "diagnosis_code_id"), schema = "catalog")
+	private Set<DiagnosisCode> diagnosisCodes = new HashSet<>();
 
 	@PrePersist
 	@PreUpdate
