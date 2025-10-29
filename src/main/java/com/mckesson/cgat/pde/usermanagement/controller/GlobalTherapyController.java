@@ -163,7 +163,7 @@ public class GlobalTherapyController {
 		return new ResponseEntity<>(spTherapyConfigs, HttpStatus.OK);
 	}
 
-	@RequirePermissions({ Permission.EDIT_USERS })
+	@RequirePermissions({ Permission.MANAGE_MATERIAL })
 	@DeleteMapping("/sp/config/{spProductId}/diagnosis-codes")
 	@Operation(summary = "Remove diagnosis codes from an sp therapy",
 			description = "Removes the association between a specified sp therapy and diagnosis codes.")
@@ -173,6 +173,21 @@ public class GlobalTherapyController {
 		log.debug("Delinking diagnosis codes from SP Material: {}", spProductId);
 		therapyService.delinkSPProductFromDiagnosisCodes(spProductId, diagnosisCodeIDs);
 		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	@RequirePermissions({ Permission.MANAGE_MATERIAL })
+	@GetMapping("/sp/config/{spProductId}/diagnosis-codes")
+	@Operation(summary = "Find and filter all diagnosis code that are not linked to a specific sp product",
+			description = "Retrieves a paginated and filtered list of all diagnosis code that are not linked to a specific sp product.")
+	Page<DiagnosisCode> findAllDiagnosisCodes(@RequestParam(defaultValue = "0") Integer pageNo,
+			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "code") String sortBy,
+			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
+			@PathVariable String spProductId) throws ResourceNotFoundException {
+		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
+				: Sort.by(sortBy).descending();
+		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
+		return therapyService.findAllDiagnosisCodesNotLinkedToSPProduct(query, paging, spProductId);
+
 	}
 
 	@GetMapping("/sp/config/{materialNumber}")

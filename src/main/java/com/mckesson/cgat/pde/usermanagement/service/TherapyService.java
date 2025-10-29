@@ -1,10 +1,7 @@
 package com.mckesson.cgat.pde.usermanagement.service;
 
 import com.mckesson.cgat.pde.usermanagement.dto.*;
-import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
-import com.mckesson.cgat.pde.usermanagement.model.SPTherapyConfigs;
-import com.mckesson.cgat.pde.usermanagement.model.Status;
-import com.mckesson.cgat.pde.usermanagement.model.Therapy;
+import com.mckesson.cgat.pde.usermanagement.model.*;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -94,6 +91,9 @@ public interface TherapyService {
 			throws ResourceNotFoundException;
 
 	void delinkSPProductFromDiagnosisCodes(String spProductId, List<Long> diagnosisCodeIDs)
+			throws ResourceNotFoundException;
+
+	Page<DiagnosisCode> findAllDiagnosisCodesNotLinkedToSPProduct(String query, Pageable paging, String spProductId)
 			throws ResourceNotFoundException;
 
 }

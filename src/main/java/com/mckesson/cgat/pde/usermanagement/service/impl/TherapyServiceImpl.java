@@ -750,4 +750,19 @@ public class TherapyServiceImpl implements TherapyService {
 
 	}
 
+	@Override
+	public Page<DiagnosisCode> findAllDiagnosisCodesNotLinkedToSPProduct(String query, Pageable paging,
+			String spProductId) throws ResourceNotFoundException {
+		SPTherapyConfigs spTherapyConfigs = spTherapyConfigRepository.findBySpProductId(spProductId);
+
+		if (spTherapyConfigs == null) {
+			throw new ResourceNotFoundException("SPTherapyConfig not found for spProductId: " + spProductId);
+		}
+
+		query = StringUtils.toRootLowerCase(query);
+
+		return diagnosisCodeRepository.findAllDiagnosisCodesNotLinkedToSPProduct(query, paging, spProductId);
+
+	}
+
 }
