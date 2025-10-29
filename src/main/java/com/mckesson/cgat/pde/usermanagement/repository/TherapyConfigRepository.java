@@ -47,7 +47,6 @@ public interface TherapyConfigRepository extends JpaRepository<TherapyConfigs, L
 			    FROM Therapy m
 			    LEFT JOIN SPTherapyConfigs sp
 			    ON m.materialNumber = sp.spProductId
-			             LEFT JOIN FETCH sp.diagnosisCodes dc
 			    WHERE m.materialNumber = :materialNumber
 			    AND m.channelType = :channelType
 			""")
@@ -75,7 +74,6 @@ public interface TherapyConfigRepository extends JpaRepository<TherapyConfigs, L
 			        ON m.ndcNumber = tc.ndcNumber
 			    LEFT JOIN SPTherapyConfigs sp
 			             ON m.materialNumber = sp.spProductId
-			             LEFT JOIN FETCH sp.diagnosisCodes dc
 			    WHERE m.id = :id
 			""")
 	Optional<MaterialResponseDTO> findTherapyDetailsById(@Param("id") Long id);
@@ -93,7 +91,6 @@ public interface TherapyConfigRepository extends JpaRepository<TherapyConfigs, L
 			    FROM Therapy m
 			    LEFT JOIN SPTherapyConfigs sp
 			    ON m.materialNumber = sp.spProductId
-			             LEFT JOIN FETCH sp.diagnosisCodes dc
 			    WHERE m.tradeName = :tradeName
 			    AND m.channelType = :channelType
 			    AND m.itemStatus = 'A'

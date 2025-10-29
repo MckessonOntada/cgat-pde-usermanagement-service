@@ -61,7 +61,7 @@ public class SPTherapyConfigs implements Serializable {
 	@Column(name = "consent_policy")
 	private String consentPolicy;
 
-	@ManyToMany(fetch = FetchType.LAZY)
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "sp_therapy_config_diagnosis_code", joinColumns = @JoinColumn(name = "sp_therapy_config_id"),
 			inverseJoinColumns = @JoinColumn(name = "diagnosis_code_id"), schema = "catalog")
 	private Set<DiagnosisCode> diagnosisCodes = new HashSet<>();
