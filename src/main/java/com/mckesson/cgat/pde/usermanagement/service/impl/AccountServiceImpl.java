@@ -153,7 +153,7 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public Page<Account> findAll(Pageable paging, String query, List<String> status, Long userId, Long practiceId,
 			AccountPartnerFunction partnerFunction, List<String> salesOrg, List<String> distChannels,
-			ChannelType channelType) throws ResourceNotFoundException {
+			ChannelType channelType, boolean allAccounts) throws ResourceNotFoundException {
 		query = StringUtils.toRootLowerCase(query);
 		String statusActive = CustomUtils.object_status.ALL.name();
 		if (!CollectionUtils.isEmpty(status)) {
@@ -186,16 +186,12 @@ public class AccountServiceImpl implements AccountService {
 				.findAccountsByUser(userId, query, statusActive, paging, practiceId,
 						partnerFunction.getPartnerFunctionType(), salesOrgForQuery, distChannels, channelType.name(),
 						include3PLPattern)
-				.map(account -> {
-					return convertingSalesOrgAndCGATIdentifierFrom340T0340B(account);
-				});
+				.map(AccountServiceImpl::convertingSalesOrgAndCGATIdentifierFrom340T0340B);
 		}
 		return accountRepository
 			.findAllByQueryText(query, statusActive, paging, practiceId, partnerFunction.getPartnerFunctionType(),
-					salesOrgForQuery, distChannels, channelType.name(), include3PLPattern)
-			.map(account -> {
-				return convertingSalesOrgAndCGATIdentifierFrom340T0340B(account);
-			});
+					salesOrgForQuery, distChannels, channelType.name(), include3PLPattern, allAccounts)
+			.map(AccountServiceImpl::convertingSalesOrgAndCGATIdentifierFrom340T0340B);
 	}
 
 	private static Account convertingSalesOrgAndCGATIdentifierFrom340T0340B(Account account) {
@@ -444,18 +440,39 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public Map<String, String> getPermissionsAndAssociatedRolesForPractice(String practiceId,
+	public List<PermissionsRoleUserDto> getPermissionsAndAssociatedRolesForPractice(String practiceId,
 			List<Permission> permissions) {
 		List<String> permissionStrings = permissions.stream()
 			.map(Permission::name) // converts each enum to its name (as String)
 			.collect(Collectors.toList());
-		List<Object[]> results = userRepository
-			.findPermissionWithAggregatedRoleNamesByPermissions(Long.valueOf(practiceId), permissionStrings);
-		Map<String, String> permissionToRoles = results.stream()
-			.collect(Collectors.toMap(row -> (String) row[0], // permission
-					row -> (String) row[1] // aggregated role names
-			));
-		return permissionToRoles;
+
+		List<Object[]> permissionWithRoleNamesAndUser = userRepository
+			.findPermissionWithRoleNamesAndUser(Long.valueOf(practiceId), permissionStrings);
+
+		Map<String, Map<String, List<String>>> permissionMap = new HashMap<>();
+
+		for (Object[] row : permissionWithRoleNamesAndUser) {
+			String permission = (String) row[0];
+			String roleName = (String) row[1];
+			String fullName = (String) row[2];
+
+			permissionMap.putIfAbsent(permission, new HashMap<>());
+
+			permissionMap.get(permission).putIfAbsent(roleName, new ArrayList<>());
+
+			permissionMap.get(permission).get(roleName).add(fullName);
+		}
+
+		List<PermissionsRoleUserDto> permissionsRoleUserDTOs = new ArrayList<>();
+
+		for (Map.Entry<String, Map<String, List<String>>> entry : permissionMap.entrySet()) {
+			PermissionsRoleUserDto dto = new PermissionsRoleUserDto();
+			dto.setPermission(Permission.valueOf(entry.getKey()));
+			dto.setRoleAndUsersList(entry.getValue());
+			permissionsRoleUserDTOs.add(dto);
+		}
+
+		return permissionsRoleUserDTOs;
 	}
 
 	private void processAccountActions(Set<AccountDTO> accountDataList, Map<String, Account> accountMap,

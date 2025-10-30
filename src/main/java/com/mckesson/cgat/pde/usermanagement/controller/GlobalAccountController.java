@@ -57,7 +57,7 @@ public class GlobalAccountController {
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 		Page<Account> accounts = accountService.findAll(paging, query, null, null, null, AccountPartnerFunction.SOLD_TO,
-				salesOrg, distChannels, ChannelType.BUY_AND_BILL);
+				salesOrg, distChannels, ChannelType.BUY_AND_BILL, false);
 
 		return new ResponseEntity<>(accounts, HttpStatus.OK);
 	}

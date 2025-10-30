@@ -30,23 +30,3 @@ public class SmsEventRequestDTO {
 	private ZonedDateTime eventTime;
 
 }
-
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-class SmsEventData {
-
-	private String messageId;
-
-	private String from;
-
-	private String to;
-
-	private String message;
-
-	private int segmentCount;
-
-	private ZonedDateTime receivedTimestamp;
-
-}

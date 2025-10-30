@@ -1,7 +1,6 @@
 package com.mckesson.cgat.pde.usermanagement.service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import com.mckesson.cgat.pde.usermanagement.dto.AccountDTO;
@@ -27,7 +26,7 @@ public interface AccountService {
 
 	Page<Account> findAll(Pageable paging, String query, List<String> status, Long userId, Long practiceId,
 			AccountPartnerFunction partnerFunction, List<String> salesOrg, List<String> distChannels,
-			ChannelType channelType) throws ResourceNotFoundException;
+			ChannelType channelType, boolean allAccounts) throws ResourceNotFoundException;
 
 	Account createAccount(AccountDTO account);
 
@@ -66,6 +65,7 @@ public interface AccountService {
 
 	CSVProcessingResult uploadSPAccounts(MultipartFile accountsData, int practiceId);
 
-	Map<String, String> getPermissionsAndAssociatedRolesForPractice(String practiceId, List<Permission> permissions);
+	List<PermissionsRoleUserDto> getPermissionsAndAssociatedRolesForPractice(String practiceId,
+			List<Permission> permissions);
 
 }

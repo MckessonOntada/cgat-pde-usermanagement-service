@@ -2,12 +2,16 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.mckesson.cgat.pde.usermanagement.dto.ResendNumberVerificationDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CGATHttpException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
+import com.mckesson.cgat.pde.usermanagement.model.*;
 import com.mckesson.cgat.pde.usermanagement.service.impl.utils.FileValidationUtils;
 import com.mckesson.jbat.auth.module.exception.BadRequestException;
 import jakarta.validation.constraints.NotBlank;
@@ -26,13 +30,6 @@ import org.springframework.web.bind.annotation.*;
 import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.dto.RolePermissionsPatchDTO;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
-import com.mckesson.cgat.pde.usermanagement.model.Account;
-import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
-import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
-import com.mckesson.cgat.pde.usermanagement.model.Permission;
-import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
-import com.mckesson.cgat.pde.usermanagement.model.User;
-import com.mckesson.cgat.pde.usermanagement.model.UserType;
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
 import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
@@ -240,7 +237,7 @@ public class UserController {
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 		return accountService.findAll(paging, query, status, userId, OrganizationContext.getCurrentOrgId(),
-				AccountPartnerFunction.SOLD_TO, salesOrg, distributionChannel, ChannelType.ALL);
+				AccountPartnerFunction.SOLD_TO, salesOrg, distributionChannel, ChannelType.ALL, false);
 
 	}
 
@@ -301,6 +298,50 @@ public class UserController {
 			throws CGATHttpException, JsonProcessingException {
 		userService.resendActivationEmail(email);
 		return ResponseEntity.ok().build();
+	}
+
+	@PatchMapping("/current/communication-preference")
+	@Operation(summary = "Updating the communication preferences for the current user",
+			description = "Updating the communication preferences for the current user")
+	public User updateCommunicationPreferences(@RequestBody UserCommunicationPreferences communicationPreferences)
+			throws ResourceNotFoundException {
+		return userService.updateCommunicationPreferences(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()),
+				communicationPreferences);
+	}
+
+	@GetMapping("/current/communication-preference")
+	@Operation(summary = "Get  the communication preferences for the current user",
+			description = "Retrieves  the communication preferences for the currently authenticated user.")
+	ResponseEntity<UserCommunicationPreferencesDTO> fetchCommunicationPreferences() throws ResourceNotFoundException {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(userService.fetchCommunicationPreferences(UserSecurityUtils.getLoggedInUser()));
+	}
+
+	@PatchMapping("/{userId}/number")
+	@Operation(summary = "Update an existing user's phone number by ID",
+			description = "Updates the details of an existing user, identified by their ID.")
+	public User updateUserNumberById(@PathVariable Long userId,
+			@NotBlank(message = "Number must not be blank") @RequestParam String number,
+			@NotNull(message = "User Type should not be null") @RequestParam UserType userType)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
+		UserRequestAuthorizationValidator.canLoggedInUserManageUserType(userType);
+		return userService.updateUserNumberById(userId, number);
+	}
+
+	@GetMapping("/{userId}/resend-number-verification-sms")
+	@Operation(summary = "Resend number verification sms for a user",
+			description = "Resends number verification sms to a user who has not give consent for sms service.")
+	public OffsetDateTime resendNumberVerificationSms(@PathVariable Long userId)
+			throws CGATHttpException, ResourceNotFoundException {
+		return userService.resendNumberVerificationSms(userId);
+	}
+
+	@GetMapping("/{userId}/number-verification-status")
+	@Operation(summary = "Resend number verification details",
+			description = "Resend number verification details of a user who has not give consent for sms service.")
+	public ResendNumberVerificationDTO resendNumberVerificationDetails(@PathVariable Long userId)
+			throws CGATHttpException, ResourceNotFoundException {
+		return userService.resendNumberVerificationDetails(userId);
 	}
 
 }

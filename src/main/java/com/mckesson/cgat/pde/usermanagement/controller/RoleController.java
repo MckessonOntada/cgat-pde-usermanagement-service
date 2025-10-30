@@ -1,11 +1,19 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
-import java.time.LocalDate;
-import java.util.List;
-
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
+import com.mckesson.cgat.pde.usermanagement.model.CommunicationPreferences;
 import com.mckesson.cgat.pde.usermanagement.model.Permission;
 import com.mckesson.cgat.pde.usermanagement.model.RequirePermissions;
+import com.mckesson.cgat.pde.usermanagement.model.Role;
+import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
+import com.mckesson.cgat.pde.usermanagement.service.RoleService;
+import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
+import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,18 +26,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import com.mckesson.cgat.pde.usermanagement.model.Role;
-import com.mckesson.cgat.pde.usermanagement.model.UserType;
-import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
-import com.mckesson.cgat.pde.usermanagement.service.RoleService;
-import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
-import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @Tag(name = "Practice Roles & Permissions",
@@ -111,6 +109,14 @@ public class RoleController {
 			throw new BadRequestException("Either enter both dates or none for the filter as its a part of date range");
 
 		return roleService.findAll(paging, query, practiceId, status, startDate, endDate);
+	}
+
+	@RequirePermissions({ Permission.ADD_ROLES, Permission.EDIT_ROLES })
+	@PatchMapping("/{roleId}/communication-preferences")
+	public ResponseEntity<Role> updateCommunicationPreferences(@PathVariable Long roleId,
+			@RequestBody CommunicationPreferences communicationPreferences) {
+		Role updatedRole = roleService.updateCommunicationPreferences(roleId, communicationPreferences);
+		return ResponseEntity.ok(updatedRole);
 	}
 
 }

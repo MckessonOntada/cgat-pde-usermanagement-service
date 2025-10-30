@@ -1,19 +1,18 @@
 package com.mckesson.cgat.pde.usermanagement.controller;
 
 import com.mckesson.cgat.pde.usermanagement.dto.ContactUsDTO;
-import com.mckesson.cgat.pde.usermanagement.notification.service.EmailNotificationService;
+import com.mckesson.cgat.pde.usermanagement.notification.config.NotificationEventType;
+import com.mckesson.cgat.pde.usermanagement.notification.service.NotificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
@@ -26,10 +25,10 @@ public class GlobalContactUsController {
 
 	private static final Logger logger = LoggerFactory.getLogger(GlobalContactUsController.class);
 
-	private final EmailNotificationService emailNotificationService;
+	private final NotificationService notificationService;
 
-	public GlobalContactUsController(EmailNotificationService emailNotificationService) {
-		this.emailNotificationService = emailNotificationService;
+	public GlobalContactUsController(NotificationService notificationService) {
+		this.notificationService = notificationService;
 	}
 
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -37,7 +36,8 @@ public class GlobalContactUsController {
 			description = "Accepts a submission from the 'Contact Us' form, validates the data, and triggers an email notification to the support team.")
 	public ResponseEntity<Map<String, String>> submitContactUs(@Valid @RequestBody ContactUsDTO contactUsDTO) {
 
-		emailNotificationService.sendContactUsNotification(contactUsDTO);
+		long id = notificationService.saveContactUsMetadata(contactUsDTO);
+		notificationService.saveNotification(id, NotificationEventType.CONTACT_US);
 		logger.info("ContactUs form submitted: {}", contactUsDTO);
 
 		Map<String, String> response = new HashMap<>();

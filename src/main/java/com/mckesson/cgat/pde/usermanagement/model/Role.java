@@ -1,36 +1,16 @@
 package com.mckesson.cgat.pde.usermanagement.model;
 
-import java.io.Serializable;
-import java.util.Set;
-
-import org.hibernate.type.NumericBooleanConverter;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
-
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import org.hibernate.type.NumericBooleanConverter;
+
+import java.io.Serializable;
+import java.util.Set;
 
 @Entity
 @Setter
@@ -70,5 +50,9 @@ public class Role extends AuditColumns implements Serializable {
 
 	@Convert(converter = NumericBooleanConverter.class)
 	private Boolean isActive = true;
+
+	@OneToOne(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+	@JoinColumn(name = "id")
+	private CommunicationPreferences communicationPreferences;
 
 }

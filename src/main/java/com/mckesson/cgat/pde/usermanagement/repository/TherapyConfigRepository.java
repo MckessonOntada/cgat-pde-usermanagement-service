@@ -3,7 +3,7 @@ package com.mckesson.cgat.pde.usermanagement.repository;
 import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
-import com.mckesson.cgat.pde.usermanagement.model.TherapyConfig;
+import com.mckesson.cgat.pde.usermanagement.model.TherapyConfigs;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,15 +13,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface TherapyConfigRepository extends JpaRepository<TherapyConfig, Long> {
+public interface TherapyConfigRepository extends JpaRepository<TherapyConfigs, Long> {
 
-	List<TherapyConfig> findByNdcNumberInAndChannelType(@Param("ndcNumbers") List<String> ndcNumbers,
+	List<TherapyConfigs> findByNdcNumberInAndChannelType(@Param("ndcNumbers") List<String> ndcNumbers,
 			ChannelType channelType);
 
 	@Query("""
 			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,tc)
 			    FROM Therapy m
-			    LEFT JOIN TherapyConfig tc
+			    LEFT JOIN TherapyConfigs tc
 			    ON m.ndcNumber = tc.ndcNumber
 			    AND m.channelType = tc.channelType
 			    WHERE m.tradeName = :tradeName
@@ -33,7 +33,7 @@ public interface TherapyConfigRepository extends JpaRepository<TherapyConfig, Lo
 	@Query("""
 			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,tc)
 			    FROM Therapy m
-			    LEFT JOIN TherapyConfig tc
+			    LEFT JOIN TherapyConfigs tc
 			    ON m.ndcNumber = tc.ndcNumber
 			    AND m.channelType = tc.channelType
 			    WHERE m.materialNumber = :materialNumber
@@ -45,7 +45,7 @@ public interface TherapyConfigRepository extends JpaRepository<TherapyConfig, Lo
 	@Query("""
 			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,sp)
 			    FROM Therapy m
-			    LEFT JOIN SPTherapyConfig sp
+			    LEFT JOIN SPTherapyConfigs sp
 			    ON m.materialNumber = sp.spProductId
 			    WHERE m.materialNumber = :materialNumber
 			    AND m.channelType = :channelType
@@ -58,7 +58,7 @@ public interface TherapyConfigRepository extends JpaRepository<TherapyConfig, Lo
 	@Query("""
 			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,tc)
 			    FROM Therapy m
-			    LEFT JOIN TherapyConfig tc
+			    LEFT JOIN TherapyConfigs tc
 			    ON m.ndcNumber = tc.ndcNumber
 			    WHERE m.ndcNumber = :ndcNumber
 			    and m.channelType = :channelType
@@ -70,9 +70,9 @@ public interface TherapyConfigRepository extends JpaRepository<TherapyConfig, Lo
 	@Query("""
 			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m, tc, sp)
 			    FROM Therapy m
-			    LEFT JOIN TherapyConfig tc
+			    LEFT JOIN TherapyConfigs tc
 			        ON m.ndcNumber = tc.ndcNumber
-			    LEFT JOIN SPTherapyConfig sp
+			    LEFT JOIN SPTherapyConfigs sp
 			        ON m.materialNumber = sp.spProductId
 			    WHERE m.id = :id
 			""")
@@ -89,7 +89,7 @@ public interface TherapyConfigRepository extends JpaRepository<TherapyConfig, Lo
 	@Query("""
 			    SELECT new com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO(m,sp)
 			    FROM Therapy m
-			    LEFT JOIN SPTherapyConfig sp
+			    LEFT JOIN SPTherapyConfigs sp
 			    ON m.materialNumber = sp.spProductId
 			    WHERE m.tradeName = :tradeName
 			    AND m.channelType = :channelType
