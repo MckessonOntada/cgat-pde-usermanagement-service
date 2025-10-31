@@ -158,7 +158,24 @@ public class TherapyServiceImpl implements TherapyService {
 			else {
 				List<Therapy> crosswalkedTherapies = therapyRepository.findCrosswalkedTherapies(ndcNumber,
 						Long.parseLong(UserSecurityUtils.getLoggedInUser().getId()));
-				variantsResponse = toResponseDtoVariantsListFromTherapies(crosswalkedTherapies);
+
+				Set<String> distinctMaterialNumbers = crosswalkedTherapies.stream()
+					.map(Therapy::getMaterialNumber)
+					.filter(Objects::nonNull)
+					.collect(Collectors.toCollection(LinkedHashSet::new));
+				List<SPTherapyConfigs> spTherapyConfigs = spTherapyConfigRepository
+					.findBySpProductIdIn((List<String>) distinctMaterialNumbers);
+
+				Map<String, Set<DiagnosisCode>> spTherapyConfigMap = spTherapyConfigs.stream()
+					.collect(Collectors.toMap(SPTherapyConfigs::getSpProductId,
+							cfg -> new HashSet<>(
+									Objects.requireNonNullElse(cfg.getDiagnosisCodes(), Collections.emptySet())),
+							(a, b) -> {
+								a.addAll(b);
+								return a;
+							}));
+
+				variantsResponse = toResponseDtoVariantsListFromTherapies(crosswalkedTherapies, spTherapyConfigMap);
 
 			}
 			return new PageImpl<>(variantsResponse, paging, variantsResponse.size());
@@ -171,7 +188,8 @@ public class TherapyServiceImpl implements TherapyService {
 		}
 	}
 
-	private List<VariantsResponseDTO> toResponseDtoVariantsListFromTherapies(List<Therapy> therapies) {
+	private List<VariantsResponseDTO> toResponseDtoVariantsListFromTherapies(List<Therapy> therapies,
+			Map<String, Set<DiagnosisCode>> spTherapyConfigMap) {
 		if (therapies == null) {
 			return null;
 		}
@@ -182,6 +200,7 @@ public class TherapyServiceImpl implements TherapyService {
 				.variantDescription(therapy.getMaterialDescription())
 				.materialNumber(therapy.getMaterialNumber())
 				.therapyId(therapy.getId())
+				.diagnosisCodes(spTherapyConfigMap.getOrDefault(therapy.getMaterialNumber(), Collections.emptySet()))
 				.build())
 			.toList();
 	}
