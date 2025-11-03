@@ -2,10 +2,15 @@ package com.mckesson.cgat.pde.usermanagement.controller;
 
 import com.mckesson.cgat.pde.usermanagement.dto.*;
 import com.mckesson.cgat.pde.usermanagement.model.*;
+import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
+import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,13 +21,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
-import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.BufferedWriter;
@@ -149,6 +147,47 @@ public class GlobalTherapyController {
 		log.debug("Remove sp therapy config for SP Material: {}", spProductId);
 		therapyService.removeSPTherapyConfig(spProductId);
 		return new ResponseEntity<>("SP Therapy configurations removed successfully", HttpStatus.OK);
+	}
+
+	@PatchMapping("/sp/config/{spProductId}/diagnosis-codes")
+	@RequirePermissions({ Permission.MANAGE_MATERIAL })
+	@Operation(summary = "Update diagnosis codes for a Specialty Pharma therapy configuration",
+			description = "Updates the list of diagnosis codes associated with a specific Specialty Pharma therapy configuration.")
+	public ResponseEntity<SPTherapyConfigs> updateSPTherapyConfigDiagnosisCodes(
+			@PathVariable @NotNull(message = "Sp product ID can not be null") String spProductId,
+			@NotEmpty(message = "Diagnosis codes can not be empty") @RequestBody List<Long> diagnosisCodeIDs)
+			throws ResourceNotFoundException {
+		log.debug("Updating diagnosis codes for SP Material: {}", spProductId);
+		SPTherapyConfigs spTherapyConfigs = therapyService.updateSPTherapyConfigDiagnosisCodes(spProductId,
+				diagnosisCodeIDs);
+		return new ResponseEntity<>(spTherapyConfigs, HttpStatus.OK);
+	}
+
+	@RequirePermissions({ Permission.MANAGE_MATERIAL })
+	@DeleteMapping("/sp/config/{spProductId}/diagnosis-codes")
+	@Operation(summary = "Remove diagnosis codes from an sp therapy",
+			description = "Removes the association between a specified sp therapy and diagnosis codes.")
+	public ResponseEntity<Void> delinkSPProductFromDiagnosisCodes(@PathVariable String spProductId,
+			@NotNull(message = "Diagnosis codes can not be empty") @RequestBody List<Long> diagnosisCodeIDs)
+			throws ResourceNotFoundException {
+		log.debug("Delinking diagnosis codes from SP Material: {}", spProductId);
+		therapyService.delinkSPProductFromDiagnosisCodes(spProductId, diagnosisCodeIDs);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	@RequirePermissions({ Permission.MANAGE_MATERIAL })
+	@GetMapping("/sp/config/{spProductId}/diagnosis-codes")
+	@Operation(summary = "Find and filter all diagnosis code that are not linked to a specific sp product",
+			description = "Retrieves a paginated and filtered list of all diagnosis code that are not linked to a specific sp product.")
+	Page<DiagnosisCode> findAllDiagnosisCodes(@RequestParam(defaultValue = "0") Integer pageNo,
+			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "code") String sortBy,
+			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
+			@PathVariable String spProductId) throws ResourceNotFoundException {
+		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
+				: Sort.by(sortBy).descending();
+		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
+		return therapyService.findAllDiagnosisCodesNotLinkedToSPProduct(query, paging, spProductId);
+
 	}
 
 	@GetMapping("/sp/config/{materialNumber}")
