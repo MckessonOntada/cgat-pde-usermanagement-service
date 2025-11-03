@@ -1,16 +1,13 @@
 package com.mckesson.cgat.pde.usermanagement.service;
 
-import java.util.List;
-
 import com.mckesson.cgat.pde.usermanagement.dto.*;
-import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
-import com.mckesson.cgat.pde.usermanagement.model.Status;
+import com.mckesson.cgat.pde.usermanagement.model.*;
+import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.mckesson.cgat.pde.usermanagement.model.Therapy;
-import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
+import java.util.List;
 
 @Service
 public interface TherapyService {
@@ -89,5 +86,14 @@ public interface TherapyService {
 	void removeSPTherapyConfig(String spProductId) throws ResourceNotFoundException;
 
 	TherapyLogoResponseDto getManufacturerLogo(Long therapyId) throws ResourceNotFoundException;
+
+	SPTherapyConfigs updateSPTherapyConfigDiagnosisCodes(String spProductId, List<Long> diagnosisCodeIDs)
+			throws ResourceNotFoundException;
+
+	void delinkSPProductFromDiagnosisCodes(String spProductId, List<Long> diagnosisCodeIDs)
+			throws ResourceNotFoundException;
+
+	Page<DiagnosisCode> findAllDiagnosisCodesNotLinkedToSPProduct(String query, Pageable paging, String spProductId)
+			throws ResourceNotFoundException;
 
 }
