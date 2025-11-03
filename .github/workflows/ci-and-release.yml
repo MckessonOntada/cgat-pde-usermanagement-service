@@ -208,14 +208,14 @@ jobs:
 
       - name: Login to Jfrog
         uses: jfrog/setup-jfrog-cli@v3
-        if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/release-')
+        if: github.ref == 'refs/heads/master_dev' || startsWith(github.ref, 'refs/heads/release-')
         env:
           JF_URL: https://${{ env.DOCKER_REGISTRY }}
           JF_USER: ${{ secrets.DEV_PORTAL_JFROG_USERNAME }}
           JF_PASSWORD: ${{ secrets.DEV_PORTAL_JFROG_API_KEY }}
 
       - name: View and Upload Images to Artifactory
-        if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/release-')
+        if: github.ref == 'refs/heads/master_dev' || startsWith(github.ref, 'refs/heads/release-')
         run: |
           docker images
           #jf docker push ${{ env.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_TAG }} --build-name=${{ env.BUILD_NAME }} --build-number=${{ env.BUILD_NUMBER }} --project ${{ env.JFROG_PROJECT_NAME }}
@@ -249,7 +249,7 @@ jobs:
 
       - name: Create Prerelease
         uses: ncipollo/release-action@v1
-        if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/release-')
+        if: github.ref == 'refs/heads/master_dev' || startsWith(github.ref, 'refs/heads/release-')
         with:
           artifacts: "./upload-artifacts/*"
           prerelease: true
