@@ -78,8 +78,8 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 			AND (
 			          (:accountsListSize > 0 AND cp.soldToCustomer IN :accountIds)
 			       OR (:accountsListSize = 0 AND (
-			              (:practiceIdListSize = 0 AND cp.tenantId IS NOT NULL)
-			           OR (:practiceIdListSize > 0 AND cp.tenantId IN :practiceIdList)
+			              (:practiceIdListSize = 0 AND ac.practiceId IS NOT NULL)
+			           OR (:practiceIdListSize > 0 AND ac.practiceId IN :practiceIdList)
 			          ))
 			      )
 			        AND ac.partnerFunction = :partnerFunction
