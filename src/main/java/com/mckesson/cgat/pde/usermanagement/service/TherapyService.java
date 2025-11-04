@@ -93,7 +93,7 @@ public interface TherapyService {
 	void delinkSPProductFromDiagnosisCodes(String spProductId, List<Long> diagnosisCodeIDs)
 			throws ResourceNotFoundException;
 
-	Page<DiagnosisCode> findAllDiagnosisCodesNotLinkedToSPProduct(String query, Pageable paging, String spProductId)
-			throws ResourceNotFoundException;
+	Page<DiagnosisCode> findAllDiagnosisCodesNotLinkedToSPProduct(String query, Pageable paging, String spProductId,
+			boolean showLinkedCodes) throws ResourceNotFoundException;
 
 }
