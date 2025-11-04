@@ -182,11 +182,13 @@ public class GlobalTherapyController {
 	Page<DiagnosisCode> findAllDiagnosisCodes(@RequestParam(defaultValue = "0") Integer pageNo,
 			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(defaultValue = "code") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @RequestParam(required = false) String query,
-			@PathVariable String spProductId) throws ResourceNotFoundException {
+			@PathVariable String spProductId, @RequestParam(required = false) Boolean showLinkedCodes)
+			throws ResourceNotFoundException {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-		return therapyService.findAllDiagnosisCodesNotLinkedToSPProduct(query, paging, spProductId);
+		showLinkedCodes = Boolean.TRUE.equals(showLinkedCodes);
+		return therapyService.findAllDiagnosisCodesNotLinkedToSPProduct(query, paging, spProductId, showLinkedCodes);
 
 	}
 

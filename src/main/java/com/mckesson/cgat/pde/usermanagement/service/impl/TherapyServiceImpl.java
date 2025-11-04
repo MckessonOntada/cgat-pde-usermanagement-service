@@ -771,7 +771,7 @@ public class TherapyServiceImpl implements TherapyService {
 
 	@Override
 	public Page<DiagnosisCode> findAllDiagnosisCodesNotLinkedToSPProduct(String query, Pageable paging,
-			String spProductId) throws ResourceNotFoundException {
+			String spProductId, boolean showLinkedCodes) throws ResourceNotFoundException {
 		SPTherapyConfigs spTherapyConfigs = spTherapyConfigRepository.findBySpProductId(spProductId);
 
 		if (spTherapyConfigs == null) {
@@ -779,6 +779,10 @@ public class TherapyServiceImpl implements TherapyService {
 		}
 
 		query = StringUtils.toRootLowerCase(query);
+
+		if (showLinkedCodes) {
+			return diagnosisCodeRepository.findAllDiagnosisCodesLinkedToSPProduct(query, paging, spProductId);
+		}
 
 		return diagnosisCodeRepository.findAllDiagnosisCodesNotLinkedToSPProduct(query, paging, spProductId);
 
