@@ -32,21 +32,21 @@ public interface DiagnosisCodeRepository extends JpaRepository<DiagnosisCode, Lo
 	Page<DiagnosisCode> findAllDiagnosisCodesNotLinkedToSPProduct(String query, Pageable paging, String spProductId);
 
 	@Query(nativeQuery = true, value = """
-			select dc.*
-			FROM usermanagement.diagnosis_code dc
-			         left JOIN catalog.sp_therapy_config stc
-			         on stc.sp_product_id = :spProductId
-			         LEFT JOIN catalog.sp_therapy_config_diagnosis_code stcdc
+			         SELECT dc.*
+			        FROM  usermanagement.diagnosis_code dc
+			        JOIN catalog.sp_therapy_config_diagnosis_code stcdc
 			         ON dc.id = stcdc.diagnosis_code_id
-			         AND stcdc.sp_therapy_config_id = stc.id
-			WHERE
-			(
-				(
-					:query IS NULL
-				 	OR LOWER(dc.code) LIKE %:query%
-				 	OR LOWER(dc.long_description) LIKE %:query%
-				)
-			)""")
+			         JOIN catalog.sp_therapy_config stc
+			         ON stcdc.sp_therapy_config_id = stc.id
+			         WHERE
+			         (
+			             (
+			                 :query IS NULL
+			                 OR LOWER(dc.code) LIKE %:query%
+			                 OR LOWER(dc.long_description) LIKE %:query%
+			             )
+			and stc.sp_product_id = :spProductId
+			         )""")
 	Page<DiagnosisCode> findAllDiagnosisCodesLinkedToSPProduct(String query, Pageable paging, String spProductId);
 
 }
