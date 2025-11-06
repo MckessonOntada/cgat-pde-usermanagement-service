@@ -159,12 +159,13 @@ public class TherapyServiceImpl implements TherapyService {
 				List<Therapy> crosswalkedTherapies = therapyRepository.findCrosswalkedTherapies(ndcNumber,
 						Long.parseLong(UserSecurityUtils.getLoggedInUser().getId()));
 
-				Set<String> distinctMaterialNumbers = crosswalkedTherapies.stream()
-					.map(Therapy::getMaterialNumber)
-					.filter(Objects::nonNull)
-					.collect(Collectors.toCollection(LinkedHashSet::new));
+                List<String> materialList = crosswalkedTherapies.stream()
+                        .map(Therapy::getMaterialNumber)
+                        .filter(Objects::nonNull).distinct().collect(Collectors.toList());
+
 				List<SPTherapyConfigs> spTherapyConfigs = spTherapyConfigRepository
-					.findBySpProductIdIn((List<String>) distinctMaterialNumbers);
+					.findBySpProductIdIn(materialList);
+
 
 				Map<String, Set<DiagnosisCode>> spTherapyConfigMap = spTherapyConfigs.stream()
 					.collect(Collectors.toMap(SPTherapyConfigs::getSpProductId,
