@@ -785,7 +785,36 @@ public class TherapyServiceImpl implements TherapyService {
 		}
 
 		return diagnosisCodeRepository.findAllDiagnosisCodesNotLinkedToSPProduct(query, paging, spProductId);
+	}
 
+	@Override
+	@Transactional
+	public void updateTherapyQuantities(TherapyQuantityUpdateRequestDTO request) {
+		List<String> ndcNumbers = request.getNdcNumbers();
+		ChannelType channelType = request.getChannelType();
+
+		Map<String, TherapyConfigs> existingConfigMap = therapyConfigRepository
+			.findByNdcNumberInAndChannelType(ndcNumbers, channelType)
+			.stream()
+			.collect(Collectors.toMap(TherapyConfigs::getNdcNumber, Function.identity()));
+
+		if (existingConfigMap.isEmpty()) {
+			throw new IllegalArgumentException("No therapy configurations found for the provided NDC numbers.");
+		}
+
+		List<TherapyConfigs> updatedConfigs = ndcNumbers.stream().map(ndc -> {
+			TherapyConfigs config = existingConfigMap.get(ndc);
+			if (config == null) {
+				log.warn("No therapy configuration found for NDC: {}", ndc);
+				return null;
+			}
+			config.setMinQuantity(request.getMinQuantity());
+			config.setMaxQuantity(request.getMaxQuantity());
+			return config;
+		}).filter(Objects::nonNull).toList();
+
+		therapyConfigRepository.saveAll(updatedConfigs);
+		log.info("Updated min/max quantities for {} therapy configurations.", updatedConfigs.size());
 	}
 
 }
