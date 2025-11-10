@@ -393,6 +393,7 @@ public class TherapyServiceImpl implements TherapyService {
 		ConfigFieldRequirement poRequirement = request.getPoRequirement();
 		ConfigFieldRequirement pidRequirement = request.getPidRequirement();
 		ConfigFieldRequirement dateOfApheresisRequirement = request.getDateOfApheresisRequirement();
+		ConfigFieldRequirement shipToPORequirement = request.getShipToPORequirement();
 		Map<String, TherapyConfigs> existingConfigMap = therapyConfigRepository
 			.findByNdcNumberInAndChannelType(ndcNumbers, channelType)
 			.stream()
@@ -409,6 +410,7 @@ public class TherapyServiceImpl implements TherapyService {
 			config.setPoNumberRequirement(poRequirement);
 			config.setPatientIdentifierRequirement(pidRequirement);
 			config.setDateOfApheresisRequirement(dateOfApheresisRequirement);
+			config.setShipToPORequirement(shipToPORequirement);
 			return config;
 		}).toList();
 

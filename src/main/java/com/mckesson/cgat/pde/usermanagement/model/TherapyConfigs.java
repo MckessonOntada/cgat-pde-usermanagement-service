@@ -55,6 +55,10 @@ public class TherapyConfigs implements Serializable {
 	private ConfigFieldRequirement dateOfApheresisRequirement;
 
 	@Enumerated(EnumType.STRING)
+	@Column(name = "ship_to_po_requirement", nullable = false)
+	private ConfigFieldRequirement shipToPORequirement;
+
+	@Enumerated(EnumType.STRING)
 	private ChannelType channelType;
 
 	@Column(name = "min_quantity", nullable = false, columnDefinition = "SMALLINT DEFAULT 1")
