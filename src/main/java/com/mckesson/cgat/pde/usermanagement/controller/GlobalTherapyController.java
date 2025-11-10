@@ -343,4 +343,14 @@ public class GlobalTherapyController {
 			.body(therapyLogoResponseDto.getLogo());
 	}
 
+	@PostMapping("/config/update-quantity")
+	@RequirePermissions({ Permission.MANAGE_MATERIAL })
+	@Operation(summary = "Update minimum and maximum quantity for therapies in bulk",
+			description = "Allows updating min and max quantities for a list of NDC numbers.")
+	public ResponseEntity<String> updateTherapyQuantities(@Valid @RequestBody TherapyQuantityUpdateRequestDTO request) {
+		log.debug("Updating therapy quantities for ndcNumbers: {}", request.getNdcNumbers());
+		therapyService.updateTherapyQuantities(request);
+		return new ResponseEntity<>("Therapy quantity configurations updated successfully", HttpStatus.OK);
+	}
+
 }

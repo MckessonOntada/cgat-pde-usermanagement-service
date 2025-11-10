@@ -96,4 +96,6 @@ public interface TherapyService {
 	Page<DiagnosisCode> findAllDiagnosisCodesNotLinkedToSPProduct(String query, Pageable paging, String spProductId,
 			boolean showLinkedCodes) throws ResourceNotFoundException;
 
+	void updateTherapyQuantities(TherapyQuantityUpdateRequestDTO request);
+
 }
