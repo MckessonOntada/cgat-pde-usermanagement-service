@@ -29,7 +29,7 @@ public class TherapyConfigRequestDTO {
 
 	private ConfigFieldRequirement dateOfApheresisRequirement;
 
-    private ConfigFieldRequirement shipToPORequirement;
+	private ConfigFieldRequirement shipToPORequirement;
 
 	private ChannelType channelType = ChannelType.BUY_AND_BILL;
 
