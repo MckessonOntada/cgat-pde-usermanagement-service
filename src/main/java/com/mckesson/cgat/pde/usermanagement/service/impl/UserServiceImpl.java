@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
 
 	private final NotificationEventRepository notificationEventRepository;
 
-	private final CatalogPriceRepository catalogPriceRepository;
+	private final TherapyRepository therapyRepository;
 
 	@Autowired
 	Validator validator;
@@ -79,14 +79,14 @@ public class UserServiceImpl implements UserService {
 	public UserServiceImpl(UserRepository userRepository, AccountRepository repository, RoleRepository roleRepository,
 			OktaUserManagementService oktaUserManagementService,
 			UserCommunicationPreferencesRepository communicationPreferencesRepository,
-			NotificationEventRepository notificationEventRepository, CatalogPriceRepository catalogPriceRepository) {
+			NotificationEventRepository notificationEventRepository, TherapyRepository therapyRepository) {
 		this.userRepository = userRepository;
 		this.accountRepository = repository;
 		this.roleRepository = roleRepository;
 		this.oktaUserManagementService = oktaUserManagementService;
 		this.communicationPreferencesRepository = communicationPreferencesRepository;
 		this.notificationEventRepository = notificationEventRepository;
-		this.catalogPriceRepository = catalogPriceRepository;
+		this.therapyRepository = therapyRepository;
 	}
 
 	@Override
@@ -707,37 +707,37 @@ public class UserServiceImpl implements UserService {
 
 	@Transactional
 	@Override
-	public User restrictUserToCatalogs(Long userId, List<Long> catalogIds) throws ResourceNotFoundException {
+	public User restrictUserToMaterial(Long userId, List<Long> materialIds) throws ResourceNotFoundException {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new ResourceNotFoundException("User not found with this Id :" + userId));
-		List<CatalogPrice> catalogsToRestrict = catalogPriceRepository.findAllById(catalogIds);
-		if (catalogsToRestrict.size() != catalogIds.size()) {
+		List<Therapy> materialsToRestrict = therapyRepository.findAllById(materialIds);
+		if (materialsToRestrict.size() != materialIds.size()) {
 			throw new ResourceNotFoundException("Some of the provided catalog IDs do not exist.");
 		}
-		user.getExcludedCatalogs().addAll(catalogsToRestrict);
+		user.getExcludedMaterials().addAll(materialsToRestrict);
 		return user;
 	}
 
 	@Transactional
 	@Override
-	public User allowUserToCatalogs(Long userId, List<Long> catalogIds) throws ResourceNotFoundException {
+	public User deleteUserMaterialRestriction(Long userId, List<Long> materialIds) throws ResourceNotFoundException {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new ResourceNotFoundException("User not found with this Id :" + userId));
-		List<CatalogPrice> catalogsToAllow = catalogPriceRepository.findAllById(catalogIds);
-		if (catalogsToAllow.size() != catalogIds.size()) {
+		List<Therapy> materialsToAllow = therapyRepository.findAllById(materialIds);
+		if (materialsToAllow.size() != materialIds.size()) {
 			throw new ResourceNotFoundException("Some of the provided catalog IDs do not exist.");
 		}
-		user.getExcludedCatalogs().removeAll(catalogsToAllow);
+		user.getExcludedMaterials().removeAll(materialsToAllow);
 		return user;
 	}
 
 	@Transactional
 	@Override
-	public List<CatalogPrice> getExcludedCatalogsForUser(Long userId) throws ResourceNotFoundException {
+	public List<Therapy> getExcludedMaterialsForUser(Long userId) throws ResourceNotFoundException {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new ResourceNotFoundException("User not found with this Id: " + userId));
 
-		return new ArrayList<>(user.getExcludedCatalogs());
+		return new ArrayList<>(user.getExcludedMaterials());
 	}
 
 }

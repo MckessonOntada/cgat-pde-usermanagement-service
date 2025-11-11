@@ -80,10 +80,10 @@ public interface UserService {
 
 	ResendNumberVerificationDTO resendNumberVerificationDetails(Long userId) throws ResourceNotFoundException;
 
-	User restrictUserToCatalogs(Long userId, List<Long> catalogIds) throws ResourceNotFoundException;
+	User restrictUserToMaterial(Long userId, List<Long> materialIds) throws ResourceNotFoundException;
 
-	User allowUserToCatalogs(Long userId, List<Long> catalogIds) throws ResourceNotFoundException;
+	User deleteUserMaterialRestriction(Long userId, List<Long> materialIds) throws ResourceNotFoundException;
 
-	List<CatalogPrice> getExcludedCatalogsForUser(Long userId) throws ResourceNotFoundException;
+	List<Therapy> getExcludedMaterialsForUser(Long userId) throws ResourceNotFoundException;
 
 }

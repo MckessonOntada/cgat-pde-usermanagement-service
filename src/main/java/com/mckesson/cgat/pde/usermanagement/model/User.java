@@ -103,9 +103,9 @@ public class User extends AuditColumns implements Serializable {
 	private Boolean isPhoneVerified = false;
 
 	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "user_catalog_exclusion", schema = "catalog", joinColumns = @JoinColumn(name = "user_id"),
-			inverseJoinColumns = @JoinColumn(name = "catalog_id"))
+	@JoinTable(name = "user_material_exclusion", schema = "catalog", joinColumns = @JoinColumn(name = "user_id"),
+			inverseJoinColumns = @JoinColumn(name = "material_id"))
 	@NotAudited
-	private Set<CatalogPrice> excludedCatalogs = new HashSet<>();
+	private Set<Therapy> excludedMaterials = new HashSet<>();
 
 }
