@@ -287,7 +287,4 @@ public class CatalogPrice extends Auditable {
 	@Column(name = "channel_type")
 	private ChannelType channelType;
 
-	@ManyToMany(mappedBy = "excludedCatalogs")
-	private Set<User> excludedUsers = new HashSet<>();
-
 }

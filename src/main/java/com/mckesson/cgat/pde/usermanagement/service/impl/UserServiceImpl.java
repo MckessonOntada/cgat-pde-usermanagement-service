@@ -715,7 +715,7 @@ public class UserServiceImpl implements UserService {
 			throw new ResourceNotFoundException("Some of the provided catalog IDs do not exist.");
 		}
 		user.getExcludedCatalogs().addAll(catalogsToRestrict);
-		return userRepository.save(user);
+		return user;
 	}
 
 	@Transactional
@@ -728,7 +728,7 @@ public class UserServiceImpl implements UserService {
 			throw new ResourceNotFoundException("Some of the provided catalog IDs do not exist.");
 		}
 		user.getExcludedCatalogs().removeAll(catalogsToAllow);
-		return userRepository.save(user);
+		return user;
 	}
 
 	@Transactional

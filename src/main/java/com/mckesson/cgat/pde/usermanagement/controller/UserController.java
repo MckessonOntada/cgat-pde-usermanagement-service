@@ -345,7 +345,7 @@ public class UserController {
 	}
 
 	@RequirePermissions({ Permission.ADD_USERS, Permission.EDIT_USERS })
-	@PatchMapping("/{userId}/restrict-catalog")
+	@PatchMapping("/{userId}/restrict-catalogs")
 	@Operation(summary = "Restrict a user to multiple catalogs",
 			description = "Creates associations between a specified user and a list of accounts.")
 	public User restrictUserToCatalog(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
@@ -356,7 +356,7 @@ public class UserController {
 	}
 
 	@RequirePermissions({ Permission.ADD_USERS, Permission.EDIT_USERS })
-	@DeleteMapping("/{userId}/allow-catalog")
+	@DeleteMapping("/{userId}/allow-catalogs")
 	@Operation(summary = "Restrict a user to multiple catalogs",
 			description = "Creates associations between a specified user and a list of accounts.")
 	public User deleteUserCatalogRestriction(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
