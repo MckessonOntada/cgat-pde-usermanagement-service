@@ -9,7 +9,7 @@ import com.mckesson.cgat.pde.usermanagement.exception.custom.ResourceConflictExc
 import com.mckesson.cgat.pde.usermanagement.model.communication.ModuleCategory;
 import com.mckesson.cgat.pde.usermanagement.model.communication.PreferenceDetails;
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
-import com.mckesson.cgat.pde.usermanagement.repository.UserCommunicationPreferencesRepository;
+import com.mckesson.cgat.pde.usermanagement.repository.*;
 import com.mckesson.cgat.pde.usermanagement.notification.config.NotificationEventType;
 import com.mckesson.cgat.pde.usermanagement.notification.repository.NotificationEventRepository;
 import com.mckesson.cgat.pde.usermanagement.notification.service.NotificationService;
@@ -44,9 +44,6 @@ import com.mckesson.cgat.pde.usermanagement.model.UserPreference;
 import com.mckesson.cgat.pde.usermanagement.model.UserPreferenceType;
 import com.mckesson.cgat.pde.usermanagement.model.UserProvisionedInOktaStatus;
 import com.mckesson.cgat.pde.usermanagement.model.UserType;
-import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
-import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
-import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
 import com.mckesson.cgat.pde.usermanagement.service.OktaUserManagementService;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -71,6 +68,8 @@ public class UserServiceImpl implements UserService {
 
 	private final NotificationEventRepository notificationEventRepository;
 
+	private final CatalogPriceRepository catalogPriceRepository;
+
 	@Autowired
 	Validator validator;
 
@@ -80,13 +79,14 @@ public class UserServiceImpl implements UserService {
 	public UserServiceImpl(UserRepository userRepository, AccountRepository repository, RoleRepository roleRepository,
 			OktaUserManagementService oktaUserManagementService,
 			UserCommunicationPreferencesRepository communicationPreferencesRepository,
-			NotificationEventRepository notificationEventRepository) {
+			NotificationEventRepository notificationEventRepository, CatalogPriceRepository catalogPriceRepository) {
 		this.userRepository = userRepository;
 		this.accountRepository = repository;
 		this.roleRepository = roleRepository;
 		this.oktaUserManagementService = oktaUserManagementService;
 		this.communicationPreferencesRepository = communicationPreferencesRepository;
 		this.notificationEventRepository = notificationEventRepository;
+		this.catalogPriceRepository = catalogPriceRepository;
 	}
 
 	@Override
@@ -700,6 +700,41 @@ public class UserServiceImpl implements UserService {
 			.number(user.getContact().getPhone())
 			.lastResendSMSTime(latestEvent != null ? latestEvent.getCreatedAt().atOffset(ZoneOffset.UTC) : null)
 			.build();
+	}
+
+	@Transactional
+	@Override
+	public User restrictUserToCatalogs(Long userId, List<Long> catalogIds) throws ResourceNotFoundException {
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new ResourceNotFoundException("User not found with this Id :" + userId));
+		List<CatalogPrice> catalogsToRestrict = catalogPriceRepository.findAllById(catalogIds);
+		if (catalogsToRestrict.size() != catalogIds.size()) {
+			throw new ResourceNotFoundException("Some of the provided catalog IDs do not exist.");
+		}
+		user.getExcludedCatalogs().addAll(catalogsToRestrict);
+		return user;
+	}
+
+	@Transactional
+	@Override
+	public User allowUserToCatalogs(Long userId, List<Long> catalogIds) throws ResourceNotFoundException {
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new ResourceNotFoundException("User not found with this Id :" + userId));
+		List<CatalogPrice> catalogsToAllow = catalogPriceRepository.findAllById(catalogIds);
+		if (catalogsToAllow.size() != catalogIds.size()) {
+			throw new ResourceNotFoundException("Some of the provided catalog IDs do not exist.");
+		}
+		user.getExcludedCatalogs().removeAll(catalogsToAllow);
+		return user;
+	}
+
+	@Transactional
+	@Override
+	public List<CatalogPrice> getExcludedCatalogsForUser(Long userId) throws ResourceNotFoundException {
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new ResourceNotFoundException("User not found with this Id: " + userId));
+
+		return new ArrayList<>(user.getExcludedCatalogs());
 	}
 
 }

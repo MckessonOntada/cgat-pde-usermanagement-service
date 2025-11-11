@@ -351,4 +351,37 @@ public class UserController {
 		return userService.resendNumberVerificationDetails(userId);
 	}
 
+	@RequirePermissions({ Permission.ADD_USERS, Permission.EDIT_USERS })
+	@PatchMapping("/{userId}/restrict-catalogs")
+	@Operation(summary = "Restrict a user to multiple catalogs",
+			description = "Creates associations between a specified user and a list of accounts.")
+	public User restrictUserToCatalog(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
+			@NotEmpty(message = "Catalogs can not be empty") @RequestBody List<Long> catalogIds)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
+		return userService.restrictUserToCatalogs(userId, catalogIds);
+
+	}
+
+	@RequirePermissions({ Permission.ADD_USERS, Permission.EDIT_USERS })
+	@DeleteMapping("/{userId}/allow-catalogs")
+	@Operation(summary = "Restrict a user to multiple catalogs",
+			description = "Creates associations between a specified user and a list of accounts.")
+	public User deleteUserCatalogRestriction(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
+			@NotEmpty(message = "Catalogs can not be empty") @RequestBody List<Long> catalogIds)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
+		return userService.allowUserToCatalogs(userId, catalogIds);
+
+	}
+
+	@RequirePermissions({ Permission.ADD_USERS, Permission.EDIT_USERS })
+	@GetMapping("/{userId}/restricted-catalogs")
+	@Operation(summary = "Restrict a user to multiple catalogs",
+			description = "Creates associations between a specified user and a list of accounts.")
+	public List<CatalogPrice> getExcludedCatalogsForUser(
+			@PathVariable @NotNull(message = "User ID can not be null") Long userId)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
+		return userService.getExcludedCatalogsForUser(userId);
+
+	}
+
 }
