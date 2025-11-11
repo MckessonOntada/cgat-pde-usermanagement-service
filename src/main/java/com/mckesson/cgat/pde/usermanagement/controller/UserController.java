@@ -303,8 +303,11 @@ public class UserController {
 	@PatchMapping("/current/communication-preference")
 	@Operation(summary = "Updating the communication preferences for the current user",
 			description = "Updating the communication preferences for the current user")
-	public User updateCommunicationPreferences(@RequestBody UserCommunicationPreferences communicationPreferences)
-			throws ResourceNotFoundException {
+	public User updateCommunicationPreferences(@RequestParam(required = false) Long userId,
+			@RequestBody UserCommunicationPreferences communicationPreferences) throws ResourceNotFoundException {
+		if (userId != null) {
+			return userService.updateCommunicationPreferences(userId, communicationPreferences);
+		}
 		return userService.updateCommunicationPreferences(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()),
 				communicationPreferences);
 	}
@@ -312,9 +315,13 @@ public class UserController {
 	@GetMapping("/current/communication-preference")
 	@Operation(summary = "Get  the communication preferences for the current user",
 			description = "Retrieves  the communication preferences for the currently authenticated user.")
-	ResponseEntity<UserCommunicationPreferencesDTO> fetchCommunicationPreferences() throws ResourceNotFoundException {
+	ResponseEntity<UserCommunicationPreferencesDTO> fetchCommunicationPreferences(
+			@RequestParam(required = false) Long userId) throws ResourceNotFoundException {
+		if (userId != null) {
+			return ResponseEntity.status(HttpStatus.OK).body(userService.fetchCommunicationPreferences(userId));
+		}
 		return ResponseEntity.status(HttpStatus.OK)
-			.body(userService.fetchCommunicationPreferences(UserSecurityUtils.getLoggedInUser()));
+			.body(userService.fetchCommunicationPreferences(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId())));
 	}
 
 	@PatchMapping("/{userId}/number")

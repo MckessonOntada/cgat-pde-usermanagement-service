@@ -70,8 +70,7 @@ public interface UserService {
 	User updateCommunicationPreferences(Long userId, UserCommunicationPreferences communicationPreferences)
 			throws ResourceNotFoundException;
 
-	UserCommunicationPreferencesDTO fetchCommunicationPreferences(LoggedInUserDetails loggedInUser)
-			throws ResourceNotFoundException;
+	UserCommunicationPreferencesDTO fetchCommunicationPreferences(Long userId) throws ResourceNotFoundException;
 
 	User updateUserNumberById(Long userId, String number) throws ResourceNotFoundException;
 
