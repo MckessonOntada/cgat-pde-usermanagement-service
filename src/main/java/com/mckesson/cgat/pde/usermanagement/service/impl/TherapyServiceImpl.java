@@ -399,7 +399,12 @@ public class TherapyServiceImpl implements TherapyService {
 
 		List<TherapyConfigs> updatedConfigs = ndcNumbers.stream().map(ndc -> {
 			TherapyConfigs config = existingConfigMap.getOrDefault(ndc,
-					TherapyConfigs.builder().ndcNumber(ndc).channelType(channelType).build());
+					TherapyConfigs.builder()
+						.ndcNumber(ndc)
+						.channelType(channelType)
+						.minQuantity(1)
+						.maxQuantity(99)
+						.build());
 
 			config.setIsPatientInformationRequired(patientInfoRequired);
 			config.setCoiIdRequirement(coiIdRequirement);
