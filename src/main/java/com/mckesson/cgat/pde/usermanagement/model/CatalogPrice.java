@@ -3,6 +3,8 @@ package com.mckesson.cgat.pde.usermanagement.model;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.mckesson.cgat.pde.usermanagement.model.converters.DistributionChannelConverter;
 
@@ -284,5 +286,8 @@ public class CatalogPrice extends Auditable {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "channel_type")
 	private ChannelType channelType;
+
+	@ManyToMany(mappedBy = "excludedCatalogs")
+	private Set<User> excludedUsers = new HashSet<>();
 
 }

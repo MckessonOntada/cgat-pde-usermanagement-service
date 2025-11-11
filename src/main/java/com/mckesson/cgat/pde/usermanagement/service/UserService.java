@@ -12,6 +12,7 @@ import com.mckesson.cgat.pde.usermanagement.exception.custom.CGATHttpException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.model.*;
 import com.mckesson.cgat.pde.usermanagement.model.Provider;
+import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -78,5 +79,11 @@ public interface UserService {
 	OffsetDateTime resendNumberVerificationSms(Long userId) throws ResourceNotFoundException;
 
 	ResendNumberVerificationDTO resendNumberVerificationDetails(Long userId) throws ResourceNotFoundException;
+
+	User restrictUserToCatalogs(Long userId, List<Long> catalogIds) throws ResourceNotFoundException;
+
+	User allowUserToCatalogs(Long userId, List<Long> catalogIds) throws ResourceNotFoundException;
+
+	List<CatalogPrice> getExcludedCatalogsForUser(Long userId) throws ResourceNotFoundException;
 
 }
