@@ -569,10 +569,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserCommunicationPreferencesDTO fetchCommunicationPreferences(LoggedInUserDetails loggedInUser)
-			throws ResourceNotFoundException {
-
-		long userId = Long.parseLong(loggedInUser.getId());
+	public UserCommunicationPreferencesDTO fetchCommunicationPreferences(Long userId) throws ResourceNotFoundException {
 
 		User user = userRepository.findByIdAndIsActiveTrue(userId)
 			.orElseThrow(() -> new ResourceNotFoundException("User not found with id:" + userId));
