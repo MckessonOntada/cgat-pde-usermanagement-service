@@ -401,7 +401,12 @@ public class TherapyServiceImpl implements TherapyService {
 
 		List<TherapyConfigs> updatedConfigs = ndcNumbers.stream().map(ndc -> {
 			TherapyConfigs config = existingConfigMap.getOrDefault(ndc,
-					TherapyConfigs.builder().ndcNumber(ndc).channelType(channelType).build());
+					TherapyConfigs.builder()
+						.ndcNumber(ndc)
+						.channelType(channelType)
+						.minQuantity(1)
+						.maxQuantity(99)
+						.build());
 
 			config.setIsPatientInformationRequired(patientInfoRequired);
 			config.setCoiIdRequirement(coiIdRequirement);
@@ -801,23 +806,36 @@ public class TherapyServiceImpl implements TherapyService {
 			.stream()
 			.collect(Collectors.toMap(TherapyConfigs::getNdcNumber, Function.identity()));
 
-		if (existingConfigMap.isEmpty()) {
-			throw new IllegalArgumentException("No therapy configurations found for the provided NDC numbers.");
-		}
-
 		List<TherapyConfigs> updatedConfigs = ndcNumbers.stream().map(ndc -> {
 			TherapyConfigs config = existingConfigMap.get(ndc);
-			if (config == null) {
-				log.warn("No therapy configuration found for NDC: {}", ndc);
-				return null;
+
+			if (config != null) {
+				config.setMinQuantity(request.getMinQuantity());
+				config.setMaxQuantity(request.getMaxQuantity());
+				log.info("Updated existing config for NDC: {}", ndc);
 			}
-			config.setMinQuantity(request.getMinQuantity());
-			config.setMaxQuantity(request.getMaxQuantity());
+			else {
+				config = TherapyConfigs.builder()
+					.ndcNumber(ndc)
+					.channelType(channelType)
+					.minQuantity(request.getMinQuantity())
+					.maxQuantity(request.getMaxQuantity())
+					.isPatientInformationRequired(false)
+					.patientIdentifierRequirement(ConfigFieldRequirement.OPTIONAL)
+					.mrnRequirement(ConfigFieldRequirement.OPTIONAL)
+					.coiIdRequirement(ConfigFieldRequirement.OPTIONAL)
+					.poNumberRequirement(ConfigFieldRequirement.OPTIONAL)
+					.dateOfAdministrationRequirement(ConfigFieldRequirement.OPTIONAL)
+					.dateOfApheresisRequirement(ConfigFieldRequirement.OPTIONAL)
+					.build();
+				log.info("Created new config for missing NDC: {}", ndc);
+			}
+
 			return config;
-		}).filter(Objects::nonNull).toList();
+		}).toList();
 
 		therapyConfigRepository.saveAll(updatedConfigs);
-		log.info("Updated min/max quantities for {} therapy configurations.", updatedConfigs.size());
+		log.info("Saved {} therapy configurations (updated + created).", updatedConfigs.size());
 	}
 
 }
