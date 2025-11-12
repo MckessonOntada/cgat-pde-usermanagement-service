@@ -31,6 +31,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			             JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material AND m.channel_type = cp.channel_type
 			             JOIN usermanagement.account ac  ON ac.sap_customer = cp.sold_to_customer
 			             JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
+			                      LEFT JOIN catalog.user_material_exclusion ume
+			                          ON ume.material_id = m.id
 			             WHERE
 			                 NOT (m.channel_type = 'SPECIALITY_PHARMA' AND m.is_crosswalked = true)
 			                 AND uam.user_id = :userId
@@ -41,6 +43,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 							 AND
 								m.item_status = 'A'
 			             	AND ac.is_active = 1
+			                          AND ume.material_id IS NULL
+
 			             union distinct
 
 			             select  m.id, m.material_number as material_number, m.material_description as material_description,
@@ -54,6 +58,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			                 ON ac.sap_customer = cp.sold_to_customer
 			             JOIN usermanagement.user_account_mapping uam
 			                 ON ac.id = uam.account_id
+			                      LEFT JOIN catalog.user_material_exclusion ume
+			                          ON ume.material_id = m.id
 			             WHERE
 			                 uam.user_id = :userId
 			                 AND ac.partner_function = :partnerFunction
@@ -63,6 +69,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 							AND
 								cw.is_active = 1
 							AND ac.is_active = 1
+			                         AND ume.material_id IS NULL
 			         )
 			         SELECT
 						com.trade_name as tradeName, com.channel_type AS channelType, STRING_AGG(com.id::text, ', ') AS id,
@@ -94,6 +101,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					         JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material AND m.channel_type = cp.channel_type
 					         JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
 					         JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
+					                        LEFT JOIN catalog.user_material_exclusion ume
+					                           ON ume.material_id = m.id
 					         WHERE
 					             NOT (m.channel_type = 'SPECIALITY_PHARMA' AND m.is_crosswalked = true)
 					             AND uam.user_id = :userId
@@ -104,6 +113,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					        AND
 								m.item_status = 'A'
 						 	AND ac.is_active = 1
+					                        AND ume.material_id IS NULL
 
 					         UNION distinct
 
@@ -114,6 +124,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					         JOIN catalog.catalog_price cp ON cp.sap_material = cw.sp_product_id
 					         JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
 					         JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
+					                         LEFT JOIN catalog.user_material_exclusion ume
+					                           ON ume.material_id = m.id
 					         WHERE
 					             uam.user_id = :userId
 					             AND ac.partner_function = :partnerFunction
@@ -123,6 +135,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 								AND
 									cw.is_active = 1
 					         	AND ac.is_active = 1
+					                            AND ume.material_id IS NULL
 					     )
 						SELECT
 							com.trade_name as tradeName, com.channel_type AS channelType, STRING_AGG(DISTINCT com.id::text, ', ') AS id,
