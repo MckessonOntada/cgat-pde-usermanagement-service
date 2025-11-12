@@ -554,6 +554,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 				 AND cp.channelType = 'SPECIALITY_PHARMA'
 				 AND m.itemStatus = 'A'
 				 and m.ndcNumber = :ndcNumber
+				 and m.isCrosswalked = false
 			""")
 	List<MaterialResponseDTO> findSPTherapyAndConfigBySoldToAccountAndProgramAndNdc(
 			@Param("soldToAccount") String soldToAccount, @Param("shipToAccount") String shipToAccount,
