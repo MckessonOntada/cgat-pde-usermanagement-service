@@ -271,6 +271,18 @@ public class UserController {
 
 	}
 
+	@GetMapping("/current/accounts-excluded-therapies")
+	@Operation(summary = "Get all account details and unavailable therapies for the current user",
+			description = "Retrieves a list of all account details and unavailable therapies for the currently authenticated user.")
+	ResponseEntity<UserAccountsTherapiesResponse> getUserAccessibleSoldToAccountAndExcludedTherapies()
+			throws ResourceNotFoundException {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(accountService.getUserAccessibleSoldToAccountAndExcludedTherapies(
+					Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), OrganizationContext.getCurrentOrgId(),
+					AccountPartnerFunction.SOLD_TO.getPartnerFunctionType()));
+
+	}
+
 	@Operation(summary = "Find all PayTo accounts available to the current user",
 			description = "Retrieves a paginated list of all PayTo accounts that the currently authenticated user has access to.")
 	@GetMapping("/current/paytoaccounts")
