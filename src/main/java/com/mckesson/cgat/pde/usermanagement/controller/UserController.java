@@ -373,15 +373,4 @@ public class UserController {
 
 	}
 
-	@RequirePermissions({ Permission.ADD_USERS, Permission.EDIT_USERS })
-	@GetMapping("/{userId}/restricted-materials")
-	@Operation(summary = "List restricted materials by user id",
-			description = "Give all restricted materials for a user.")
-	public List<Therapy> getExcludedMaterialsForUser(
-			@PathVariable @NotNull(message = "User ID can not be null") Long userId)
-			throws ResourceNotFoundException, UnauthorizedAccessException {
-		return userService.getExcludedMaterialsForUser(userId);
-
-	}
-
 }

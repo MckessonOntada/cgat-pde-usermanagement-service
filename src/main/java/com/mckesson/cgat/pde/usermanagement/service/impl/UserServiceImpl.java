@@ -736,13 +736,4 @@ public class UserServiceImpl implements UserService {
 		return user;
 	}
 
-	@Transactional
-	@Override
-	public List<Therapy> getExcludedMaterialsForUser(Long userId) throws ResourceNotFoundException {
-		User user = userRepository.findById(userId)
-			.orElseThrow(() -> new ResourceNotFoundException("User not found with this Id: " + userId));
-
-		return new ArrayList<>(user.getExcludedMaterials());
-	}
-
 }

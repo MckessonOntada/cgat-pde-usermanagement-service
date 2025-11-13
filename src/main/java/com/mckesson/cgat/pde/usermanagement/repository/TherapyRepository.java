@@ -43,7 +43,10 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 							 AND
 								m.item_status = 'A'
 			             	AND ac.is_active = 1
-			                          AND ume.material_id IS NULL
+			                          AND (
+			                          	(:showExcludedOnly = TRUE AND ume.material_id IS NULL)
+			                          	OR (:showExcludedOnly = FALSE AND ume.user_id = :userId)
+			                          )
 
 			             union distinct
 
@@ -69,7 +72,10 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 							AND
 								cw.is_active = 1
 							AND ac.is_active = 1
-			                         AND ume.material_id IS NULL
+			                         AND (
+			                          	(:showExcludedOnly = TRUE AND ume.material_id IS NULL)
+			                          	OR (:showExcludedOnly = FALSE AND ume.user_id = :userId)
+			                          )
 			         )
 			         SELECT
 						com.trade_name as tradeName, com.channel_type AS channelType, STRING_AGG(com.id::text, ', ') AS id,
@@ -113,7 +119,10 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					        AND
 								m.item_status = 'A'
 						 	AND ac.is_active = 1
-					                        AND ume.material_id IS NULL
+					                  AND (
+					                        	(:showExcludedOnly = TRUE AND ume.material_id IS NULL)
+					                        	OR (:showExcludedOnly = FALSE AND ume.user_id = :userId)
+					                        )
 
 					         UNION distinct
 
@@ -135,7 +144,10 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 								AND
 									cw.is_active = 1
 					         	AND ac.is_active = 1
-					                            AND ume.material_id IS NULL
+					                  AND (
+					                        	(:showExcludedOnly = TRUE AND ume.material_id IS NULL)
+					                        	OR (:showExcludedOnly = FALSE AND ume.user_id = :userId)
+					                        )
 					     )
 						SELECT
 							com.trade_name as tradeName, com.channel_type AS channelType, STRING_AGG(DISTINCT com.id::text, ', ') AS id,
@@ -161,7 +173,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			nativeQuery = true)
 	Page<TherapyCatalogResponseDTO> findAllTherapies(@Param("userId") Long userId, @Param("query") String query,
 			@Param("salesOrg") List<String> salesOrg, @Param("customerIdentifier") List<String> customerIdentifier,
-			@Param("partnerFunction") String partnerFunction, Pageable paging);
+			@Param("partnerFunction") String partnerFunction, Pageable paging, boolean showExcludedOnly);
 
 	@Query(value = """
 				SELECT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2 as street2,
