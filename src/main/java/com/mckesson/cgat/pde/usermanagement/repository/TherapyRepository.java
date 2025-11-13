@@ -44,8 +44,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 								m.item_status = 'A'
 			             	AND ac.is_active = 1
 			                          AND (
-			                          	(:showExcludedOnly = TRUE AND ume.material_id IS NULL)
-			                          	OR (:showExcludedOnly = FALSE AND ume.user_id = :userId)
+			                          	(:showExcludedOnly = FALSE AND ume.material_id IS NULL)
+			                          	OR (:showExcludedOnly = TRUE AND ume.user_id = :userId)
 			                          )
 
 			             union distinct
@@ -73,8 +73,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 								cw.is_active = 1
 							AND ac.is_active = 1
 			                         AND (
-			                          	(:showExcludedOnly = TRUE AND ume.material_id IS NULL)
-			                          	OR (:showExcludedOnly = FALSE AND ume.user_id = :userId)
+			                          	(:showExcludedOnly = FALSE AND ume.material_id IS NULL)
+			                          	OR (:showExcludedOnly = TRUE AND ume.user_id = :userId)
 			                          )
 			         )
 			         SELECT
@@ -120,8 +120,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 								m.item_status = 'A'
 						 	AND ac.is_active = 1
 					                  AND (
-					                        	(:showExcludedOnly = TRUE AND ume.material_id IS NULL)
-					                        	OR (:showExcludedOnly = FALSE AND ume.user_id = :userId)
+					                        	(:showExcludedOnly = FALSE AND ume.material_id IS NULL)
+					                        	OR (:showExcludedOnly = TRUE AND ume.user_id = :userId)
 					                        )
 
 					         UNION distinct
@@ -145,8 +145,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 									cw.is_active = 1
 					         	AND ac.is_active = 1
 					                  AND (
-					                        	(:showExcludedOnly = TRUE AND ume.material_id IS NULL)
-					                        	OR (:showExcludedOnly = FALSE AND ume.user_id = :userId)
+					                        	(:showExcludedOnly = FALSE AND ume.material_id IS NULL)
+					                        	OR (:showExcludedOnly = TRUE AND ume.user_id = :userId)
 					                        )
 					     )
 						SELECT
