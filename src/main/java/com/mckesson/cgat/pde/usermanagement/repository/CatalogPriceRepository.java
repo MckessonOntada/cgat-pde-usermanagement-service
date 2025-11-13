@@ -4,10 +4,12 @@ import java.util.List;
 import java.util.Optional;
 
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponse;
+import com.mckesson.cgat.pde.usermanagement.model.Account;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -95,5 +97,66 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 
 	Optional<CatalogPrice> findBySapMaterialAndSoldToCustomerAndChannelType(String sapMaterial, String soldToCustomer,
 			ChannelType channelType);
+
+	@Modifying
+	@Query(nativeQuery = true, value = """
+			  SELECT *
+			  	FROM catalog.material AS m
+			    JOIN catalog.catalog_price AS cp
+			        ON m.material_number = cp.sap_material
+			    JOIN usermanagement.account AS a
+			        ON cp.sold_to_customer = a.sap_customer
+			    JOIN usermanagement.user_account_mapping AS uam
+			        ON a.id = uam.account_id
+			    WHERE uam.user_id = :userId
+			        AND a.id = :accountId
+			        AND NOT EXISTS (
+			            SELECT 1
+			            FROM usermanagement.user_account_mapping AS uam2
+			            JOIN usermanagement.account AS a2
+			            ON uam2.account_id = a2.id
+			            JOIN catalog.catalog_price AS cp2
+			            ON a2.sap_customer = cp2.sold_to_customer
+			            JOIN catalog.material AS m2
+			            ON m2.material_number = cp2.sap_material
+			            WHERE uam2.user_id = uam.user_id
+			            AND m2.id = m.id
+			            AND a2.id <> :accountId
+			        );
+			""")
+	List<String> findExclusiveTherapyByAccount(@Param("accountId") Long accountId, @Param("userId") Long userId);
+
+	@Modifying
+	@Query(nativeQuery = true, value = """
+			DELETE FROM catalog.user_material_exclusion AS ume
+			WHERE ume.user_id IN (
+			    SELECT uam.user_id
+			    FROM usermanagement.user_account_mapping AS uam
+			    WHERE uam.account_id = :accountId
+			)
+			AND ume.material_id IN (
+			    SELECT m.id
+			    FROM catalog.material AS m
+			    JOIN catalog.catalog_price AS cp
+			      ON m.material_number = cp.sap_material
+			    JOIN usermanagement.account AS a
+			      ON cp.sold_to_customer = a.sap_customer
+			    WHERE a.id = :accountId
+			)
+			AND NOT EXISTS (
+			    SELECT 1
+			    FROM usermanagement.user_account_mapping AS uam2
+			    JOIN usermanagement.account AS a2
+			      ON uam2.account_id = a2.id
+			    JOIN catalog.catalog_price AS cp2
+			      ON a2.sap_customer = cp2.sold_to_customer
+			    JOIN catalog.material AS m2
+			      ON m2.material_number = cp2.sap_material
+			    WHERE uam2.user_id = ume.user_id
+			      AND m2.id = ume.material_id
+			      AND a2.id <> :accountId
+			)
+			""")
+	void updateUserMaterialExclusion(@Param("accountId") Long accountId);
 
 }

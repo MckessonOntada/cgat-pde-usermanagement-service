@@ -70,6 +70,8 @@ public class UserServiceImpl implements UserService {
 
 	private final TherapyRepository therapyRepository;
 
+	private final CatalogPriceRepository catalogPriceRepository;
+
 	@Autowired
 	Validator validator;
 
@@ -79,7 +81,8 @@ public class UserServiceImpl implements UserService {
 	public UserServiceImpl(UserRepository userRepository, AccountRepository repository, RoleRepository roleRepository,
 			OktaUserManagementService oktaUserManagementService,
 			UserCommunicationPreferencesRepository communicationPreferencesRepository,
-			NotificationEventRepository notificationEventRepository, TherapyRepository therapyRepository) {
+			NotificationEventRepository notificationEventRepository, TherapyRepository therapyRepository,
+			CatalogPriceRepository catalogPriceRepository) {
 		this.userRepository = userRepository;
 		this.accountRepository = repository;
 		this.roleRepository = roleRepository;
@@ -87,6 +90,7 @@ public class UserServiceImpl implements UserService {
 		this.communicationPreferencesRepository = communicationPreferencesRepository;
 		this.notificationEventRepository = notificationEventRepository;
 		this.therapyRepository = therapyRepository;
+		this.catalogPriceRepository = catalogPriceRepository;
 	}
 
 	@Override
@@ -193,6 +197,10 @@ public class UserServiceImpl implements UserService {
 
 		if (removed) {
 			userRepository.delinkUserFromAccount(userId, accountId);
+
+			List<String> therapyList = catalogPriceRepository.findExclusiveTherapyByAccount(accountId, userId);
+			user.getExcludedMaterials().removeAll(therapyList);
+
 			userRepository.save(user); // Triggers Hibernate Envers auditing
 		}
 		else {
