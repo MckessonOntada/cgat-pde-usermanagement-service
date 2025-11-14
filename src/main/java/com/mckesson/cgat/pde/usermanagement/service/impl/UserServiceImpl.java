@@ -198,7 +198,7 @@ public class UserServiceImpl implements UserService {
 		if (removed) {
 			userRepository.delinkUserFromAccount(userId, accountId);
 
-			List<String> therapyList = catalogPriceRepository.findExclusiveTherapyByAccount(accountId, userId);
+			List<Therapy> therapyList = catalogPriceRepository.findExclusiveTherapyByAccount(accountId, userId);
 			user.getExcludedMaterials().removeAll(therapyList);
 
 			userRepository.save(user); // Triggers Hibernate Envers auditing

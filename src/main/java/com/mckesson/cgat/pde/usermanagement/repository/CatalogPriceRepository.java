@@ -4,17 +4,13 @@ import java.util.List;
 import java.util.Optional;
 
 import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponse;
-import com.mckesson.cgat.pde.usermanagement.model.Account;
-import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
+import com.mckesson.cgat.pde.usermanagement.model.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
-import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
-import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
 
 public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long> {
 
@@ -124,7 +120,7 @@ public interface CatalogPriceRepository extends JpaRepository<CatalogPrice, Long
 			            AND a2.id <> :accountId
 			        );
 			""")
-	List<String> findExclusiveTherapyByAccount(@Param("accountId") Long accountId, @Param("userId") Long userId);
+	List<Therapy> findExclusiveTherapyByAccount(@Param("accountId") Long accountId, @Param("userId") Long userId);
 
 	@Modifying
 	@Query(nativeQuery = true, value = """
