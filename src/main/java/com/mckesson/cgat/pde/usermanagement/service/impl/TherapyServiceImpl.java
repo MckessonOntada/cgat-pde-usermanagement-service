@@ -827,6 +827,7 @@ public class TherapyServiceImpl implements TherapyService {
 					.poNumberRequirement(ConfigFieldRequirement.OPTIONAL)
 					.dateOfAdministrationRequirement(ConfigFieldRequirement.OPTIONAL)
 					.dateOfApheresisRequirement(ConfigFieldRequirement.OPTIONAL)
+					.shipToPORequirement(ConfigFieldRequirement.OPTIONAL)
 					.build();
 				log.info("Created new config for missing NDC: {}", ndc);
 			}
