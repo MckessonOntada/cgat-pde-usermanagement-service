@@ -13,7 +13,7 @@ import java.util.List;
 public interface TherapyService {
 
 	Page<TradeCatalogResponseDTO> findAllTherapies(Long userId, String query, List<String> salesOrg, Pageable paging,
-			List<String> customerIdentifier);
+			List<String> customerIdentifier, boolean showExcludedOnly);
 
 	Page<AccountsResponseDTO> findAllSoldToAccounts(Long userId, String ndcNumber, String query, Pageable paging,
 			ChannelType channel, String program, ChannelType ndcChannelType);

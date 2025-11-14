@@ -102,7 +102,7 @@ public class User extends AuditColumns implements Serializable {
 	@NotAudited
 	private Boolean isPhoneVerified = false;
 
-	@ManyToMany(fetch = FetchType.LAZY)
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "user_material_exclusion", schema = "catalog", joinColumns = @JoinColumn(name = "user_id"),
 			inverseJoinColumns = @JoinColumn(name = "material_id"))
 	@NotAudited
