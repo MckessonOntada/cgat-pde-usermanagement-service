@@ -68,4 +68,7 @@ public interface AccountService {
 	List<PermissionsRoleUserDto> getPermissionsAndAssociatedRolesForPractice(String practiceId,
 			List<Permission> permissions);
 
+	UserAccountsTherapiesResponse getUserAccessibleSoldToAccountAndExcludedTherapies(Long userId, Long currentOrgId,
+			String partnerFunctionType) throws ResourceNotFoundException;
+
 }

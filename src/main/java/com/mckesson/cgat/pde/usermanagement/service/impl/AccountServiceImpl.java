@@ -477,6 +477,20 @@ public class AccountServiceImpl implements AccountService {
 		return permissionsRoleUserDTOs;
 	}
 
+	@Override
+	@Transactional
+	public UserAccountsTherapiesResponse getUserAccessibleSoldToAccountAndExcludedTherapies(Long userId,
+			Long currentOrgId, String partnerFunctionType) throws ResourceNotFoundException {
+		List<Account> accountsByUser = accountRepository.findAccountsByUser(userId, currentOrgId, partnerFunctionType);
+		List<Therapy> excludedMaterialsForUser = userService.getExcludedMaterialsForUser(userId);
+		UserAccountsTherapiesResponse userAccountsTherapiesResponse = UserAccountsTherapiesResponse.builder()
+			.accounts(accountsByUser)
+			.excludedTherapies(excludedMaterialsForUser)
+			.build();
+
+		return userAccountsTherapiesResponse;
+	}
+
 	private void processAccountActions(Set<AccountDTO> accountDataList, Map<String, Account> accountMap,
 			List<Account> accountsToUpdate, int practiceId, List<String[]> errorRecords) {
 
