@@ -353,4 +353,20 @@ public class GlobalTherapyController {
 		return new ResponseEntity<>("Therapy quantity configurations updated successfully", HttpStatus.OK);
 	}
 
+	@GetMapping("/user/{userId}")
+	@Operation(summary = "Find all therapies available to the current user",
+			description = "Retrieves a paginated list of all therapies that the currently authenticated user has access to.")
+	public Page<TradeCatalogResponseDTO> findAllTherapies(@RequestParam(defaultValue = "0") Integer pageNo,
+			@RequestParam(defaultValue = "20") Integer pageSize, @RequestParam(required = false) String query,
+			@RequestParam(required = false) List<String> salesOrg,
+			@RequestParam(required = false) List<String> customerIdentifier,
+			@RequestParam(defaultValue = "trade_name") String sortBy,
+			@RequestParam(defaultValue = "asc") String sortOrder, @PathVariable Long userId,
+			@RequestParam(defaultValue = "false") boolean showExcludedOnly) {
+		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
+				: Sort.by(sortBy).descending();
+		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
+		return therapyService.findAllTherapies(userId, query, salesOrg, paging, customerIdentifier, showExcludedOnly);
+	}
+
 }

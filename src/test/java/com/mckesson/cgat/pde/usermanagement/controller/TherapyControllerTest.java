@@ -127,7 +127,7 @@ public class TherapyControllerTest {
 
 		};
 
-		when(therapyService.findAllTherapies(anyLong(), anyString(), anyList(), any(Pageable.class), anyList()))
+		when(therapyService.findAllTherapies(anyLong(), anyString(), anyList(), any(Pageable.class), anyList(), false))
 			.thenReturn(new PageImpl<>(List.of(therapy1), paging, 1L));
 
 		mockMvc

@@ -77,12 +77,12 @@ public class TherapyServiceImplTest {
 
 		Mockito
 			.when(therapyRepository.findAllTherapies(anyLong(), anyString(), anyList(), anyList(), anyString(),
-					any(Pageable.class)))
+					any(Pageable.class), false))
 			.thenReturn(new PageImpl<>(mockResponse, paging, 1L));
 
-		therapyService.findAllTherapies(userId, query, new ArrayList<>(), paging, new ArrayList<>());
+		therapyService.findAllTherapies(userId, query, new ArrayList<>(), paging, new ArrayList<>(), false);
 		verify(therapyRepository, times(1)).findAllTherapies(userId, query, new ArrayList<>(), new ArrayList<>(), "SP",
-				paging);
+				paging, false);
 	}
 
 	@DisplayName("Test: FindAll SoldToAccounts")
