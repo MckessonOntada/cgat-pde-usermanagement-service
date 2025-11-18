@@ -15,21 +15,8 @@ public class TherapyConfigRequestDTO {
 	@Size(min = 1, message = "Ndc numbers must not be empty.")
 	private List<String> ndcNumbers;
 
-	private Boolean isPatientInformationRequired;
-
-	private ConfigFieldRequirement coiIdRequirement;
-
-	private ConfigFieldRequirement mrnRequirement;
-
-	private ConfigFieldRequirement doaRequirement;
-
-	private ConfigFieldRequirement poRequirement;
-
-	private ConfigFieldRequirement pidRequirement;
-
-	private ConfigFieldRequirement dateOfApheresisRequirement;
-
-	private ConfigFieldRequirement shipToPORequirement;
+	@NotNull(message = "Config must not be null.")
+	private TherapyConfigDTO config;
 
 	private ChannelType channelType = ChannelType.BUY_AND_BILL;
 

@@ -386,14 +386,9 @@ public class TherapyServiceImpl implements TherapyService {
 	public void updateTherapyConfigs(TherapyConfigRequestDTO request) {
 		List<String> ndcNumbers = request.getNdcNumbers();
 		ChannelType channelType = request.getChannelType();
-		boolean patientInfoRequired = request.getIsPatientInformationRequired();
-		ConfigFieldRequirement coiIdRequirement = request.getCoiIdRequirement();
-		ConfigFieldRequirement mrnRequirement = request.getMrnRequirement();
-		ConfigFieldRequirement doaRequirement = request.getDoaRequirement();
-		ConfigFieldRequirement poRequirement = request.getPoRequirement();
-		ConfigFieldRequirement pidRequirement = request.getPidRequirement();
-		ConfigFieldRequirement dateOfApheresisRequirement = request.getDateOfApheresisRequirement();
-		ConfigFieldRequirement shipToPORequirement = request.getShipToPORequirement();
+		TherapyConfigDTO configDTO = request.getConfig();
+
+		// Fetch existing configs
 		Map<String, TherapyConfigs> existingConfigMap = therapyConfigRepository
 			.findByNdcNumberInAndChannelType(ndcNumbers, channelType)
 			.stream()
@@ -408,14 +403,9 @@ public class TherapyServiceImpl implements TherapyService {
 						.maxQuantity(99)
 						.build());
 
-			config.setIsPatientInformationRequired(patientInfoRequired);
-			config.setCoiIdRequirement(coiIdRequirement);
-			config.setMrnRequirement(mrnRequirement);
-			config.setDateOfAdministrationRequirement(doaRequirement);
-			config.setPoNumberRequirement(poRequirement);
-			config.setPatientIdentifierRequirement(pidRequirement);
-			config.setDateOfApheresisRequirement(dateOfApheresisRequirement);
-			config.setShipToPORequirement(shipToPORequirement);
+			// Assign the new JSON config to the unified column
+			config.setConfig(configDTO);
+
 			return config;
 		}).toList();
 
@@ -820,14 +810,6 @@ public class TherapyServiceImpl implements TherapyService {
 					.channelType(channelType)
 					.minQuantity(request.getMinQuantity())
 					.maxQuantity(request.getMaxQuantity())
-					.isPatientInformationRequired(false)
-					.patientIdentifierRequirement(ConfigFieldRequirement.OPTIONAL)
-					.mrnRequirement(ConfigFieldRequirement.OPTIONAL)
-					.coiIdRequirement(ConfigFieldRequirement.OPTIONAL)
-					.poNumberRequirement(ConfigFieldRequirement.OPTIONAL)
-					.dateOfAdministrationRequirement(ConfigFieldRequirement.OPTIONAL)
-					.dateOfApheresisRequirement(ConfigFieldRequirement.OPTIONAL)
-					.shipToPORequirement(ConfigFieldRequirement.OPTIONAL)
 					.build();
 				log.info("Created new config for missing NDC: {}", ndc);
 			}
