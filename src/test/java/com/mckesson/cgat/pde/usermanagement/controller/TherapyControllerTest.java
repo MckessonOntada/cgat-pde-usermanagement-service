@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mckesson.cgat.pde.usermanagement.dto.VariantsResponseDTO;
+import com.mckesson.cgat.pde.usermanagement.dto.*;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,9 +32,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponseDto;
-import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 import com.mckesson.cgat.pde.usermanagement.service.TherapyService;
 import com.mckesson.cgat.pde.usermanagement.util.TestUtils;
@@ -127,7 +124,8 @@ public class TherapyControllerTest {
 
 		};
 
-		when(therapyService.findAllTherapies(anyLong(), anyString(), anyList(), any(Pageable.class), anyList(), false))
+		when(therapyService.findAllTherapies(anyLong(), anyString(), anyList(), any(Pageable.class), anyList(),
+				TherapyListingMode.INCLUDED))
 			.thenReturn(new PageImpl<>(List.of(therapy1), paging, 1L));
 
 		mockMvc

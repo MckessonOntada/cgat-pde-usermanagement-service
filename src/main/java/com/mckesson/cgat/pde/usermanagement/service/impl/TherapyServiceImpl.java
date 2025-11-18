@@ -78,10 +78,10 @@ public class TherapyServiceImpl implements TherapyService {
 	}
 
 	public Page<TradeCatalogResponseDTO> findAllTherapies(Long userId, String query, List<String> salesOrg,
-			Pageable paging, List<String> customerIdentifier, boolean showExcludedOnly) {
+			Pageable paging, List<String> customerIdentifier, TherapyListingMode listingMode) {
 		Page<TherapyCatalogResponseDTO> projections = therapyRepository.findAllTherapies(userId,
 				StringUtils.toRootLowerCase(query), salesOrg, customerIdentifier,
-				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), paging, showExcludedOnly);
+				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), paging, listingMode.name());
 
 		Page<TradeCatalogResponseDTO> map = projections.map(TradeCatalogResponseMapper::mapToTradeCatalogResponse);
 		return map;

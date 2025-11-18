@@ -361,11 +361,11 @@ public class GlobalTherapyController {
 			@RequestParam(required = false) List<String> customerIdentifier,
 			@RequestParam(defaultValue = "trade_name") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortOrder, @PathVariable Long userId,
-			@RequestParam(defaultValue = "false") boolean showExcludedOnly) {
+			@RequestParam(defaultValue = "ALL") TherapyListingMode listingMode) {
 		Sort sort = SORT_ORDER_ASC.equalsIgnoreCase(sortOrder) ? Sort.by(sortBy).ascending()
 				: Sort.by(sortBy).descending();
 		Pageable unpaged = PageRequest.of(0, Integer.MAX_VALUE, sort);
-		return therapyService.findAllTherapies(userId, query, salesOrg, unpaged, customerIdentifier, showExcludedOnly)
+		return therapyService.findAllTherapies(userId, query, salesOrg, unpaged, customerIdentifier, listingMode)
 			.getContent();
 	}
 
