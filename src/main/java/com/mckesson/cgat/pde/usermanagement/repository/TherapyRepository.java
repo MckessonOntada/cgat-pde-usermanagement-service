@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.mckesson.cgat.pde.usermanagement.dto.*;
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import org.springframework.data.domain.Page;
@@ -14,10 +15,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelProjectionDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 
 @Repository
@@ -44,8 +41,9 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 								m.item_status = 'A'
 			             	AND ac.is_active = 1
 			                          AND (
-			                          	(:showExcludedOnly = FALSE AND ume.material_id IS NULL)
-			                          	OR (:showExcludedOnly = TRUE AND ume.user_id = :userId)
+			                          	(:listingMode = 'INCLUDED' AND ume.material_id IS NULL)
+			                          	OR (:listingMode = 'EXCLUDED' AND ume.user_id = :userId)
+			                          	OR (:listingMode = 'ALL')
 			                          )
 
 			             union distinct
@@ -73,8 +71,9 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 								cw.is_active = 1
 							AND ac.is_active = 1
 			                         AND (
-			                          	(:showExcludedOnly = FALSE AND ume.material_id IS NULL)
-			                          	OR (:showExcludedOnly = TRUE AND ume.user_id = :userId)
+			                          	(:listingMode = 'INCLUDED' AND ume.material_id IS NULL)
+			                          	OR (:listingMode = 'EXCLUDED' AND ume.user_id = :userId)
+			                          	OR (:listingMode = 'ALL')
 			                          )
 			         )
 			         SELECT
@@ -120,8 +119,9 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 								m.item_status = 'A'
 						 	AND ac.is_active = 1
 					                  AND (
-					                        	(:showExcludedOnly = FALSE AND ume.material_id IS NULL)
-					                        	OR (:showExcludedOnly = TRUE AND ume.user_id = :userId)
+					                        	(:listingMode = 'INCLUDED' AND ume.material_id IS NULL)
+					                        	OR (:listingMode = 'EXCLUDED' AND ume.user_id = :userId)
+					                        	OR (:listingMode = 'ALL')
 					                        )
 
 					         UNION distinct
@@ -145,8 +145,9 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 									cw.is_active = 1
 					         	AND ac.is_active = 1
 					                  AND (
-					                        	(:showExcludedOnly = FALSE AND ume.material_id IS NULL)
-					                        	OR (:showExcludedOnly = TRUE AND ume.user_id = :userId)
+					                        	(:listingMode = 'INCLUDED' AND ume.material_id IS NULL)
+					                        	OR (:listingMode = 'EXCLUDED' AND ume.user_id = :userId)
+					                        	OR (:listingMode = 'ALL')
 					                        )
 					     )
 						SELECT
@@ -173,7 +174,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			nativeQuery = true)
 	Page<TherapyCatalogResponseDTO> findAllTherapies(@Param("userId") Long userId, @Param("query") String query,
 			@Param("salesOrg") List<String> salesOrg, @Param("customerIdentifier") List<String> customerIdentifier,
-			@Param("partnerFunction") String partnerFunction, Pageable paging, boolean showExcludedOnly);
+			@Param("partnerFunction") String partnerFunction, Pageable paging, String listingMode);
 
 	@Query(value = """
 				SELECT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2 as street2,

@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import com.mckesson.cgat.pde.usermanagement.dto.CatalogPriceResponse;
+import com.mckesson.cgat.pde.usermanagement.dto.*;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,9 +29,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelProjectionDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.mapper.CatalogPriceMapper;
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import com.mckesson.cgat.pde.usermanagement.model.CatalogPrice;
@@ -77,12 +74,13 @@ public class TherapyServiceImplTest {
 
 		Mockito
 			.when(therapyRepository.findAllTherapies(anyLong(), anyString(), anyList(), anyList(), anyString(),
-					any(Pageable.class), false))
+					any(Pageable.class), TherapyListingMode.INCLUDED))
 			.thenReturn(new PageImpl<>(mockResponse, paging, 1L));
 
-		therapyService.findAllTherapies(userId, query, new ArrayList<>(), paging, new ArrayList<>(), false);
+		therapyService.findAllTherapies(userId, query, new ArrayList<>(), paging, new ArrayList<>(),
+				TherapyListingMode.INCLUDED);
 		verify(therapyRepository, times(1)).findAllTherapies(userId, query, new ArrayList<>(), new ArrayList<>(), "SP",
-				paging, false);
+				paging, TherapyListingMode.INCLUDED);
 	}
 
 	@DisplayName("Test: FindAll SoldToAccounts")
