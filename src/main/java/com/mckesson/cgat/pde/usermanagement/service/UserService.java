@@ -83,4 +83,6 @@ public interface UserService {
 
 	User deleteUserMaterialRestriction(Long userId, List<Long> materialIds) throws ResourceNotFoundException;
 
+	List<Therapy> getExcludedMaterialsForUser(Long userId) throws ResourceNotFoundException;
+
 }
