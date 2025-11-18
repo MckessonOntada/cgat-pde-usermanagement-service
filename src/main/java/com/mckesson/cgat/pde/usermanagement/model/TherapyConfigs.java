@@ -1,14 +1,11 @@
 package com.mckesson.cgat.pde.usermanagement.model;
 
-import com.mckesson.cgat.pde.usermanagement.dto.TherapyConfigDTO;
-import com.vladmihalcea.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Type;
 
 import java.io.Serializable;
 
@@ -30,9 +27,36 @@ public class TherapyConfigs implements Serializable {
 	@Column(name = "ndc_number", nullable = false, unique = true)
 	private String ndcNumber;
 
-	@Column(name = "config", columnDefinition = "jsonb")
-	@Type(JsonType.class)
-	private TherapyConfigDTO config;
+	@Column(name = "is_patient_information_required", nullable = false)
+	private Boolean isPatientInformationRequired;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "patient_identifier_requirement", nullable = false)
+	private ConfigFieldRequirement patientIdentifierRequirement;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "mrn__requirement", nullable = false)
+	private ConfigFieldRequirement mrnRequirement;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "coi_id_requirement", nullable = false)
+	private ConfigFieldRequirement coiIdRequirement;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "po_number_requirement", nullable = false)
+	private ConfigFieldRequirement poNumberRequirement;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "date_of_administration_requirement", nullable = false)
+	private ConfigFieldRequirement dateOfAdministrationRequirement;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "date_of_apheresis_requirement", nullable = false)
+	private ConfigFieldRequirement dateOfApheresisRequirement;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "ship_to_po_requirement", nullable = false)
+	private ConfigFieldRequirement shipToPORequirement;
 
 	@Enumerated(EnumType.STRING)
 	private ChannelType channelType;
