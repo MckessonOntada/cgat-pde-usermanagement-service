@@ -1,14 +1,14 @@
 package com.mckesson.cgat.pde.usermanagement.model;
 
 import com.mckesson.cgat.pde.usermanagement.dto.TherapyConfigDTO;
-import com.vladmihalcea.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.io.Serializable;
 
@@ -31,7 +31,7 @@ public class TherapyConfigs implements Serializable {
 	private String ndcNumber;
 
 	@Column(name = "config", columnDefinition = "jsonb")
-	@Type(JsonType.class)
+	@JdbcTypeCode(SqlTypes.JSON)
 	private TherapyConfigDTO config;
 
 	@Enumerated(EnumType.STRING)
