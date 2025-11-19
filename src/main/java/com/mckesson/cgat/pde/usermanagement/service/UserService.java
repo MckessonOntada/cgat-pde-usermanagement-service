@@ -79,9 +79,8 @@ public interface UserService {
 
 	ResendNumberVerificationDTO resendNumberVerificationDetails(Long userId) throws ResourceNotFoundException;
 
-	User restrictUserToMaterial(Long userId, List<Long> materialIds) throws ResourceNotFoundException;
-
-	User deleteUserMaterialRestriction(Long userId, List<Long> materialIds) throws ResourceNotFoundException;
+	User restrictUserToMaterial(Long userId, List<Long> materialIds, boolean isReplace)
+			throws ResourceNotFoundException;
 
 	List<Therapy> getExcludedMaterialsForUser(Long userId) throws ResourceNotFoundException;
 
