@@ -712,27 +712,18 @@ public class UserServiceImpl implements UserService {
 
 	@Transactional
 	@Override
-	public User restrictUserToMaterial(Long userId, List<Long> materialIds) throws ResourceNotFoundException {
+	public User restrictUserToMaterial(Long userId, List<Long> materialIds, boolean isReplace)
+			throws ResourceNotFoundException {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new ResourceNotFoundException("User not found with this Id :" + userId));
 		List<Therapy> materialsToRestrict = therapyRepository.findAllById(materialIds);
 		if (materialsToRestrict.size() != materialIds.size()) {
 			throw new ResourceNotFoundException("Some of the provided catalog IDs do not exist.");
 		}
-		user.getExcludedMaterials().addAll(materialsToRestrict);
-		return user;
-	}
-
-	@Transactional
-	@Override
-	public User deleteUserMaterialRestriction(Long userId, List<Long> materialIds) throws ResourceNotFoundException {
-		User user = userRepository.findById(userId)
-			.orElseThrow(() -> new ResourceNotFoundException("User not found with this Id :" + userId));
-		List<Therapy> materialsToAllow = therapyRepository.findAllById(materialIds);
-		if (materialsToAllow.size() != materialIds.size()) {
-			throw new ResourceNotFoundException("Some of the provided catalog IDs do not exist.");
+		if (isReplace) {
+			user.getExcludedMaterials().clear();
 		}
-		user.getExcludedMaterials().removeAll(materialsToAllow);
+		user.getExcludedMaterials().addAll(materialsToRestrict);
 		return user;
 	}
 

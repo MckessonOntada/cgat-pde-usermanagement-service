@@ -365,23 +365,22 @@ public class UserController {
 
 	@RequirePermissions({ Permission.ADD_USERS, Permission.EDIT_USERS })
 	@PatchMapping("/{userId}/restrict-materials")
-	@Operation(summary = "Restrict a user to multiple materials",
-			description = "Creates associations between a specified user and a list of materials.")
-	public User restrictUserToMaterial(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
+	@Operation(summary = "Restrict a user to multiple materials", description = "Update the material exclusion mapping")
+	public User addRestrictedToMaterialUser(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
 			@NotEmpty(message = "Materials can not be empty") @RequestBody List<Long> materialIds)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
-		return userService.restrictUserToMaterial(userId, materialIds);
+		return userService.restrictUserToMaterial(userId, materialIds, false);
 
 	}
 
 	@RequirePermissions({ Permission.ADD_USERS, Permission.EDIT_USERS })
-	@DeleteMapping("/{userId}/allow-materials")
+	@PutMapping("/{userId}/restrict-materials")
 	@Operation(summary = "Restrict a user to multiple materials",
-			description = "Creates associations between a specified user and a list of materials.")
-	public User deleteUserMaterialRestriction(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
+			description = "Replace the material exclusion mapping.")
+	public User updateRestrictedToMaterialUser(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
 			@NotEmpty(message = "Materials can not be empty") @RequestBody List<Long> materialIds)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
-		return userService.deleteUserMaterialRestriction(userId, materialIds);
+		return userService.restrictUserToMaterial(userId, materialIds, true);
 
 	}
 
