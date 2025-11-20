@@ -378,7 +378,7 @@ public class UserController {
 	@Operation(summary = "Restrict a user to multiple materials",
 			description = "Replace the material exclusion mapping.")
 	public User updateRestrictedToMaterialUser(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
-			@NotEmpty(message = "Materials can not be empty") @RequestBody List<Long> materialIds)
+			@NotNull(message = "Materials can not be empty") @RequestBody List<Long> materialIds)
 			throws ResourceNotFoundException, UnauthorizedAccessException {
 		return userService.restrictUserToMaterial(userId, materialIds, true);
 
