@@ -29,7 +29,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			             JOIN usermanagement.account ac  ON ac.sap_customer = cp.sold_to_customer
 			             JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
 			                      LEFT JOIN catalog.user_material_exclusion ume
-			                          ON ume.material_id = m.id
+			                          ON ume.material_id = m.id AND ume.user_id = :userId
 			             WHERE
 			                 NOT (m.channel_type = 'SPECIALITY_PHARMA' AND m.is_crosswalked = true)
 			                 AND uam.user_id = :userId
@@ -60,7 +60,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			             JOIN usermanagement.user_account_mapping uam
 			                 ON ac.id = uam.account_id
 			                      LEFT JOIN catalog.user_material_exclusion ume
-			                          ON ume.material_id = m.id
+			                          ON ume.material_id = m.id AND ume.user_id = :userId
 			             WHERE
 			                 uam.user_id = :userId
 			                 AND ac.partner_function = :partnerFunction
@@ -107,7 +107,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					         JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
 					         JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
 					                        LEFT JOIN catalog.user_material_exclusion ume
-					                           ON ume.material_id = m.id
+					                           ON ume.material_id = m.id AND ume.user_id = :userId
 					         WHERE
 					             NOT (m.channel_type = 'SPECIALITY_PHARMA' AND m.is_crosswalked = true)
 					             AND uam.user_id = :userId
@@ -134,7 +134,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					         JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
 					         JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
 					                         LEFT JOIN catalog.user_material_exclusion ume
-					                           ON ume.material_id = m.id
+					                           ON ume.material_id = m.id AND ume.user_id = :userId
 					         WHERE
 					             uam.user_id = :userId
 					             AND ac.partner_function = :partnerFunction
