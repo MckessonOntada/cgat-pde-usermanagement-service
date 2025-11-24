@@ -12,6 +12,7 @@ import com.mckesson.cgat.pde.usermanagement.exception.custom.CGATHttpException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.FileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.model.*;
 import com.mckesson.cgat.pde.usermanagement.model.Provider;
+import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -70,13 +71,17 @@ public interface UserService {
 	User updateCommunicationPreferences(Long userId, UserCommunicationPreferences communicationPreferences)
 			throws ResourceNotFoundException;
 
-	UserCommunicationPreferencesDTO fetchCommunicationPreferences(LoggedInUserDetails loggedInUser)
-			throws ResourceNotFoundException;
+	UserCommunicationPreferencesDTO fetchCommunicationPreferences(Long userId) throws ResourceNotFoundException;
 
 	User updateUserNumberById(Long userId, String number) throws ResourceNotFoundException;
 
 	OffsetDateTime resendNumberVerificationSms(Long userId) throws ResourceNotFoundException;
 
 	ResendNumberVerificationDTO resendNumberVerificationDetails(Long userId) throws ResourceNotFoundException;
+
+	User restrictUserToMaterial(Long userId, List<Long> materialIds, boolean isReplace)
+			throws ResourceNotFoundException;
+
+	List<Therapy> getExcludedMaterialsForUser(Long userId) throws ResourceNotFoundException;
 
 }

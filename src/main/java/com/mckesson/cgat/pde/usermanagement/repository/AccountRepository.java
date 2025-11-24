@@ -7,6 +7,7 @@ import com.mckesson.cgat.pde.usermanagement.dto.SpecialtyPharmaAccountProjection
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 
+import com.mckesson.cgat.pde.usermanagement.model.UserAccountsTherapiesResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

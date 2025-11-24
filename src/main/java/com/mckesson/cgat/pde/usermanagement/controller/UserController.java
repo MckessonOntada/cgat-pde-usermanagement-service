@@ -271,6 +271,18 @@ public class UserController {
 
 	}
 
+	@GetMapping("/current/accounts-excluded-therapies")
+	@Operation(summary = "Get all account details and unavailable therapies for the current user",
+			description = "Retrieves a list of all account details and unavailable therapies for the currently authenticated user.")
+	ResponseEntity<UserAccountsTherapiesResponse> getUserAccessibleSoldToAccountAndExcludedTherapies()
+			throws ResourceNotFoundException {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(accountService.getUserAccessibleSoldToAccountAndExcludedTherapies(
+					Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), OrganizationContext.getCurrentOrgId(),
+					AccountPartnerFunction.SOLD_TO.getPartnerFunctionType()));
+
+	}
+
 	@Operation(summary = "Find all PayTo accounts available to the current user",
 			description = "Retrieves a paginated list of all PayTo accounts that the currently authenticated user has access to.")
 	@GetMapping("/current/paytoaccounts")
@@ -303,8 +315,11 @@ public class UserController {
 	@PatchMapping("/current/communication-preference")
 	@Operation(summary = "Updating the communication preferences for the current user",
 			description = "Updating the communication preferences for the current user")
-	public User updateCommunicationPreferences(@RequestBody UserCommunicationPreferences communicationPreferences)
-			throws ResourceNotFoundException {
+	public User updateCommunicationPreferences(@RequestParam(required = false) Long userId,
+			@RequestBody UserCommunicationPreferences communicationPreferences) throws ResourceNotFoundException {
+		if (userId != null) {
+			return userService.updateCommunicationPreferences(userId, communicationPreferences);
+		}
 		return userService.updateCommunicationPreferences(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()),
 				communicationPreferences);
 	}
@@ -312,9 +327,13 @@ public class UserController {
 	@GetMapping("/current/communication-preference")
 	@Operation(summary = "Get  the communication preferences for the current user",
 			description = "Retrieves  the communication preferences for the currently authenticated user.")
-	ResponseEntity<UserCommunicationPreferencesDTO> fetchCommunicationPreferences() throws ResourceNotFoundException {
+	ResponseEntity<UserCommunicationPreferencesDTO> fetchCommunicationPreferences(
+			@RequestParam(required = false) Long userId) throws ResourceNotFoundException {
+		if (userId != null) {
+			return ResponseEntity.status(HttpStatus.OK).body(userService.fetchCommunicationPreferences(userId));
+		}
 		return ResponseEntity.status(HttpStatus.OK)
-			.body(userService.fetchCommunicationPreferences(UserSecurityUtils.getLoggedInUser()));
+			.body(userService.fetchCommunicationPreferences(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId())));
 	}
 
 	@PatchMapping("/{userId}/number")
@@ -342,6 +361,27 @@ public class UserController {
 	public ResendNumberVerificationDTO resendNumberVerificationDetails(@PathVariable Long userId)
 			throws CGATHttpException, ResourceNotFoundException {
 		return userService.resendNumberVerificationDetails(userId);
+	}
+
+	@RequirePermissions({ Permission.ADD_USERS, Permission.EDIT_USERS })
+	@PatchMapping("/{userId}/restrict-materials")
+	@Operation(summary = "Restrict a user to multiple materials", description = "Update the material exclusion mapping")
+	public User addRestrictedToMaterialUser(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
+			@NotEmpty(message = "Materials can not be empty") @RequestBody List<Long> materialIds)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
+		return userService.restrictUserToMaterial(userId, materialIds, false);
+
+	}
+
+	@RequirePermissions({ Permission.ADD_USERS, Permission.EDIT_USERS })
+	@PutMapping("/{userId}/restrict-materials")
+	@Operation(summary = "Restrict a user to multiple materials",
+			description = "Replace the material exclusion mapping.")
+	public User updateRestrictedToMaterialUser(@PathVariable @NotNull(message = "User ID can not be null") Long userId,
+			@NotNull(message = "Materials can not be empty") @RequestBody List<Long> materialIds)
+			throws ResourceNotFoundException, UnauthorizedAccessException {
+		return userService.restrictUserToMaterial(userId, materialIds, true);
+
 	}
 
 }

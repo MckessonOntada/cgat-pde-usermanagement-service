@@ -73,7 +73,7 @@ public interface TherapyConfigRepository extends JpaRepository<TherapyConfigs, L
 			    LEFT JOIN TherapyConfigs tc
 			        ON m.ndcNumber = tc.ndcNumber
 			    LEFT JOIN SPTherapyConfigs sp
-			        ON m.materialNumber = sp.spProductId
+			             ON m.materialNumber = sp.spProductId
 			    WHERE m.id = :id
 			""")
 	Optional<MaterialResponseDTO> findTherapyDetailsById(@Param("id") Long id);

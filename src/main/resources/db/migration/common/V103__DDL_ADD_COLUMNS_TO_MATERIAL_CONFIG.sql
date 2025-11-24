@@ -1,0 +1,3 @@
+ALTER TABLE catalog.therapy_config
+  ADD COLUMN min_quantity SMALLINT NOT NULL DEFAULT 1,
+  ADD COLUMN max_quantity SMALLINT NOT NULL DEFAULT 99;

@@ -51,6 +51,8 @@ public class TherapyServiceImpl implements TherapyService {
 
 	private final SPTherapyConfigRepository spTherapyConfigRepository;
 
+	private final DiagnosisCodeRepository diagnosisCodeRepository;
+
 	private final PracticeUtils practiceUtils;
 
 	private final String MANUFACTURER_LOGO_BASE_URL = "logos/manufacturer";
@@ -61,7 +63,8 @@ public class TherapyServiceImpl implements TherapyService {
 			CatalogPriceMapper catalogPriceMapper, TherapyConfigRepository therapyConfigRepository,
 			QuestionnaireService questionnaireService, ShippingLocationRepository shippingLocationRepository,
 			MaterialCrossWalkConfigRepository materialCrossWalkConfigRepository,
-			SPTherapyConfigRepository spTherapyConfigRepository, PracticeUtils practiceUtils) {
+			SPTherapyConfigRepository spTherapyConfigRepository, DiagnosisCodeRepository diagnosisCodeRepository,
+			PracticeUtils practiceUtils) {
 		this.therapyRepository = therapyRepository;
 		this.catalogPriceRepository = catalogPriceRepository;
 		this.catalogPriceMapper = catalogPriceMapper;
@@ -70,14 +73,15 @@ public class TherapyServiceImpl implements TherapyService {
 		this.shippingLocationRepository = shippingLocationRepository;
 		this.materialCrossWalkConfigRepository = materialCrossWalkConfigRepository;
 		this.spTherapyConfigRepository = spTherapyConfigRepository;
+		this.diagnosisCodeRepository = diagnosisCodeRepository;
 		this.practiceUtils = practiceUtils;
 	}
 
 	public Page<TradeCatalogResponseDTO> findAllTherapies(Long userId, String query, List<String> salesOrg,
-			Pageable paging, List<String> customerIdentifier) {
+			Pageable paging, List<String> customerIdentifier, TherapyListingMode listingMode) {
 		Page<TherapyCatalogResponseDTO> projections = therapyRepository.findAllTherapies(userId,
 				StringUtils.toRootLowerCase(query), salesOrg, customerIdentifier,
-				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), paging);
+				AccountPartnerFunction.SOLD_TO.getPartnerFunctionType(), paging, listingMode.name());
 
 		Page<TradeCatalogResponseDTO> map = projections.map(TradeCatalogResponseMapper::mapToTradeCatalogResponse);
 		return map;
@@ -154,7 +158,25 @@ public class TherapyServiceImpl implements TherapyService {
 			else {
 				List<Therapy> crosswalkedTherapies = therapyRepository.findCrosswalkedTherapies(ndcNumber,
 						Long.parseLong(UserSecurityUtils.getLoggedInUser().getId()));
-				variantsResponse = toResponseDtoVariantsListFromTherapies(crosswalkedTherapies);
+
+				List<String> materialList = crosswalkedTherapies.stream()
+					.map(Therapy::getMaterialNumber)
+					.filter(Objects::nonNull)
+					.distinct()
+					.collect(Collectors.toList());
+
+				List<SPTherapyConfigs> spTherapyConfigs = spTherapyConfigRepository.findBySpProductIdIn(materialList);
+
+				Map<String, Set<DiagnosisCode>> spTherapyConfigMap = spTherapyConfigs.stream()
+					.collect(Collectors.toMap(SPTherapyConfigs::getSpProductId,
+							cfg -> new HashSet<>(
+									Objects.requireNonNullElse(cfg.getDiagnosisCodes(), Collections.emptySet())),
+							(a, b) -> {
+								a.addAll(b);
+								return a;
+							}));
+
+				variantsResponse = toResponseDtoVariantsListFromTherapies(crosswalkedTherapies, spTherapyConfigMap);
 
 			}
 			return new PageImpl<>(variantsResponse, paging, variantsResponse.size());
@@ -167,7 +189,8 @@ public class TherapyServiceImpl implements TherapyService {
 		}
 	}
 
-	private List<VariantsResponseDTO> toResponseDtoVariantsListFromTherapies(List<Therapy> therapies) {
+	private List<VariantsResponseDTO> toResponseDtoVariantsListFromTherapies(List<Therapy> therapies,
+			Map<String, Set<DiagnosisCode>> spTherapyConfigMap) {
 		if (therapies == null) {
 			return null;
 		}
@@ -178,6 +201,7 @@ public class TherapyServiceImpl implements TherapyService {
 				.variantDescription(therapy.getMaterialDescription())
 				.materialNumber(therapy.getMaterialNumber())
 				.therapyId(therapy.getId())
+				.diagnosisCodes(spTherapyConfigMap.getOrDefault(therapy.getMaterialNumber(), Collections.emptySet()))
 				.build())
 			.toList();
 	}
@@ -369,6 +393,7 @@ public class TherapyServiceImpl implements TherapyService {
 		ConfigFieldRequirement poRequirement = request.getPoRequirement();
 		ConfigFieldRequirement pidRequirement = request.getPidRequirement();
 		ConfigFieldRequirement dateOfApheresisRequirement = request.getDateOfApheresisRequirement();
+		ConfigFieldRequirement shipToPORequirement = request.getShipToPORequirement();
 		Map<String, TherapyConfigs> existingConfigMap = therapyConfigRepository
 			.findByNdcNumberInAndChannelType(ndcNumbers, channelType)
 			.stream()
@@ -376,7 +401,12 @@ public class TherapyServiceImpl implements TherapyService {
 
 		List<TherapyConfigs> updatedConfigs = ndcNumbers.stream().map(ndc -> {
 			TherapyConfigs config = existingConfigMap.getOrDefault(ndc,
-					TherapyConfigs.builder().ndcNumber(ndc).channelType(channelType).build());
+					TherapyConfigs.builder()
+						.ndcNumber(ndc)
+						.channelType(channelType)
+						.minQuantity(1)
+						.maxQuantity(99)
+						.build());
 
 			config.setIsPatientInformationRequired(patientInfoRequired);
 			config.setCoiIdRequirement(coiIdRequirement);
@@ -385,6 +415,7 @@ public class TherapyServiceImpl implements TherapyService {
 			config.setPoNumberRequirement(poRequirement);
 			config.setPatientIdentifierRequirement(pidRequirement);
 			config.setDateOfApheresisRequirement(dateOfApheresisRequirement);
+			config.setShipToPORequirement(shipToPORequirement);
 			return config;
 		}).toList();
 
@@ -695,6 +726,117 @@ public class TherapyServiceImpl implements TherapyService {
 		String logoUri = String.format("%s/%s.%s", MANUFACTURER_LOGO_BASE_URL, firstName, MANUFACTURER_LOGO_EXTENSION);
 		byte[] logo = practiceUtils.fetchLogo(logoUri);
 		return TherapyLogoResponseDto.builder().logo(logo).logoExtension(mediaType).build();
+	}
+
+	@Override
+	@Transactional
+	public SPTherapyConfigs updateSPTherapyConfigDiagnosisCodes(String spProductId, List<Long> diagnosisCodeIDs)
+			throws ResourceNotFoundException {
+		SPTherapyConfigs configToUpdate = spTherapyConfigRepository.findBySpProductId(spProductId);
+
+		if (configToUpdate == null) {
+			configToUpdate = new SPTherapyConfigs();
+			configToUpdate.setSpProductId(spProductId);
+		}
+
+		List<DiagnosisCode> diagnosisCodeToLink = diagnosisCodeRepository.findAllById(diagnosisCodeIDs);
+		if (diagnosisCodeIDs.size() != diagnosisCodeToLink.size()) {
+			throw new ResourceNotFoundException("Some of the provided diagnosis Code IDs do not exist.");
+		}
+		Set<DiagnosisCode> existingDiagCode = new HashSet<>(configToUpdate.getDiagnosisCodes());
+
+		existingDiagCode.addAll(diagnosisCodeToLink);
+		configToUpdate.getDiagnosisCodes().clear();
+		configToUpdate.setDiagnosisCodes(existingDiagCode);
+		spTherapyConfigRepository.save(configToUpdate);
+		return configToUpdate;
+
+	}
+
+	@Override
+	@Transactional
+	public void delinkSPProductFromDiagnosisCodes(String spProductId, List<Long> diagnosisCodeIDs)
+			throws ResourceNotFoundException {
+		SPTherapyConfigs spTherapyConfigs = spTherapyConfigRepository.findBySpProductId(spProductId);
+
+		if (spTherapyConfigs == null) {
+			throw new ResourceNotFoundException("SPTherapyConfig not found for spProductId: " + spProductId);
+		}
+
+		List<DiagnosisCode> diagnosisCodeToRemove = diagnosisCodeRepository.findAllById(diagnosisCodeIDs);
+		if (diagnosisCodeIDs.size() != diagnosisCodeToRemove.size()) {
+			throw new ResourceNotFoundException("Some of the provided diagnosis Code IDs do not exist.");
+		}
+
+		boolean removedAll = spTherapyConfigs.getDiagnosisCodes().removeAll(new HashSet<>(diagnosisCodeToRemove));
+		if (!removedAll) {
+			throw new ResourceNotFoundException(
+					"Some of the provided diagnosis Code IDs are not linked to the SP Product.");
+		}
+		spTherapyConfigRepository.save(spTherapyConfigs);
+
+	}
+
+	@Override
+	public Page<DiagnosisCode> findAllDiagnosisCodesNotLinkedToSPProduct(String query, Pageable paging,
+			String spProductId, boolean showLinkedCodes) throws ResourceNotFoundException {
+		SPTherapyConfigs spTherapyConfigs = spTherapyConfigRepository.findBySpProductId(spProductId);
+
+		if (spTherapyConfigs == null) {
+			throw new ResourceNotFoundException("SPTherapyConfig not found for spProductId: " + spProductId);
+		}
+
+		query = StringUtils.toRootLowerCase(query);
+
+		if (showLinkedCodes) {
+			return diagnosisCodeRepository.findAllDiagnosisCodesLinkedToSPProduct(query, paging, spProductId);
+		}
+
+		return diagnosisCodeRepository.findAllDiagnosisCodesNotLinkedToSPProduct(query, paging, spProductId);
+	}
+
+	@Override
+	@Transactional
+	public void updateTherapyQuantities(TherapyQuantityUpdateRequestDTO request) {
+		List<String> ndcNumbers = request.getNdcNumbers();
+		ChannelType channelType = request.getChannelType();
+
+		Map<String, TherapyConfigs> existingConfigMap = therapyConfigRepository
+			.findByNdcNumberInAndChannelType(ndcNumbers, channelType)
+			.stream()
+			.collect(Collectors.toMap(TherapyConfigs::getNdcNumber, Function.identity()));
+
+		List<TherapyConfigs> updatedConfigs = ndcNumbers.stream().map(ndc -> {
+			TherapyConfigs config = existingConfigMap.get(ndc);
+
+			if (config != null) {
+				config.setMinQuantity(request.getMinQuantity());
+				config.setMaxQuantity(request.getMaxQuantity());
+				log.info("Updated existing config for NDC: {}", ndc);
+			}
+			else {
+				config = TherapyConfigs.builder()
+					.ndcNumber(ndc)
+					.channelType(channelType)
+					.minQuantity(request.getMinQuantity())
+					.maxQuantity(request.getMaxQuantity())
+					.isPatientInformationRequired(false)
+					.patientIdentifierRequirement(ConfigFieldRequirement.OPTIONAL)
+					.mrnRequirement(ConfigFieldRequirement.OPTIONAL)
+					.coiIdRequirement(ConfigFieldRequirement.OPTIONAL)
+					.poNumberRequirement(ConfigFieldRequirement.OPTIONAL)
+					.dateOfAdministrationRequirement(ConfigFieldRequirement.OPTIONAL)
+					.dateOfApheresisRequirement(ConfigFieldRequirement.OPTIONAL)
+					.shipToPORequirement(ConfigFieldRequirement.OPTIONAL)
+					.build();
+				log.info("Created new config for missing NDC: {}", ndc);
+			}
+
+			return config;
+		}).toList();
+
+		therapyConfigRepository.saveAll(updatedConfigs);
+		log.info("Saved {} therapy configurations (updated + created).", updatedConfigs.size());
 	}
 
 }

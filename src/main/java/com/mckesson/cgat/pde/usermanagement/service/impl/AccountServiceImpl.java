@@ -20,7 +20,7 @@ import com.mckesson.cgat.pde.usermanagement.exception.custom.CSVGenerationExcept
 import com.mckesson.cgat.pde.usermanagement.exception.custom.CsvFileNotValidException;
 import com.mckesson.cgat.pde.usermanagement.model.*;
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
-import com.mckesson.cgat.pde.usermanagement.repository.ProviderRepository;
+import com.mckesson.cgat.pde.usermanagement.repository.*;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;
 import com.mckesson.cgat.pde.usermanagement.utils.SalesOrgUtils;
 import jakarta.validation.ConstraintViolation;
@@ -43,10 +43,6 @@ import org.springframework.util.CollectionUtils;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.ForbiddenActionException;
 import com.mckesson.cgat.pde.usermanagement.exception.custom.UnauthorizedAccessException;
 import com.mckesson.cgat.pde.usermanagement.mapper.AccountMapper;
-import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
-import com.mckesson.cgat.pde.usermanagement.repository.PracticeRepository;
-import com.mckesson.cgat.pde.usermanagement.repository.UserPreferenceRepository;
-import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
 import com.mckesson.cgat.pde.usermanagement.service.AccountService;
 import com.mckesson.cgat.pde.usermanagement.service.QuestionnaireService;
 import com.mckesson.cgat.pde.usermanagement.utils.CustomUtils;
@@ -81,10 +77,13 @@ public class AccountServiceImpl implements AccountService {
 
 	private final UserService userService;
 
+	private final CatalogPriceRepository catalogPriceRepository;
+
 	public AccountServiceImpl(AccountRepository accountRepository, PracticeRepository practiceRepository,
 			UserRepository userRepository, UserPreferenceRepository userPreferenceRepository,
 			QuestionnaireService questionnaireService, AccountMapper accountMapper,
-			ProviderRepository providerRepository, Validator validator, UserService userService) {
+			ProviderRepository providerRepository, Validator validator, UserService userService,
+			CatalogPriceRepository catalogPriceRepository) {
 		this.accountRepository = accountRepository;
 		this.practiceRepository = practiceRepository;
 		this.userRepository = userRepository;
@@ -94,6 +93,7 @@ public class AccountServiceImpl implements AccountService {
 		this.providerRepository = providerRepository;
 		this.validator = validator;
 		this.userService = userService;
+		this.catalogPriceRepository = catalogPriceRepository;
 	}
 
 	@Override
@@ -147,7 +147,9 @@ public class AccountServiceImpl implements AccountService {
 			throw new ForbiddenActionException(CustomUtils.UNAUTHORIZED_MESSAGE);
 		account.setPracticeId(null);
 		accountRepository.save(account);
+		catalogPriceRepository.updateUserMaterialExclusion(accountId);
 		accountRepository.delinkUsersFromAccount(accountId);
+
 	}
 
 	@Override
@@ -473,6 +475,20 @@ public class AccountServiceImpl implements AccountService {
 		}
 
 		return permissionsRoleUserDTOs;
+	}
+
+	@Override
+	@Transactional
+	public UserAccountsTherapiesResponse getUserAccessibleSoldToAccountAndExcludedTherapies(Long userId,
+			Long currentOrgId, String partnerFunctionType) throws ResourceNotFoundException {
+		List<Account> accountsByUser = accountRepository.findAccountsByUser(userId, currentOrgId, partnerFunctionType);
+		List<Therapy> excludedMaterialsForUser = userService.getExcludedMaterialsForUser(userId);
+		UserAccountsTherapiesResponse userAccountsTherapiesResponse = UserAccountsTherapiesResponse.builder()
+			.accounts(accountsByUser)
+			.excludedTherapies(excludedMaterialsForUser)
+			.build();
+
+		return userAccountsTherapiesResponse;
 	}
 
 	private void processAccountActions(Set<AccountDTO> accountDataList, Map<String, Account> accountMap,

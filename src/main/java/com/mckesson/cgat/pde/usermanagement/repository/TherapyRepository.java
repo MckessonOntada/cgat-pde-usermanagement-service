@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.mckesson.cgat.pde.usermanagement.dto.*;
 import com.mckesson.cgat.pde.usermanagement.model.AccountPartnerFunction;
 import com.mckesson.cgat.pde.usermanagement.model.ChannelType;
 import org.springframework.data.domain.Page;
@@ -14,10 +15,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.mckesson.cgat.pde.usermanagement.dto.AccountsResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.MaterialResponseDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.ProgramChannelProjectionDTO;
-import com.mckesson.cgat.pde.usermanagement.dto.TherapyCatalogResponseDTO;
 import com.mckesson.cgat.pde.usermanagement.model.Therapy;
 
 @Repository
@@ -31,6 +28,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			             JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material AND m.channel_type = cp.channel_type
 			             JOIN usermanagement.account ac  ON ac.sap_customer = cp.sold_to_customer
 			             JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
+			                      LEFT JOIN catalog.user_material_exclusion ume
+			                          ON ume.material_id = m.id AND ume.user_id = :userId
 			             WHERE
 			                 NOT (m.channel_type = 'SPECIALITY_PHARMA' AND m.is_crosswalked = true)
 			                 AND uam.user_id = :userId
@@ -41,6 +40,12 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 							 AND
 								m.item_status = 'A'
 			             	AND ac.is_active = 1
+			                          AND (
+			                          	(:listingMode = 'INCLUDED' AND ume.material_id IS NULL)
+			                          	OR (:listingMode = 'EXCLUDED' AND ume.user_id = :userId)
+			                          	OR (:listingMode = 'ALL')
+			                          )
+
 			             union distinct
 
 			             select  m.id, m.material_number as material_number, m.material_description as material_description,
@@ -54,6 +59,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			                 ON ac.sap_customer = cp.sold_to_customer
 			             JOIN usermanagement.user_account_mapping uam
 			                 ON ac.id = uam.account_id
+			                      LEFT JOIN catalog.user_material_exclusion ume
+			                          ON ume.material_id = m.id AND ume.user_id = :userId
 			             WHERE
 			                 uam.user_id = :userId
 			                 AND ac.partner_function = :partnerFunction
@@ -63,6 +70,11 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 							AND
 								cw.is_active = 1
 							AND ac.is_active = 1
+			                         AND (
+			                          	(:listingMode = 'INCLUDED' AND ume.material_id IS NULL)
+			                          	OR (:listingMode = 'EXCLUDED' AND ume.user_id = :userId)
+			                          	OR (:listingMode = 'ALL')
+			                          )
 			         )
 			         SELECT
 						com.trade_name as tradeName, com.channel_type AS channelType, STRING_AGG(com.id::text, ', ') AS id,
@@ -94,6 +106,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					         JOIN catalog.catalog_price cp ON m.material_number = cp.sap_material AND m.channel_type = cp.channel_type
 					         JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
 					         JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
+					                        LEFT JOIN catalog.user_material_exclusion ume
+					                           ON ume.material_id = m.id AND ume.user_id = :userId
 					         WHERE
 					             NOT (m.channel_type = 'SPECIALITY_PHARMA' AND m.is_crosswalked = true)
 					             AND uam.user_id = :userId
@@ -104,6 +118,11 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					        AND
 								m.item_status = 'A'
 						 	AND ac.is_active = 1
+					                  AND (
+					                        	(:listingMode = 'INCLUDED' AND ume.material_id IS NULL)
+					                        	OR (:listingMode = 'EXCLUDED' AND ume.user_id = :userId)
+					                        	OR (:listingMode = 'ALL')
+					                        )
 
 					         UNION distinct
 
@@ -114,6 +133,8 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 					         JOIN catalog.catalog_price cp ON cp.sap_material = cw.sp_product_id
 					         JOIN usermanagement.account ac ON ac.sap_customer = cp.sold_to_customer
 					         JOIN usermanagement.user_account_mapping uam ON ac.id = uam.account_id
+					                         LEFT JOIN catalog.user_material_exclusion ume
+					                           ON ume.material_id = m.id AND ume.user_id = :userId
 					         WHERE
 					             uam.user_id = :userId
 					             AND ac.partner_function = :partnerFunction
@@ -123,6 +144,11 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 								AND
 									cw.is_active = 1
 					         	AND ac.is_active = 1
+					                  AND (
+					                        	(:listingMode = 'INCLUDED' AND ume.material_id IS NULL)
+					                        	OR (:listingMode = 'EXCLUDED' AND ume.user_id = :userId)
+					                        	OR (:listingMode = 'ALL')
+					                        )
 					     )
 						SELECT
 							com.trade_name as tradeName, com.channel_type AS channelType, STRING_AGG(DISTINCT com.id::text, ', ') AS id,
@@ -148,7 +174,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 			nativeQuery = true)
 	Page<TherapyCatalogResponseDTO> findAllTherapies(@Param("userId") Long userId, @Param("query") String query,
 			@Param("salesOrg") List<String> salesOrg, @Param("customerIdentifier") List<String> customerIdentifier,
-			@Param("partnerFunction") String partnerFunction, Pageable paging);
+			@Param("partnerFunction") String partnerFunction, Pageable paging, String listingMode);
 
 	@Query(value = """
 				SELECT ac.id, ac.sap_customer as accountNumber, ac.name_1 as accountName, ac.house_number, ac.street, ac.street_2 as street2,
@@ -554,6 +580,7 @@ public interface TherapyRepository extends JpaRepository<Therapy, Long> {
 				 AND cp.channelType = 'SPECIALITY_PHARMA'
 				 AND m.itemStatus = 'A'
 				 and m.ndcNumber = :ndcNumber
+				 and m.isCrosswalked = false
 			""")
 	List<MaterialResponseDTO> findSPTherapyAndConfigBySoldToAccountAndProgramAndNdc(
 			@Param("soldToAccount") String soldToAccount, @Param("shipToAccount") String shipToAccount,

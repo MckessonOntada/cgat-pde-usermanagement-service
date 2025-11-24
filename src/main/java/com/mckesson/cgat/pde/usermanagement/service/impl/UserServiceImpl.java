@@ -9,7 +9,7 @@ import com.mckesson.cgat.pde.usermanagement.exception.custom.ResourceConflictExc
 import com.mckesson.cgat.pde.usermanagement.model.communication.ModuleCategory;
 import com.mckesson.cgat.pde.usermanagement.model.communication.PreferenceDetails;
 import com.mckesson.cgat.pde.usermanagement.model.validators.BasicInfo;
-import com.mckesson.cgat.pde.usermanagement.repository.UserCommunicationPreferencesRepository;
+import com.mckesson.cgat.pde.usermanagement.repository.*;
 import com.mckesson.cgat.pde.usermanagement.notification.config.NotificationEventType;
 import com.mckesson.cgat.pde.usermanagement.notification.repository.NotificationEventRepository;
 import com.mckesson.cgat.pde.usermanagement.notification.service.NotificationService;
@@ -44,9 +44,6 @@ import com.mckesson.cgat.pde.usermanagement.model.UserPreference;
 import com.mckesson.cgat.pde.usermanagement.model.UserPreferenceType;
 import com.mckesson.cgat.pde.usermanagement.model.UserProvisionedInOktaStatus;
 import com.mckesson.cgat.pde.usermanagement.model.UserType;
-import com.mckesson.cgat.pde.usermanagement.repository.AccountRepository;
-import com.mckesson.cgat.pde.usermanagement.repository.RoleRepository;
-import com.mckesson.cgat.pde.usermanagement.repository.UserRepository;
 import com.mckesson.cgat.pde.usermanagement.service.OktaUserManagementService;
 import com.mckesson.cgat.pde.usermanagement.service.UserService;
 import com.mckesson.jbat.common.util.exception.ResourceNotFoundException;
@@ -71,6 +68,10 @@ public class UserServiceImpl implements UserService {
 
 	private final NotificationEventRepository notificationEventRepository;
 
+	private final TherapyRepository therapyRepository;
+
+	private final CatalogPriceRepository catalogPriceRepository;
+
 	@Autowired
 	Validator validator;
 
@@ -80,13 +81,16 @@ public class UserServiceImpl implements UserService {
 	public UserServiceImpl(UserRepository userRepository, AccountRepository repository, RoleRepository roleRepository,
 			OktaUserManagementService oktaUserManagementService,
 			UserCommunicationPreferencesRepository communicationPreferencesRepository,
-			NotificationEventRepository notificationEventRepository) {
+			NotificationEventRepository notificationEventRepository, TherapyRepository therapyRepository,
+			CatalogPriceRepository catalogPriceRepository) {
 		this.userRepository = userRepository;
 		this.accountRepository = repository;
 		this.roleRepository = roleRepository;
 		this.oktaUserManagementService = oktaUserManagementService;
 		this.communicationPreferencesRepository = communicationPreferencesRepository;
 		this.notificationEventRepository = notificationEventRepository;
+		this.therapyRepository = therapyRepository;
+		this.catalogPriceRepository = catalogPriceRepository;
 	}
 
 	@Override
@@ -193,6 +197,10 @@ public class UserServiceImpl implements UserService {
 
 		if (removed) {
 			userRepository.delinkUserFromAccount(userId, accountId);
+
+			List<Therapy> therapyList = catalogPriceRepository.findExclusiveTherapyByAccount(accountId, userId);
+			user.getExcludedMaterials().removeAll(therapyList);
+
 			userRepository.save(user); // Triggers Hibernate Envers auditing
 		}
 		else {
@@ -569,10 +577,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserCommunicationPreferencesDTO fetchCommunicationPreferences(LoggedInUserDetails loggedInUser)
-			throws ResourceNotFoundException {
-
-		long userId = Long.parseLong(loggedInUser.getId());
+	public UserCommunicationPreferencesDTO fetchCommunicationPreferences(Long userId) throws ResourceNotFoundException {
 
 		User user = userRepository.findByIdAndIsActiveTrue(userId)
 			.orElseThrow(() -> new ResourceNotFoundException("User not found with id:" + userId));
@@ -703,6 +708,31 @@ public class UserServiceImpl implements UserService {
 			.number(user.getContact().getPhone())
 			.lastResendSMSTime(latestEvent != null ? latestEvent.getCreatedAt().atOffset(ZoneOffset.UTC) : null)
 			.build();
+	}
+
+	@Transactional
+	@Override
+	public User restrictUserToMaterial(Long userId, List<Long> materialIds, boolean isReplace)
+			throws ResourceNotFoundException {
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new ResourceNotFoundException("User not found with this Id :" + userId));
+		List<Therapy> materialsToRestrict = therapyRepository.findAllById(materialIds);
+		if (materialsToRestrict.size() != materialIds.size()) {
+			throw new ResourceNotFoundException("Some of the provided catalog IDs do not exist.");
+		}
+		if (isReplace) {
+			user.getExcludedMaterials().clear();
+		}
+		user.getExcludedMaterials().addAll(materialsToRestrict);
+		return user;
+	}
+
+	@Transactional
+	@Override
+	public List<Therapy> getExcludedMaterialsForUser(Long userId) throws ResourceNotFoundException {
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new ResourceNotFoundException("User not found with this Id :" + userId));
+		return user.getExcludedMaterials().stream().toList();
 	}
 
 }

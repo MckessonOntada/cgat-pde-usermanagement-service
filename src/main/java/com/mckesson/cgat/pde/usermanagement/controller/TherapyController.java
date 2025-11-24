@@ -67,7 +67,7 @@ public class TherapyController {
 				: Sort.by(sortBy).descending();
 		Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 		return therapyService.findAllTherapies(Long.valueOf(UserSecurityUtils.getLoggedInUser().getId()), query,
-				salesOrg, paging, customerIdentifier);
+				salesOrg, paging, customerIdentifier, TherapyListingMode.INCLUDED);
 	}
 
 	@GetMapping("/ndc/{ndcNumber}/soldtoaccounts")
